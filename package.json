@@ -1,0 +1,9 @@
+{
+  "name": "gpinterface-monorepo",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend",
+    "shared"
+  ]
+}

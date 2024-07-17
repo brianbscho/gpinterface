@@ -1,0 +1,48 @@
+export const monsterapiModels = [
+  {
+    name: "Monster Api",
+    config: {
+      guidance_scale: 7.5,
+      negprompt: "",
+      seed: 2414,
+      steps: 15,
+    },
+    configSelects: [
+      {
+        title: "Aspect ratio",
+        name: "aspect_ratio",
+        values: ["square", "portrait", "landscape"],
+      },
+      { title: "Safe filter", name: "safe_filter", values: ["true", "false"] },
+      { title: "Samples", name: "samples", values: [1] },
+      {
+        title: "Style",
+        name: "style",
+        values: [
+          "enhance",
+          "anime",
+          "photographic",
+          "digital-art",
+          "comic-book",
+          "fantasy-art",
+          "analog-film",
+          "neonpunk",
+          "isometric",
+          "lowpoly",
+          "origami",
+          "line-art",
+          "craft-clay",
+          "cinematic",
+          "3d-model",
+          "pixel-art",
+          "texture",
+          "futuristic",
+          "realism",
+          "watercolor",
+          "photorealistic",
+        ],
+      },
+    ],
+    url: "https://api.monsterapi.ai/v1/generate/txt2img",
+  },
+];

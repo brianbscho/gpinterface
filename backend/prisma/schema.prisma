@@ -1,0 +1,282 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// * * * * * * * * * * * *
+// Thread
+// 
+
+model Bookmark {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  isBookmarked Boolean @map("is_bookmarked")
+
+  postHashId String @map("post_hash_id")
+  post       Post   @relation(fields: [postHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
+  userHashId String @map("user_hash_id")
+  user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("bookmarks")
+}
+
+model Like {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  isLiked Boolean @map("is_liked")
+
+  postHashId String @map("post_hash_id")
+  post       Post   @relation(fields: [postHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
+  userHashId String @map("user_hash_id")
+  user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("likes")
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  post String
+
+  threadHashId String  @map("thread_hash_id")
+  thread       Thread  @relation(fields: [threadHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
+  userHashId   String? @map("user_hash_id")
+  user         User?   @relation(fields: [userHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+
+  bookmarks    Bookmark[]
+  likes        Like[]
+  imagePrompts ImagePrompt[]
+  textPrompts  TextPrompt[]
+
+  @@map("posts")
+}
+
+model Thread {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  title    String
+  isPublic Boolean @map("is_public")
+
+  userHashId String? @map("user_hash_id")
+  user       User?   @relation(fields: [userHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+
+  posts Post[]
+
+  @@map("threads")
+}
+
+// * * * * * * * * * * * *
+// Image Prompt
+// 
+model ImageExample {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  input    Json
+  url      String
+  response Json
+  price    Float
+
+  imagePromptHashId String      @map("image_prompt_hash_id")
+  imagePrompt       ImagePrompt @relation(fields: [imagePromptHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("image_examples")
+}
+
+model ImagePrompt {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  provider String
+  model    String
+  prompt   String
+  config   Json
+
+  postHashId String @map("post_hash_id")
+  post       Post   @relation(fields: [postHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
+
+  examples  ImageExample[]
+  histories ImagePromptHistory[]
+
+  @@map("image_prompts")
+}
+
+model ImagePromptHistory {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  provider String
+  model    String
+  prompt   String
+  config   Json
+  input    Json
+  url      String
+  response Json
+  price    Float
+
+  imagePromptHashId String?      @map("image_prompt_hash_id")
+  imagePrompt       ImagePrompt? @relation(fields: [imagePromptHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+  apiKeyHashId      String?      @map("api_key_hash_id")
+  apiKey            ApiKey?      @relation(fields: [apiKeyHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+  userHashId        String       @map("user_hash_id")
+  user              User         @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@map("image_prompt_histories")
+}
+
+// * * * * * * * * * * * *
+// Text Prompt
+// 
+
+model TextExample {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  input    Json
+  content  String
+  response Json
+  price    Float
+
+  textPromptHashId String     @map("text_prompt_hash_id")
+  textPrompt       TextPrompt @relation(fields: [textPromptHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("text_examples")
+}
+
+model TextMessage {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  role    String
+  content String
+
+  textPromptHashId String     @map("text_prompt_hash_id")
+  textPrompt       TextPrompt @relation(fields: [textPromptHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("text_messages")
+}
+
+model TextPrompt {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  provider      String
+  model         String
+  systemMessage String @map("system_message")
+  config        Json
+
+  postHashId String @map("post_hash_id")
+  post       Post   @relation(fields: [postHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
+
+  examples  TextExample[]
+  messages  TextMessage[]
+  histories TextPromptHistory[]
+
+  @@map("text_prompts")
+}
+
+model TextPromptHistory {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  provider      String
+  model         String
+  systemMessage String @map("system_message")
+  config        Json
+  input         Json
+  content       String
+  response      Json
+  inputTokens   Int    @map("input_tokens")
+  outputTokens  Int    @map("output_tokens")
+  messages      Json
+  price         Float
+
+  textPromptHashId String?     @map("text_prompt_hash_id")
+  textPrompt       TextPrompt? @relation(fields: [textPromptHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+  apiKeyHashId     String?     @map("api_key_hash_id")
+  apiKey           ApiKey?     @relation(fields: [apiKeyHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+  userHashId       String      @map("user_hash_id")
+  user             User        @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@map("text_prompt_histories")
+}
+
+// * * * * * * * * * * * *
+// User
+// 
+
+model ApiKey {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  key String @unique @map("key")
+
+  userHashId String @map("user_hash_id")
+  user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  imagePromptHistories ImagePromptHistory[]
+  textPromptHistories  TextPromptHistory[]
+
+  @@map("api_keys")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  email    String
+  password String
+  name     String
+  bio      String @default("")
+
+  apiKeys              ApiKey[]
+  bookmarks            Bookmark[]
+  likes                Like[]
+  posts                Post[]
+  threads              Thread[]
+  imagePromptHistories ImagePromptHistory[]
+  textPromptHistories  TextPromptHistory[]
+
+  @@map("users")
+}

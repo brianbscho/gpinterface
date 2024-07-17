@@ -1,0 +1,33 @@
+import callApi from "@/util/callApi";
+import { Metadata } from "next";
+import User from "./user";
+import { cache } from "react";
+import { UserGetResponse } from "gpinterface-shared/type/user";
+
+const getUser = cache(async (hashId: string) => {
+  const response = await callApi<UserGetResponse>({
+    endpoint: `/user/${hashId}`,
+  });
+  return response;
+});
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { hashId: string };
+}): Promise<Metadata> {
+  const { hashId } = params;
+  const response = await getUser(hashId);
+  if (response) {
+    return {
+      title: `GPInterface - ${response.user.name}`,
+      description: response.user.bio,
+    };
+  }
+  return { title: "GPInterface" };
+}
+
+export default function Page({ params }: { params: { hashId: string } }) {
+  const { hashId } = params;
+  return <User hashId={hashId} />;
+}

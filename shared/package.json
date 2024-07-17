@@ -1,0 +1,21 @@
+{
+  "name": "gpinterface-shared",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.24.3",
+    "@aws-sdk/client-bedrock-runtime": "^3.614.0",
+    "@sinclair/typebox": "^0.32.34",
+    "cohere-ai": "^7.10.6",
+    "openai": "^4.52.7"
+  }
+}

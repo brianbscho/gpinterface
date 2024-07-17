@@ -1,0 +1,45 @@
+{
+  "name": "gpinterface-backend",
+  "version": "1.0.0",
+  "scripts": {
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:deploy": "prisma migrate deploy",
+    "prisma:generate": "prisma generate",
+    "copy-shared": "cpy '../shared/dist/**/*' './dist/node_modules/gpinterface-shared/'",
+    "build": "tsc -p tsconfig.json && npm run copy-shared",
+    "start:prompt": "node dist/prompt/app.js",
+    "start": "node dist/app.js",
+    "dev": "nodemon"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.614.0",
+    "@aws-sdk/credential-providers": "^3.614.0",
+    "@aws-sdk/lib-storage": "^3.614.0",
+    "@fastify/cookie": "^9.3.1",
+    "@fastify/cors": "^9.0.1",
+    "@fastify/sensible": "^5.5.0",
+    "@prisma/client": "5.14",
+    "@sinclair/typebox": "^0.32.22",
+    "bcryptjs": "^2.4.3",
+    "fastify": "^4.26.2",
+    "fastify-plugin": "^4.5.1",
+    "groq-sdk": "^0.5.0",
+    "jsonwebtoken": "^9.0.2",
+    "nanoid": "3",
+    "openai": "^4.35.0"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/jsonwebtoken": "^9.0.6",
+    "@types/node": "^20.12.7",
+    "cpy-cli": "^5.0.0",
+    "gpinterface-shared": "1.0.0",
+    "nodemon": "^3.1.0",
+    "prisma": "5.14",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
+  }
+}

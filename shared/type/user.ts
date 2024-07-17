@@ -1,0 +1,27 @@
+import { Type } from "@sinclair/typebox";
+import { UserInfo, UserMe } from ".";
+
+export const UserCreateSchema = Type.Object({
+  email: Type.String(),
+  name: Type.String(),
+  password: Type.String(),
+});
+export const UserGetSchema = Type.Object({
+  hashId: Type.String(),
+});
+export const UserUpdateSchema = Type.Object({
+  name: Type.String(),
+  bio: Type.String(),
+});
+export const UserLoginSchema = Type.Object({
+  email: Type.String(),
+  password: Type.String(),
+});
+export const UserUpdatePasswordSchema = Type.Object({
+  oldPassword: Type.String(),
+  newPassword: Type.String(),
+  newPasswordRepeat: Type.String(),
+});
+
+export type UserGetResponse = { user: UserInfo };
+export type UserGetMeResponse = { user: UserMe };
