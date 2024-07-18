@@ -179,25 +179,47 @@ export default function Page() {
           <DataList.Label>API Keys</DataList.Label>
           <DataList.Value>
             <div>
-              <table className="mb-3">
-                {apiKeys.map((k) => (
-                  <tr key={k.hashId}>
-                    <td>{k.key}</td>
-                    <td className="pl-3">
-                      <Button
-                        variant="outline"
-                        size="1"
-                        onClick={() => onClickApiKeyTrash(k.hashId)}
-                      >
-                        <TrashIcon />
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </table>
-              <Button size="1" onClick={onClickGetApiKey}>
-                Get API Key
-              </Button>
+              <div>
+                <table>
+                  {apiKeys.map((k) => (
+                    <tr key={k.hashId}>
+                      <td>
+                        <div className="mb-3">{k.key}</div>
+                      </td>
+                      <td className="pl-3">
+                        <div className="mb-3">
+                          <Button
+                            variant="outline"
+                            size="1"
+                            onClick={() => onClickApiKeyTrash(k.hashId)}
+                            className="mb-3"
+                          >
+                            <TrashIcon />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </table>
+                <Button size="1" onClick={onClickGetApiKey}>
+                  Get API Key
+                </Button>
+              </div>
+              <div className="mt-3">
+                <ul>
+                  <li>
+                    1. We are currently in the beta phase of our product launch.
+                  </li>
+                  <li>
+                    2. During this beta period, there will be no charges for
+                    your use of the service.
+                  </li>
+                  <li>
+                    3. As part of our beta testing phase, your daily usage is
+                    capped at $1.
+                  </li>
+                </ul>
+              </div>
             </div>
           </DataList.Value>
         </DataList.Item>
