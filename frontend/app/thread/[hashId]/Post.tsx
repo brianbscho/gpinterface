@@ -30,11 +30,9 @@ import {
 import ImagePrompt from "./ImagePrompt";
 
 export default function Post({
-  isPublic,
   post,
   setPost,
 }: {
-  isPublic: boolean;
   post: PostType;
   setPost: (p: PostType) => void;
 }) {
@@ -113,7 +111,7 @@ export default function Post({
       ))}
       <div className="py-1 flex gap-3 justify-end items-center text-sm">
         <div>
-          {!isPublic && post.user && post.user.hashId === user?.hashId && (
+          {post.user && post.user.hashId === user?.hashId && (
             <Button size="1" asChild>
               <Link href={`/post/edit/${post.hashId}`}>edit</Link>
             </Button>
