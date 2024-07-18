@@ -125,7 +125,6 @@ export default function Page() {
           value={title}
           onChange={(e) => setTitle(e.currentTarget.value)}
           placeholder="title of the thread"
-          disabled={loading}
         />
       </div>
       <div className="w-full">
@@ -134,7 +133,6 @@ export default function Page() {
           value={post}
           onChange={(e) => setPost(e.currentTarget.value)}
           placeholder="contents of the post"
-          disabled={loading}
         />
       </div>
       <Radio.Provider useProvider={[provider, setProvider]} loading={loading} />
