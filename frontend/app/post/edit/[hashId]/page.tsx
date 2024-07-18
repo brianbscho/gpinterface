@@ -208,7 +208,11 @@ export default function Page({ params }: { params: { hashId: string } }) {
           placeholder="contents of the post"
         />
       </div>
-      <Radio.Provider useProvider={[modal, setModal]} loading={loading} />
+      <Radio.Provider
+        useProvider={[modal, setModal]}
+        loading={loading}
+        disabled={responsePost.thread.isPublic}
+      />
       {modal === modals[0] && (
         <div className="flex justify-end pb-3">
           <div>
