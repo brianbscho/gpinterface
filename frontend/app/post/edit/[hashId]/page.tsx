@@ -77,11 +77,11 @@ export default function Page({ params }: { params: { hashId: string } }) {
 
         setLoading(true);
         const response = await callApi(...args);
-        setLoading(false);
 
         if (response) {
           router.push(`/thread/${response.hashId}`);
         }
+        setLoading(false);
       };
     },
     [responsePost, title, post, router]

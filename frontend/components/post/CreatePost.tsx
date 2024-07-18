@@ -33,11 +33,11 @@ export default function CreatePost({ thread }: { thread: Thread }) {
 
         setLoading(true);
         const response = await callApi(...args);
-        setLoading(false);
 
         if (response) {
           location.reload();
         }
+        setLoading(false);
       };
     },
     [post]

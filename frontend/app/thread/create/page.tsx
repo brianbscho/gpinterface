@@ -42,11 +42,11 @@ export default function Page() {
 
         setLoading(true);
         const response = await callApi(...args);
-        setLoading(false);
 
         if (response) {
           router.push(`/thread/${response.hashId}`);
         }
+        setLoading(false);
       };
     },
     [title, post, router]
