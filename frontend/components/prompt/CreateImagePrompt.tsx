@@ -230,6 +230,7 @@ export default function CreateImagePrompt({
         <Radio.ImageProvider
           useProvider={[provider, setProvider]}
           loading={loading}
+          disabled={responsePost?.thread.isPublic}
         />
       </div>
       {models.length > 0 && (
@@ -238,6 +239,7 @@ export default function CreateImagePrompt({
             models={models}
             useModel={[model, setModel]}
             loading={loading}
+            disabled={responsePost?.thread.isPublic}
           />
         </div>
       )}
@@ -254,7 +256,7 @@ export default function CreateImagePrompt({
                   placeholder="image generation prompt"
                   value={prompt}
                   onChange={(e) => setPrompt(e.currentTarget.value)}
-                  disabled={loading}
+                  disabled={loading || responsePost?.thread.isPublic}
                 />
               </td>
             </tr>
@@ -270,7 +272,7 @@ export default function CreateImagePrompt({
                         className="w-full focus:outline-none border border-px rounded p-1 resize-none h-80"
                         placeholder="advanced config"
                         useValue={[config, setConfig]}
-                        disabled={loading}
+                        disabled={loading || responsePost?.thread.isPublic}
                       />
                       <div className="grid grid-cols-[auto_1fr] gap-3 w-full">
                         {model.configSelects.map((c) => (
@@ -289,6 +291,7 @@ export default function CreateImagePrompt({
                                 },
                               ]}
                               loading={loading}
+                              disabled={responsePost?.thread.isPublic}
                             />
                           </Fragment>
                         ))}
@@ -297,6 +300,7 @@ export default function CreateImagePrompt({
                         size="1"
                         onClick={onClickResetConfig}
                         loading={loading}
+                        disabled={responsePost?.thread.isPublic}
                       >
                         Reset to Default
                       </Button>
@@ -307,7 +311,11 @@ export default function CreateImagePrompt({
             )}
             <tr>
               <td>
-                <Button onClick={onClickTest} loading={loading}>
+                <Button
+                  onClick={onClickTest}
+                  loading={loading}
+                  disabled={responsePost?.thread.isPublic}
+                >
                   Test
                 </Button>
               </td>
@@ -315,7 +323,7 @@ export default function CreateImagePrompt({
                 <Textarea
                   className="border rounded p-1 resize-none w-full h-40"
                   useValue={[example.input, setExampleInput]}
-                  disabled={loading}
+                  disabled={loading || responsePost?.thread.isPublic}
                 />
                 <div className="text-sm text-rose-500 mb-3">
                   {inputErrorMessage}

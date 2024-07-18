@@ -211,6 +211,7 @@ export default function CreateTextPrompt({
         <Radio.TextProvider
           useProvider={[provider, setProvider]}
           loading={loading}
+          disabled={responsePost?.thread.isPublic}
         />
       </div>
       {models.length > 0 && (
@@ -219,6 +220,7 @@ export default function CreateTextPrompt({
             options={models}
             useOption={[model, setModel]}
             loading={loading}
+            disabled={responsePost?.thread.isPublic}
           />
         </div>
       )}
@@ -230,7 +232,11 @@ export default function CreateTextPrompt({
                 <div className="font-bold text-nowrap">Messages</div>
               </td>
               <td>
-                <Button onClick={onClickAddMessages} loading={loading}>
+                <Button
+                  onClick={onClickAddMessages}
+                  loading={loading}
+                  disabled={responsePost?.thread.isPublic}
+                >
                   Add messages
                 </Button>
               </td>
@@ -243,7 +249,7 @@ export default function CreateTextPrompt({
                   placeholder="system message"
                   value={systemMessage}
                   onChange={(e) => setSystemMessage(e.currentTarget.value)}
-                  disabled={loading}
+                  disabled={loading || responsePost?.thread.isPublic}
                 />
               </td>
             </tr>
@@ -253,7 +259,7 @@ export default function CreateTextPrompt({
                   <Select.Root
                     value={m.role}
                     onValueChange={(v) => setMessage(index)({ role: v })}
-                    disabled={loading}
+                    disabled={loading || responsePost?.thread.isPublic}
                   >
                     <Select.Trigger />
                     <Select.Content>
@@ -271,11 +277,12 @@ export default function CreateTextPrompt({
                       onChange={(e) =>
                         setMessage(index)({ content: e.currentTarget.value })
                       }
-                      disabled={loading}
+                      disabled={loading || responsePost?.thread.isPublic}
                     />
                     <Button
                       onClick={() => onClickDeleteMessage(index)}
                       loading={loading}
+                      disabled={responsePost?.thread.isPublic}
                     >
                       <TrashIcon />
                     </Button>
@@ -293,12 +300,13 @@ export default function CreateTextPrompt({
                     className="w-full focus:outline-none border border-px rounded p-1 resize-none h-80"
                     placeholder="advanced config"
                     useValue={[config, setConfig]}
-                    disabled={loading}
+                    disabled={loading || responsePost?.thread.isPublic}
                   />
                   <Button
                     size="1"
                     onClick={onClickResetConfig}
                     loading={loading}
+                    disabled={responsePost?.thread.isPublic}
                   >
                     Reset to Default
                   </Button>
@@ -307,7 +315,11 @@ export default function CreateTextPrompt({
             </tr>
             <tr>
               <td>
-                <Button onClick={onClickTest} loading={loading}>
+                <Button
+                  onClick={onClickTest}
+                  loading={loading}
+                  disabled={responsePost?.thread.isPublic}
+                >
                   Test
                 </Button>
               </td>
@@ -316,7 +328,7 @@ export default function CreateTextPrompt({
                   className="w-full focus:outline-none border-b p-1"
                   value={example.input}
                   onChange={(e) => setExampleInput(e.currentTarget.value)}
-                  disabled={loading}
+                  disabled={loading || responsePost?.thread.isPublic}
                 />
                 <div className="text-sm text-rose-500 mb-3">
                   {inputErrorMessage}
