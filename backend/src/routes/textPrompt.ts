@@ -226,6 +226,9 @@ export default async function (fastify: FastifyInstance) {
         if (!post) {
           throw unauthorized("Text prompt not found.");
         }
+        if (post.thread.isPublic) {
+          throw badRequest("Public prompt cannot be edited");
+        }
         isAccessible(post.thread, user);
 
         if (hashId) {
