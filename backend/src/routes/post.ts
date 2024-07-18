@@ -96,7 +96,7 @@ export default async function (fastify: FastifyInstance) {
 
         const { thread, bookmarks, likes, _count, ...rest } = post;
         return {
-          thread: { hashId: thread.hashId, title: thread.title },
+          thread,
           post: {
             ...rest,
             createdAt: getDateString(post.createdAt),

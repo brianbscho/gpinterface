@@ -32,7 +32,7 @@ export type PostCreateResponse = { hashId: string };
 
 export const PostGetSchema = Type.Object({ hashId: Type.String() });
 export type PostGetResponse = {
-  thread: { hashId: string; title: string };
+  thread: { hashId: string; title: string; isPublic: boolean };
   post: Post;
 };
 
