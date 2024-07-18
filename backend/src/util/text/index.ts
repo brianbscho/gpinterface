@@ -242,21 +242,23 @@ export function getTextPriceByModel(
 // $0.07/$0.07
 // (per 1M Tokens, input/output)
 
-export async function getThisMonthPriceSum(
+export async function getTodayPriceSum(
   history: Prisma.TextPromptHistoryDelegate,
   userHashId: string
 ) {
-  const now = new Date();
-  const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-  const lastDayOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const tomorrowStart = new Date();
+  tomorrowStart.setDate(todayStart.getDate() + 1);
+  tomorrowStart.setHours(0, 0, 0, 0);
 
   const result = await history.aggregate({
     _sum: { price: true },
     where: {
       userHashId,
-      createdAt: { gte: firstDayOfMonth, lte: lastDayOfMonth },
+      createdAt: { gte: todayStart, lt: tomorrowStart },
     },
   });
 
-  return result._sum.price || 0; // Return the sum of the price or 0 if no records found
+  return result._sum.price || 0;
 }

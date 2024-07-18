@@ -12,7 +12,7 @@ import { getApiKey } from "./controllers/apiKey";
 import { getInterpolatedString } from "../util/string";
 import {
   getTextPriceByModel,
-  getThisMonthPriceSum,
+  getTodayPriceSum,
   getTextResponse,
 } from "../util/text";
 import { getValidBody } from "../util";
@@ -26,12 +26,12 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<TextPromptExecuteResponse> => {
       try {
         const apiKey = await getApiKey(fastify, request);
-        const thisMonthPriceSum = await getThisMonthPriceSum(
+        const todayPriceSum = await getTodayPriceSum(
           fastify.prisma.textPromptHistory,
           apiKey.user.hashId
         );
-        if (thisMonthPriceSum > 1) {
-          throw badRequest("You exceeded this month's rate limit");
+        if (todayPriceSum > 1) {
+          throw badRequest("You exceeded today's rate limit");
         }
 
         const { hashId } = request.params;

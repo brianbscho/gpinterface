@@ -17,7 +17,7 @@ import { getInterpolatedString } from "../util/string";
 import {
   getImagePriceByModel,
   getImageResponse,
-  getThisMonthPriceSum,
+  getTodayPriceSum,
 } from "../util/image";
 import { getValidBody } from "../util";
 
@@ -30,12 +30,12 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<ImagePromptExecuteResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
-        const thisMonthPriceSum = await getThisMonthPriceSum(
+        const todayPriceSum = await getTodayPriceSum(
           fastify.prisma.imagePromptHistory,
           user.hashId
         );
-        if (thisMonthPriceSum > 1) {
-          throw badRequest("You exceeded this month's rate limit");
+        if (todayPriceSum > 1) {
+          throw badRequest("You exceeded today's rate limit");
         }
 
         const { hashId } = request.params;
@@ -103,12 +103,12 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<ImagePromptExecuteResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
-        const thisMonthPriceSum = await getThisMonthPriceSum(
+        const todayPriceSum = await getTodayPriceSum(
           fastify.prisma.imagePromptHistory,
           user.hashId
         );
-        if (thisMonthPriceSum > 1) {
-          throw badRequest("You exceeded this month's rate limit");
+        if (todayPriceSum > 1) {
+          throw badRequest("You exceeded today's rate limit");
         }
 
         const { provider, model, prompt, input, config } = request.body;

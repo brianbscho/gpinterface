@@ -16,7 +16,7 @@ import { textModels } from "gpinterface-shared/models/text/model";
 import {
   getTextPriceByModel,
   getTextResponse,
-  getThisMonthPriceSum,
+  getTodayPriceSum,
 } from "../util/text";
 import { getInterpolatedString } from "../util/string";
 import { getValidBody } from "../util";
@@ -30,13 +30,13 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<TextPromptExecuteResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
-        const thisMonthPriceSum = await getThisMonthPriceSum(
+        const todayPriceSum = await getTodayPriceSum(
           fastify.prisma.textPromptHistory,
           user.hashId
         );
-        if (thisMonthPriceSum > 1) {
+        if (todayPriceSum > 1) {
           throw fastify.httpErrors.badRequest(
-            "You exceeded this month's rate limit"
+            "You exceeded today's rate limit"
           );
         }
 
@@ -126,13 +126,13 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<TextPromptExecuteResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
-        const thisMonthPriceSum = await getThisMonthPriceSum(
+        const todayPriceSum = await getTodayPriceSum(
           fastify.prisma.textPromptHistory,
           user.hashId
         );
-        if (thisMonthPriceSum > 1) {
+        if (todayPriceSum > 1) {
           throw fastify.httpErrors.badRequest(
-            "You exceeded this month's rate limit"
+            "You exceeded today's rate limit"
           );
         }
 

@@ -10,7 +10,7 @@ import { createEntity } from "../util/prisma";
 import { imageModels } from "gpinterface-shared/models/image/model";
 import {
   getImagePriceByModel,
-  getThisMonthPriceSum,
+  getTodayPriceSum,
   getImageResponse,
 } from "../util/image";
 import { getInterpolatedString } from "../util/string";
@@ -26,12 +26,12 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<ImagePromptExecuteResponse> => {
       try {
         const apiKey = await getApiKey(fastify, request);
-        const thisMonthPriceSum = await getThisMonthPriceSum(
+        const todayPriceSum = await getTodayPriceSum(
           fastify.prisma.imagePromptHistory,
           apiKey.user.hashId
         );
-        if (thisMonthPriceSum > 1) {
-          throw badRequest("You exceeded this month's rate limit");
+        if (todayPriceSum > 1) {
+          throw badRequest("You exceeded today's rate limit");
         }
 
         const { hashId } = request.params;
