@@ -44,6 +44,8 @@ export default function TextUsage({
           <div className="mt-3 whitespace-pre">
             {stringify(textHistory.config)}
           </div>
+          <div className="font-bold mt-12">Date</div>
+          <div className="mt-3 whitespace-pre">{textHistory.createdAt}</div>
         </div>
         <div className="w-full flex justify-end mt-7">
           <Dialog.Close>

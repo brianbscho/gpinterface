@@ -59,6 +59,7 @@ export interface ImagePromptHistory {
   url: string;
   response: object;
   price: number;
+  createdAt: string;
 }
 
 // * * * * * * * * * * * *
@@ -103,6 +104,7 @@ export interface TextPromptHistory {
   config: object;
   messages: object;
   price: number;
+  createdAt: string;
 }
 
 // * * * * * * * * * * * *
