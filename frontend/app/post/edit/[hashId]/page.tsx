@@ -57,6 +57,11 @@ export default function Page({ params }: { params: { hashId: string } }) {
 
     setTitle(responsePost.thread.title);
     setPost(responsePost.post.post);
+    if (responsePost.post.textPrompts.length > 0) {
+      setModal(modals[1]);
+    } else if (responsePost.post.imagePrompts.length > 0) {
+      setModal(modals[2]);
+    }
   }, [responsePost]);
 
   const [loading, setLoading] = useState(false);
@@ -102,16 +107,6 @@ export default function Page({ params }: { params: { hashId: string } }) {
         body: { hashId: responsePost.post.hashId, post },
         showError: true,
       }),
-      responsePost.post.textPrompts.length > 0
-        ? callApi<
-            TextPromptUpdateResponse,
-            Static<typeof TextPromptDeleteSchema>
-          >({
-            endpoint: "/text/prompt",
-            method: "DELETE",
-            body: { hashId: responsePost.post.textPrompts[0].hashId },
-          })
-        : null,
     ]);
     return responds[0];
   }, [responsePost, title, post]);
@@ -131,18 +126,20 @@ export default function Page({ params }: { params: { hashId: string } }) {
           body: { hashId: responsePost.post.hashId, post },
           showError: true,
         }),
-        callApi<
-          TextPromptUpdateResponse,
-          Static<typeof TextPromptUpdateSchema>
-        >({
-          endpoint: "/text/prompt",
-          method: "PUT",
-          body: {
-            postHashId: responsePost.post.hashId,
-            hashId: responsePost.post.textPrompts[0]?.hashId,
-            ...textPrompt,
-          },
-        }),
+        responsePost.thread.isPublic
+          ? undefined
+          : callApi<
+              TextPromptUpdateResponse,
+              Static<typeof TextPromptUpdateSchema>
+            >({
+              endpoint: "/text/prompt",
+              method: "PUT",
+              body: {
+                postHashId: responsePost.post.hashId,
+                hashId: responsePost.post.textPrompts[0]?.hashId,
+                ...textPrompt,
+              },
+            }),
       ]);
       setLoading(false);
       return responds[0];
@@ -165,18 +162,20 @@ export default function Page({ params }: { params: { hashId: string } }) {
           body: { hashId: responsePost.post.hashId, post },
           showError: true,
         }),
-        callApi<
-          ImagePromptUpdateResponse,
-          Static<typeof ImagePromptUpdateSchema>
-        >({
-          endpoint: "/image/prompt",
-          method: "PUT",
-          body: {
-            postHashId: responsePost.post.hashId,
-            hashId: responsePost.post.imagePrompts[0]?.hashId,
-            ...imagePrompt,
-          },
-        }),
+        responsePost.thread.isPublic
+          ? undefined
+          : callApi<
+              ImagePromptUpdateResponse,
+              Static<typeof ImagePromptUpdateSchema>
+            >({
+              endpoint: "/image/prompt",
+              method: "PUT",
+              body: {
+                postHashId: responsePost.post.hashId,
+                hashId: responsePost.post.imagePrompts[0]?.hashId,
+                ...imagePrompt,
+              },
+            }),
       ]);
       setLoading(false);
       return responds[0];

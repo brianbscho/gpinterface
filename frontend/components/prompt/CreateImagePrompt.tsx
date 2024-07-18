@@ -63,8 +63,8 @@ export default function CreateImagePrompt({
   useEffect(() => {
     if (!responsePost) return;
 
-    if (responsePost.post.imagePrompts.length > 0) {
-      const { imagePrompts } = responsePost.post;
+    const { imagePrompts } = responsePost.post;
+    if (imagePrompts.length > 0) {
       const imagePrompt = imagePrompts[0];
       setProvider(imagePrompt.provider);
       const _model = models.find((m) => m.name === imagePrompt.model);
@@ -89,12 +89,8 @@ export default function CreateImagePrompt({
 
       const { examples } = imagePrompt;
       if (examples.length > 0) {
-        setExample({
-          input: stringify(examples[0].input),
-          url: "",
-          response: null,
-          price: 0,
-        });
+        const _example = examples[0];
+        setExample({ ..._example, input: JSON.stringify(_example.input) });
       }
     }
   }, [
@@ -110,12 +106,14 @@ export default function CreateImagePrompt({
 
   const setExampleInput = useCallback(
     (input: string) => setExample((prev) => ({ ...prev, input })),
-    [setExample]
+    []
   );
 
   useEffect(() => {
+    if (responsePost) return;
+
     setExample((prev) => ({ ...prev, url: "", response: null, price: 0 }));
-  }, [provider, model, config, configSelects, setExample]);
+  }, [responsePost, provider, model, config, configSelects]);
 
   const configBody = useMemo(() => {
     const _config: any = {};
@@ -197,7 +195,6 @@ export default function CreateImagePrompt({
     model,
     prompt,
     configBody,
-    setExample,
     setLoading,
   ]);
 

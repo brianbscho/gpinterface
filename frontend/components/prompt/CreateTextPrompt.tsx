@@ -65,8 +65,8 @@ export default function CreateTextPrompt({
   useEffect(() => {
     if (!responsePost) return;
 
-    if (responsePost.post.textPrompts.length > 0) {
-      const { textPrompts } = responsePost.post;
+    const { textPrompts } = responsePost.post;
+    if (textPrompts.length > 0) {
       const textPrompt = textPrompts[0];
       setProvider(textPrompt.provider);
       setModel(textPrompt.model);
@@ -76,13 +76,8 @@ export default function CreateTextPrompt({
 
       const { examples } = textPrompt;
       if (examples.length > 0) {
-        const example = examples[0];
-        setExample({
-          input: stringify(example.input),
-          content: "",
-          response: null,
-          price: 0,
-        });
+        const _example = examples[0];
+        setExample({ ..._example, input: JSON.stringify(_example.input) });
       }
     }
   }, [responsePost, setProvider, setModel, setConfig]);
@@ -104,12 +99,14 @@ export default function CreateTextPrompt({
 
   const setExampleInput = useCallback(
     (input: string) => setExample((prev) => ({ ...prev, input })),
-    [setExample]
+    []
   );
 
   useEffect(() => {
+    if (responsePost) return;
+
     setExample((prev) => ({ ...prev, content: "", response: null, price: 0 }));
-  }, [provider, model, systemMessage, messages, config, setExample]);
+  }, [responsePost, provider, model, systemMessage, messages, config]);
 
   const onClickAddMessages = useCallback(() => {
     setMessages((prev) => {
@@ -177,7 +174,6 @@ export default function CreateTextPrompt({
     provider,
     model,
     config,
-    setExample,
     example.input,
     systemMessage,
     messages,
