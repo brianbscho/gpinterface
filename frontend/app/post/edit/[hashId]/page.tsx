@@ -17,7 +17,6 @@ import {
 import CreateTextPrompt from "@/components/prompt/CreateTextPrompt";
 import useLinkConfirmMessage from "@/hooks/useLinkConfirmMessage";
 import {
-  TextPromptDeleteSchema,
   TextPromptSchema,
   TextPromptUpdateResponse,
   TextPromptUpdateSchema,
@@ -92,9 +91,10 @@ export default function Page({ params }: { params: { hashId: string } }) {
     [responsePost, title, post, router]
   );
 
-  const callPostSave = useCallback(async () => {
-    if (!responsePost) return;
-    const responds = await Promise.all([
+  const getEditApis = useCallback(() => {
+    if (!responsePost) return [];
+
+    return [
       callApi<ThreadCreateResponse, Static<typeof ThreadUpdateSchema>>({
         endpoint: "/thread",
         method: "PUT",
@@ -107,25 +107,17 @@ export default function Page({ params }: { params: { hashId: string } }) {
         body: { hashId: responsePost.post.hashId, post },
         showError: true,
       }),
-    ]);
+    ];
+  }, [post, responsePost, title]);
+  const callPostSave = useCallback(async () => {
+    const responds = await Promise.all(getEditApis());
     return responds[0];
-  }, [responsePost, title, post]);
+  }, [getEditApis]);
   const callTextPromptPostSave = useCallback(
     async (textPrompt: Static<typeof TextPromptSchema>) => {
       if (!responsePost) return;
       const responds = await Promise.all([
-        callApi<ThreadCreateResponse, Static<typeof ThreadUpdateSchema>>({
-          endpoint: "/thread",
-          method: "PUT",
-          body: { hashId: responsePost.thread.hashId, title },
-          showError: true,
-        }),
-        callApi<PostCreateResponse, Static<typeof PostUpdateSchema>>({
-          endpoint: "/post",
-          method: "PUT",
-          body: { hashId: responsePost.post.hashId, post },
-          showError: true,
-        }),
+        ...getEditApis(),
         responsePost.thread.isPublic
           ? undefined
           : callApi<
@@ -144,24 +136,13 @@ export default function Page({ params }: { params: { hashId: string } }) {
       setLoading(false);
       return responds[0];
     },
-    [responsePost, title, post]
+    [responsePost, getEditApis]
   );
   const callImagePromptPostSave = useCallback(
     async (imagePrompt: Static<typeof ImagePromptSchema>) => {
       if (!responsePost) return;
       const responds = await Promise.all([
-        callApi<ThreadCreateResponse, Static<typeof ThreadUpdateSchema>>({
-          endpoint: "/thread",
-          method: "PUT",
-          body: { hashId: responsePost.thread.hashId, title },
-          showError: true,
-        }),
-        callApi<PostCreateResponse, Static<typeof PostUpdateSchema>>({
-          endpoint: "/post",
-          method: "PUT",
-          body: { hashId: responsePost.post.hashId, post },
-          showError: true,
-        }),
+        ...getEditApis(),
         responsePost.thread.isPublic
           ? undefined
           : callApi<
@@ -180,7 +161,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
       setLoading(false);
       return responds[0];
     },
-    [responsePost, title, post]
+    [responsePost, getEditApis]
   );
   const onClickSave = getOnClick(callPostSave);
   const onClickTextPromptSave = getOnClick(callTextPromptPostSave);
