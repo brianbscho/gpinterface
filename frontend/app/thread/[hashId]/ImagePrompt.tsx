@@ -149,7 +149,9 @@ export default function ImagePrompt({
           </tr>
           <tr>
             <td>
-              <div className="font-bold">Input</div>
+              <Button onClick={onClickTry} loading={loading}>
+                Try
+              </Button>
             </td>
             <td>
               <div>
@@ -162,14 +164,6 @@ export default function ImagePrompt({
                   {inputErrorMessage}
                 </div>
               </div>
-            </td>
-          </tr>
-          <tr>
-            <td className="font-bold">Try</td>
-            <td>
-              <Button onClick={onClickTry} loading={loading}>
-                Run
-              </Button>
             </td>
           </tr>
           <tr>

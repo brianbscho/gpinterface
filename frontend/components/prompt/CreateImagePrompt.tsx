@@ -306,7 +306,11 @@ export default function CreateImagePrompt({
               </tr>
             )}
             <tr>
-              <td className="font-bold">Input</td>
+              <td>
+                <Button onClick={onClickTest} loading={loading}>
+                  Test
+                </Button>
+              </td>
               <td>
                 <Textarea
                   className="border rounded p-1 resize-none w-full h-40"
@@ -316,14 +320,6 @@ export default function CreateImagePrompt({
                 <div className="text-sm text-rose-500 mb-3">
                   {inputErrorMessage}
                 </div>
-              </td>
-            </tr>
-            <tr>
-              <td className="font-bold">Test</td>
-              <td>
-                <Button onClick={onClickTest} loading={loading}>
-                  Run
-                </Button>
               </td>
             </tr>
             {example.url.length > 0 && (

@@ -306,7 +306,11 @@ export default function CreateTextPrompt({
               </td>
             </tr>
             <tr>
-              <td className="font-bold">Input</td>
+              <td>
+                <Button onClick={onClickTest} loading={loading}>
+                  Test
+                </Button>
+              </td>
               <td>
                 <input
                   className="w-full focus:outline-none border-b p-1"
@@ -317,14 +321,6 @@ export default function CreateTextPrompt({
                 <div className="text-sm text-rose-500 mb-3">
                   {inputErrorMessage}
                 </div>
-              </td>
-            </tr>
-            <tr>
-              <td className="font-bold">Test</td>
-              <td>
-                <Button onClick={onClickTest} loading={loading}>
-                  Run
-                </Button>
               </td>
             </tr>
             {example.content.length > 0 && example.response !== null && (
