@@ -20,11 +20,11 @@ export async function generateMetadata({
   const response = await getUser(hashId);
   if (response) {
     return {
-      title: `GPInterface - ${response.user.name}`,
+      title: `gpinterface - ${response.user.name}`,
       description: response.user.bio,
     };
   }
-  return { title: "GPInterface" };
+  return { title: "gpinterface" };
 }
 
 export default function Page({ params }: { params: { hashId: string } }) {

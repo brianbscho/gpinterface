@@ -19,9 +19,9 @@ export async function generateMetadata({
   const { hashId } = params;
   const response = await getThread(hashId);
   if (response) {
-    return { title: `GPInterface - ${response.thread.title}` };
+    return { title: `gpinterface - ${response.thread.title}` };
   }
-  return { title: "GPInterface" };
+  return { title: "gpinterface" };
 }
 
 export default function Page({ params }: { params: { hashId: string } }) {

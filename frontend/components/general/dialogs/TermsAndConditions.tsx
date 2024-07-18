@@ -17,17 +17,17 @@ export default function TermsAndConditions({
             <div>Last updated May 21, 2024</div>
             <div className="text-lg my-3">AGREEMENT TO OUR LEGAL TERMS</div>
             <div>
-              We are Bookquilt (&quot;Company,&quot; &quot;we,&quot;
+              We are gpinterface (&quot;Company,&quot; &quot;we,&quot;
               &quot;us,&quot; &quot;our&quot;). We operate the website
-              https://bookquilt.com (the &quot;Site&quot;), as well as any other
-              related products and services that refer or link to these legal
-              terms (the &quot;Legal Terms&quot;) (collectively, the
+              https://gpinterface.com (the &quot;Site&quot;), as well as any
+              other related products and services that refer or link to these
+              legal terms (the &quot;Legal Terms&quot;) (collectively, the
               &quot;Services&quot;). We offer an AI text generation service. You
               can contact us by email at brian.b.cho@bookquilt.com. These Legal
               Terms constitute a legally binding agreement made between you,
               whether personally or on behalf of an entity (&quot;you&quot;),
-              and Bookquilt, concerning your access to and use of the Services.
-              You agree that by accessing the Services, you have read,
+              and gpinterface, concerning your access to and use of the
+              Services. You agree that by accessing the Services, you have read,
               understood, and agreed to be bound by all of these Legal Terms. IF
               YOU DO NOT AGREE WITH ALL OF THESE LEGAL TERMS, THEN YOU ARE
               EXPRESSLY PROHIBITED FROM USING THE SERVICES AND YOU MUST
@@ -767,7 +767,7 @@ export default function TermsAndConditions({
             <div>
               In order to resolve a complaint regarding the Services or to
               receive further information regarding use of the Services, please
-              contact us at: Bookquilt brian.b.cho@bookquilt.com
+              contact us at: gpinterface brian.b.cho@bookquilt.com
             </div>
           </div>
         </Dialog.Description>

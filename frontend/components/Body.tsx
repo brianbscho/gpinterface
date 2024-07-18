@@ -25,7 +25,7 @@ export default function Body({
             >
               <div className="w-full max-w-7xl h-full mx-auto px-3 flex gap-3 items-center">
                 <Link href="/" className="font-bold text-lg">
-                  GPInterface ⌨️
+                  gpinterface
                 </Link>
                 <div className="flex-1">
                   <Search />
