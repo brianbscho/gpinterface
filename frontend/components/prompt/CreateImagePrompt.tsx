@@ -4,7 +4,6 @@ import { Button } from "@radix-ui/themes";
 import Textarea from "../general/inputs/Textarea";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { stringify } from "@/util/string";
-import { getRequiredKeys } from "gpinterface-shared/string";
 import callApi from "@/util/callApi";
 import {
   ImagePromptDraftExecuteSchema,
@@ -21,6 +20,7 @@ import Login from "../general/dialogs/Login";
 import useImageModel, { ConfigSelectType } from "@/hooks/useImageModel";
 import { imageModels } from "gpinterface-shared/models/image/model";
 import EstimatedPrice from "../general/hover/EstimatedPrice";
+import { getValidBody } from "gpinterface-shared/util";
 
 const defaultPrompt =
   "The {{subject}} teacher is teaching a class at the {{school}}";
@@ -102,8 +102,6 @@ export default function CreateImagePrompt({
     models,
   ]);
 
-  const requiredKeys = useMemo(() => getRequiredKeys(prompt), [prompt]);
-
   const setExampleInput = useCallback(
     (input: string) => setExample((prev) => ({ ...prev, input })),
     []
@@ -154,13 +152,7 @@ export default function CreateImagePrompt({
         return;
       }
 
-      const requestBody = JSON.parse(example.input);
-      for (const key of requiredKeys) {
-        if (!(key in requestBody)) {
-          setInputErrorMessage(`${key} is missing`);
-          return;
-        }
-      }
+      const input = getValidBody(prompt, JSON.parse(example.input));
       setInputErrorMessage("");
 
       setLoading(true);
@@ -171,7 +163,7 @@ export default function CreateImagePrompt({
         endpoint: "/image/prompt/draft",
         method: "POST",
         body: {
-          input: JSON.parse(example.input),
+          input,
           provider,
           model: model.name,
           prompt,
@@ -183,20 +175,12 @@ export default function CreateImagePrompt({
         setExample((prev) => ({ ...prev, ...response }));
       }
     } catch (e) {
-      setInputErrorMessage("Provided JSON is invalid.");
+      const msg = typeof e === "string" ? e : "Provided JSON is invalid.";
+      setInputErrorMessage(msg);
     } finally {
       setLoading(false);
     }
-  }, [
-    user,
-    requiredKeys,
-    example.input,
-    provider,
-    model,
-    prompt,
-    configBody,
-    setLoading,
-  ]);
+  }, [user, example.input, provider, model, prompt, configBody, setLoading]);
 
   const onClickCreate = useCallback(async () => {
     if (!model) {

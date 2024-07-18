@@ -1,6 +1,5 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
-import { getRequiredKeys } from "gpinterface-shared/string";
 import {
   ImagePromptExecuteSchema,
   ImagePromptExecuteResponse,
@@ -15,7 +14,7 @@ import {
 } from "../util/image";
 import { getInterpolatedString } from "../util/string";
 import { getApiKey } from "./controllers/apiKey";
-import { getValidBody } from "../util";
+import { getValidBody } from "gpinterface-shared/util";
 
 export default async function (fastify: FastifyInstance) {
   const { badRequest } = fastify.httpErrors;
@@ -57,8 +56,7 @@ export default async function (fastify: FastifyInstance) {
         isAccessible(imagePrompt.post.thread, apiKey.user);
 
         const { prompt, provider, model, config } = imagePrompt;
-        const requiredKeys = getRequiredKeys(prompt);
-        const body = getValidBody(request.body, requiredKeys);
+        const body = getValidBody(prompt, request.body);
         const interpolatedPrompt = getInterpolatedString(prompt, body);
 
         if (!imageModels.map((m) => m.provider).includes(provider)) {

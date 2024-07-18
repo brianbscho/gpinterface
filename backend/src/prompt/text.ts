@@ -1,6 +1,5 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
-import { getRequiredKeys } from "gpinterface-shared/string";
 import {
   TextPromptExecuteSchema,
   TextPromptExecuteResponse,
@@ -15,7 +14,7 @@ import {
   getTodayPriceSum,
   getTextResponse,
 } from "../util/text";
-import { getValidBody } from "../util";
+import { getValidBody } from "gpinterface-shared/util";
 
 export default async function (fastify: FastifyInstance) {
   const { badRequest } = fastify.httpErrors;
@@ -57,10 +56,10 @@ export default async function (fastify: FastifyInstance) {
         }
         isAccessible(textPrompt.post.thread, apiKey.user);
 
-        const requiredKeys = getRequiredKeys(
-          textPrompt.systemMessage + JSON.stringify(textPrompt.messages)
+        const body = getValidBody(
+          textPrompt.systemMessage + JSON.stringify(textPrompt.messages),
+          request.body
         );
-        const body = getValidBody(request.body, requiredKeys);
         const messages = textPrompt.messages.map((m) => ({
           role: m.role,
           content: getInterpolatedString(m.content, body),

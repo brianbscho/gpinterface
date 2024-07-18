@@ -2,9 +2,8 @@
 
 import { Button, Select } from "@radix-ui/themes";
 import Textarea from "../general/inputs/Textarea";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { stringify } from "@/util/string";
-import { getRequiredKeys } from "gpinterface-shared/string";
 import callApi from "@/util/callApi";
 import {
   TextPromptDraftExecuteSchema,
@@ -22,8 +21,8 @@ import useUserStore from "@/store/user";
 import Login from "../general/dialogs/Login";
 import { TrashIcon } from "@radix-ui/react-icons";
 import { TextMessageSchema } from "gpinterface-shared/type/textMessage";
-import { TextExampleSchema } from "gpinterface-shared/type/textExample";
 import EstimatedPrice from "../general/hover/EstimatedPrice";
+import { getValidBody } from "gpinterface-shared/util";
 
 const defaultSystemMessage = "{{systemMessage}}";
 
@@ -32,7 +31,7 @@ const defaultMessage: Static<typeof TextMessageSchema> = {
   content: "What is {{a}} + {{b}}?",
 };
 
-const defaultExample: Static<typeof TextExampleSchema> = {
+const defaultExample = {
   input: '{"systemMessage": "You are a helpful math teacher.", "a": 1, "b": 2}',
   content: "",
   response: null as any,
@@ -82,11 +81,6 @@ export default function CreateTextPrompt({
     }
   }, [responsePost, setProvider, setModel, setConfig]);
 
-  const requiredKeys = useMemo(
-    () => getRequiredKeys(JSON.stringify([systemMessage, messages])),
-    [systemMessage, messages]
-  );
-
   const setMessage = useCallback(
     (index: number) => (message: { role?: string; content?: string }) =>
       setMessages((prev) => {
@@ -134,13 +128,10 @@ export default function CreateTextPrompt({
         return;
       }
 
-      const requestBody = JSON.parse(example.input);
-      for (const key of requiredKeys) {
-        if (!(key in requestBody)) {
-          setInputErrorMessage(`${key} is missing`);
-          return;
-        }
-      }
+      const input = getValidBody(
+        JSON.stringify([systemMessage, messages]),
+        JSON.parse(example.input)
+      );
       setInputErrorMessage("");
 
       setLoading(true);
@@ -155,7 +146,7 @@ export default function CreateTextPrompt({
           model,
           systemMessage,
           config: JSON.parse(config),
-          input: JSON.parse(example.input),
+          input,
           messages,
         },
         showError: true,
@@ -164,13 +155,13 @@ export default function CreateTextPrompt({
         setExample((prev) => ({ ...prev, ...response }));
       }
     } catch (e) {
-      setInputErrorMessage("Provided JSON is invalid.");
+      const msg = typeof e === "string" ? e : "Provided JSON is invalid.";
+      setInputErrorMessage(msg);
     } finally {
       setLoading(false);
     }
   }, [
     user,
-    requiredKeys,
     provider,
     model,
     config,

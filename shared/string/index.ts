@@ -7,15 +7,3 @@ export function validatePassword(password: string) {
   const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
   return regex.test(password);
 }
-
-export function getRequiredKeys(body: string) {
-  const regex = /{{([^}]*)}}/g;
-  const matches = [];
-  let match;
-
-  while ((match = regex.exec(body)) !== null) {
-    matches.push(match[1]);
-  }
-
-  return matches;
-}
