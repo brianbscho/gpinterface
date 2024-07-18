@@ -14,12 +14,14 @@ export default function ImageUsage({
         <Button>Detail</Button>
       </Dialog.Trigger>
       <Dialog.Content>
-        <Dialog.Title>Usage Detail</Dialog.Title>
-        <div className="h-[70vh] overflow-y-auto py-12">
+        <Dialog.Title className="px-3">Usage Detail</Dialog.Title>
+        <div className="h-[70vh] overflow-y-auto py-12 px-3">
           <div className="font-bold">Model</div>
           <div className="mt-3">{`${imageHistory.provider} - ${imageHistory.model}`}</div>
           <div className="font-bold mt-12">Prompt</div>
-          <div className="mt-3 whitespace-pre">{imageHistory.prompt}</div>
+          <div className="mt-3 whitespace-pre text-wrap">
+            {imageHistory.prompt}
+          </div>
           <div className="font-bold mt-12">Generated Image</div>
           <picture>
             <img
@@ -29,11 +31,11 @@ export default function ImageUsage({
             />
           </picture>
           <div className="font-bold mt-12">Response</div>
-          <div className="mt-3 whitespace-pre">
+          <div className="mt-3 whitespace-pre text-wrap">
             {stringify(imageHistory.response)}
           </div>
           <div className="font-bold mt-12">Input</div>
-          <div className="mt-3 whitespace-pre">
+          <div className="mt-3 whitespace-pre text-wrap">
             {stringify(imageHistory.input)}
           </div>
           <div className="font-bold mt-12">
@@ -41,7 +43,7 @@ export default function ImageUsage({
           </div>
           <div className="mt-3 whitespace-pre">${imageHistory.price}</div>
           <div className="font-bold mt-12">Config</div>
-          <div className="mt-3 whitespace-pre">
+          <div className="mt-3 whitespace-pre text-wrap">
             {stringify(imageHistory.config)}
           </div>
           <div className="font-bold mt-12">Date</div>
