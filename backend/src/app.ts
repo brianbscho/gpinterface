@@ -20,7 +20,26 @@ import textHistories from "./routes/textHistories";
 import imagePrompt from "./routes/imagePrompt";
 import imageHistories from "./routes/imageHistories";
 
-const fastify = Fastify({ logger: true });
+const fastify = Fastify({
+  logger: {
+    level: "info",
+    serializers: {
+      req(request) {
+        return {
+          body: request.body,
+          hostname: request.hostname,
+          ip: request.ip,
+          method: request.method,
+          url: request.url,
+          params: request.params,
+        };
+      },
+      res(response) {
+        return { statusCode: response.statusCode };
+      },
+    },
+  },
+});
 
 fastify.register(cookiePlugin);
 fastify.register(httpErrorsPlugin);

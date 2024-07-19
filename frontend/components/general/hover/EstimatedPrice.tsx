@@ -3,9 +3,9 @@ import { HoverCard } from "@radix-ui/themes";
 
 export default function EstimatedPrice() {
   return (
-    <HoverCard.Root>
+    <HoverCard.Root openDelay={0} closeDelay={0}>
       <HoverCard.Trigger>
-        <div className="flex items-start text-nowrap">
+        <div className="flex items-start">
           <div>Estimated Price</div>
           <QuestionMarkCircledIcon />
         </div>

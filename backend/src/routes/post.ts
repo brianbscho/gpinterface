@@ -31,9 +31,11 @@ export default async function (fastify: FastifyInstance) {
           select: {
             thread: { select: { hashId: true, isPublic: true, title: true } },
             hashId: true,
-            userHashId: true,
             post: true,
-            bookmarks: { select: { isBookmarked: true } },
+            bookmarks: {
+              select: { isBookmarked: true },
+              where: { userHashId: user.hashId },
+            },
             likes: {
               select: { isLiked: true },
               where: { userHashId: user.hashId },
@@ -90,13 +92,13 @@ export default async function (fastify: FastifyInstance) {
           throw fastify.httpErrors.badRequest("The post is not available.");
         }
         isAccessible(
-          { isPublic: post.thread.isPublic, userHashId: post.userHashId },
+          { isPublic: post.thread.isPublic, userHashId: post.user?.hashId },
           user
         );
 
         const { thread, bookmarks, likes, _count, ...rest } = post;
         return {
-          thread: { hashId: thread.hashId, title: thread.title },
+          thread,
           post: {
             ...rest,
             createdAt: getDateString(post.createdAt),

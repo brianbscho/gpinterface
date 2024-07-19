@@ -4,7 +4,6 @@ import { Button } from "@radix-ui/themes";
 import Textarea from "../general/inputs/Textarea";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { stringify } from "@/util/string";
-import { getRequiredKeys } from "gpinterface-shared/string";
 import callApi from "@/util/callApi";
 import {
   ImagePromptDraftExecuteSchema,
@@ -21,6 +20,8 @@ import Login from "../general/dialogs/Login";
 import useImageModel, { ConfigSelectType } from "@/hooks/useImageModel";
 import { imageModels } from "gpinterface-shared/models/image/model";
 import EstimatedPrice from "../general/hover/EstimatedPrice";
+import { getValidBody } from "gpinterface-shared/util";
+import { useRouter } from "next/navigation";
 
 const defaultPrompt =
   "The {{subject}} teacher is teaching a class at the {{school}}";
@@ -63,13 +64,12 @@ export default function CreateImagePrompt({
   useEffect(() => {
     if (!responsePost) return;
 
-    if (responsePost.post.imagePrompts.length > 0) {
-      const { imagePrompts } = responsePost.post;
+    const { imagePrompts } = responsePost.post;
+    if (imagePrompts.length > 0) {
       const imagePrompt = imagePrompts[0];
       setProvider(imagePrompt.provider);
       const _model = models.find((m) => m.name === imagePrompt.model);
       if (!_model) {
-        alert("Image model is incompatible.");
         return;
       }
       setModel(_model);
@@ -89,12 +89,8 @@ export default function CreateImagePrompt({
 
       const { examples } = imagePrompt;
       if (examples.length > 0) {
-        setExample({
-          input: stringify(examples[0].input),
-          url: "",
-          response: null,
-          price: 0,
-        });
+        const _example = examples[0];
+        setExample({ ..._example, input: JSON.stringify(_example.input) });
       }
     }
   }, [
@@ -106,16 +102,16 @@ export default function CreateImagePrompt({
     models,
   ]);
 
-  const requiredKeys = useMemo(() => getRequiredKeys(prompt), [prompt]);
-
   const setExampleInput = useCallback(
     (input: string) => setExample((prev) => ({ ...prev, input })),
-    [setExample]
+    []
   );
 
   useEffect(() => {
+    if (responsePost) return;
+
     setExample((prev) => ({ ...prev, url: "", response: null, price: 0 }));
-  }, [provider, model, config, configSelects, setExample]);
+  }, [responsePost, provider, model, config, configSelects]);
 
   const configBody = useMemo(() => {
     const _config: any = {};
@@ -156,13 +152,7 @@ export default function CreateImagePrompt({
         return;
       }
 
-      const requestBody = JSON.parse(example.input);
-      for (const key of requiredKeys) {
-        if (!(key in requestBody)) {
-          setInputErrorMessage(`${key} is missing`);
-          return;
-        }
-      }
+      const input = getValidBody(prompt, JSON.parse(example.input));
       setInputErrorMessage("");
 
       setLoading(true);
@@ -173,7 +163,7 @@ export default function CreateImagePrompt({
         endpoint: "/image/prompt/draft",
         method: "POST",
         body: {
-          input: JSON.parse(example.input),
+          input,
           provider,
           model: model.name,
           prompt,
@@ -185,21 +175,12 @@ export default function CreateImagePrompt({
         setExample((prev) => ({ ...prev, ...response }));
       }
     } catch (e) {
-      setInputErrorMessage("Provided JSON is invalid.");
+      const msg = typeof e === "string" ? e : "Provided JSON is invalid.";
+      setInputErrorMessage(msg);
     } finally {
       setLoading(false);
     }
-  }, [
-    user,
-    requiredKeys,
-    example.input,
-    provider,
-    model,
-    prompt,
-    configBody,
-    setExample,
-    setLoading,
-  ]);
+  }, [user, example.input, provider, model, prompt, configBody, setLoading]);
 
   const onClickCreate = useCallback(async () => {
     if (!model) {
@@ -224,12 +205,16 @@ export default function CreateImagePrompt({
 
   useLinkConfirmMessage(models.length > 0 && provider !== models[0].name);
 
+  const router = useRouter();
+  const onClickCancel = useCallback(() => router.back(), [router]);
+
   return (
     <>
       <div className="w-full flex items-center gap-3">
         <Radio.ImageProvider
           useProvider={[provider, setProvider]}
           loading={loading}
+          disabled={responsePost?.thread.isPublic}
         />
       </div>
       {models.length > 0 && (
@@ -238,146 +223,158 @@ export default function CreateImagePrompt({
             models={models}
             useModel={[model, setModel]}
             loading={loading}
+            disabled={responsePost?.thread.isPublic}
           />
         </div>
       )}
-      {provider !== imageModels[0].provider && (
-        <table className="w-full border-spacing-y-7 border-spacing-x-3 border-separate">
-          <tbody className="align-top">
-            <tr>
-              <td className="w-40">
-                <div className="font-bold text-nowrap">Prompt</div>
-              </td>
-              <td>
-                <textarea
-                  className="w-full focus:outline-none border border-px rounded p-1 resize-none h-20"
-                  placeholder="image generation prompt"
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.currentTarget.value)}
-                  disabled={loading}
-                />
-              </td>
-            </tr>
-            {!!model && (
+      <div className="overflow-x-auto">
+        {provider !== imageModels[0].provider && (
+          <table className="w-full border-spacing-y-7 border-spacing-x-3 border-separate">
+            <tbody className="align-top">
               <tr>
-                <td>
-                  <div className="font-bold text-nowrap">Config</div>
+                <td className="w-24 md:w-40">
+                  <div className="font-bold text-nowrap">Prompt</div>
                 </td>
                 <td>
-                  <Collapsible>
-                    <div className="flex flex-col gap-3 items-start">
-                      <Textarea
-                        className="w-full focus:outline-none border border-px rounded p-1 resize-none h-80"
-                        placeholder="advanced config"
-                        useValue={[config, setConfig]}
-                        disabled={loading}
-                      />
-                      <div className="grid grid-cols-[auto_1fr] gap-3 w-full">
-                        {model.configSelects.map((c) => (
-                          <Fragment key={c.name}>
-                            <div>{c.title}</div>
-                            <Radio
-                              options={c.values}
-                              useOption={[
-                                configSelects[c.name],
-                                (option) => {
-                                  setConfigSelects((prev) => {
-                                    const newConfigSelects = { ...prev };
-                                    newConfigSelects[c.name] = option;
-                                    return newConfigSelects;
-                                  });
-                                },
-                              ]}
-                              loading={loading}
-                            />
-                          </Fragment>
-                        ))}
-                      </div>
-                      <Button
-                        size="1"
-                        onClick={onClickResetConfig}
-                        loading={loading}
-                      >
-                        Reset to Default
-                      </Button>
-                    </div>
-                  </Collapsible>
+                  <textarea
+                    className="w-full focus:outline-none border border-px rounded p-1 resize-none h-20"
+                    placeholder="image generation prompt"
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.currentTarget.value)}
+                    disabled={loading || responsePost?.thread.isPublic}
+                  />
                 </td>
               </tr>
-            )}
-            <tr>
-              <td className="font-bold">Input</td>
-              <td>
-                <Textarea
-                  className="border rounded p-1 resize-none w-full h-40"
-                  useValue={[example.input, setExampleInput]}
-                  disabled={loading}
-                />
-                <div className="text-sm text-rose-500 mb-3">
-                  {inputErrorMessage}
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td className="font-bold">Test</td>
-              <td>
-                <Button onClick={onClickTest} loading={loading}>
-                  Run
-                </Button>
-              </td>
-            </tr>
-            {example.url.length > 0 && (
-              <>
-                <tr>
-                  <td colSpan={2}>
-                    <div className="w-full h-80">
-                      <picture>
-                        <img
-                          className="h-full"
-                          src={example.url}
-                          alt="ai_generated_image"
-                        />
-                      </picture>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Url</td>
-                  <td className="whitespace-pre text-wrap">
-                    <div>{example.url}</div>
-                  </td>
-                </tr>
+              {!!model && (
                 <tr>
                   <td>
-                    <EstimatedPrice />
+                    <div className="font-bold text-nowrap">Config</div>
                   </td>
-                  <td>
-                    <div>
-                      <div className="whitespace-pre text-wrap">
-                        ${example.price}
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Response</td>
                   <td>
                     <Collapsible>
-                      <div className="border rounded p-1 whitespace-pre text-wrap">
-                        {stringify(example.response)}
+                      <div className="flex flex-col gap-3 items-start">
+                        <Textarea
+                          className="w-full focus:outline-none border border-px rounded p-1 resize-none h-80"
+                          placeholder="advanced config"
+                          useValue={[config, setConfig]}
+                          disabled={loading || responsePost?.thread.isPublic}
+                        />
+                        <div className="grid grid-cols-[auto_1fr] gap-3 w-full">
+                          {model.configSelects.map((c) => (
+                            <Fragment key={c.name}>
+                              <div>{c.title}</div>
+                              <Radio
+                                options={c.values}
+                                useOption={[
+                                  configSelects[c.name],
+                                  (option) => {
+                                    setConfigSelects((prev) => {
+                                      const newConfigSelects = { ...prev };
+                                      newConfigSelects[c.name] = option;
+                                      return newConfigSelects;
+                                    });
+                                  },
+                                ]}
+                                loading={loading}
+                                disabled={responsePost?.thread.isPublic}
+                              />
+                            </Fragment>
+                          ))}
+                        </div>
+                        <Button
+                          size="1"
+                          onClick={onClickResetConfig}
+                          loading={loading}
+                          disabled={responsePost?.thread.isPublic}
+                        >
+                          Reset to Default
+                        </Button>
                       </div>
                     </Collapsible>
                   </td>
                 </tr>
-              </>
-            )}
-          </tbody>
-        </table>
-      )}
-      <div className="flex justify-end pb-3">
+              )}
+              <tr>
+                <td>
+                  <Button
+                    onClick={onClickTest}
+                    loading={loading}
+                    disabled={responsePost?.thread.isPublic}
+                  >
+                    Test
+                  </Button>
+                </td>
+                <td>
+                  <Textarea
+                    className="border rounded p-1 resize-none w-full h-40"
+                    useValue={[example.input, setExampleInput]}
+                    disabled={loading || responsePost?.thread.isPublic}
+                  />
+                  <div className="text-sm text-rose-500 mb-3">
+                    {inputErrorMessage}
+                  </div>
+                </td>
+              </tr>
+              {example.url.length > 0 && (
+                <>
+                  <tr>
+                    <td colSpan={2}>
+                      <div className="w-full h-80">
+                        <picture>
+                          <img
+                            className="h-full"
+                            src={example.url}
+                            alt="ai_generated_image"
+                          />
+                        </picture>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>URL</td>
+                    <td className="whitespace-pre text-wrap">
+                      <a target="_blank" href={example.url}>
+                        {example.url}
+                      </a>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <EstimatedPrice />
+                    </td>
+                    <td>
+                      <div>
+                        <div className="whitespace-pre text-wrap">
+                          ${example.price}
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Response</td>
+                    <td>
+                      <Collapsible>
+                        <div className="border rounded p-1 whitespace-pre text-wrap">
+                          {stringify(example.response)}
+                        </div>
+                      </Collapsible>
+                    </td>
+                  </tr>
+                </>
+              )}
+            </tbody>
+          </table>
+        )}
+      </div>
+      <div className="flex justify-end gap-3 pb-3">
+        <div>
+          <Button variant="soft" onClick={onClickCancel}>
+            Cancel
+          </Button>
+        </div>
         <div>
           <Button onClick={onClickCreate} loading={loading}>
-            {!!responsePost ? "Save" : "Create Thread"}
+            {!!responsePost ? "Save" : "Create"}
           </Button>
         </div>
       </div>

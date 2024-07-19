@@ -2,9 +2,8 @@
 
 import { Button, Select } from "@radix-ui/themes";
 import Textarea from "../general/inputs/Textarea";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { stringify } from "@/util/string";
-import { getRequiredKeys } from "gpinterface-shared/string";
 import callApi from "@/util/callApi";
 import {
   TextPromptDraftExecuteSchema,
@@ -22,8 +21,9 @@ import useUserStore from "@/store/user";
 import Login from "../general/dialogs/Login";
 import { TrashIcon } from "@radix-ui/react-icons";
 import { TextMessageSchema } from "gpinterface-shared/type/textMessage";
-import { TextExampleSchema } from "gpinterface-shared/type/textExample";
 import EstimatedPrice from "../general/hover/EstimatedPrice";
+import { getValidBody } from "gpinterface-shared/util";
+import { useRouter } from "next/navigation";
 
 const defaultSystemMessage = "{{systemMessage}}";
 
@@ -32,7 +32,7 @@ const defaultMessage: Static<typeof TextMessageSchema> = {
   content: "What is {{a}} + {{b}}?",
 };
 
-const defaultExample: Static<typeof TextExampleSchema> = {
+const defaultExample = {
   input: '{"systemMessage": "You are a helpful math teacher.", "a": 1, "b": 2}',
   content: "",
   response: null as any,
@@ -65,8 +65,8 @@ export default function CreateTextPrompt({
   useEffect(() => {
     if (!responsePost) return;
 
-    if (responsePost.post.textPrompts.length > 0) {
-      const { textPrompts } = responsePost.post;
+    const { textPrompts } = responsePost.post;
+    if (textPrompts.length > 0) {
       const textPrompt = textPrompts[0];
       setProvider(textPrompt.provider);
       setModel(textPrompt.model);
@@ -76,21 +76,11 @@ export default function CreateTextPrompt({
 
       const { examples } = textPrompt;
       if (examples.length > 0) {
-        const example = examples[0];
-        setExample({
-          input: stringify(example.input),
-          content: "",
-          response: null,
-          price: 0,
-        });
+        const _example = examples[0];
+        setExample({ ..._example, input: JSON.stringify(_example.input) });
       }
     }
   }, [responsePost, setProvider, setModel, setConfig]);
-
-  const requiredKeys = useMemo(
-    () => getRequiredKeys(JSON.stringify([systemMessage, messages])),
-    [systemMessage, messages]
-  );
 
   const setMessage = useCallback(
     (index: number) => (message: { role?: string; content?: string }) =>
@@ -104,12 +94,14 @@ export default function CreateTextPrompt({
 
   const setExampleInput = useCallback(
     (input: string) => setExample((prev) => ({ ...prev, input })),
-    [setExample]
+    []
   );
 
   useEffect(() => {
+    if (responsePost) return;
+
     setExample((prev) => ({ ...prev, content: "", response: null, price: 0 }));
-  }, [provider, model, systemMessage, messages, config, setExample]);
+  }, [responsePost, provider, model, systemMessage, messages, config]);
 
   const onClickAddMessages = useCallback(() => {
     setMessages((prev) => {
@@ -137,13 +129,10 @@ export default function CreateTextPrompt({
         return;
       }
 
-      const requestBody = JSON.parse(example.input);
-      for (const key of requiredKeys) {
-        if (!(key in requestBody)) {
-          setInputErrorMessage(`${key} is missing`);
-          return;
-        }
-      }
+      const input = getValidBody(
+        JSON.stringify([systemMessage, messages]),
+        JSON.parse(example.input)
+      );
       setInputErrorMessage("");
 
       setLoading(true);
@@ -158,7 +147,7 @@ export default function CreateTextPrompt({
           model,
           systemMessage,
           config: JSON.parse(config),
-          input: JSON.parse(example.input),
+          input,
           messages,
         },
         showError: true,
@@ -167,17 +156,16 @@ export default function CreateTextPrompt({
         setExample((prev) => ({ ...prev, ...response }));
       }
     } catch (e) {
-      setInputErrorMessage("Provided JSON is invalid.");
+      const msg = typeof e === "string" ? e : "Provided JSON is invalid.";
+      setInputErrorMessage(msg);
     } finally {
       setLoading(false);
     }
   }, [
     user,
-    requiredKeys,
     provider,
     model,
     config,
-    setExample,
     example.input,
     systemMessage,
     messages,
@@ -205,12 +193,16 @@ export default function CreateTextPrompt({
 
   useLinkConfirmMessage(provider !== textModels[0].provider);
 
+  const router = useRouter();
+  const onClickCancel = useCallback(() => router.back(), [router]);
+
   return (
     <>
       <div className="w-full flex items-center gap-3">
         <Radio.TextProvider
           useProvider={[provider, setProvider]}
           loading={loading}
+          disabled={responsePost?.thread.isPublic}
         />
       </div>
       {models.length > 0 && (
@@ -219,6 +211,7 @@ export default function CreateTextPrompt({
             options={models}
             useOption={[model, setModel]}
             loading={loading}
+            disabled={responsePost?.thread.isPublic}
           />
         </div>
       )}
@@ -226,24 +219,32 @@ export default function CreateTextPrompt({
         <table className="w-full border-spacing-y-7 border-spacing-x-3 border-separate">
           <tbody className="align-top">
             <tr>
-              <td className="w-40">
+              <td className="w-28 md:w-40">
                 <div className="font-bold text-nowrap">Messages</div>
               </td>
               <td>
-                <Button onClick={onClickAddMessages} loading={loading}>
+                <Button
+                  onClick={onClickAddMessages}
+                  loading={loading}
+                  disabled={responsePost?.thread.isPublic}
+                >
                   Add messages
                 </Button>
               </td>
             </tr>
             <tr>
-              <td className="text-sm">system (optional)</td>
+              <td className="text-sm">
+                system
+                <br />
+                (optional)
+              </td>
               <td>
                 <textarea
                   className="w-full focus:outline-none border border-px rounded p-1 resize-none h-20"
                   placeholder="system message"
                   value={systemMessage}
                   onChange={(e) => setSystemMessage(e.currentTarget.value)}
-                  disabled={loading}
+                  disabled={loading || responsePost?.thread.isPublic}
                 />
               </td>
             </tr>
@@ -253,7 +254,7 @@ export default function CreateTextPrompt({
                   <Select.Root
                     value={m.role}
                     onValueChange={(v) => setMessage(index)({ role: v })}
-                    disabled={loading}
+                    disabled={loading || responsePost?.thread.isPublic}
                   >
                     <Select.Trigger />
                     <Select.Content>
@@ -271,11 +272,12 @@ export default function CreateTextPrompt({
                       onChange={(e) =>
                         setMessage(index)({ content: e.currentTarget.value })
                       }
-                      disabled={loading}
+                      disabled={loading || responsePost?.thread.isPublic}
                     />
                     <Button
                       onClick={() => onClickDeleteMessage(index)}
                       loading={loading}
+                      disabled={responsePost?.thread.isPublic}
                     >
                       <TrashIcon />
                     </Button>
@@ -293,12 +295,13 @@ export default function CreateTextPrompt({
                     className="w-full focus:outline-none border border-px rounded p-1 resize-none h-80"
                     placeholder="advanced config"
                     useValue={[config, setConfig]}
-                    disabled={loading}
+                    disabled={loading || responsePost?.thread.isPublic}
                   />
                   <Button
                     size="1"
                     onClick={onClickResetConfig}
                     loading={loading}
+                    disabled={responsePost?.thread.isPublic}
                   >
                     Reset to Default
                   </Button>
@@ -306,25 +309,25 @@ export default function CreateTextPrompt({
               </td>
             </tr>
             <tr>
-              <td className="font-bold">Input</td>
+              <td>
+                <Button
+                  onClick={onClickTest}
+                  loading={loading}
+                  disabled={responsePost?.thread.isPublic}
+                >
+                  Test
+                </Button>
+              </td>
               <td>
                 <input
                   className="w-full focus:outline-none border-b p-1"
                   value={example.input}
                   onChange={(e) => setExampleInput(e.currentTarget.value)}
-                  disabled={loading}
+                  disabled={loading || responsePost?.thread.isPublic}
                 />
                 <div className="text-sm text-rose-500 mb-3">
                   {inputErrorMessage}
                 </div>
-              </td>
-            </tr>
-            <tr>
-              <td className="font-bold">Test</td>
-              <td>
-                <Button onClick={onClickTest} loading={loading}>
-                  Run
-                </Button>
               </td>
             </tr>
             {example.content.length > 0 && example.response !== null && (
@@ -360,10 +363,15 @@ export default function CreateTextPrompt({
           </tbody>
         </table>
       )}
-      <div className="flex justify-end pb-3">
+      <div className="flex justify-end gap-3 pb-3">
+        <div>
+          <Button variant="soft" onClick={onClickCancel}>
+            Cancel
+          </Button>
+        </div>
         <div>
           <Button onClick={onClickCreate} loading={loading}>
-            {!!responsePost ? "Save" : "Create Thread"}
+            {!!responsePost ? "Save" : "Create"}
           </Button>
         </div>
       </div>

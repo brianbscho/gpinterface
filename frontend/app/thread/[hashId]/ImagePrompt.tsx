@@ -5,13 +5,13 @@ import Collapsible from "@/components/general/collapsible";
 import { stringify } from "@/util/string";
 import { useCallback, useMemo, useState } from "react";
 import { Button } from "@radix-ui/themes";
-import { getRequiredKeys } from "gpinterface-shared/string";
 import callApi from "@/util/callApi";
 import { ImagePromptExecuteResponse } from "gpinterface-shared/type/imagePrompt";
 import Login from "@/components/general/dialogs/Login";
 import useUserStore from "@/store/user";
 import EstimatedPrice from "@/components/general/hover/EstimatedPrice";
 import Textarea from "@/components/general/inputs/Textarea";
+import { getValidBody } from "gpinterface-shared/util";
 
 export default function ImagePrompt({
   imagePrompt,
@@ -30,7 +30,6 @@ export default function ImagePrompt({
 
   const [loading, setLoading] = useState(false);
   const [inputErrorMessage, setInputErrorMessage] = useState("");
-  const requiredKeys = useMemo(() => getRequiredKeys(prompt), [prompt]);
 
   const [loginOpen, setLoginOpen] = useState(false);
   const { user } = useUserStore();
@@ -41,13 +40,7 @@ export default function ImagePrompt({
     }
 
     try {
-      const input = JSON.parse(example.input);
-      for (const key of requiredKeys) {
-        if (!(key in input)) {
-          setInputErrorMessage(`${key} is missing`);
-          return;
-        }
-      }
+      const input = getValidBody(prompt, JSON.parse(example.input));
       setInputErrorMessage("");
 
       setLoading(true);
@@ -60,33 +53,33 @@ export default function ImagePrompt({
       if (response) {
         setExample((prev) => ({ ...prev, ...response }));
       }
-    } catch {
-      setInputErrorMessage("Provided JSON is invalid.");
+    } catch (e) {
+      const msg = typeof e === "string" ? e : "Provided JSON is invalid.";
+      setInputErrorMessage(msg);
     } finally {
       setLoading(false);
     }
-  }, [user, example.input, requiredKeys, imagePrompt.hashId]);
+  }, [user, example.input, prompt, imagePrompt.hashId]);
 
   const curl = useMemo(() => {
-    const body = requiredKeys.reduce((obj, key) => {
-      obj[key] = "value";
-      return obj;
-    }, {} as any);
+    if (examples.length === 0) return "";
 
-    return `curl -X POST ${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/image/${
-      imagePrompt.hashId
-    } \\
-    -H "Authorization: Bearer {your_api_key}" \\
+    const input = Object.keys(examples[0].input)
+      .map((k) => `${k}: "some_value"`)
+      .join(", ");
+
+    return `curl -X POST ${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/image/${imagePrompt.hashId} \\
+    -H "Authorization: Bearer {YOUR_API_KEY}" \\
     -H "Content-Type: application/json" \\
-    -d '${JSON.stringify(body)}'`;
-  }, [requiredKeys, imagePrompt.hashId]);
+    -d '{${input}}'`;
+  }, [examples, imagePrompt.hashId]);
 
   return (
     <>
       <table className="border-t w-full border-spacing-y-7 border-spacing-x-3 border-separate">
         <tbody className="align-top">
           <tr>
-            <td className="w-40">
+            <td className="min-w-24 md:w-40">
               <div className="font-bold">{imagePrompt.provider}</div>
             </td>
             <td>
@@ -125,7 +118,7 @@ export default function ImagePrompt({
           </tr>
           <tr>
             <td>
-              <div className="font-bold image-nowrap">{`What you'll get`}</div>
+              <div className="font-bold image-nowrap">Example response</div>
             </td>
             <td>
               <div className="whitespace-pre text-wrap">
@@ -149,7 +142,9 @@ export default function ImagePrompt({
           </tr>
           <tr>
             <td>
-              <div className="font-bold">Input</div>
+              <Button onClick={onClickTry} loading={loading}>
+                Try
+              </Button>
             </td>
             <td>
               <div>
@@ -162,14 +157,6 @@ export default function ImagePrompt({
                   {inputErrorMessage}
                 </div>
               </div>
-            </td>
-          </tr>
-          <tr>
-            <td className="font-bold">Try</td>
-            <td>
-              <Button onClick={onClickTry} loading={loading}>
-                Run
-              </Button>
             </td>
           </tr>
           <tr>
@@ -186,9 +173,11 @@ export default function ImagePrompt({
             </td>
           </tr>
           <tr>
-            <td>Url</td>
+            <td>URL</td>
             <td className="whitespace-pre text-wrap">
-              <div>{example.url}</div>
+              <a target="_blank" href={example.url}>
+                {example.url}
+              </a>
             </td>
           </tr>
           <tr>

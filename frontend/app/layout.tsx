@@ -6,7 +6,7 @@ import Head from "@/components/Head";
 import Body from "@/components/Body";
 
 export const metadata: Metadata = {
-  title: "GPInterface",
+  title: "gpinterface",
 };
 
 export default function RootLayout({

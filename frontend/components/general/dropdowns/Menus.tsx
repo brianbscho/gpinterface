@@ -1,57 +1,98 @@
 "use client";
 
-import { HamburgerMenuIcon } from "@radix-ui/react-icons";
+import { AvatarIcon, HamburgerMenuIcon } from "@radix-ui/react-icons";
 import { Button, DropdownMenu } from "@radix-ui/themes";
-import { MouseEventHandler, useCallback, useState } from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import callApi from "@/util/callApi";
 import useUserStore from "@/store/user";
-import Link from "../links/Link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { UserGetMeResponse } from "gpinterface-shared/type/user";
 
-export default function Menus() {
+const loginRedirectPaths = ["login"];
+const logoutRedirectPaths = ["settings", "usages", "edit", "create"];
+
+function _Menus() {
   const { user, setUser } = useUserStore();
-  const onClickLogout: MouseEventHandler<HTMLAnchorElement> = useCallback(
-    (e) => {
-      e.preventDefault();
-      setOpen(false);
-      callApi({ endpoint: "/user/logout" });
-      setUser(undefined);
-      location.reload();
-    },
-    [setUser]
-  );
+  const pathname = usePathname();
+  const router = useRouter();
+  const { push } = router;
+
+  useEffect(() => {
+    const callUserApi = async () => {
+      const response = await callApi<UserGetMeResponse>({ endpoint: "/user" });
+      setUser(response?.user);
+      if (!response && logoutRedirectPaths.some((p) => pathname.includes(p))) {
+        push("/");
+      }
+    };
+    callUserApi();
+  }, [setUser, push, pathname]);
+
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const redirectPath = searchParams.get("redirect");
+    if (user && loginRedirectPaths.some((p) => pathname.includes(p))) {
+      if (redirectPath) {
+        push(redirectPath);
+      } else {
+        push("/");
+      }
+    }
+  }, [user, push, pathname, searchParams]);
+
+  const onClickLogout = useCallback(() => {
+    setOpen(false);
+    callApi({ endpoint: "/user/logout" });
+    setUser(undefined);
+    location.reload();
+  }, [setUser]);
+
+  const redirect = useMemo(() => {
+    if (pathname.includes("login")) return "";
+    if (pathname === "/") {
+      return "";
+    } else {
+      return `?redirect=${pathname}`;
+    }
+  }, [pathname]);
 
   const [open, setOpen] = useState(false);
 
-  if (!user) return null;
   return (
     <DropdownMenu.Root open={open} onOpenChange={setOpen}>
       <DropdownMenu.Trigger className="focus:outline-none">
-        <Button>
-          <HamburgerMenuIcon />
-        </Button>
+        <Button>{!user ? <HamburgerMenuIcon /> : <AvatarIcon />}</Button>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content>
-        <DropdownMenu.Item asChild>
-          <Link href={`/user/${user.hashId}`} onClick={() => setOpen(false)}>
-            My page
-          </Link>
-        </DropdownMenu.Item>
-        <DropdownMenu.Item asChild>
-          <Link href="/settings" onClick={() => setOpen(false)}>
-            Settings
-          </Link>
-        </DropdownMenu.Item>
-        <DropdownMenu.Item asChild>
-          <Link href="/usages" onClick={() => setOpen(false)}>
-            Usages
-          </Link>
-        </DropdownMenu.Item>
-        <DropdownMenu.Item asChild>
-          <a href="/logout" onClick={onClickLogout}>
-            Logout
-          </a>
-        </DropdownMenu.Item>
+        {!user ? (
+          <DropdownMenu.Item onClick={() => push(`/login${redirect}`)}>
+            Login
+          </DropdownMenu.Item>
+        ) : (
+          <>
+            <DropdownMenu.Item onClick={() => push(`/user/${user.hashId}`)}>
+              My page
+            </DropdownMenu.Item>
+            <DropdownMenu.Item onClick={() => push("/settings")}>
+              Settings
+            </DropdownMenu.Item>
+            <DropdownMenu.Item onClick={() => push("/usages")}>
+              Usages
+            </DropdownMenu.Item>
+            <DropdownMenu.Item onClick={onClickLogout}>
+              Logout
+            </DropdownMenu.Item>
+          </>
+        )}
       </DropdownMenu.Content>
     </DropdownMenu.Root>
+  );
+}
+
+export default function Menus() {
+  return (
+    <Suspense>
+      <_Menus />
+    </Suspense>
   );
 }

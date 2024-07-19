@@ -51,7 +51,7 @@ export default function Thread({ hashId }: { hashId: string }) {
         </div>
         {thread.isPublic && <Share threadHashId={hashId} />}
       </div>
-      <Posts isPublic={thread.isPublic} baseUrl={`/posts/${hashId}`} />
+      <Posts baseUrl={`/posts/${hashId}`} />
       <div className="w-full mt-3">
         <Collapsible title="Write Post" onClick={onClickWritePost}>
           <CreatePost thread={thread} />

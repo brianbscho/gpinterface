@@ -8,13 +8,7 @@ import { PostsGetResponse } from "gpinterface-shared/type/post";
 import { useRouter } from "next/navigation";
 import List from "@/components/List";
 
-export default function Posts({
-  isPublic,
-  baseUrl,
-}: {
-  isPublic: boolean;
-  baseUrl: string;
-}) {
+export default function Posts({ baseUrl }: { baseUrl: string }) {
   const [posts, setPosts] = useState<PostType[]>([]);
   const [lastHashId, setLastHashId] = useState("");
   const [spinnerHidden, setSpinnerHidden] = useState(false);
@@ -55,12 +49,7 @@ export default function Posts({
       useLastHashId={[lastHashId, setLastHashId]}
     >
       {posts.map((t, i) => (
-        <Post
-          key={t.hashId}
-          isPublic={isPublic}
-          post={t}
-          setPost={setPost(i)}
-        />
+        <Post key={t.hashId} post={t} setPost={setPost(i)} />
       ))}
     </List>
   );

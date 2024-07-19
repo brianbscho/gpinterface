@@ -1,6 +1,5 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
-import { getRequiredKeys } from "gpinterface-shared/string";
 import {
   TextPromptExecuteSchema,
   TextPromptExecuteResponse,
@@ -12,10 +11,10 @@ import { getApiKey } from "./controllers/apiKey";
 import { getInterpolatedString } from "../util/string";
 import {
   getTextPriceByModel,
-  getThisMonthPriceSum,
+  getTodayPriceSum,
   getTextResponse,
 } from "../util/text";
-import { getValidBody } from "../util";
+import { getValidBody } from "gpinterface-shared/util";
 
 export default async function (fastify: FastifyInstance) {
   const { badRequest } = fastify.httpErrors;
@@ -26,12 +25,12 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<TextPromptExecuteResponse> => {
       try {
         const apiKey = await getApiKey(fastify, request);
-        const thisMonthPriceSum = await getThisMonthPriceSum(
+        const todayPriceSum = await getTodayPriceSum(
           fastify.prisma.textPromptHistory,
           apiKey.user.hashId
         );
-        if (thisMonthPriceSum > 1) {
-          throw badRequest("You exceeded this month's rate limit");
+        if (todayPriceSum > 1) {
+          throw badRequest("You exceeded today's rate limit");
         }
 
         const { hashId } = request.params;
@@ -57,10 +56,10 @@ export default async function (fastify: FastifyInstance) {
         }
         isAccessible(textPrompt.post.thread, apiKey.user);
 
-        const requiredKeys = getRequiredKeys(
-          textPrompt.systemMessage + JSON.stringify(textPrompt.messages)
+        const body = getValidBody(
+          textPrompt.systemMessage + JSON.stringify(textPrompt.messages),
+          request.body
         );
-        const body = getValidBody(request.body, requiredKeys);
         const messages = textPrompt.messages.map((m) => ({
           role: m.role,
           content: getInterpolatedString(m.content, body),

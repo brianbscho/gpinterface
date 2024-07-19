@@ -33,11 +33,11 @@ export default function CreatePost({ thread }: { thread: Thread }) {
 
         setLoading(true);
         const response = await callApi(...args);
-        setLoading(false);
 
         if (response) {
           location.reload();
         }
+        setLoading(false);
       };
     },
     [post]
@@ -114,7 +114,6 @@ export default function CreatePost({ thread }: { thread: Thread }) {
           value={post}
           onChange={(e) => setPost(e.currentTarget.value)}
           placeholder="contents of the post"
-          disabled={loading}
         />
       </div>
       <Radio.Provider useProvider={[provider, setProvider]} loading={loading} />

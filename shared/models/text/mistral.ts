@@ -6,6 +6,7 @@ export const mistralModels = [
   "mistral-medium-2312",
   "mistral-large-2402",
   "codestral-2405",
+  "codestral-mamba-2407",
 ];
 
 export const mistralConfig = {

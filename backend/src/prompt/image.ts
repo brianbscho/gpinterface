@@ -1,6 +1,5 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
-import { getRequiredKeys } from "gpinterface-shared/string";
 import {
   ImagePromptExecuteSchema,
   ImagePromptExecuteResponse,
@@ -10,12 +9,12 @@ import { createEntity } from "../util/prisma";
 import { imageModels } from "gpinterface-shared/models/image/model";
 import {
   getImagePriceByModel,
-  getThisMonthPriceSum,
+  getTodayPriceSum,
   getImageResponse,
 } from "../util/image";
 import { getInterpolatedString } from "../util/string";
 import { getApiKey } from "./controllers/apiKey";
-import { getValidBody } from "../util";
+import { getValidBody } from "gpinterface-shared/util";
 
 export default async function (fastify: FastifyInstance) {
   const { badRequest } = fastify.httpErrors;
@@ -26,12 +25,12 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<ImagePromptExecuteResponse> => {
       try {
         const apiKey = await getApiKey(fastify, request);
-        const thisMonthPriceSum = await getThisMonthPriceSum(
+        const todayPriceSum = await getTodayPriceSum(
           fastify.prisma.imagePromptHistory,
           apiKey.user.hashId
         );
-        if (thisMonthPriceSum > 1) {
-          throw badRequest("You exceeded this month's rate limit");
+        if (todayPriceSum > 1) {
+          throw badRequest("You exceeded today's rate limit");
         }
 
         const { hashId } = request.params;
@@ -57,8 +56,7 @@ export default async function (fastify: FastifyInstance) {
         isAccessible(imagePrompt.post.thread, apiKey.user);
 
         const { prompt, provider, model, config } = imagePrompt;
-        const requiredKeys = getRequiredKeys(prompt);
-        const body = getValidBody(request.body, requiredKeys);
+        const body = getValidBody(prompt, request.body);
         const interpolatedPrompt = getInterpolatedString(prompt, body);
 
         if (!imageModels.map((m) => m.provider).includes(provider)) {

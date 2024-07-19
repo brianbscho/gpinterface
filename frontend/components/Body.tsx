@@ -1,8 +1,7 @@
 import { Inter } from "next/font/google";
 import { Theme } from "@radix-ui/themes";
 import { ThemeProvider } from "next-themes";
-import Login from "./general/buttons/Login";
-import CreateThread from "./general/buttons/CreateThread";
+import ThreadCreate from "./general/buttons/ThreadCreate";
 import Menus from "./general/dropdowns/Menus";
 import Link from "./general/links/Link";
 import Search from "./general/inputs/Search";
@@ -25,14 +24,13 @@ export default function Body({
             >
               <div className="w-full max-w-7xl h-full mx-auto px-3 flex gap-3 items-center">
                 <Link href="/" className="font-bold text-lg">
-                  GPInterface ⌨️
+                  gpinterface
                 </Link>
                 <div className="flex-1">
                   <Search />
                 </div>
-                <CreateThread />
+                <ThreadCreate />
                 <Menus />
-                <Login />
               </div>
             </div>
             {children}

@@ -42,11 +42,11 @@ export default function Page() {
 
         setLoading(true);
         const response = await callApi(...args);
-        setLoading(false);
 
         if (response) {
           router.push(`/thread/${response.hashId}`);
         }
+        setLoading(false);
       };
     },
     [title, post, router]
@@ -117,6 +117,8 @@ export default function Page() {
 
   useLinkConfirmMessage(title.length > 0 || post.length > 0);
 
+  const onClickCancel = useCallback(() => router.back(), [router]);
+
   return (
     <div className="w-full max-w-7xl px-3 flex flex-col gap-7 py-7">
       <div className="w-full">
@@ -125,7 +127,6 @@ export default function Page() {
           value={title}
           onChange={(e) => setTitle(e.currentTarget.value)}
           placeholder="title of the thread"
-          disabled={loading}
         />
       </div>
       <div className="w-full">
@@ -134,7 +135,6 @@ export default function Page() {
           value={post}
           onChange={(e) => setPost(e.currentTarget.value)}
           placeholder="contents of the post"
-          disabled={loading}
         />
       </div>
       <Radio.Provider useProvider={[provider, setProvider]} loading={loading} />
@@ -148,10 +148,15 @@ export default function Page() {
         </div>
       )}
       {provider === modals[0] && (
-        <div className="flex justify-end pb-3">
+        <div className="flex justify-end gap-3 pb-3">
+          <div>
+            <Button variant="soft" onClick={onClickCancel}>
+              Cancel
+            </Button>
+          </div>
           <div>
             <Button onClick={onClickCreate} loading={loading}>
-              Create Thread
+              Create
             </Button>
           </div>
         </div>

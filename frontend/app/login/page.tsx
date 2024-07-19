@@ -153,8 +153,7 @@ export default function Page() {
             <Tabs.Content value="signup">
               <div className="text-xs mt-1">
                 at least 8 characters long, at least one uppercase letter, at
-                least one lowercase letter, at least one digit, and at least one
-                special character
+                least one lowercase letter, and at least one digit
               </div>
               <div className="flex items-center gap-3 mt-12">
                 <input

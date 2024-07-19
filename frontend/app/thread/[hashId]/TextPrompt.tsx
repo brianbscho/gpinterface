@@ -5,13 +5,13 @@ import Collapsible from "@/components/general/collapsible";
 import { stringify } from "@/util/string";
 import { useCallback, useMemo, useState } from "react";
 import { Button } from "@radix-ui/themes";
-import { getRequiredKeys } from "gpinterface-shared/string";
 import callApi from "@/util/callApi";
 import Textarea from "@/components/general/inputs/Textarea";
 import { TextPromptExecuteResponse } from "gpinterface-shared/type/textPrompt";
 import Login from "@/components/general/dialogs/Login";
 import useUserStore from "@/store/user";
 import EstimatedPrice from "@/components/general/hover/EstimatedPrice";
+import { getValidBody } from "gpinterface-shared/util";
 
 export default function TextPrompt({
   textPrompt,
@@ -30,10 +30,6 @@ export default function TextPrompt({
 
   const [loading, setLoading] = useState(false);
   const [inputErrorMessage, setInputErrorMessage] = useState("");
-  const requiredKeys = useMemo(
-    () => getRequiredKeys(JSON.stringify([systemMessage, messages])),
-    [messages, systemMessage]
-  );
 
   const [loginOpen, setLoginOpen] = useState(false);
   const { user } = useUserStore();
@@ -44,13 +40,10 @@ export default function TextPrompt({
     }
 
     try {
-      const input = JSON.parse(example.input);
-      for (const key of requiredKeys) {
-        if (!(key in input)) {
-          setInputErrorMessage(`${key} is missing`);
-          return;
-        }
-      }
+      const input = getValidBody(
+        JSON.stringify([systemMessage, messages]),
+        JSON.parse(example.input)
+      );
       setInputErrorMessage("");
 
       setLoading(true);
@@ -63,33 +56,33 @@ export default function TextPrompt({
       if (response) {
         setExample((prev) => ({ ...prev, ...response }));
       }
-    } catch {
-      setInputErrorMessage("Provided JSON is invalid.");
+    } catch (e) {
+      const msg = typeof e === "string" ? e : "Provided JSON is invalid.";
+      setInputErrorMessage(msg);
     } finally {
       setLoading(false);
     }
-  }, [user, example.input, requiredKeys, textPrompt.hashId]);
+  }, [user, example.input, systemMessage, messages, textPrompt.hashId]);
 
   const curl = useMemo(() => {
-    const body = requiredKeys.reduce((obj, key) => {
-      obj[key] = "value";
-      return obj;
-    }, {} as any);
+    if (examples.length === 0) return "";
 
-    return `curl -X POST ${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/text/${
-      textPrompt.hashId
-    } \\
+    const input = Object.keys(examples[0].input)
+      .map((k) => `${k}: "some_value"`)
+      .join(", ");
+
+    return `curl -X POST ${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/text/${textPrompt.hashId} \\
     -H "Authorization: Bearer {your_api_key}" \\
     -H "Content-Type: application/json" \\
-    -d '${JSON.stringify(body)}'`;
-  }, [requiredKeys, textPrompt.hashId]);
+    -d '{${input}}'`;
+  }, [examples, textPrompt.hashId]);
 
   return (
     <>
       <table className="border-t w-full border-spacing-y-7 border-spacing-x-3 border-separate">
         <tbody className="align-top">
           <tr>
-            <td className="w-40">
+            <td className="w-28 md:w-40">
               <div className="font-bold">{textPrompt.provider}</div>
             </td>
             <td>
@@ -137,7 +130,7 @@ export default function TextPrompt({
           </tr>
           <tr>
             <td>
-              <div className="font-bold image-nowrap">{`What you'll get`}</div>
+              <div className="font-bold image-nowrap">Example response</div>
             </td>
             <td>
               <div className="whitespace-pre text-wrap">
@@ -161,7 +154,9 @@ export default function TextPrompt({
           </tr>
           <tr>
             <td>
-              <div className="font-bold">Input</div>
+              <Button onClick={onClickTry} loading={loading}>
+                Try
+              </Button>
             </td>
             <td>
               <div>
@@ -174,14 +169,6 @@ export default function TextPrompt({
                   {inputErrorMessage}
                 </div>
               </div>
-            </td>
-          </tr>
-          <tr>
-            <td className="font-bold">Try</td>
-            <td>
-              <Button onClick={onClickTry} loading={loading}>
-                Run
-              </Button>
             </td>
           </tr>
           <tr>
