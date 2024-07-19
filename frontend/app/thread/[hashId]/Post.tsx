@@ -96,20 +96,7 @@ export default function Post({
 
   return (
     <div className="py-1 border-b">
-      <div className="py-12 whitespace-pre-line">{post.post}</div>
-      {post.textPrompts
-        .filter((t) => t.examples.length > 0)
-        .map((t) => (
-          <div key={t.hashId} className="pl-12 mt-3">
-            <TextPrompt textPrompt={t} />
-          </div>
-        ))}
-      {post.imagePrompts.map((i) => (
-        <div key={i.hashId} className="pl-12 mt-3">
-          <ImagePrompt imagePrompt={i} />
-        </div>
-      ))}
-      <div className="py-1 flex gap-3 justify-end items-center text-sm">
+      <div className="py-1 flex gap-3 items-center text-sm">
         <div>
           {post.user && post.user.hashId === user?.hashId && (
             <Button size="1" asChild>
@@ -126,6 +113,7 @@ export default function Post({
             </Tooltip>
           </div>
         )}
+        <div className="flex-1"></div>
         <div
           className="flex gap-3 cursor-pointer items-center"
           onClick={onClickBookmark}
@@ -139,7 +127,19 @@ export default function Post({
           {post.isLiked ? <HeartFilledIcon /> : <HeartIcon />}
           <div>{post.likes} likes</div>
         </div>
-        <Separator orientation="vertical" />
+      </div>
+      <div className="py-12 whitespace-pre-line">{post.post}</div>
+      {post.textPrompts.map((t) => (
+        <div key={t.hashId} className="mt-3 w-full overflow-x-auto">
+          <TextPrompt textPrompt={t} />
+        </div>
+      ))}
+      {post.imagePrompts.map((i) => (
+        <div key={i.hashId} className="mt-3 w-full overflow-x-auto">
+          <ImagePrompt imagePrompt={i} />
+        </div>
+      ))}
+      <div className="py-1 flex gap-3 justify-end items-center text-sm">
         <div className="font-bold">
           {post.user ? (
             <Link href={`/user/${post.user.hashId}`}>{post.user.name}</Link>

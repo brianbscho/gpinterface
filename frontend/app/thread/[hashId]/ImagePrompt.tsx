@@ -79,7 +79,7 @@ export default function ImagePrompt({
       <table className="border-t w-full border-spacing-y-7 border-spacing-x-3 border-separate">
         <tbody className="align-top">
           <tr>
-            <td className="w-40">
+            <td className="min-w-24 md:w-40">
               <div className="font-bold">{imagePrompt.provider}</div>
             </td>
             <td>
@@ -173,9 +173,11 @@ export default function ImagePrompt({
             </td>
           </tr>
           <tr>
-            <td>Url</td>
+            <td>URL</td>
             <td className="whitespace-pre text-wrap">
-              <div>{example.url}</div>
+              <a target="_blank" href={example.url}>
+                {example.url}
+              </a>
             </td>
           </tr>
           <tr>

@@ -1,7 +1,7 @@
 import { Inter } from "next/font/google";
 import { Theme } from "@radix-ui/themes";
 import { ThemeProvider } from "next-themes";
-import Write from "./general/buttons/Write";
+import ThreadCreate from "./general/buttons/ThreadCreate";
 import Menus from "./general/dropdowns/Menus";
 import Link from "./general/links/Link";
 import Search from "./general/inputs/Search";
@@ -29,7 +29,7 @@ export default function Body({
                 <div className="flex-1">
                   <Search />
                 </div>
-                <Write />
+                <ThreadCreate />
                 <Menus />
               </div>
             </div>

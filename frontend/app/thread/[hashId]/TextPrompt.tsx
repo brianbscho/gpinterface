@@ -82,7 +82,7 @@ export default function TextPrompt({
       <table className="border-t w-full border-spacing-y-7 border-spacing-x-3 border-separate">
         <tbody className="align-top">
           <tr>
-            <td className="w-40">
+            <td className="w-28 md:w-40">
               <div className="font-bold">{textPrompt.provider}</div>
             </td>
             <td>

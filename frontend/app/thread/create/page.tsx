@@ -156,7 +156,7 @@ export default function Page() {
           </div>
           <div>
             <Button onClick={onClickCreate} loading={loading}>
-              Create Thread
+              Create
             </Button>
           </div>
         </div>
