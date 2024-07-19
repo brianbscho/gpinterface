@@ -2,17 +2,9 @@
 
 import { AvatarIcon, HamburgerMenuIcon } from "@radix-ui/react-icons";
 import { Button, DropdownMenu } from "@radix-ui/themes";
-import {
-  MouseEventHandler,
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import callApi from "@/util/callApi";
 import useUserStore from "@/store/user";
-import Link from "../links/Link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { UserGetMeResponse } from "gpinterface-shared/type/user";
 
@@ -23,40 +15,37 @@ function _Menus() {
   const { user, setUser } = useUserStore();
   const pathname = usePathname();
   const router = useRouter();
+  const { push } = router;
 
   useEffect(() => {
     const callUserApi = async () => {
       const response = await callApi<UserGetMeResponse>({ endpoint: "/user" });
       setUser(response?.user);
       if (!response && logoutRedirectPaths.some((p) => pathname.includes(p))) {
-        router.push("/");
+        push("/");
       }
     };
     callUserApi();
-  }, [setUser, router, pathname]);
+  }, [setUser, push, pathname]);
 
   const searchParams = useSearchParams();
   useEffect(() => {
     const redirectPath = searchParams.get("redirect");
     if (user && loginRedirectPaths.some((p) => pathname.includes(p))) {
       if (redirectPath) {
-        router.push(redirectPath);
+        push(redirectPath);
       } else {
-        router.push("/");
+        push("/");
       }
     }
-  }, [user, router, pathname, searchParams]);
+  }, [user, push, pathname, searchParams]);
 
-  const onClickLogout: MouseEventHandler<HTMLAnchorElement> = useCallback(
-    (e) => {
-      e.preventDefault();
-      setOpen(false);
-      callApi({ endpoint: "/user/logout" });
-      setUser(undefined);
-      location.reload();
-    },
-    [setUser]
-  );
+  const onClickLogout = useCallback(() => {
+    setOpen(false);
+    callApi({ endpoint: "/user/logout" });
+    setUser(undefined);
+    location.reload();
+  }, [setUser]);
 
   const redirect = useMemo(() => {
     if (pathname.includes("login")) return "";
@@ -76,33 +65,22 @@ function _Menus() {
       </DropdownMenu.Trigger>
       <DropdownMenu.Content>
         {!user ? (
-          <DropdownMenu.Item>
-            <Link href={`/login${redirect}`}>Login</Link>
+          <DropdownMenu.Item onClick={() => push(`/login${redirect}`)}>
+            Login
           </DropdownMenu.Item>
         ) : (
           <>
-            <DropdownMenu.Item asChild>
-              <Link
-                href={`/user/${user.hashId}`}
-                onClick={() => setOpen(false)}
-              >
-                My page
-              </Link>
+            <DropdownMenu.Item onClick={() => push(`/user/${user.hashId}`)}>
+              My page
             </DropdownMenu.Item>
-            <DropdownMenu.Item asChild>
-              <Link href="/settings" onClick={() => setOpen(false)}>
-                Settings
-              </Link>
+            <DropdownMenu.Item onClick={() => push("/settings")}>
+              Settings
             </DropdownMenu.Item>
-            <DropdownMenu.Item asChild>
-              <Link href="/usages" onClick={() => setOpen(false)}>
-                Usages
-              </Link>
+            <DropdownMenu.Item onClick={() => push("/usages")}>
+              Usages
             </DropdownMenu.Item>
-            <DropdownMenu.Item asChild>
-              <a href="/logout" onClick={onClickLogout}>
-                Logout
-              </a>
+            <DropdownMenu.Item onClick={onClickLogout}>
+              Logout
             </DropdownMenu.Item>
           </>
         )}
