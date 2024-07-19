@@ -118,7 +118,7 @@ export default function ImagePrompt({
           </tr>
           <tr>
             <td>
-              <div className="font-bold image-nowrap">{`What you'll get`}</div>
+              <div className="font-bold image-nowrap">Example response</div>
             </td>
             <td>
               <div className="whitespace-pre text-wrap">
