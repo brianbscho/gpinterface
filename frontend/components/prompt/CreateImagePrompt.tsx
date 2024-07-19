@@ -21,6 +21,7 @@ import useImageModel, { ConfigSelectType } from "@/hooks/useImageModel";
 import { imageModels } from "gpinterface-shared/models/image/model";
 import EstimatedPrice from "../general/hover/EstimatedPrice";
 import { getValidBody } from "gpinterface-shared/util";
+import { useRouter } from "next/navigation";
 
 const defaultPrompt =
   "The {{subject}} teacher is teaching a class at the {{school}}";
@@ -205,6 +206,9 @@ export default function CreateImagePrompt({
 
   useLinkConfirmMessage(models.length > 0 && provider !== models[0].name);
 
+  const router = useRouter();
+  const onClickCancel = useCallback(() => router.back(), [router]);
+
   return (
     <>
       <div className="w-full flex items-center gap-3">
@@ -359,7 +363,12 @@ export default function CreateImagePrompt({
           </tbody>
         </table>
       )}
-      <div className="flex justify-end pb-3">
+      <div className="flex justify-end gap-3 pb-3">
+        <div>
+          <Button variant="soft" onClick={onClickCancel}>
+            Cancel
+          </Button>
+        </div>
         <div>
           <Button onClick={onClickCreate} loading={loading}>
             {!!responsePost ? "Save" : "Create Thread"}

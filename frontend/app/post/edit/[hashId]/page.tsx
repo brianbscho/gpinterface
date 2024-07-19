@@ -169,6 +169,8 @@ export default function Page({ params }: { params: { hashId: string } }) {
 
   useLinkConfirmMessage(title.length > 0 || post.length > 0);
 
+  const onClickCancel = useCallback(() => router.back(), [router]);
+
   if (!responsePost) return null;
   return (
     <div className="w-full max-w-7xl px-3 flex flex-col gap-7 py-7">
@@ -194,7 +196,12 @@ export default function Page({ params }: { params: { hashId: string } }) {
         disabled={responsePost.thread.isPublic}
       />
       {modal === modals[0] && (
-        <div className="flex justify-end pb-3">
+        <div className="flex justify-end gap-3 pb-3">
+          <div>
+            <Button variant="soft" onClick={onClickCancel}>
+              Cancel
+            </Button>
+          </div>
           <div>
             <Button onClick={onClickSave} loading={loading}>
               Save

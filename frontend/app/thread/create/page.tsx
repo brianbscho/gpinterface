@@ -117,6 +117,8 @@ export default function Page() {
 
   useLinkConfirmMessage(title.length > 0 || post.length > 0);
 
+  const onClickCancel = useCallback(() => router.back(), [router]);
+
   return (
     <div className="w-full max-w-7xl px-3 flex flex-col gap-7 py-7">
       <div className="w-full">
@@ -146,7 +148,12 @@ export default function Page() {
         </div>
       )}
       {provider === modals[0] && (
-        <div className="flex justify-end pb-3">
+        <div className="flex justify-end gap-3 pb-3">
+          <div>
+            <Button variant="soft" onClick={onClickCancel}>
+              Cancel
+            </Button>
+          </div>
           <div>
             <Button onClick={onClickCreate} loading={loading}>
               Create Thread
