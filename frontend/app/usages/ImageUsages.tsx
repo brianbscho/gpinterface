@@ -59,12 +59,12 @@ export default function ImageUsages() {
       <table className="border-spacing-3 border-separate w-full table-fixed">
         <thead>
           <tr>
-            <td>Model</td>
-            <td>Prompt</td>
-            <td>Input</td>
-            <td>Price</td>
-            <td>Image</td>
-            <td>Details</td>
+            <td className="hidden md:table-cell">Model</td>
+            <td className="hidden md:table-cell">Prompt</td>
+            <td className="w-2/5 md:w-auto">Input</td>
+            <td className="hidden md:table-cell">Price</td>
+            <td className="w-2/5 md:w-auto">Image</td>
+            <td className="w-1/5 md:w-auto">Details</td>
           </tr>
         </thead>
         <tbody className="w-full">
@@ -72,20 +72,26 @@ export default function ImageUsages() {
             <Fragment key={date}>
               {history.histories.map((t) => (
                 <tr key={t.hashId} className="w-full">
-                  <td className="text-nowrap">{t.model}</td>
-                  <td className="truncate w-full">{t.prompt}</td>
+                  <td className="hidden md:table-cell text-nowrap">
+                    {t.model}
+                  </td>
+                  <td className="hidden md:table-cell truncate w-full">
+                    {t.prompt}
+                  </td>
                   <td className="truncate w-full">{stringify(t.input)}</td>
-                  <td className="text-nowrap">${t.price}</td>
+                  <td className="hidden md:table-cell text-nowrap">
+                    ${t.price}
+                  </td>
                   <td>
                     <picture>
                       <img
-                        className="h-40"
+                        className="h-auto w-full md:h-40 md:w-auto"
                         src={t.url}
                         alt="ai_generated_image"
                       />
                     </picture>
                   </td>
-                  <td className="w-full">
+                  <td>
                     <ImageUsage imageHistory={t} />
                   </td>
                 </tr>
