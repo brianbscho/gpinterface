@@ -117,19 +117,15 @@ export default function Post({
             </Button>
           )}
         </div>
-        {post.textPrompts.length > 0 ||
-          (post.imagePrompts.length > 0 && (
-            <div>
-              <Tooltip
-                content="Make a private copy to edit it"
-                delayDuration={0}
-              >
-                <Button size="1" onClick={onClickCopy}>
-                  {copyText}
-                </Button>
-              </Tooltip>
-            </div>
-          ))}
+        {(post.textPrompts.length > 0 || post.imagePrompts.length > 0) && (
+          <div>
+            <Tooltip content="Make a private copy to edit it" delayDuration={0}>
+              <Button size="1" onClick={onClickCopy}>
+                {copyText}
+              </Button>
+            </Tooltip>
+          </div>
+        )}
         <div
           className="flex gap-3 cursor-pointer items-center"
           onClick={onClickBookmark}
