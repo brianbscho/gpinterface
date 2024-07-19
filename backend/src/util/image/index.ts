@@ -26,41 +26,28 @@ export async function getImageResponse(imagePrompt: ImagePromptType) {
 }
 
 export function getImagePriceByModel(model: string) {
+  const hundred = 100;
   switch (model) {
     case "stable-image-ultra":
-      return 0.08;
+      return 8 / hundred;
     case "stable-image-core":
-      return 0.03;
+      return 3 / hundred;
     case "stable-diffusion-3-medium":
-      return 0.035;
+      return 3.5 / hundred;
     case "stable-diffusion-3-large":
-      return 0.065;
+      return 6.5 / hundred;
     case "stable-diffusion-3-large-turbo":
-      return 0.04;
+      return 4 / hundred;
     case "stable-diffusion-v1-6":
-      return 0.006;
+      return 1 / hundred;
     case "stable-diffusion-xl-1024-v1-0":
-      return 0.01;
+      return 0.6 / hundred;
     case "ModelsLab":
       return 0.009;
     default:
-      return 0;
+      throw "Cannot find price info of the model";
   }
 }
-
-// Stability AI
-// $10 per 1,000 credits
-// Ultra	8 credits
-// Core	3 credits
-// Stable Diffusion 3 Medium 3.5 credits
-// Stable Diffusion 3 Large 6.5 credits
-// Stable Diffusion 3 Large Turbo credits 4
-// SDXL 1.0 0.2-0.6 credits
-// SD 1.6 0.2-1.0 credits
-
-//
-// ModelsLab
-// $27 / 3,250 API Calls
 
 export async function getTodayPriceSum(
   history: Prisma.ImagePromptHistoryDelegate,
