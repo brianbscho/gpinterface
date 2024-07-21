@@ -65,7 +65,7 @@ export default function ImagePrompt({
     if (examples.length === 0) return "";
 
     const input = Object.keys(examples[0].input)
-      .map((k) => `${k}: "some_value"`)
+      .map((k) => `"${k}": "some_value"`)
       .join(", ");
 
     return `curl -X POST ${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/image/${imagePrompt.hashId} \\
