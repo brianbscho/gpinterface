@@ -17,13 +17,12 @@ import useTextModel from "@/hooks/useTextModel";
 import Radio from "../general/inputs/Radio";
 import useLinkConfirmMessage from "@/hooks/useLinkConfirmMessage";
 import { PostGetResponse } from "gpinterface-shared/type/post";
-import useUserStore from "@/store/user";
-import Login from "../general/dialogs/Login";
 import { TrashIcon } from "@radix-ui/react-icons";
 import { TextMessageSchema } from "gpinterface-shared/type/textMessage";
 import EstimatedPrice from "../general/hover/EstimatedPrice";
 import { getValidBody } from "gpinterface-shared/util";
 import { useRouter } from "next/navigation";
+import UserRequiredButton from "../general/buttons/UserRequiredButton";
 
 const defaultSystemMessage = "{{systemMessage}}";
 
@@ -119,16 +118,9 @@ export default function CreateTextPrompt({
     });
   }, []);
 
-  const { user } = useUserStore();
-  const [loginOpen, setLoginOpen] = useState(false);
   const [inputErrorMessage, setInputErrorMessage] = useState("");
   const onClickTest = useCallback(async () => {
     try {
-      if (!user) {
-        setLoginOpen(true);
-        return;
-      }
-
       const input = getValidBody(
         JSON.stringify([systemMessage, messages]),
         JSON.parse(example.input)
@@ -162,7 +154,6 @@ export default function CreateTextPrompt({
       setLoading(false);
     }
   }, [
-    user,
     provider,
     model,
     config,
@@ -310,13 +301,14 @@ export default function CreateTextPrompt({
             </tr>
             <tr>
               <td>
-                <Button
-                  onClick={onClickTest}
-                  loading={loading}
-                  disabled={responsePost?.thread.isPublic}
-                >
-                  Test
-                </Button>
+                <UserRequiredButton onClick={onClickTest}>
+                  <Button
+                    loading={loading}
+                    disabled={responsePost?.thread.isPublic}
+                  >
+                    Test
+                  </Button>
+                </UserRequiredButton>
               </td>
               <td>
                 <input
@@ -375,7 +367,6 @@ export default function CreateTextPrompt({
           </Button>
         </div>
       </div>
-      <Login open={loginOpen} onClickLogin={() => setLoginOpen(false)} />
     </>
   );
 }

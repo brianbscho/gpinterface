@@ -15,13 +15,12 @@ import Collapsible from "../general/collapsible";
 import Radio from "../general/inputs/Radio";
 import useLinkConfirmMessage from "@/hooks/useLinkConfirmMessage";
 import { PostGetResponse } from "gpinterface-shared/type/post";
-import useUserStore from "@/store/user";
-import Login from "../general/dialogs/Login";
 import useImageModel, { ConfigSelectType } from "@/hooks/useImageModel";
 import { imageModels } from "gpinterface-shared/models/image/model";
 import EstimatedPrice from "../general/hover/EstimatedPrice";
 import { getValidBody } from "gpinterface-shared/util";
 import { useRouter } from "next/navigation";
+import UserRequiredButton from "../general/buttons/UserRequiredButton";
 
 const defaultPrompt =
   "The {{subject}} teacher is teaching a class at the {{school}}";
@@ -135,15 +134,9 @@ export default function CreateImagePrompt({
     return _config;
   }, [config, configSelects]);
 
-  const { user } = useUserStore();
-  const [loginOpen, setLoginOpen] = useState(false);
   const [inputErrorMessage, setInputErrorMessage] = useState("");
   const onClickTest = useCallback(async () => {
     try {
-      if (!user) {
-        setLoginOpen(true);
-        return;
-      }
       if (!model) {
         alert("Please select model and try again");
         return;
@@ -180,7 +173,7 @@ export default function CreateImagePrompt({
     } finally {
       setLoading(false);
     }
-  }, [user, example.input, provider, model, prompt, configBody, setLoading]);
+  }, [example.input, provider, model, prompt, configBody, setLoading]);
 
   const onClickCreate = useCallback(async () => {
     if (!model) {
@@ -296,13 +289,14 @@ export default function CreateImagePrompt({
               )}
               <tr>
                 <td>
-                  <Button
-                    onClick={onClickTest}
-                    loading={loading}
-                    disabled={responsePost?.thread.isPublic}
-                  >
-                    Test
-                  </Button>
+                  <UserRequiredButton onClick={onClickTest}>
+                    <Button
+                      loading={loading}
+                      disabled={responsePost?.thread.isPublic}
+                    >
+                      Test
+                    </Button>
+                  </UserRequiredButton>
                 </td>
                 <td>
                   <Textarea
@@ -378,7 +372,6 @@ export default function CreateImagePrompt({
           </Button>
         </div>
       </div>
-      <Login open={loginOpen} onClickLogin={() => setLoginOpen(false)} />
     </>
   );
 }

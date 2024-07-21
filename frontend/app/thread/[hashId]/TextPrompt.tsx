@@ -8,10 +8,9 @@ import { Button } from "@radix-ui/themes";
 import callApi from "@/util/callApi";
 import Textarea from "@/components/general/inputs/Textarea";
 import { TextPromptExecuteResponse } from "gpinterface-shared/type/textPrompt";
-import Login from "@/components/general/dialogs/Login";
-import useUserStore from "@/store/user";
 import EstimatedPrice from "@/components/general/hover/EstimatedPrice";
 import { getValidBody } from "gpinterface-shared/util";
+import UserRequiredButton from "@/components/general/buttons/UserRequiredButton";
 
 export default function TextPrompt({
   textPrompt,
@@ -31,14 +30,7 @@ export default function TextPrompt({
   const [loading, setLoading] = useState(false);
   const [inputErrorMessage, setInputErrorMessage] = useState("");
 
-  const [loginOpen, setLoginOpen] = useState(false);
-  const { user } = useUserStore();
   const onClickTry = useCallback(async () => {
-    if (!user) {
-      setLoginOpen(true);
-      return;
-    }
-
     try {
       const input = getValidBody(
         JSON.stringify([systemMessage, messages]),
@@ -62,7 +54,7 @@ export default function TextPrompt({
     } finally {
       setLoading(false);
     }
-  }, [user, example.input, systemMessage, messages, textPrompt.hashId]);
+  }, [example.input, systemMessage, messages, textPrompt.hashId]);
 
   const curl = useMemo(() => {
     if (examples.length === 0) return "";
@@ -154,9 +146,9 @@ export default function TextPrompt({
           </tr>
           <tr>
             <td>
-              <Button onClick={onClickTry} loading={loading}>
-                Try
-              </Button>
+              <UserRequiredButton onClick={onClickTry}>
+                <Button loading={loading}>Try</Button>
+              </UserRequiredButton>
             </td>
             <td>
               <div>
@@ -213,7 +205,6 @@ export default function TextPrompt({
           </tr>
         </tbody>
       </table>
-      <Login open={loginOpen} onClickLogin={() => setLoginOpen(false)} />
     </>
   );
 }

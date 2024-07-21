@@ -7,11 +7,10 @@ import { useCallback, useMemo, useState } from "react";
 import { Button } from "@radix-ui/themes";
 import callApi from "@/util/callApi";
 import { ImagePromptExecuteResponse } from "gpinterface-shared/type/imagePrompt";
-import Login from "@/components/general/dialogs/Login";
-import useUserStore from "@/store/user";
 import EstimatedPrice from "@/components/general/hover/EstimatedPrice";
 import Textarea from "@/components/general/inputs/Textarea";
 import { getValidBody } from "gpinterface-shared/util";
+import UserRequiredButton from "@/components/general/buttons/UserRequiredButton";
 
 export default function ImagePrompt({
   imagePrompt,
@@ -31,14 +30,7 @@ export default function ImagePrompt({
   const [loading, setLoading] = useState(false);
   const [inputErrorMessage, setInputErrorMessage] = useState("");
 
-  const [loginOpen, setLoginOpen] = useState(false);
-  const { user } = useUserStore();
   const onClickTry = useCallback(async () => {
-    if (!user) {
-      setLoginOpen(true);
-      return;
-    }
-
     try {
       const input = getValidBody(prompt, JSON.parse(example.input));
       setInputErrorMessage("");
@@ -59,7 +51,7 @@ export default function ImagePrompt({
     } finally {
       setLoading(false);
     }
-  }, [user, example.input, prompt, imagePrompt.hashId]);
+  }, [example.input, prompt, imagePrompt.hashId]);
 
   const curl = useMemo(() => {
     if (examples.length === 0) return "";
@@ -142,9 +134,9 @@ export default function ImagePrompt({
           </tr>
           <tr>
             <td>
-              <Button onClick={onClickTry} loading={loading}>
-                Try
-              </Button>
+              <UserRequiredButton onClick={onClickTry}>
+                <Button loading={loading}>Try</Button>
+              </UserRequiredButton>
             </td>
             <td>
               <div>
@@ -202,7 +194,6 @@ export default function ImagePrompt({
           </tr>
         </tbody>
       </table>
-      <Login open={loginOpen} onClickLogin={() => setLoginOpen(false)} />
     </>
   );
 }

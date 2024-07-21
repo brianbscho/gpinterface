@@ -9,7 +9,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { UserGetMeResponse } from "gpinterface-shared/type/user";
 
 const loginRedirectPaths = ["login"];
-const logoutRedirectPaths = ["settings", "usages", "edit", "create"];
+const logoutRedirectPaths = ["settings", "usages"];
 
 function _Menus() {
   const { user, setUser } = useUserStore();
