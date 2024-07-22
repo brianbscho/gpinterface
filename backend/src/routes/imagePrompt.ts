@@ -7,10 +7,11 @@ import {
   ImagePromptUpdateSchema,
   ImagePromptUpdateResponse,
   ImagePromptDeleteSchema,
+  ImagePromptBookmarksGetResponse,
 } from "gpinterface-shared/type/imagePrompt";
 import { isAccessible } from "../util/thread";
-import { confirmImagePrompt } from "../util/imagePrompt";
-import { createEntity, upsertEntity } from "../util/prisma";
+import { confirmImagePrompt, getTypedImagePrompts } from "../util/imagePrompt";
+import { createEntity, getIdByHashId, upsertEntity } from "../util/prisma";
 import { imageModels } from "gpinterface-shared/models/image/model";
 import { getInterpolatedString } from "../util/string";
 import {
@@ -19,6 +20,7 @@ import {
   getTodayPriceSum,
 } from "../util/image";
 import { getValidBody } from "gpinterface-shared/util";
+import { QueryParamSchema } from "gpinterface-shared/type";
 
 export default async function (fastify: FastifyInstance) {
   const { unauthorized, badRequest } = fastify.httpErrors;
@@ -259,6 +261,74 @@ export default async function (fastify: FastifyInstance) {
         return { hashId };
       } catch (ex) {
         console.error("path: /image/prompt, method: delete, error:", ex);
+        throw ex;
+      }
+    }
+  );
+  fastify.get<{ Querystring: Static<typeof QueryParamSchema> }>(
+    "/bookmarks",
+    { schema: { querystring: QueryParamSchema } },
+    async (request, reply): Promise<ImagePromptBookmarksGetResponse> => {
+      try {
+        const { user } = await fastify.getUser(request, reply, true);
+        const { lastHashId } = request.query;
+
+        const id = await getIdByHashId(
+          fastify.prisma.bookmark.findFirst,
+          lastHashId
+        );
+
+        const bookmarks = await fastify.prisma.bookmark.findMany({
+          where: { ...(id > 0 && { id: { gt: id } }), userHashId: user.hashId },
+          select: {
+            hashId: true,
+            post: {
+              select: {
+                hashId: true,
+                user: { select: { hashId: true, name: true } },
+                imagePrompts: {
+                  select: {
+                    hashId: true,
+                    provider: true,
+                    model: true,
+                    prompt: true,
+                    config: true,
+                    examples: {
+                      select: {
+                        hashId: true,
+                        input: true,
+                        url: true,
+                        response: true,
+                        price: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+          orderBy: { id: "asc" },
+          take: 20,
+        });
+
+        return {
+          imagePrompts: bookmarks
+            .filter((b) => b.post.imagePrompts.length > 0)
+            .map((b) => {
+              const { hashId, post } = b;
+              const { imagePrompts, ..._post } = post;
+              return {
+                hashId,
+                post: _post,
+                imagePrompt: getTypedImagePrompts(imagePrompts)[0],
+              };
+            }),
+        };
+      } catch (ex) {
+        console.error(
+          "path: /image/propmt/bookmarks?lashHashId, method: get, error:",
+          ex
+        );
         throw ex;
       }
     }
