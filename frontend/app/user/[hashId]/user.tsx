@@ -8,6 +8,8 @@ import { UserInfo } from "gpinterface-shared/type";
 import { UserGetResponse } from "gpinterface-shared/type/user";
 import { Tabs } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
+import TextPrompts from "@/components/prompt/TextPrompts";
+import ImagePrompts from "@/components/prompt/ImagePrompts";
 
 export default function User({ hashId }: { hashId: string }) {
   const router = useRouter();
@@ -59,8 +61,12 @@ export default function User({ hashId }: { hashId: string }) {
               <Tabs.Trigger value="text">Text</Tabs.Trigger>
               <Tabs.Trigger value="image">Image</Tabs.Trigger>
             </Tabs.List>
-            <Tabs.Content value="text"></Tabs.Content>
-            <Tabs.Content value="image"></Tabs.Content>
+            <Tabs.Content value="text">
+              <TextPrompts />
+            </Tabs.Content>
+            <Tabs.Content value="image">
+              <ImagePrompts />
+            </Tabs.Content>
           </Tabs.Root>
         </Tabs.Content>
       </Tabs.Root>
