@@ -42,6 +42,7 @@ export default function User({ hashId }: { hashId: string }) {
           <Tabs.Trigger value="thread">Threads</Tabs.Trigger>
           <Tabs.Trigger value="post">Posts</Tabs.Trigger>
           <Tabs.Trigger value="bookmark">Bookmarks</Tabs.Trigger>
+          <Tabs.Trigger value="prompts">Bookmarked Prompts</Tabs.Trigger>
         </Tabs.List>
         <Tabs.Content value="thread">
           <Threads baseUrl={`/threads/user/${hashId}?type=thread`} />
@@ -51,6 +52,16 @@ export default function User({ hashId }: { hashId: string }) {
         </Tabs.Content>
         <Tabs.Content value="bookmark">
           <Threads baseUrl={`/threads/user/${hashId}?type=bookmark`} />
+        </Tabs.Content>
+        <Tabs.Content value="prompts">
+          <Tabs.Root defaultValue="text">
+            <Tabs.List>
+              <Tabs.Trigger value="text">Text</Tabs.Trigger>
+              <Tabs.Trigger value="image">Image</Tabs.Trigger>
+            </Tabs.List>
+            <Tabs.Content value="text"></Tabs.Content>
+            <Tabs.Content value="image"></Tabs.Content>
+          </Tabs.Root>
         </Tabs.Content>
       </Tabs.Root>
     </div>
