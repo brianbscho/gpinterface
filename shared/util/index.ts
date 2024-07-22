@@ -8,7 +8,7 @@ export function getValidBody(content: string, body: any) {
   }
 
   for (const key of keys) {
-    if (!(key in body)) {
+    if (!(key in body) || !body[key]) {
       throw `${key} is missing`;
     }
   }
