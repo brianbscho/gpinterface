@@ -11,7 +11,7 @@ import {
 import { Button, Separator } from "@radix-ui/themes";
 import { Post as PostType } from "gpinterface-shared/type";
 import { useCallback } from "react";
-import TextPrompt from "./TextPrompt";
+import TextPrompt from "../../../components/prompt/TextPrompt";
 import {
   LikeUpdateResponse,
   LikeUpdateSchema,
@@ -22,7 +22,7 @@ import {
 } from "gpinterface-shared/type/bookmark";
 import { Static } from "@sinclair/typebox";
 import Link from "@/components/general/links/Link";
-import ImagePrompt from "./ImagePrompt";
+import ImagePrompt from "../../../components/prompt/ImagePrompt";
 import UserRequiredButton from "@/components/general/buttons/UserRequiredButton";
 
 export default function Post({
