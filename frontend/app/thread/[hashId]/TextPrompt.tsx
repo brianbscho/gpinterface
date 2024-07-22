@@ -71,7 +71,7 @@ export default function TextPrompt({
 
   return (
     <>
-      <table className="border-t w-full border-spacing-y-7 border-spacing-x-3 border-separate">
+      <table className="w-full border-spacing-y-7 border-spacing-x-3 border-separate">
         <tbody className="align-top">
           <tr>
             <td className="w-28 md:w-40">

@@ -68,7 +68,7 @@ export default function ImagePrompt({
 
   return (
     <>
-      <table className="border-t w-full border-spacing-y-7 border-spacing-x-3 border-separate">
+      <table className="w-full border-spacing-y-7 border-spacing-x-3 border-separate">
         <tbody className="align-top">
           <tr>
             <td className="min-w-24 md:w-40">
