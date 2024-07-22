@@ -2,16 +2,15 @@
 
 import { TextPrompt as TextPromptType } from "gpinterface-shared/type";
 import Collapsible from "@/components/general/collapsible";
-import { stringify } from "@/util/string";
-import { useCallback, useMemo, useState } from "react";
+import { inputsToObject, objectToInputs, stringify } from "@/util/string";
+import { Fragment, useCallback, useMemo, useState } from "react";
 import { Button } from "@radix-ui/themes";
 import callApi from "@/util/callApi";
 import Textarea from "@/components/general/inputs/Textarea";
 import { TextPromptExecuteResponse } from "gpinterface-shared/type/textPrompt";
-import Login from "@/components/general/dialogs/Login";
-import useUserStore from "@/store/user";
 import EstimatedPrice from "@/components/general/hover/EstimatedPrice";
 import { getValidBody } from "gpinterface-shared/util";
+import UserRequiredButton from "@/components/general/buttons/UserRequiredButton";
 
 export default function TextPrompt({
   textPrompt,
@@ -19,34 +18,37 @@ export default function TextPrompt({
   textPrompt: TextPromptType;
 }) {
   const { systemMessage, messages, examples } = textPrompt;
-  const [example, setExample] = useState({
-    ...examples[0],
-    input: stringify(examples[0].input),
-  });
-  const setInput = useCallback(
-    (input: string) => setExample((prev) => ({ ...prev, input })),
+  const [example, setExample] = useState(examples[0]);
+  const [inputs, setInputs] = useState(objectToInputs(examples[0].input));
+  const setExampleInput = useCallback(
+    (index: number) => (value: string) =>
+      setInputs((prev) => {
+        const newInputs = [...prev];
+        newInputs[index].value = value;
+        return newInputs;
+      }),
     []
   );
 
   const [loading, setLoading] = useState(false);
   const [inputErrorMessage, setInputErrorMessage] = useState("");
 
-  const [loginOpen, setLoginOpen] = useState(false);
-  const { user } = useUserStore();
   const onClickTry = useCallback(async () => {
-    if (!user) {
-      setLoginOpen(true);
-      return;
-    }
-
     try {
       const input = getValidBody(
         JSON.stringify([systemMessage, messages]),
-        JSON.parse(example.input)
+        inputsToObject(inputs)
       );
       setInputErrorMessage("");
 
       setLoading(true);
+      setExample({
+        hashId: "",
+        input: {},
+        content: "",
+        response: {},
+        price: 0,
+      });
       const response = await callApi<TextPromptExecuteResponse>({
         endpoint: `/text/prompt/${textPrompt.hashId}`,
         method: "POST",
@@ -62,24 +64,20 @@ export default function TextPrompt({
     } finally {
       setLoading(false);
     }
-  }, [user, example.input, systemMessage, messages, textPrompt.hashId]);
+  }, [inputs, systemMessage, messages, textPrompt.hashId]);
 
   const curl = useMemo(() => {
-    if (examples.length === 0) return "";
-
-    const input = Object.keys(examples[0].input)
-      .map((k) => `${k}: "some_value"`)
-      .join(", ");
+    const input = inputs.map((i) => `"${i.name}": "some_value"`).join(", ");
 
     return `curl -X POST ${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/text/${textPrompt.hashId} \\
     -H "Authorization: Bearer {your_api_key}" \\
     -H "Content-Type: application/json" \\
     -d '{${input}}'`;
-  }, [examples, textPrompt.hashId]);
+  }, [inputs, textPrompt.hashId]);
 
   return (
     <>
-      <table className="border-t w-full border-spacing-y-7 border-spacing-x-3 border-separate">
+      <table className="w-full border-spacing-y-7 border-spacing-x-3 border-separate">
         <tbody className="align-top">
           <tr>
             <td className="w-28 md:w-40">
@@ -154,20 +152,26 @@ export default function TextPrompt({
           </tr>
           <tr>
             <td>
-              <Button onClick={onClickTry} loading={loading}>
-                Try
-              </Button>
+              <UserRequiredButton onClick={onClickTry}>
+                <Button loading={loading}>Try</Button>
+              </UserRequiredButton>
+              <div className="text-sm text-rose-500 mt-3">
+                {inputErrorMessage}
+              </div>
             </td>
             <td>
-              <div>
-                <Textarea
-                  className="border rounded p-1 resize-none w-full h-40"
-                  useValue={[example.input, setInput]}
-                  disabled={loading}
-                />
-                <div className="text-sm text-rose-500 mb-3">
-                  {inputErrorMessage}
-                </div>
+              <div className="grid grid-cols-[auto_1fr] gap-3 w-full">
+                {inputs.map((i, index) => (
+                  <Fragment key={i.name}>
+                    <div className="font-bold">{i.name}</div>
+                    <Textarea
+                      className="focus:outline-none border border-px rounded p-1 resize-none h-40"
+                      placeholder={i.name}
+                      useValue={[i.value, setExampleInput(index)]}
+                      disabled={loading}
+                    />
+                  </Fragment>
+                ))}
               </div>
             </td>
           </tr>
@@ -213,7 +217,6 @@ export default function TextPrompt({
           </tr>
         </tbody>
       </table>
-      <Login open={loginOpen} onClickLogin={() => setLoginOpen(false)} />
     </>
   );
 }

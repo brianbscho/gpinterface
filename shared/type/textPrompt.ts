@@ -1,6 +1,7 @@
 import { Type } from "@sinclair/typebox";
 import { TextMessageSchema } from "./textMessage";
 import { TextExampleSchema } from "./textExample";
+import { TextPrompt as TextPromptType } from ".";
 
 export const TextPrompt = {
   provider: Type.String(),
@@ -41,3 +42,12 @@ export type TextPromptUpdateResponse = { hashId: string };
 export const TextPromptDeleteSchema = Type.Object({
   hashId: Type.String(),
 });
+
+export type TextPromptBookmark = {
+  hashId: string;
+  post: { hashId: string; user: { hashId: string; name: string } | null };
+  textPrompt: TextPromptType;
+};
+export type TextPromptBookmarksGetResponse = {
+  textPrompts: TextPromptBookmark[];
+};

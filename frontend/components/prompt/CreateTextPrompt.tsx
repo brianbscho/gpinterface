@@ -2,8 +2,14 @@
 
 import { Button, Select } from "@radix-ui/themes";
 import Textarea from "../general/inputs/Textarea";
-import { useCallback, useEffect, useState } from "react";
-import { stringify } from "@/util/string";
+import { Fragment, useCallback, useEffect, useState } from "react";
+import {
+  getKeyAlignedInput,
+  getKeys,
+  inputsToObject,
+  objectToInputs,
+  stringify,
+} from "@/util/string";
 import callApi from "@/util/callApi";
 import {
   TextPromptDraftExecuteSchema,
@@ -17,13 +23,12 @@ import useTextModel from "@/hooks/useTextModel";
 import Radio from "../general/inputs/Radio";
 import useLinkConfirmMessage from "@/hooks/useLinkConfirmMessage";
 import { PostGetResponse } from "gpinterface-shared/type/post";
-import useUserStore from "@/store/user";
-import Login from "../general/dialogs/Login";
 import { TrashIcon } from "@radix-ui/react-icons";
 import { TextMessageSchema } from "gpinterface-shared/type/textMessage";
 import EstimatedPrice from "../general/hover/EstimatedPrice";
 import { getValidBody } from "gpinterface-shared/util";
 import { useRouter } from "next/navigation";
+import UserRequiredButton from "../general/buttons/UserRequiredButton";
 
 const defaultSystemMessage = "{{systemMessage}}";
 
@@ -33,11 +38,16 @@ const defaultMessage: Static<typeof TextMessageSchema> = {
 };
 
 const defaultExample = {
-  input: '{"systemMessage": "You are a helpful math teacher.", "a": 1, "b": 2}',
   content: "",
   response: null as any,
   price: 0,
 };
+
+const defaultInputs = [
+  { name: "systemMessage", value: "You are a helpful math teacher." },
+  { name: "a", value: "1" },
+  { name: "b", value: "2" },
+];
 
 export default function CreateTextPrompt({
   callCreate,
@@ -61,6 +71,7 @@ export default function CreateTextPrompt({
 
   const [messages, setMessages] = useState([defaultMessage]);
   const [example, setExample] = useState(defaultExample);
+  const [inputs, setInputs] = useState(defaultInputs);
 
   useEffect(() => {
     if (!responsePost) return;
@@ -77,7 +88,8 @@ export default function CreateTextPrompt({
       const { examples } = textPrompt;
       if (examples.length > 0) {
         const _example = examples[0];
-        setExample({ ..._example, input: JSON.stringify(_example.input) });
+        setExample(_example);
+        setInputs(objectToInputs(_example.input));
       }
     }
   }, [responsePost, setProvider, setModel, setConfig]);
@@ -91,9 +103,18 @@ export default function CreateTextPrompt({
       }),
     [setMessages]
   );
+  useEffect(() => {
+    const keys = getKeys(JSON.stringify([systemMessage, messages]));
+    setInputs((prev) => getKeyAlignedInput(keys, prev));
+  }, [systemMessage, messages]);
 
   const setExampleInput = useCallback(
-    (input: string) => setExample((prev) => ({ ...prev, input })),
+    (index: number) => (value: string) =>
+      setInputs((prev) => {
+        const newInputs = [...prev];
+        newInputs[index].value = value;
+        return newInputs;
+      }),
     []
   );
 
@@ -119,19 +140,12 @@ export default function CreateTextPrompt({
     });
   }, []);
 
-  const { user } = useUserStore();
-  const [loginOpen, setLoginOpen] = useState(false);
   const [inputErrorMessage, setInputErrorMessage] = useState("");
   const onClickTest = useCallback(async () => {
     try {
-      if (!user) {
-        setLoginOpen(true);
-        return;
-      }
-
       const input = getValidBody(
         JSON.stringify([systemMessage, messages]),
-        JSON.parse(example.input)
+        inputsToObject(inputs)
       );
       setInputErrorMessage("");
 
@@ -161,16 +175,7 @@ export default function CreateTextPrompt({
     } finally {
       setLoading(false);
     }
-  }, [
-    user,
-    provider,
-    model,
-    config,
-    example.input,
-    systemMessage,
-    messages,
-    setLoading,
-  ]);
+  }, [provider, model, config, inputs, systemMessage, messages, setLoading]);
 
   const onClickCreate = useCallback(async () => {
     if (messages.length === 0) {
@@ -187,9 +192,18 @@ export default function CreateTextPrompt({
       systemMessage,
       messages,
       config: JSON.parse(config),
-      examples: [{ ...example, input: JSON.parse(example.input) }],
+      examples: [{ ...example, input: inputsToObject(inputs) }],
     });
-  }, [callCreate, example, messages, config, model, provider, systemMessage]);
+  }, [
+    callCreate,
+    example,
+    inputs,
+    messages,
+    config,
+    model,
+    provider,
+    systemMessage,
+  ]);
 
   useLinkConfirmMessage(provider !== textModels[0].provider);
 
@@ -310,23 +324,31 @@ export default function CreateTextPrompt({
             </tr>
             <tr>
               <td>
-                <Button
-                  onClick={onClickTest}
-                  loading={loading}
-                  disabled={responsePost?.thread.isPublic}
-                >
-                  Test
-                </Button>
-              </td>
-              <td>
-                <input
-                  className="w-full focus:outline-none border-b p-1"
-                  value={example.input}
-                  onChange={(e) => setExampleInput(e.currentTarget.value)}
-                  disabled={loading || responsePost?.thread.isPublic}
-                />
+                <UserRequiredButton onClick={onClickTest}>
+                  <Button
+                    loading={loading}
+                    disabled={responsePost?.thread.isPublic}
+                  >
+                    Test
+                  </Button>
+                </UserRequiredButton>
                 <div className="text-sm text-rose-500 mb-3">
                   {inputErrorMessage}
+                </div>
+              </td>
+              <td>
+                <div className="grid grid-cols-[auto_1fr] gap-3 w-full">
+                  {inputs.map((i, index) => (
+                    <Fragment key={i.name}>
+                      <div>{i.name}</div>
+                      <Textarea
+                        className="focus:outline-none border border-px rounded p-1 resize-none h-40"
+                        placeholder={i.name}
+                        useValue={[i.value, setExampleInput(index)]}
+                        disabled={loading || responsePost?.thread.isPublic}
+                      />
+                    </Fragment>
+                  ))}
                 </div>
               </td>
             </tr>
@@ -375,7 +397,6 @@ export default function CreateTextPrompt({
           </Button>
         </div>
       </div>
-      <Login open={loginOpen} onClickLogin={() => setLoginOpen(false)} />
     </>
   );
 }

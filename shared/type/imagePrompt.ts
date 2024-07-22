@@ -1,5 +1,6 @@
 import { Type } from "@sinclair/typebox";
 import { ImageExampleSchema } from "./imageExample";
+import { ImagePrompt as ImagePromptType } from ".";
 
 export const ImagePrompt = {
   provider: Type.String(),
@@ -37,3 +38,12 @@ export type ImagePromptUpdateResponse = { hashId: string };
 export const ImagePromptDeleteSchema = Type.Object({
   hashId: Type.String(),
 });
+
+export type ImagePromptBookmark = {
+  hashId: string;
+  post: { hashId: string; user: { hashId: string; name: string } | null };
+  imagePrompt: ImagePromptType;
+};
+export type ImagePromptBookmarksGetResponse = {
+  imagePrompts: ImagePromptBookmark[];
+};

@@ -8,11 +8,10 @@ import {
   HeartFilledIcon,
   HeartIcon,
 } from "@radix-ui/react-icons";
-import { Button, Separator, Tooltip } from "@radix-ui/themes";
+import { Button, Separator } from "@radix-ui/themes";
 import { Post as PostType } from "gpinterface-shared/type";
-import { useCallback, useState } from "react";
-import Login from "@/components/general/dialogs/Login";
-import TextPrompt from "./TextPrompt";
+import { useCallback } from "react";
+import TextPrompt from "../../../components/prompt/TextPrompt";
 import {
   LikeUpdateResponse,
   LikeUpdateSchema,
@@ -23,11 +22,8 @@ import {
 } from "gpinterface-shared/type/bookmark";
 import { Static } from "@sinclair/typebox";
 import Link from "@/components/general/links/Link";
-import {
-  PostCopySchema,
-  PostCreateResponse,
-} from "gpinterface-shared/type/post";
-import ImagePrompt from "./ImagePrompt";
+import ImagePrompt from "../../../components/prompt/ImagePrompt";
+import UserRequiredButton from "@/components/general/buttons/UserRequiredButton";
 
 export default function Post({
   post,
@@ -37,13 +33,8 @@ export default function Post({
   setPost: (p: PostType) => void;
 }) {
   const { user } = useUserStore();
-  const [loginOpen, setLoginOpen] = useState(false);
 
   const onClickLike = useCallback(async () => {
-    if (!user) {
-      setLoginOpen(true);
-      return;
-    }
     const response = await callApi<
       LikeUpdateResponse,
       Static<typeof LikeUpdateSchema>
@@ -54,12 +45,8 @@ export default function Post({
       showError: true,
     });
     setPost({ ...post, ...response });
-  }, [user, post, setPost]);
+  }, [post, setPost]);
   const onClickBookmark = useCallback(async () => {
-    if (!user) {
-      setLoginOpen(true);
-      return;
-    }
     const response = await callApi<
       BookmarkUpdateResponse,
       Static<typeof BookmarkUpdateSchema>
@@ -70,76 +57,30 @@ export default function Post({
       showError: true,
     });
     setPost({ ...post, ...response });
-  }, [user, post, setPost]);
-  const [copyText, setCopyText] = useState("Make private copy");
-  const onClickCopy = useCallback(async () => {
-    if (!user) {
-      setLoginOpen(true);
-      return;
-    }
-    const response = await callApi<
-      PostCreateResponse,
-      Static<typeof PostCopySchema>
-    >({
-      method: "POST",
-      endpoint: "/post/copy",
-      body: { hashId: post.hashId },
-      showError: true,
-    });
-    if (response) {
-      setCopyText("copied!");
-      setTimeout(() => {
-        setCopyText("Make private copy");
-      }, 1000);
-    }
-  }, [user, post.hashId]);
+  }, [post, setPost]);
 
   return (
     <div className="py-1 border-b">
-      <div className="py-1 flex gap-3 items-center text-sm">
-        <div>
-          {post.user && post.user.hashId === user?.hashId && (
-            <Button size="1" asChild>
-              <Link href={`/post/edit/${post.hashId}`}>edit</Link>
-            </Button>
-          )}
-        </div>
-        {(post.textPrompts.length > 0 || post.imagePrompts.length > 0) && (
-          <div>
-            <Tooltip content="Make a private copy to edit it" delayDuration={0}>
-              <Button size="1" onClick={onClickCopy}>
-                {copyText}
-              </Button>
-            </Tooltip>
-          </div>
-        )}
-        <div className="flex-1"></div>
-        <div
-          className="flex gap-3 cursor-pointer items-center"
-          onClick={onClickBookmark}
-        >
-          {post.isBookmarked ? <BookmarkFilledIcon /> : <BookmarkIcon />}
-        </div>
-        <div
-          className="flex gap-3 cursor-pointer items-center"
-          onClick={onClickLike}
-        >
-          {post.isLiked ? <HeartFilledIcon /> : <HeartIcon />}
-          <div>{post.likes} likes</div>
-        </div>
-      </div>
-      <div className="py-12 whitespace-pre-line">{post.post}</div>
-      {post.textPrompts.map((t) => (
-        <div key={t.hashId} className="mt-3 w-full overflow-x-auto">
-          <TextPrompt textPrompt={t} />
-        </div>
-      ))}
-      {post.imagePrompts.map((i) => (
-        <div key={i.hashId} className="mt-3 w-full overflow-x-auto">
-          <ImagePrompt imagePrompt={i} />
-        </div>
-      ))}
       <div className="py-1 flex gap-3 justify-end items-center text-sm">
+        <UserRequiredButton onClick={onClickBookmark}>
+          <div className="cursor-pointer">
+            {post.isBookmarked ? <BookmarkFilledIcon /> : <BookmarkIcon />}
+          </div>
+        </UserRequiredButton>
+        <UserRequiredButton onClick={onClickLike}>
+          <div className="flex gap-3 items-center cursor-pointer">
+            {post.isLiked ? <HeartFilledIcon /> : <HeartIcon />}
+            <div>{post.likes} likes</div>
+          </div>
+        </UserRequiredButton>
+      </div>
+      <div className="mt-3 whitespace-pre-line">{post.post}</div>
+      <div className="py-1 flex gap-3 justify-end items-center text-sm">
+        {post.user && post.user.hashId === user?.hashId && (
+          <Button size="1" asChild>
+            <Link href={`/post/edit/${post.hashId}`}>edit</Link>
+          </Button>
+        )}
         <div className="font-bold">
           {post.user ? (
             <Link href={`/user/${post.user.hashId}`}>{post.user.name}</Link>
@@ -150,7 +91,16 @@ export default function Post({
         <Separator orientation="vertical" />
         <div>{post.createdAt}</div>
       </div>
-      <Login open={loginOpen} onClickLogin={() => setLoginOpen(false)} />
+      {post.textPrompts.map((t) => (
+        <div key={t.hashId} className="mt-3 w-full overflow-x-auto">
+          <TextPrompt textPrompt={t} />
+        </div>
+      ))}
+      {post.imagePrompts.map((i) => (
+        <div key={i.hashId} className="mt-3 w-full overflow-x-auto">
+          <ImagePrompt imagePrompt={i} />
+        </div>
+      ))}
     </div>
   );
 }

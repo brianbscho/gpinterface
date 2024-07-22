@@ -1,10 +1,15 @@
+"use client";
+
 import { Button } from "@radix-ui/themes";
-import Link from "../links/Link";
+import { useRouter } from "next/navigation";
+import UserRequiredButton from "./UserRequiredButton";
 
 export default function ThreadCreate() {
+  const router = useRouter();
+
   return (
-    <Button asChild>
-      <Link href="/thread/create">Create</Link>
-    </Button>
+    <UserRequiredButton onClick={() => router.push("/thread/create")}>
+      <Button>Create</Button>
+    </UserRequiredButton>
   );
 }

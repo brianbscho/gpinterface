@@ -2,7 +2,7 @@
 
 import callApi from "@/util/callApi";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Thread as ThreadType } from "gpinterface-shared/type";
 import Posts from "./Posts";
 import Share from "@/components/general/toasts/Share";
@@ -10,11 +10,9 @@ import CreatePost from "@/components/post/CreatePost";
 import Collapsible from "@/components/general/collapsible";
 import { ThreadGetResponse } from "gpinterface-shared/type/thread";
 import { Badge } from "@radix-ui/themes";
-import Login from "@/components/general/dialogs/Login";
-import useUserStore from "@/store/user";
+import UserRequiredButton from "@/components/general/buttons/UserRequiredButton";
 
 export default function Thread({ hashId }: { hashId: string }) {
-  const [loginOpen, setLoginOpen] = useState(false);
   const [thread, setThread] = useState<ThreadType>();
   const router = useRouter();
   useEffect(() => {
@@ -32,13 +30,6 @@ export default function Thread({ hashId }: { hashId: string }) {
     callThreadsApi();
   }, [hashId, router]);
 
-  const { user } = useUserStore();
-  const onClickWritePost = useCallback(() => {
-    if (!user) {
-      setLoginOpen(true);
-    }
-  }, [user]);
-
   if (!thread) {
     return null;
   }
@@ -53,11 +44,12 @@ export default function Thread({ hashId }: { hashId: string }) {
       </div>
       <Posts baseUrl={`/posts/${hashId}`} />
       <div className="w-full mt-3">
-        <Collapsible title="Write Post" onClick={onClickWritePost}>
-          <CreatePost thread={thread} />
-        </Collapsible>
+        <UserRequiredButton>
+          <Collapsible title="Write Post">
+            <CreatePost thread={thread} />
+          </Collapsible>
+        </UserRequiredButton>
       </div>
-      <Login open={loginOpen} onClickLogin={() => setLoginOpen(false)} />
     </div>
   );
 }
