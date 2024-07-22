@@ -63,10 +63,12 @@ export default function Post({
     <div className="py-1 border-b">
       <div className="py-1 flex gap-3 justify-end items-center text-sm">
         <UserRequiredButton onClick={onClickBookmark}>
-          {post.isBookmarked ? <BookmarkFilledIcon /> : <BookmarkIcon />}
+          <div className="cursor-pointer">
+            {post.isBookmarked ? <BookmarkFilledIcon /> : <BookmarkIcon />}
+          </div>
         </UserRequiredButton>
         <UserRequiredButton onClick={onClickLike}>
-          <div className="flex gap-3 items-center">
+          <div className="flex gap-3 items-center cursor-pointer">
             {post.isLiked ? <HeartFilledIcon /> : <HeartIcon />}
             <div>{post.likes} likes</div>
           </div>

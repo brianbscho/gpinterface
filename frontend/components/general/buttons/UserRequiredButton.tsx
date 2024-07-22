@@ -27,9 +27,7 @@ export default function UserRequiredButton({
 
   return (
     <>
-      <div onClick={onClickUserRequired} className="cursor-pointer">
-        {children}
-      </div>
+      <div onClick={onClickUserRequired}>{children}</div>
       <Login open={loginOpen} onClickLogin={() => setLoginOpen(false)} />
     </>
   );
