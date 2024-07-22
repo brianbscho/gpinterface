@@ -3,7 +3,13 @@
 import { Button } from "@radix-ui/themes";
 import Textarea from "../general/inputs/Textarea";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
-import { stringify } from "@/util/string";
+import {
+  getKeyAlignedInput,
+  getKeys,
+  inputsToObject,
+  objectToInputs,
+  stringify,
+} from "@/util/string";
 import callApi from "@/util/callApi";
 import {
   ImagePromptDraftExecuteSchema,
@@ -24,12 +30,11 @@ import UserRequiredButton from "../general/buttons/UserRequiredButton";
 
 const defaultPrompt =
   "The {{subject}} teacher is teaching a class at the {{school}}";
-const defaultExample = {
-  input: '{"subject": "math", "school": "high school"}',
-  url: "",
-  response: null as any,
-  price: 0,
-};
+const defaultInputs = [
+  { name: "subject", value: "math" },
+  { name: "school", value: "high school" },
+];
+const defaultExample = { url: "", response: null as any, price: 0 };
 
 export default function CreateImagePrompt({
   callCreate,
@@ -59,6 +64,7 @@ export default function CreateImagePrompt({
 
   const [prompt, setPrompt] = useState(defaultPrompt);
   const [example, setExample] = useState(defaultExample);
+  const [inputs, setInputs] = useState(defaultInputs);
 
   useEffect(() => {
     if (!responsePost) return;
@@ -89,7 +95,8 @@ export default function CreateImagePrompt({
       const { examples } = imagePrompt;
       if (examples.length > 0) {
         const _example = examples[0];
-        setExample({ ..._example, input: JSON.stringify(_example.input) });
+        setExample(_example);
+        setInputs(objectToInputs(_example.input));
       }
     }
   }, [
@@ -101,8 +108,17 @@ export default function CreateImagePrompt({
     models,
   ]);
 
+  useEffect(() => {
+    const keys = getKeys(prompt);
+    setInputs((prev) => getKeyAlignedInput(keys, prev));
+  }, [prompt]);
   const setExampleInput = useCallback(
-    (input: string) => setExample((prev) => ({ ...prev, input })),
+    (index: number) => (value: string) =>
+      setInputs((prev) => {
+        const newInputs = [...prev];
+        newInputs[index].value = value;
+        return newInputs;
+      }),
     []
   );
 
@@ -145,7 +161,7 @@ export default function CreateImagePrompt({
         return;
       }
 
-      const input = getValidBody(prompt, JSON.parse(example.input));
+      const input = getValidBody(prompt, inputsToObject(inputs));
       setInputErrorMessage("");
 
       setLoading(true);
@@ -173,7 +189,7 @@ export default function CreateImagePrompt({
     } finally {
       setLoading(false);
     }
-  }, [example.input, provider, model, prompt, configBody, setLoading]);
+  }, [inputs, provider, model, prompt, configBody, setLoading]);
 
   const onClickCreate = useCallback(async () => {
     if (!model) {
@@ -192,9 +208,9 @@ export default function CreateImagePrompt({
       model: model.name,
       prompt,
       config: configBody,
-      examples: [{ ...example, input: JSON.parse(example.input) }],
+      examples: [{ ...example, input: inputsToObject(inputs) }],
     });
-  }, [callCreate, provider, model, prompt, configBody, example]);
+  }, [callCreate, provider, model, prompt, configBody, example, inputs]);
 
   useLinkConfirmMessage(models.length > 0 && provider !== models[0].name);
 
@@ -297,15 +313,23 @@ export default function CreateImagePrompt({
                       Test
                     </Button>
                   </UserRequiredButton>
+                  <div className="text-sm text-rose-500 mt-3">
+                    {inputErrorMessage}
+                  </div>
                 </td>
                 <td>
-                  <Textarea
-                    className="border rounded p-1 resize-none w-full h-40"
-                    useValue={[example.input, setExampleInput]}
-                    disabled={loading || responsePost?.thread.isPublic}
-                  />
-                  <div className="text-sm text-rose-500 mb-3">
-                    {inputErrorMessage}
+                  <div className="grid grid-cols-[auto_1fr] gap-3 w-full">
+                    {inputs.map((i, index) => (
+                      <Fragment key={i.name}>
+                        <div>{i.name}</div>
+                        <Textarea
+                          className="focus:outline-none border border-px rounded p-1 resize-none h-40"
+                          placeholder={i.name}
+                          useValue={[i.value, setExampleInput(index)]}
+                          disabled={loading || responsePost?.thread.isPublic}
+                        />
+                      </Fragment>
+                    ))}
                   </div>
                 </td>
               </tr>

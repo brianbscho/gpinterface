@@ -2,8 +2,8 @@
 
 import { ImagePrompt as ImagePromptType } from "gpinterface-shared/type";
 import Collapsible from "@/components/general/collapsible";
-import { stringify } from "@/util/string";
-import { useCallback, useMemo, useState } from "react";
+import { inputsToObject, objectToInputs, stringify } from "@/util/string";
+import { Fragment, useCallback, useMemo, useState } from "react";
 import { Button } from "@radix-ui/themes";
 import callApi from "@/util/callApi";
 import { ImagePromptExecuteResponse } from "gpinterface-shared/type/imagePrompt";
@@ -18,12 +18,15 @@ export default function ImagePrompt({
   imagePrompt: ImagePromptType;
 }) {
   const { prompt, examples } = imagePrompt;
-  const [example, setExample] = useState({
-    ...examples[0],
-    input: stringify(examples[0].input),
-  });
-  const setInput = useCallback(
-    (input: string) => setExample((prev) => ({ ...prev, input })),
+  const [example, setExample] = useState(examples[0]);
+  const [inputs, setInputs] = useState(objectToInputs(examples[0].input));
+  const setExampleInput = useCallback(
+    (index: number) => (value: string) =>
+      setInputs((prev) => {
+        const newInputs = [...prev];
+        newInputs[index].value = value;
+        return newInputs;
+      }),
     []
   );
 
@@ -32,10 +35,11 @@ export default function ImagePrompt({
 
   const onClickTry = useCallback(async () => {
     try {
-      const input = getValidBody(prompt, JSON.parse(example.input));
+      const input = getValidBody(prompt, inputsToObject(inputs));
       setInputErrorMessage("");
 
       setLoading(true);
+      setExample({ hashId: "", input: {}, url: "", response: {}, price: 0 });
       const response = await callApi<ImagePromptExecuteResponse>({
         endpoint: `/image/prompt/${imagePrompt.hashId}`,
         method: "POST",
@@ -51,20 +55,16 @@ export default function ImagePrompt({
     } finally {
       setLoading(false);
     }
-  }, [example.input, prompt, imagePrompt.hashId]);
+  }, [inputs, prompt, imagePrompt.hashId]);
 
   const curl = useMemo(() => {
-    if (examples.length === 0) return "";
-
-    const input = Object.keys(examples[0].input)
-      .map((k) => `"${k}": "some_value"`)
-      .join(", ");
+    const input = inputs.map((i) => `"${i.name}": "some_value"`).join(", ");
 
     return `curl -X POST ${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/image/${imagePrompt.hashId} \\
     -H "Authorization: Bearer {YOUR_API_KEY}" \\
     -H "Content-Type: application/json" \\
     -d '{${input}}'`;
-  }, [examples, imagePrompt.hashId]);
+  }, [inputs, imagePrompt.hashId]);
 
   return (
     <>
@@ -137,17 +137,23 @@ export default function ImagePrompt({
               <UserRequiredButton onClick={onClickTry}>
                 <Button loading={loading}>Try</Button>
               </UserRequiredButton>
+              <div className="text-sm text-rose-500 mt-3">
+                {inputErrorMessage}
+              </div>
             </td>
             <td>
-              <div>
-                <Textarea
-                  className="border rounded p-1 resize-none w-full h-40"
-                  useValue={[example.input, setInput]}
-                  disabled={loading}
-                />
-                <div className="image-sm image-rose-500 mb-3">
-                  {inputErrorMessage}
-                </div>
+              <div className="grid grid-cols-[auto_1fr] gap-3 w-full">
+                {inputs.map((i, index) => (
+                  <Fragment key={i.name}>
+                    <div className="font-bold">{i.name}</div>
+                    <Textarea
+                      className="focus:outline-none border border-px rounded p-1 resize-none h-40"
+                      placeholder={i.name}
+                      useValue={[i.value, setExampleInput(index)]}
+                      disabled={loading}
+                    />
+                  </Fragment>
+                ))}
               </div>
             </td>
           </tr>
