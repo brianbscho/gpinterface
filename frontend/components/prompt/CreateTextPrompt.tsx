@@ -2,7 +2,7 @@
 
 import { Button, Select } from "@radix-ui/themes";
 import Textarea from "../general/inputs/Textarea";
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import {
   getKeyAlignedInput,
   getKeys,
@@ -18,7 +18,7 @@ import {
 } from "gpinterface-shared/type/textPrompt";
 import { Static } from "@sinclair/typebox";
 import Collapsible from "../general/collapsible";
-import { textModels } from "gpinterface-shared/models/text/model";
+import { getBasePrice, textModels } from "gpinterface-shared/models/text/model";
 import useTextModel from "@/hooks/useTextModel";
 import Radio from "../general/inputs/Radio";
 import useLinkConfirmMessage from "@/hooks/useLinkConfirmMessage";
@@ -232,6 +232,12 @@ export default function CreateTextPrompt({
       {provider !== textModels[0].provider && (
         <table className="w-full border-spacing-y-7 border-spacing-x-3 border-separate">
           <tbody className="align-top">
+            <tr>
+              <td className="w-28 md:w-40">
+                <div className="font-bold text-nowrap">Base price</div>
+              </td>
+              <td>{getBasePrice(model)}</td>
+            </tr>
             <tr>
               <td className="w-28 md:w-40">
                 <div className="font-bold text-nowrap">Messages</div>

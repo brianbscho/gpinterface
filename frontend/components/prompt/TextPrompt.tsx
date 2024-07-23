@@ -11,6 +11,7 @@ import { TextPromptExecuteResponse } from "gpinterface-shared/type/textPrompt";
 import EstimatedPrice from "@/components/general/hover/EstimatedPrice";
 import { getValidBody } from "gpinterface-shared/util";
 import UserRequiredButton from "@/components/general/buttons/UserRequiredButton";
+import { getBasePrice } from "gpinterface-shared/models/text/model";
 
 export default function TextPrompt({
   textPrompt,
@@ -85,6 +86,7 @@ export default function TextPrompt({
             </td>
             <td>
               <div>{textPrompt.model}</div>
+              <div>{getBasePrice(textPrompt.model)}</div>
             </td>
           </tr>
           <tr>
