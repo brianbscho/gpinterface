@@ -259,6 +259,21 @@ model ApiKey {
   @@map("api_keys")
 }
 
+model Notification {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  message String
+  url     String
+
+  userHashId String @map("user_hash_id")
+  user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
+
+  @@map("notifications")
+}
+
 model User {
   id        Int      @id @default(autoincrement())
   hashId    String   @unique @map("hash_id")
@@ -273,6 +288,7 @@ model User {
   apiKeys              ApiKey[]
   bookmarks            Bookmark[]
   likes                Like[]
+  notifications        Notification[]
   posts                Post[]
   threads              Thread[]
   imagePromptHistories ImagePromptHistory[]
