@@ -116,6 +116,13 @@ export interface ApiKey {
   key: string;
 }
 
+export interface Notification {
+  hashId: string;
+  message: string;
+  url: string;
+  createdAt: string;
+}
+
 export interface User {
   hashId: string;
   name: string;
