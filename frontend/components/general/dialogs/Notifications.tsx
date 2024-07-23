@@ -26,7 +26,7 @@ export default function Notifications() {
     setLastHashId("");
     setSpinnerHidden(false);
     setUserProperty({ notification: false });
-  }, [open]);
+  }, [open, setUserProperty]);
 
   const callNotificationsApi = useCallback(async () => {
     const response = await callApi<NotificationsGetResponse>({
