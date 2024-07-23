@@ -5,6 +5,7 @@ import ThreadCreate from "./general/buttons/ThreadCreate";
 import Menus from "./general/dropdowns/Menus";
 import Link from "./general/links/Link";
 import Search from "./general/inputs/Search";
+import Notifications from "./general/dialogs/Notifications";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,7 +23,7 @@ export default function Body({
               style={{ backgroundColor: "var(--color-background)" }}
               className="sticky top-0 left-0 w-full h-16 z-20 shrink-0 border-b"
             >
-              <div className="w-full max-w-7xl h-full mx-auto px-3 flex gap-3 items-center">
+              <div className="w-full max-w-7xl h-full mx-auto px-3 flex gap-1 md:gap-3 items-center">
                 <Link href="/" className="font-bold text-lg">
                   gpinterface
                 </Link>
@@ -30,6 +31,7 @@ export default function Body({
                   <Search />
                 </div>
                 <ThreadCreate />
+                <Notifications />
                 <Menus />
               </div>
             </div>

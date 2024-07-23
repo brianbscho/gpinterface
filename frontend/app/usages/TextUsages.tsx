@@ -18,10 +18,7 @@ export default function TextUsages() {
       endpoint: `/text/histories?lastHashId=${lastHashId}`,
     });
     if (response) {
-      setTextHistories((prev) => [
-        ...(prev ? prev : []),
-        ...response.textHistories,
-      ]);
+      setTextHistories((prev) => [...(prev ?? []), ...response.textHistories]);
     }
     if (response?.textHistories.length === 0) {
       setSpinnerHidden(true);

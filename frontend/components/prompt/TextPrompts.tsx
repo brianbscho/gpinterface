@@ -12,7 +12,7 @@ import {
 import Link from "next/link";
 
 export default function TextPrompts() {
-  const [textPrompts, setTextPrompts] = useState<TextPromptBookmark[]>([]);
+  const [textPrompts, setTextPrompts] = useState<TextPromptBookmark[]>();
   const [lastHashId, setLastHashId] = useState("");
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 
@@ -24,7 +24,7 @@ export default function TextPrompts() {
     });
     if (response) {
       if (response.textPrompts.length > 0) {
-        setTextPrompts((prev) => [...prev, ...response.textPrompts]);
+        setTextPrompts((prev) => [...(prev ?? []), ...response.textPrompts]);
       } else {
         setSpinnerHidden(true);
       }
@@ -41,7 +41,7 @@ export default function TextPrompts() {
       spinnerHidden={spinnerHidden}
       useLastHashId={[lastHashId, setLastHashId]}
     >
-      {textPrompts.map((p) => (
+      {textPrompts?.map((p) => (
         <Fragment key={p.hashId}>
           <div className="font-bold text-sm mt-3 border-t">
             {p.post.user ? (

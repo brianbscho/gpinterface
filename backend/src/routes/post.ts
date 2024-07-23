@@ -14,6 +14,7 @@ import { confirmTextPrompt, getTypedTextPrompts } from "../util/textPrompt";
 import { isAccessible } from "../util/thread";
 import { createThread } from "../controllers/thread";
 import { confirmImagePrompt, getTypedImagePrompts } from "../util/imagePrompt";
+import { createEntity } from "../util/prisma";
 
 export default async function (fastify: FastifyInstance) {
   const { httpErrors } = fastify;
@@ -146,6 +147,17 @@ export default async function (fastify: FastifyInstance) {
           threadHashId,
           userHashId: user.hashId,
         });
+
+        const { userHashId } = thread;
+        if (userHashId !== null && userHashId !== user.hashId) {
+          await createEntity(fastify.prisma.notification.create, {
+            data: {
+              userHashId: userHashId,
+              message: `${user.name} wrote a post on your thread!`,
+              url: `/thread/${threadHashId}`,
+            },
+          });
+        }
 
         return { hashId: newPost.hashId };
       } catch (ex) {

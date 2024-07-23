@@ -20,7 +20,12 @@ export default async function (fastify: FastifyInstance) {
 
         const post = await fastify.prisma.post.findFirst({
           where: { hashId: postHashId },
-          select: { thread: { select: { isPublic: true, userHashId: true } } },
+          select: {
+            thread: {
+              select: { hashId: true, isPublic: true, userHashId: true },
+            },
+            userHashId: true,
+          },
         });
         if (!post) {
           throw httpErrors.badRequest("The post is not available.");
@@ -41,6 +46,17 @@ export default async function (fastify: FastifyInstance) {
             data: { isLiked, userHashId: user.hashId, postHashId },
             select: { hashId: true },
           });
+
+          const { userHashId } = post;
+          if (isLiked && userHashId !== null && userHashId !== user.hashId) {
+            await createEntity(fastify.prisma.notification.create, {
+              data: {
+                userHashId,
+                message: `${user.name} liked your post!`,
+                url: `/thread/${post.thread.hashId}`,
+              },
+            });
+          }
         }
 
         const likes = await fastify.prisma.like.count({

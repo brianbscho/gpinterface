@@ -46,7 +46,9 @@ export default async function (fastify: FastifyInstance) {
             post: {
               select: {
                 userHashId: true,
-                thread: { select: { isPublic: true, userHashId: true } },
+                thread: {
+                  select: { hashId: true, isPublic: true, userHashId: true },
+                },
               },
             },
             provider: true,
@@ -89,6 +91,17 @@ export default async function (fastify: FastifyInstance) {
             userHashId: user.hashId,
           },
         });
+
+        const { userHashId } = imagePrompt.post;
+        if (userHashId !== null && userHashId !== user.hashId) {
+          await createEntity(fastify.prisma.notification.create, {
+            data: {
+              userHashId: userHashId,
+              message: `${user.name} tried your prompt!`,
+              url: `/thread/${imagePrompt.post.thread.hashId}`,
+            },
+          });
+        }
 
         return { url, response, price };
       } catch (ex) {
@@ -279,7 +292,7 @@ export default async function (fastify: FastifyInstance) {
         );
 
         const bookmarks = await fastify.prisma.bookmark.findMany({
-          where: { ...(id > 0 && { id: { gt: id } }), userHashId: user.hashId },
+          where: { ...(id > 0 && { id: { lt: id } }), userHashId: user.hashId },
           select: {
             hashId: true,
             post: {
@@ -307,7 +320,7 @@ export default async function (fastify: FastifyInstance) {
               },
             },
           },
-          orderBy: { id: "asc" },
+          orderBy: { id: "desc" },
           take: 20,
         });
 

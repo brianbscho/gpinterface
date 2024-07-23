@@ -43,7 +43,7 @@ const jwtPlugin: FastifyPluginAsync = fp(async (fastify: FastifyInstance) => {
         const payload = (await verify(token, secret)) as Payload;
         return payload;
       } catch (ex) {
-        if (optional) return { user: { hashId: "" } };
+        if (optional) return { user: { hashId: "", name: "" } };
         throw reply.status(500).send(ex);
       }
     }
