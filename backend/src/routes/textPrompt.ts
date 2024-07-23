@@ -48,7 +48,9 @@ export default async function (fastify: FastifyInstance) {
             post: {
               select: {
                 userHashId: true,
-                thread: { select: { isPublic: true, userHashId: true } },
+                thread: {
+                  select: { hashId: true, isPublic: true, userHashId: true },
+                },
               },
             },
             hashId: true,
@@ -113,6 +115,17 @@ export default async function (fastify: FastifyInstance) {
             price,
           },
         });
+
+        const { userHashId } = textPrompt.post;
+        if (userHashId !== null && userHashId !== user.hashId) {
+          await createEntity(fastify.prisma.notification.create, {
+            data: {
+              userHashId: userHashId,
+              message: `${user.name} tried your prompt!`,
+              url: `/thread/${textPrompt.post.thread.hashId}`,
+            },
+          });
+        }
 
         return { content, response, price };
       } catch (ex) {
