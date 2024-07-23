@@ -23,7 +23,7 @@ export default async function (fastify: FastifyInstance) {
           {
             where: {
               userHashId: user.hashId,
-              ...(id > 0 && { id: { gt: id } }),
+              ...(id > 0 && { id: { lt: id } }),
             },
             select: {
               hashId: true,
@@ -37,7 +37,7 @@ export default async function (fastify: FastifyInstance) {
               price: true,
               createdAt: true,
             },
-            orderBy: { id: "asc" },
+            orderBy: { id: "desc" },
             take: 20,
           }
         );

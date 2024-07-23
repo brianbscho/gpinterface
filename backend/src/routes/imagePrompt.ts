@@ -292,7 +292,7 @@ export default async function (fastify: FastifyInstance) {
         );
 
         const bookmarks = await fastify.prisma.bookmark.findMany({
-          where: { ...(id > 0 && { id: { gt: id } }), userHashId: user.hashId },
+          where: { ...(id > 0 && { id: { lt: id } }), userHashId: user.hashId },
           select: {
             hashId: true,
             post: {
@@ -320,7 +320,7 @@ export default async function (fastify: FastifyInstance) {
               },
             },
           },
-          orderBy: { id: "asc" },
+          orderBy: { id: "desc" },
           take: 20,
         });
 

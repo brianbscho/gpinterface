@@ -20,7 +20,7 @@ export default async function (fastify: FastifyInstance) {
         );
 
         const textHistories = await fastify.prisma.textPromptHistory.findMany({
-          where: { userHashId: user.hashId, ...(id > 0 && { id: { gt: id } }) },
+          where: { userHashId: user.hashId, ...(id > 0 && { id: { lt: id } }) },
           select: {
             hashId: true,
             provider: true,
@@ -36,7 +36,7 @@ export default async function (fastify: FastifyInstance) {
             createdAt: true,
             price: true,
           },
-          orderBy: { id: "asc" },
+          orderBy: { id: "desc" },
           take: 20,
         });
 
