@@ -26,7 +26,7 @@ function Component() {
 
   return (
     <form className="w-full" onSubmit={onSubmit}>
-      <div className="w-full my-3 flex items-center gap-3">
+      <div className="w-full my-3 flex items-center gap-1 md:gap-3">
         <TextField.Root
           placeholder="Search"
           className="flex-1"
