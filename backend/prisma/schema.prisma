@@ -280,10 +280,11 @@ model User {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
-  email    String
-  password String
-  name     String
-  bio      String @default("")
+  email                 String
+  password              String
+  name                  String
+  bio                   String   @default("")
+  notificationCheckedAt DateTime @default(now()) @map("notification_checked_at")
 
   apiKeys              ApiKey[]
   bookmarks            Bookmark[]
