@@ -9,13 +9,15 @@ import { useRouter } from "next/navigation";
 import List from "@/components/List";
 
 export default function Posts({ baseUrl }: { baseUrl: string }) {
-  const [posts, setPosts] = useState<PostType[]>([]);
+  const [posts, setPosts] = useState<PostType[]>();
   const [lastHashId, setLastHashId] = useState("");
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 
   const setPost = useCallback(
     (i: number) => (p: PostType) =>
       setPosts((prev) => {
+        if (!prev) return prev;
+
         const newPosts = [...prev];
         newPosts[i] = p;
         return newPosts;
@@ -31,7 +33,7 @@ export default function Posts({ baseUrl }: { baseUrl: string }) {
     });
     if (response) {
       if (response.posts.length > 0) {
-        setPosts((prev) => [...prev, ...response.posts]);
+        setPosts((prev) => [...(prev ?? []), ...response.posts]);
       } else {
         setSpinnerHidden(true);
       }
@@ -48,7 +50,7 @@ export default function Posts({ baseUrl }: { baseUrl: string }) {
       spinnerHidden={spinnerHidden}
       useLastHashId={[lastHashId, setLastHashId]}
     >
-      {posts.map((t, i) => (
+      {posts?.map((t, i) => (
         <Post key={t.hashId} post={t} setPost={setPost(i)} />
       ))}
     </List>

@@ -20,7 +20,7 @@ export default function Threads({
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 
   useEffect(() => {
-    setThreads([]);
+    setThreads(undefined);
     setLastHashId("");
     setSpinnerHidden(false);
   }, [baseUrl]);
@@ -29,7 +29,7 @@ export default function Threads({
       endpoint: `${baseUrl}&lastHashId=${lastHashId}`,
     });
     if (response) {
-      setThreads((prev) => [...(prev ? prev : []), ...response.threads]);
+      setThreads((prev) => [...(prev ?? []), ...response.threads]);
     }
     if (response?.threads.length === 0) {
       setSpinnerHidden(true);

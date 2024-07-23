@@ -12,7 +12,7 @@ import {
 import Link from "next/link";
 
 export default function ImagePrompts() {
-  const [imagePrompts, setImagePrompts] = useState<ImagePromptBookmark[]>([]);
+  const [imagePrompts, setImagePrompts] = useState<ImagePromptBookmark[]>();
   const [lastHashId, setLastHashId] = useState("");
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 
@@ -24,7 +24,7 @@ export default function ImagePrompts() {
     });
     if (response) {
       if (response.imagePrompts.length > 0) {
-        setImagePrompts((prev) => [...prev, ...response.imagePrompts]);
+        setImagePrompts((prev) => [...(prev ?? []), ...response.imagePrompts]);
       } else {
         setSpinnerHidden(true);
       }
@@ -41,7 +41,7 @@ export default function ImagePrompts() {
       spinnerHidden={spinnerHidden}
       useLastHashId={[lastHashId, setLastHashId]}
     >
-      {imagePrompts.map((p) => (
+      {imagePrompts?.map((p) => (
         <Fragment key={p.hashId}>
           <div className="font-bold text-sm mt-3 border-t">
             {p.post.user ? (

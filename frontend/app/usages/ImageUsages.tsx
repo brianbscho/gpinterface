@@ -19,7 +19,7 @@ export default function ImageUsages() {
     });
     if (response) {
       setImageHistories((prev) => [
-        ...(prev ? prev : []),
+        ...(prev ?? []),
         ...response.imageHistories,
       ]);
     }
