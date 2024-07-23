@@ -81,15 +81,6 @@ export default function TextPrompt({
       <table className="w-full border-spacing-y-7 border-spacing-x-3 border-separate">
         <tbody className="align-top">
           <tr>
-            <td className="w-28 md:w-40">
-              <div className="font-bold">{textPrompt.provider}</div>
-            </td>
-            <td>
-              <div>{textPrompt.model}</div>
-              <div>{getBasePrice(textPrompt.model)}</div>
-            </td>
-          </tr>
-          <tr>
             <td>
               <div className="font-bold text-nowrap">Messages</div>
             </td>
@@ -97,61 +88,15 @@ export default function TextPrompt({
           {systemMessage.length > 0 && (
             <tr>
               <td className="text-sm">system</td>
-              <td className="text-sm whitespace-pre">{systemMessage}</td>
+              <td className="whitespace-pre">{systemMessage}</td>
             </tr>
           )}
           {messages.map((m, index) => (
             <tr key={`message_${index}`}>
               <td className="text-sm">{m.role}</td>
-              <td className="text-sm whitespace-pre">{m.content}</td>
+              <td className="whitespace-pre">{m.content}</td>
             </tr>
           ))}
-          <tr>
-            <td>
-              <div className="font-bold text-nowrap">Config</div>
-            </td>
-            <td>
-              <div>
-                <Collapsible>
-                  <div className="border rounded p-1 whitespace-pre">
-                    {stringify(textPrompt.config)}
-                  </div>
-                </Collapsible>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div className="font-bold text-nowrap">How to call</div>
-            </td>
-            <td>
-              <div className="whitespace-pre">{curl}</div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div className="font-bold image-nowrap">Example response</div>
-            </td>
-            <td>
-              <div className="whitespace-pre text-wrap">
-                {stringify({
-                  content: example.content,
-                  price: example.price,
-                }).slice(0, -2) + ","}
-                <div className="flex items-start">
-                  <div className="text-nowrap">{`\t"response": `}</div>
-                  <div>
-                    <Collapsible title="response">
-                      <pre className="whitespace-pre text-wrap">
-                        {stringify(example.response)}
-                      </pre>
-                    </Collapsible>
-                  </div>
-                </div>
-                {`}`}
-              </div>
-            </td>
-          </tr>
           <tr>
             <td>
               <UserRequiredButton onClick={onClickTry}>
@@ -214,6 +159,61 @@ export default function TextPrompt({
                     </pre>
                   </div>
                 </Collapsible>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td className="w-28 md:w-40">
+              <div className="font-bold">{textPrompt.provider}</div>
+            </td>
+            <td>
+              <div>{textPrompt.model}</div>
+              <div>{getBasePrice(textPrompt.model)}</div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div className="font-bold text-nowrap">Config</div>
+            </td>
+            <td>
+              <div>
+                <Collapsible>
+                  <div className="border rounded p-1 whitespace-pre">
+                    {stringify(textPrompt.config)}
+                  </div>
+                </Collapsible>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div className="font-bold text-nowrap">How to call</div>
+            </td>
+            <td>
+              <div className="whitespace-pre">{curl}</div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div className="font-bold image-nowrap">Example response</div>
+            </td>
+            <td>
+              <div className="whitespace-pre text-wrap">
+                {stringify({
+                  content: example.content,
+                  price: example.price,
+                }).slice(0, -2) + ","}
+                <div className="flex items-start">
+                  <div className="text-nowrap">{`\t"response": `}</div>
+                  <div>
+                    <Collapsible title="response">
+                      <pre className="whitespace-pre text-wrap">
+                        {stringify(example.response)}
+                      </pre>
+                    </Collapsible>
+                  </div>
+                </div>
+                {`}`}
               </div>
             </td>
           </tr>

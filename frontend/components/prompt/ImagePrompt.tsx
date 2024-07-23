@@ -71,65 +71,11 @@ export default function ImagePrompt({
       <table className="w-full border-spacing-y-7 border-spacing-x-3 border-separate">
         <tbody className="align-top">
           <tr>
-            <td className="min-w-24 md:w-40">
-              <div className="font-bold">{imagePrompt.provider}</div>
-            </td>
-            <td>
-              <div>{imagePrompt.model}</div>
-            </td>
-          </tr>
-          <tr>
             <td>
               <div className="font-bold image-nowrap">Prompt</div>
             </td>
             <td>
               <div>{imagePrompt.prompt}</div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div className="font-bold image-nowrap">Config</div>
-            </td>
-            <td>
-              <div>
-                <Collapsible>
-                  <div className="border rounded p-1 whitespace-pre">
-                    {stringify(imagePrompt.config)}
-                  </div>
-                </Collapsible>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div className="font-bold image-nowrap">How to call</div>
-            </td>
-            <td>
-              <div className="whitespace-pre">{curl}</div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div className="font-bold image-nowrap">Example response</div>
-            </td>
-            <td>
-              <div className="whitespace-pre text-wrap">
-                {stringify({
-                  url: example.url,
-                  price: example.price,
-                }).slice(0, -2) + ","}
-                <div className="flex items-start">
-                  <div className="text-nowrap">{`\t"response": `}</div>
-                  <div>
-                    <Collapsible title="response">
-                      <pre className="whitespace-pre text-wrap">
-                        {stringify(example.response)}
-                      </pre>
-                    </Collapsible>
-                  </div>
-                </div>
-                {`}`}
-              </div>
             </td>
           </tr>
           <tr>
@@ -196,6 +142,60 @@ export default function ImagePrompt({
                   {stringify(example.response)}
                 </div>
               </Collapsible>
+            </td>
+          </tr>
+          <tr>
+            <td className="min-w-24 md:w-40">
+              <div className="font-bold">{imagePrompt.provider}</div>
+            </td>
+            <td>
+              <div>{imagePrompt.model}</div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div className="font-bold image-nowrap">Config</div>
+            </td>
+            <td>
+              <div>
+                <Collapsible>
+                  <div className="border rounded p-1 whitespace-pre">
+                    {stringify(imagePrompt.config)}
+                  </div>
+                </Collapsible>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div className="font-bold image-nowrap">How to call</div>
+            </td>
+            <td>
+              <div className="whitespace-pre">{curl}</div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div className="font-bold image-nowrap">Example response</div>
+            </td>
+            <td>
+              <div className="whitespace-pre text-wrap">
+                {stringify({
+                  url: example.url,
+                  price: example.price,
+                }).slice(0, -2) + ","}
+                <div className="flex items-start">
+                  <div className="text-nowrap">{`\t"response": `}</div>
+                  <div>
+                    <Collapsible title="response">
+                      <pre className="whitespace-pre text-wrap">
+                        {stringify(example.response)}
+                      </pre>
+                    </Collapsible>
+                  </div>
+                </div>
+                {`}`}
+              </div>
             </td>
           </tr>
         </tbody>

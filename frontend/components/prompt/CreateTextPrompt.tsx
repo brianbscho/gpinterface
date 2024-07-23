@@ -234,12 +234,6 @@ export default function CreateTextPrompt({
           <tbody className="align-top">
             <tr>
               <td className="w-28 md:w-40">
-                <div className="font-bold text-nowrap">Base price</div>
-              </td>
-              <td>{getBasePrice(model)}</td>
-            </tr>
-            <tr>
-              <td className="w-28 md:w-40">
                 <div className="font-bold text-nowrap">Messages</div>
               </td>
               <td>
@@ -357,6 +351,12 @@ export default function CreateTextPrompt({
                   ))}
                 </div>
               </td>
+            </tr>
+            <tr>
+              <td className="w-28 md:w-40">
+                <div className="font-bold text-nowrap">Base price</div>
+              </td>
+              <td>{getBasePrice(model)}</td>
             </tr>
             {example.content.length > 0 && example.response !== null && (
               <>
