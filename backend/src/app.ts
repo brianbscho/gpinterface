@@ -19,6 +19,7 @@ import bookmark from "./routes/bookmark";
 import textHistories from "./routes/textHistories";
 import imagePrompt from "./routes/imagePrompt";
 import imageHistories from "./routes/imageHistories";
+import notifications from "./routes/notifications";
 
 const fastify = Fastify({
   logger: {
@@ -53,6 +54,7 @@ fastify.register(bookmark, { prefix: "/bookmark" });
 fastify.register(imageHistories, { prefix: "/image/histories" });
 fastify.register(imagePrompt, { prefix: "/image/prompt" });
 fastify.register(like, { prefix: "/like" });
+fastify.register(notifications, { prefix: "/notifications" });
 fastify.register(post, { prefix: "/post" });
 fastify.register(posts, { prefix: "/posts" });
 fastify.register(textHistories, { prefix: "/text/histories" });
