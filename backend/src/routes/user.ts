@@ -58,7 +58,7 @@ export default async function (fastify: FastifyInstance) {
       }
 
       const accessToken = getAccessToken(httpErrors.internalServerError, {
-        user: { hashId },
+        user: { hashId, name: user.name },
       });
       return cookieReply(reply, accessToken, user);
     } catch (ex) {
@@ -110,7 +110,7 @@ export default async function (fastify: FastifyInstance) {
 
         const { hashId, name, bio, ...rest } = user;
         const accessToken = getAccessToken(httpErrors.internalServerError, {
-          user: { hashId },
+          user: { hashId, name },
         });
         return cookieReply(reply, accessToken, { hashId, name, email, bio });
       } catch (ex) {
@@ -154,7 +154,7 @@ export default async function (fastify: FastifyInstance) {
         );
 
         const accessToken = getAccessToken(httpErrors.internalServerError, {
-          user: { hashId: user.hashId },
+          user: { hashId: user.hashId, name },
         });
         const me = { hashId: user.hashId, email, name, bio: "" };
         return cookieReply(reply, accessToken, me);

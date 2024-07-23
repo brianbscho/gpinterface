@@ -1,3 +1,3 @@
 export interface Payload {
-  user: { hashId: string };
+  user: { hashId: string; name: string };
 }
