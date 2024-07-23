@@ -5,6 +5,7 @@ import ThreadCreate from "./general/buttons/ThreadCreate";
 import Menus from "./general/dropdowns/Menus";
 import Link from "./general/links/Link";
 import Search from "./general/inputs/Search";
+import Notifications from "./general/dialogs/Notifications";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,6 +31,7 @@ export default function Body({
                   <Search />
                 </div>
                 <ThreadCreate />
+                <Notifications />
                 <Menus />
               </div>
             </div>
