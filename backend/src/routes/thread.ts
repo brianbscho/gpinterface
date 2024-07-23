@@ -33,8 +33,6 @@ export default async function (fastify: FastifyInstance) {
             user: { select: { hashId: true, name: true } },
             _count: { select: { posts: true } },
           },
-          orderBy: { id: "desc" },
-          take: 20,
         });
 
         if (!thread) {
