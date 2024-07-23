@@ -139,6 +139,7 @@ export interface UserMe {
   email: string;
   name: string;
   bio: string;
+  notification: boolean;
 }
 
 export const QueryParamSchema = Type.Object({

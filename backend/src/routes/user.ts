@@ -41,8 +41,30 @@ function cookieReply(reply: FastifyReply, accessToken: string, user: UserMe) {
     })
     .send(response);
 }
+function getNotification(
+  notifications: { createdAt: Date; user: { notificationCheckedAt: Date } }[]
+) {
+  return (
+    notifications.length > 0 &&
+    notifications[0].createdAt > notifications[0].user.notificationCheckedAt
+  );
+}
 export default async function (fastify: FastifyInstance) {
   const { httpErrors } = fastify;
+
+  const getNotifications = async (userHashId: string) => {
+    const notifications = await fastify.prisma.notification.findMany({
+      where: { userHashId },
+      select: {
+        createdAt: true,
+        user: { select: { notificationCheckedAt: true } },
+      },
+      orderBy: { id: "desc" },
+      take: 1,
+    });
+
+    return notifications;
+  };
 
   fastify.get("/", async (request, reply) => {
     try {
@@ -53,6 +75,7 @@ export default async function (fastify: FastifyInstance) {
         where: { hashId },
         select: { hashId: true, email: true, name: true, bio: true },
       });
+      const notifications = await getNotifications(hashId);
       if (!user) {
         throw httpErrors.badRequest("no user");
       }
@@ -60,7 +83,10 @@ export default async function (fastify: FastifyInstance) {
       const accessToken = getAccessToken(httpErrors.internalServerError, {
         user: { hashId, name: user.name },
       });
-      return cookieReply(reply, accessToken, user);
+      return cookieReply(reply, accessToken, {
+        ...user,
+        notification: getNotification(notifications),
+      });
     } catch (ex) {
       console.error("path: /user, method: get, error:", ex);
       throw ex;
@@ -108,11 +134,18 @@ export default async function (fastify: FastifyInstance) {
           );
         }
 
+        const notiifcations = await getNotifications(user.hashId);
         const { hashId, name, bio, ...rest } = user;
         const accessToken = getAccessToken(httpErrors.internalServerError, {
           user: { hashId, name },
         });
-        return cookieReply(reply, accessToken, { hashId, name, email, bio });
+        return cookieReply(reply, accessToken, {
+          hashId,
+          name,
+          email,
+          bio,
+          notification: getNotification(notiifcations),
+        });
       } catch (ex) {
         console.error("path: /user/login, method: post, error: ", ex);
         throw ex;
@@ -156,7 +189,7 @@ export default async function (fastify: FastifyInstance) {
         const accessToken = getAccessToken(httpErrors.internalServerError, {
           user: { hashId: user.hashId, name },
         });
-        const me = { hashId: user.hashId, email, name, bio: "" };
+        const me = { ...user, email, name, bio: "", notification: false };
         return cookieReply(reply, accessToken, me);
       } catch (ex) {
         console.error("path: /user/signup, method: post, error: ", ex);
@@ -198,7 +231,14 @@ export default async function (fastify: FastifyInstance) {
           data: { name, bio },
           select: { hashId: true, email: true, name: true, bio: true },
         });
-        return { user: updatedUser };
+
+        const notifications = await getNotifications(user.hashId);
+        return {
+          user: {
+            ...updatedUser,
+            notification: getNotification(notifications),
+          },
+        };
       } catch (ex) {
         console.error("path: /user, method: put, error: ", ex);
         throw ex;

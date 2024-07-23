@@ -1,7 +1,7 @@
 import { UserMe } from "gpinterface-shared/type";
 import { create } from "zustand";
 
-type OptionalUserMe = { name?: string; bio?: string };
+type OptionalUserMe = { name?: string; bio?: string; notification?: boolean };
 type UserState = {
   user: UserMe | undefined;
   setUser: (u: UserMe | undefined) => void;
