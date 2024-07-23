@@ -68,74 +68,73 @@ export async function getTextResponse(
   }
 }
 
+const MILLION = 1000000;
+const KILO = 1000;
 export function getTextPriceByModel(
   model: string,
   input: number,
   output: number
 ): number {
-  const million = 1000000;
-  const kilo = 1000;
-
   switch (model) {
     case "gpt-4o-2024-05-13":
-      return (5 * input) / million + (15 * output) / million;
+      return (5 * input) / MILLION + (15 * output) / MILLION;
     case "gpt-4o-mini-2024-07-18":
-      return (0.15 * input) / million + (0.6 * output) / million;
+      return (0.15 * input) / MILLION + (0.6 * output) / MILLION;
     case "gpt-4-turbo-2024-04-09":
     case "gpt-4-0125-preview":
-      return (10 * input) / million + (30 * output) / million;
+      return (10 * input) / MILLION + (30 * output) / MILLION;
     case "gpt-3.5-turbo-0125":
-      return (0.5 * input) / million + (1.5 * output) / million;
+      return (0.5 * input) / MILLION + (1.5 * output) / MILLION;
     case "claude-3-5-sonnet-20240620":
     case "claude-3-sonnet-20240229":
-      return (3 * input) / million + (15 * output) / million;
+      return (3 * input) / MILLION + (15 * output) / MILLION;
     case "claude-3-opus-20240229":
-      return (15 * input) / million + (75 * output) / million;
+      return (15 * input) / MILLION + (75 * output) / MILLION;
     case "claude-3-haiku-20240307":
-      return (0.25 * input) / million + (1.25 * output) / million;
+      return (0.25 * input) / MILLION + (1.25 * output) / MILLION;
     case "claude-2.1":
     case "claude-2.0":
-      return (8 * input) / million + (24 * output) / million;
+      return (8 * input) / MILLION + (24 * output) / MILLION;
     case "claude-instant-1.2":
-      return (0.8 * input) / million + (2.4 * output) / million;
+      return (0.8 * input) / MILLION + (2.4 * output) / MILLION;
     case "open-mistral-nemo-2407":
-      return (0.3 * input) / million + (0.3 * output) / million;
+      return (0.3 * input) / MILLION + (0.3 * output) / MILLION;
     case "open-mixtral-8x22b-2404":
-      return (2 * input) / million + (6 * output) / million;
+      return (2 * input) / MILLION + (6 * output) / MILLION;
     case "mistral-large-2402":
-      return (4 * input) / million + (12 * output) / million;
+      return (4 * input) / MILLION + (12 * output) / MILLION;
     case "mistral-medium-2312":
-      return (2.7 * input) / million + (8.1 * output) / million;
+      return (2.7 * input) / MILLION + (8.1 * output) / MILLION;
     case "mistral-small-2402":
-      return (1 * input) / million + (3 * output) / million;
+      return (1 * input) / MILLION + (3 * output) / MILLION;
     case "mistral-small-2312":
-      return (0.7 * input) / million + (0.7 * output) / million;
+      return (0.7 * input) / MILLION + (0.7 * output) / MILLION;
     case "mistral-tiny-2312":
-      return (0.25 * input) / million + (0.25 * output) / million;
+      return (0.25 * input) / MILLION + (0.25 * output) / MILLION;
     case "codestral-mamba-2407":
-      return (0.25 * input) / million + (0.25 * output) / million;
+      return (0.25 * input) / MILLION + (0.25 * output) / MILLION;
     case "codestral-2405":
-      return (1 * input) / million + (3 * output) / million;
+      return (1 * input) / MILLION + (3 * output) / MILLION;
     case "command-r-plus":
-      return (3.0 * input) / million + (15.0 * output) / million;
+      return (3.0 * input) / MILLION + (15.0 * output) / MILLION;
     case "command-r":
-      return (0.5 * input) / million + (1.5 * output) / million;
+      return (0.5 * input) / MILLION + (1.5 * output) / MILLION;
     case "command":
     case "command-nightly":
-      return (1 * input) / million + (2 * output) / million;
+      return (1 * input) / MILLION + (2 * output) / MILLION;
     case "command-light":
     case "command-light-nightly":
-      return (0.3 * input) / million + (0.6 * output) / million;
+      return (0.3 * input) / MILLION + (0.6 * output) / MILLION;
     case "jamba-instruct-preview":
-      return (0.5 * input) / million + (0.7 * output) / million;
+      return (0.5 * input) / MILLION + (0.7 * output) / MILLION;
     case "meta.llama3-70b-instruct-v1:0":
-      return (0.00265 * input) / kilo + (0.0035 * output) / kilo;
+      return (0.00265 * input) / KILO + (0.0035 * output) / KILO;
     case "meta.llama3-8b-instruct-v1:0":
-      return (0.0003 * input) / kilo + (0.0006 * output) / kilo;
+      return (0.0003 * input) / KILO + (0.0006 * output) / KILO;
     case "gemma2-9b-it":
-      return (0.2 * input) / million + (0.2 * output) / million;
+      return (0.2 * input) / MILLION + (0.2 * output) / MILLION;
     case "gemma-7b-it":
-      return (0.07 * input) / million + (0.07 * output) / million;
+      return (0.07 * input) / MILLION + (0.07 * output) / MILLION;
     default:
       throw "Cannot find price info of the model";
   }
