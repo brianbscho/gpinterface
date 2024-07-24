@@ -1,7 +1,6 @@
 "use client";
 
 import callApi from "@/util/callApi";
-import { Button } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -28,6 +27,7 @@ import {
   ImagePromptUpdateResponse,
   ImagePromptUpdateSchema,
 } from "gpinterface-shared/type/imagePrompt";
+import { Button } from "@/components/ui";
 
 export default function Page({ params }: { params: { hashId: string } }) {
   const { hashId } = params;
@@ -198,7 +198,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
       {modal === modals[0] && (
         <div className="flex justify-end gap-3 pb-3">
           <div>
-            <Button variant="soft" onClick={onClickCancel}>
+            <Button variant="secondary" onClick={onClickCancel}>
               Cancel
             </Button>
           </div>

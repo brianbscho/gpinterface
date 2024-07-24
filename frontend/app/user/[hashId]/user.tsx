@@ -6,10 +6,10 @@ import callApi from "@/util/callApi";
 import { useEffect, useMemo, useState } from "react";
 import { UserInfo } from "gpinterface-shared/type";
 import { UserGetResponse } from "gpinterface-shared/type/user";
-import { Tabs } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import TextPrompts from "@/components/prompt/TextPrompts";
 import ImagePrompts from "@/components/prompt/ImagePrompts";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui";
 
 export default function User({ hashId }: { hashId: string }) {
   const router = useRouter();
@@ -39,37 +39,37 @@ export default function User({ hashId }: { hashId: string }) {
     <div className="w-full max-w-7xl flex flex-col gap-3 px-3">
       <div className="text-xl font-bold mt-12">{name}</div>
       <div className="text-sm">{bio}</div>
-      <Tabs.Root defaultValue="thread">
-        <Tabs.List>
-          <Tabs.Trigger value="thread">Threads</Tabs.Trigger>
-          <Tabs.Trigger value="post">Posts</Tabs.Trigger>
-          <Tabs.Trigger value="bookmark">Bookmarks</Tabs.Trigger>
-          <Tabs.Trigger value="prompts">Bookmarked Prompts</Tabs.Trigger>
-        </Tabs.List>
-        <Tabs.Content value="thread">
+      <Tabs defaultValue="thread">
+        <TabsList>
+          <TabsTrigger value="thread">Threads</TabsTrigger>
+          <TabsTrigger value="post">Posts</TabsTrigger>
+          <TabsTrigger value="bookmark">Bookmarks</TabsTrigger>
+          <TabsTrigger value="prompts">Bookmarked Prompts</TabsTrigger>
+        </TabsList>
+        <TabsContent value="thread">
           <Threads baseUrl={`/threads/user/${hashId}?type=thread`} />
-        </Tabs.Content>
-        <Tabs.Content value="post">
+        </TabsContent>
+        <TabsContent value="post">
           <Threads baseUrl={`/threads/user/${hashId}?type=post`} />
-        </Tabs.Content>
-        <Tabs.Content value="bookmark">
+        </TabsContent>
+        <TabsContent value="bookmark">
           <Threads baseUrl={`/threads/user/${hashId}?type=bookmark`} />
-        </Tabs.Content>
-        <Tabs.Content value="prompts">
-          <Tabs.Root defaultValue="text">
-            <Tabs.List>
-              <Tabs.Trigger value="text">Text</Tabs.Trigger>
-              <Tabs.Trigger value="image">Image</Tabs.Trigger>
-            </Tabs.List>
-            <Tabs.Content value="text">
+        </TabsContent>
+        <TabsContent value="prompts">
+          <Tabs defaultValue="text">
+            <TabsList>
+              <TabsTrigger value="text">Text</TabsTrigger>
+              <TabsTrigger value="image">Image</TabsTrigger>
+            </TabsList>
+            <TabsContent value="text">
               <TextPrompts />
-            </Tabs.Content>
-            <Tabs.Content value="image">
+            </TabsContent>
+            <TabsContent value="image">
               <ImagePrompts />
-            </Tabs.Content>
-          </Tabs.Root>
-        </Tabs.Content>
-      </Tabs.Root>
+            </TabsContent>
+          </Tabs>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

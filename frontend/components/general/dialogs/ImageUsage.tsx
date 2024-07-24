@@ -1,7 +1,14 @@
 import { stringify } from "@/util/string";
-import { Button, Dialog } from "@radix-ui/themes";
 import { ImagePromptHistory } from "gpinterface-shared/type";
 import EstimatedPrice from "../hover/EstimatedPrice";
+import {
+  Button,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui";
 
 export default function ImageUsage({
   imageHistory,
@@ -9,12 +16,12 @@ export default function ImageUsage({
   imageHistory: ImagePromptHistory;
 }) {
   return (
-    <Dialog.Root>
-      <Dialog.Trigger>
+    <Dialog>
+      <DialogTrigger>
         <Button>Detail</Button>
-      </Dialog.Trigger>
-      <Dialog.Content>
-        <Dialog.Title className="px-3">Usage Detail</Dialog.Title>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogTitle className="px-3">Usage Detail</DialogTitle>
         <div className="h-[70vh] overflow-y-auto py-12 px-3">
           <div className="font-bold">Model</div>
           <div className="mt-3">{`${imageHistory.provider} - ${imageHistory.model}`}</div>
@@ -50,11 +57,11 @@ export default function ImageUsage({
           <div className="mt-3 whitespace-pre">{imageHistory.createdAt}</div>
         </div>
         <div className="w-full flex justify-end mt-7">
-          <Dialog.Close>
+          <DialogClose>
             <Button>Close</Button>
-          </Dialog.Close>
+          </DialogClose>
         </div>
-      </Dialog.Content>
-    </Dialog.Root>
+      </DialogContent>
+    </Dialog>
   );
 }

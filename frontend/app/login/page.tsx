@@ -1,6 +1,5 @@
 "use client";
 
-import { Button, Tabs, TextField } from "@radix-ui/themes";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { validateEmail, validatePassword } from "gpinterface-shared/string";
 import callApi from "@/util/callApi";
@@ -11,6 +10,14 @@ import {
   UserGetMeResponse,
 } from "gpinterface-shared/type/user";
 import { Static } from "@sinclair/typebox";
+import {
+  Button,
+  Input,
+  Tabs,
+  TabsList,
+  TabsContent,
+  TabsTrigger,
+} from "@/components/ui";
 import { Lock, Mail, UserRound } from "lucide-react";
 
 export default function Page() {
@@ -76,77 +83,65 @@ export default function Page() {
   const [termsOpen, setTermsOpen] = useState(false);
 
   return (
-    <div className="w-full max-w-7xl px-7">
-      <Tabs.Root
+    <div className="w-full max-w-7xl px-3">
+      <Tabs
+        className="mt-12"
         defaultValue="login"
         onValueChange={(e) => setIsLogin(e === "login")}
       >
-        <Tabs.List>
-          <Tabs.Trigger value="login">Login</Tabs.Trigger>
-          <Tabs.Trigger value="signup">Sign up</Tabs.Trigger>
-        </Tabs.List>
+        <TabsList>
+          <TabsTrigger value="login">Login</TabsTrigger>
+          <TabsTrigger value="signup">Sign up</TabsTrigger>
+        </TabsList>
         <form onSubmit={onSubmit} noValidate>
           <div className="mt-12">
-            <Tabs.Content value="signup">
-              <TextField.Root
+            <TabsContent value="signup">
+              <Input
                 type="text"
-                size="3"
                 placeholder="Please type your username (no space)"
                 value={name}
                 onChange={(e) => setName(e.currentTarget.value)}
                 disabled={loading}
-              >
-                <TextField.Slot>
-                  <UserRound />
-                </TextField.Slot>
-              </TextField.Root>
+                Icon={UserRound}
+              />
               <div className="text-xs min-h-4 mt-1 mb-3 text-rose-500">
                 {name.length > 0 &&
                   !nameValid &&
                   "You can use only alphanumeric characters and -_,~!@#$^&*()+= special characters."}
               </div>
-            </Tabs.Content>
-            <TextField.Root
+            </TabsContent>
+            <Input
               type="email"
-              size="3"
               placeholder="email@domain.com"
               value={email}
               onChange={(e) => setEmail(e.currentTarget.value)}
               disabled={loading}
-            >
-              <TextField.Slot>
-                <Mail />
-              </TextField.Slot>
-            </TextField.Root>
+              Icon={Mail}
+            />
             <div className="mt-1 text-xs h-4 text-rose-500">{emailMsg}</div>
-            <TextField.Root
+            <Input
               type="password"
-              size="3"
               placeholder="Please use secure password"
               value={password}
               onChange={(e) => setPassword(e.currentTarget.value)}
               className="mt-3"
               disabled={loading}
-            >
-              <TextField.Slot>
-                <Lock />
-              </TextField.Slot>
-            </TextField.Root>
+              Icon={Lock}
+            />
             <div className="mt-1 text-xs h-4 text-rose-500">{passwordMsg}</div>
           </div>
           <div>
-            <Tabs.Content value="login" className="mt-12">
+            <TabsContent value="login" className="mt-12">
               <Button
                 style={{ width: "100%" }}
-                size="4"
                 disabled={loginDisabled}
                 type="submit"
                 loading={loading}
               >
                 Login
               </Button>
-            </Tabs.Content>
-            <Tabs.Content value="signup">
+            </TabsContent>
+            <TabsContent value="signup">
               <div className="text-xs mt-1">
                 at least 8 characters long, at least one uppercase letter, at
                 least one lowercase letter, and at least one digit
@@ -187,17 +182,16 @@ export default function Page() {
               <div className="mt-3"></div>
               <Button
                 style={{ width: "100%" }}
-                size="4"
                 disabled={signupDisabled}
                 type="submit"
                 loading={loading}
               >
                 Sign up
               </Button>
-            </Tabs.Content>
+            </TabsContent>
           </div>
         </form>
-      </Tabs.Root>
+      </Tabs>
       <TermsAndConditions useOpen={[termsOpen, setTermsOpen]} />
     </div>
   );

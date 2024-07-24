@@ -1,6 +1,6 @@
-import { Badge, Separator } from "@radix-ui/themes";
 import { Thread as ThreadType } from "gpinterface-shared/type";
 import { FileText } from "lucide-react";
+import { Badge, Separator } from "../ui";
 
 export default function Thread({ thread }: { thread: ThreadType }) {
   const username = thread.user ? thread.user.name : "unknown";

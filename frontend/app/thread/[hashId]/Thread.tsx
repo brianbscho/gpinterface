@@ -9,8 +9,8 @@ import Share from "@/components/general/toasts/Share";
 import CreatePost from "@/components/post/CreatePost";
 import Collapsible from "@/components/general/collapsible";
 import { ThreadGetResponse } from "gpinterface-shared/type/thread";
-import { Badge } from "@radix-ui/themes";
 import UserRequiredButton from "@/components/general/buttons/UserRequiredButton";
+import { Badge } from "@/components/ui";
 
 export default function Thread({ hashId }: { hashId: string }) {
   const [thread, setThread] = useState<ThreadType>();

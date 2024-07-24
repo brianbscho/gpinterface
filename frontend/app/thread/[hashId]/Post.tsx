@@ -2,7 +2,6 @@
 
 import useUserStore from "@/store/user";
 import callApi from "@/util/callApi";
-import { Button, Separator } from "@radix-ui/themes";
 import { Post as PostType } from "gpinterface-shared/type";
 import { useCallback } from "react";
 import TextPrompt from "../../../components/prompt/TextPrompt";
@@ -19,6 +18,7 @@ import Link from "@/components/general/links/Link";
 import ImagePrompt from "../../../components/prompt/ImagePrompt";
 import UserRequiredButton from "@/components/general/buttons/UserRequiredButton";
 import { Bookmark, Heart } from "lucide-react";
+import { Button, Separator } from "@/components/ui";
 
 export default function Post({
   post,
@@ -72,7 +72,7 @@ export default function Post({
       <div className="mt-3 whitespace-pre-line">{post.post}</div>
       <div className="py-1 flex gap-3 justify-end items-center text-sm">
         {post.user && post.user.hashId === user?.hashId && (
-          <Button size="1" asChild>
+          <Button asChild>
             <Link href={`/post/edit/${post.hashId}`}>edit</Link>
           </Button>
         )}

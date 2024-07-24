@@ -2,19 +2,21 @@
 
 import useUserStore from "@/store/user";
 import callApi from "@/util/callApi";
-import {
-  Button,
-  DataList,
-  Dialog,
-  Separator,
-  TextField,
-} from "@radix-ui/themes";
 import { useCallback, useEffect, useState } from "react";
 import {
   UserGetMeResponse,
   UserUpdatePasswordSchema,
 } from "gpinterface-shared/type/user";
 import { Static } from "@sinclair/typebox";
+import {
+  Button,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTrigger,
+  Input,
+  Separator,
+} from "@/components/ui";
 
 export default function Password() {
   const { user } = useUserStore();
@@ -46,53 +48,53 @@ export default function Password() {
 
   if (!user) return null;
   return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger>
         <Button>Password update</Button>
-      </Dialog.Trigger>
-      <Dialog.Content>
-        <DataList.Root>
-          <DataList.Item style={{ height: "2rem" }}>
-            <DataList.Label>Current password</DataList.Label>
-            <DataList.Value>
-              <TextField.Root
+      </DialogTrigger>
+      <DialogContent>
+        <table>
+          <tr style={{ height: "2rem" }}>
+            <td>Current password</td>
+            <td>
+              <Input
                 type="password"
                 value={oldPassword}
                 onChange={(e) => setOldPassword(e.currentTarget.value)}
-              ></TextField.Root>
-            </DataList.Value>
-          </DataList.Item>
-          <Separator orientation="horizontal" size="4" className="my-3" />
-          <DataList.Item style={{ height: "2rem" }}>
-            <DataList.Label>New password</DataList.Label>
-            <DataList.Value>
-              <TextField.Root
+              ></Input>
+            </td>
+          </tr>
+          <Separator orientation="horizontal" className="my-3" />
+          <tr style={{ height: "2rem" }}>
+            <td>New password</td>
+            <td>
+              <Input
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.currentTarget.value)}
-              ></TextField.Root>
-            </DataList.Value>
-          </DataList.Item>
-          <DataList.Item style={{ height: "2rem" }}>
-            <DataList.Label>New password Repeat</DataList.Label>
-            <DataList.Value>
-              <TextField.Root
+              ></Input>
+            </td>
+          </tr>
+          <tr style={{ height: "2rem" }}>
+            <td>New password Repeat</td>
+            <td>
+              <Input
                 type="password"
                 value={newPasswordRepeat}
                 onChange={(e) => setNewPasswordRepeat(e.currentTarget.value)}
-              ></TextField.Root>
-            </DataList.Value>
-          </DataList.Item>
-        </DataList.Root>
+              ></Input>
+            </td>
+          </tr>
+        </table>
         <div className="w-full flex justify-end gap-3 mt-7">
-          <Dialog.Close>
+          <DialogClose>
             <Button variant="outline">Cancel</Button>
-          </Dialog.Close>
-          <Dialog.Close>
+          </DialogClose>
+          <DialogClose>
             <Button onClick={onClickUpdate}>Update</Button>
-          </Dialog.Close>
+          </DialogClose>
         </div>
-      </Dialog.Content>
-    </Dialog.Root>
+      </DialogContent>
+    </Dialog>
   );
 }

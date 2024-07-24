@@ -1,9 +1,9 @@
 "use client";
 
-import { Button, TextField } from "@radix-ui/themes";
 import { SearchIcon } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, Suspense, useCallback, useEffect, useState } from "react";
+import { Button, Input } from "@/components/ui";
 
 const nullRenderPathname = ["/", "/search"];
 function Component() {
@@ -31,17 +31,14 @@ function Component() {
     <div className="py-3">
       <form className="w-full" onSubmit={onSubmit}>
         <div className="w-full flex items-center gap-3">
-          <TextField.Root
+          <Input
             placeholder="Search"
             className="flex-1"
             name="keyword"
             value={keyword}
             onChange={(e) => setKeyword(e.currentTarget.value)}
-          >
-            <TextField.Slot>
-              <SearchIcon />
-            </TextField.Slot>
-          </TextField.Root>
+            Icon={SearchIcon}
+          />
           <Button type="submit">Search</Button>
         </div>
       </form>

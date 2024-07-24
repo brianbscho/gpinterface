@@ -1,12 +1,18 @@
 "use client";
 
-import { Button, DropdownMenu } from "@radix-ui/themes";
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import callApi from "@/util/callApi";
 import useUserStore from "@/store/user";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { UserGetMeResponse } from "gpinterface-shared/type/user";
 import { Menu, UserRound } from "lucide-react";
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui";
 
 const loginRedirectPaths = ["login"];
 const logoutRedirectPaths = ["settings", "usages"];
@@ -59,33 +65,31 @@ function _Menus() {
   const [open, setOpen] = useState(false);
 
   return (
-    <DropdownMenu.Root open={open} onOpenChange={setOpen}>
-      <DropdownMenu.Trigger className="focus:outline-none">
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger className="focus:outline-none">
         <Button>{!user ? <Menu /> : <UserRound />}</Button>
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Content>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
         {!user ? (
-          <DropdownMenu.Item onClick={() => push(`/login${redirect}`)}>
+          <DropdownMenuItem onClick={() => push(`/login${redirect}`)}>
             Login
-          </DropdownMenu.Item>
+          </DropdownMenuItem>
         ) : (
           <>
-            <DropdownMenu.Item onClick={() => push(`/user/${user.hashId}`)}>
+            <DropdownMenuItem onClick={() => push(`/user/${user.hashId}`)}>
               My page
-            </DropdownMenu.Item>
-            <DropdownMenu.Item onClick={() => push("/settings")}>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => push("/settings")}>
               Settings
-            </DropdownMenu.Item>
-            <DropdownMenu.Item onClick={() => push("/usages")}>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => push("/usages")}>
               Usages
-            </DropdownMenu.Item>
-            <DropdownMenu.Item onClick={onClickLogout}>
-              Logout
-            </DropdownMenu.Item>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={onClickLogout}>Logout</DropdownMenuItem>
           </>
         )}
-      </DropdownMenu.Content>
-    </DropdownMenu.Root>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 

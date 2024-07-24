@@ -1,19 +1,19 @@
-import { HoverCard } from "@radix-ui/themes";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui";
 import { HelpCircle } from "lucide-react";
 
 export default function EstimatedPrice() {
   return (
-    <HoverCard.Root openDelay={0} closeDelay={0}>
-      <HoverCard.Trigger>
+    <HoverCard openDelay={0} closeDelay={0}>
+      <HoverCardTrigger>
         <div className="flex items-start">
           <div>Estimated Price</div>
           <HelpCircle />
         </div>
-      </HoverCard.Trigger>
-      <HoverCard.Content>
+      </HoverCardTrigger>
+      <HoverCardContent>
         Why estimated? because costs vary based on the specific inputs and
         outputs, which affect resource consumption.
-      </HoverCard.Content>
-    </HoverCard.Root>
+      </HoverCardContent>
+    </HoverCard>
   );
 }

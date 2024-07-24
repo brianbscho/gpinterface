@@ -1,7 +1,6 @@
 "use client";
 
 import callApi from "@/util/callApi";
-import { Button } from "@radix-ui/themes";
 import { Thread } from "gpinterface-shared/type";
 import { useCallback, useState } from "react";
 import {
@@ -15,6 +14,7 @@ import Radio, { modals } from "../general/inputs/Radio";
 import { TextPromptSchema } from "gpinterface-shared/type/textPrompt";
 import CreateImagePrompt from "../prompt/CreateImagePrompt";
 import { ImagePromptSchema } from "gpinterface-shared/type/imagePrompt";
+import { Button } from "../ui";
 
 export default function CreatePost({ thread }: { thread: Thread }) {
   const [post, setPost] = useState("");

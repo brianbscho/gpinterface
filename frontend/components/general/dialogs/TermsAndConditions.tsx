@@ -1,6 +1,13 @@
 "use client";
 
-import { Button, Dialog } from "@radix-ui/themes";
+import {
+  Button,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@/components/ui";
 
 export default function TermsAndConditions({
   useOpen,
@@ -9,10 +16,10 @@ export default function TermsAndConditions({
 }) {
   const [open, setOpen] = useOpen;
   return (
-    <Dialog.Root onOpenChange={(o) => setOpen(o)} open={open}>
-      <Dialog.Content>
-        <Dialog.Title>TERMS AND CONDITIONS</Dialog.Title>
-        <Dialog.Description className="py-3">
+    <Dialog onOpenChange={(o) => setOpen(o)} open={open}>
+      <DialogContent>
+        <DialogTitle>TERMS AND CONDITIONS</DialogTitle>
+        <DialogDescription className="py-3">
           <div className="h-[70vh] overflow-y-auto">
             <div>Last updated May 21, 2024</div>
             <div className="text-lg my-3">AGREEMENT TO OUR LEGAL TERMS</div>
@@ -770,11 +777,11 @@ export default function TermsAndConditions({
               contact us at: gpinterface brian.b.cho@bookquilt.com
             </div>
           </div>
-        </Dialog.Description>
-        <Dialog.Close>
+        </DialogDescription>
+        <DialogClose>
           <Button>Close</Button>
-        </Dialog.Close>
-      </Dialog.Content>
-    </Dialog.Root>
+        </DialogClose>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -2,14 +2,6 @@
 
 import useUserStore from "@/store/user";
 import callApi from "@/util/callApi";
-import {
-  AlertDialog,
-  Button,
-  Card,
-  DataList,
-  TextArea,
-  TextField,
-} from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Password from "@/components/general/dialogs/Password";
@@ -26,6 +18,18 @@ import {
 } from "gpinterface-shared/type/apiKey";
 import { Static } from "@sinclair/typebox";
 import { Copy, Trash2, UserRound } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+  Button,
+  Card,
+  Input,
+  Textarea,
+} from "@/components/ui";
 
 export default function Page() {
   const { user, setUser } = useUserStore();
@@ -139,45 +143,41 @@ export default function Page() {
   if (!user) return null;
   return (
     <div className="w-full max-w-7xl flex flex-col gap-3 px-3">
-      <DataList.Root>
-        <DataList.Item style={{ height: "2rem", alignItems: "center" }}>
-          <DataList.Label>Email</DataList.Label>
-          <DataList.Value>{user.email}</DataList.Value>
-        </DataList.Item>
-        <DataList.Item style={{ height: "2rem" }}>
-          <DataList.Label>Username</DataList.Label>
-          <DataList.Value>
-            <TextField.Root
+      <table>
+        <tr>
+          <td>Email</td>
+          <td>{user.email}</td>
+        </tr>
+        <tr>
+          <td>Username</td>
+          <td>
+            <Input
               type="text"
-              size="3"
               placeholder="Please type your username (no space)"
               value={name}
               onChange={(e) => setName(e.currentTarget.value)}
-            >
-              <TextField.Slot>
-                <UserRound />
-              </TextField.Slot>
-            </TextField.Root>
+              Icon={UserRound}
+            ></Input>
             <div className="text-xs min-h-4 mt-1 mb-3 text-rose-500">
               {name.length > 0 &&
                 !nameValid &&
                 "You can use only alphanumeric characters and -_,~!@#$^&*()+= special characters."}
             </div>
-          </DataList.Value>
-        </DataList.Item>
-        <DataList.Item>
-          <DataList.Label>Bio</DataList.Label>
-          <DataList.Value>
-            <TextArea
+          </td>
+        </tr>
+        <tr>
+          <td>Bio</td>
+          <td>
+            <Textarea
               value={bio}
               className="flex-1 h-40"
               onChange={(e) => setBio(e.currentTarget.value)}
-            ></TextArea>
-          </DataList.Value>
-        </DataList.Item>
-        <DataList.Item>
-          <DataList.Label>API Keys</DataList.Label>
-          <DataList.Value>
+            ></Textarea>
+          </td>
+        </tr>
+        <tr>
+          <td>API Keys</td>
+          <td>
             <div>
               <div>
                 <table>
@@ -190,7 +190,6 @@ export default function Page() {
                         <div className="mb-3">
                           <Button
                             variant="outline"
-                            size="1"
                             onClick={() => onClickApiKeyTrash(k.hashId)}
                             className="mb-3"
                           >
@@ -201,9 +200,7 @@ export default function Page() {
                     </tr>
                   ))}
                 </table>
-                <Button size="1" onClick={onClickGetApiKey}>
-                  Get API Key
-                </Button>
+                <Button onClick={onClickGetApiKey}>Get API Key</Button>
               </div>
               <div className="mt-3">
                 <ul>
@@ -221,9 +218,9 @@ export default function Page() {
                 </ul>
               </div>
             </div>
-          </DataList.Value>
-        </DataList.Item>
-      </DataList.Root>
+          </td>
+        </tr>
+      </table>
       <div className="my-3 text-xs flex justify-end">
         <a href="mailto:brian.b.cho@bookquilt.com">Customer Support</a>
       </div>
@@ -236,13 +233,13 @@ export default function Page() {
           Delete account
         </Button>
       </div>
-      <AlertDialog.Root open={newKey.length > 0}>
-        <AlertDialog.Trigger>
+      <AlertDialog open={newKey.length > 0}>
+        <AlertDialogTrigger>
           <div></div>
-        </AlertDialog.Trigger>
-        <AlertDialog.Content>
-          <AlertDialog.Title>API Key</AlertDialog.Title>
-          <AlertDialog.Description>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogTitle>API Key</AlertDialogTitle>
+          <AlertDialogDescription>
             <div>
               <div>
                 <span className="text-rose-500">Important: </span>
@@ -255,8 +252,7 @@ export default function Page() {
                 <div className="flex items-center gap-3">
                   <div className="text-xs">{newKey}</div>
                   <Button
-                    variant="soft"
-                    size="1"
+                    variant="secondary"
                     onClick={() => navigator.clipboard.writeText(newKey)}
                   >
                     <Copy />
@@ -264,16 +260,16 @@ export default function Page() {
                 </div>
               </Card>
             </div>
-          </AlertDialog.Description>
-          <AlertDialog.Action>
+          </AlertDialogDescription>
+          <AlertDialogAction>
             <div className="w-full flex justify-end mt-3">
               <div>
                 <Button onClick={() => setNewKey("")}>Confirm</Button>
               </div>
             </div>
-          </AlertDialog.Action>
-        </AlertDialog.Content>
-      </AlertDialog.Root>
+          </AlertDialogAction>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

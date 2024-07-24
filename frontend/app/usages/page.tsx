@@ -1,20 +1,20 @@
-import { Tabs } from "@radix-ui/themes";
 import TextUsages from "./TextUsages";
 import ImageUsages from "./ImageUsages";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui";
 
 export default function Page() {
   return (
-    <Tabs.Root defaultValue="text">
-      <Tabs.List>
-        <Tabs.Trigger value="text">Text</Tabs.Trigger>
-        <Tabs.Trigger value="image">Image</Tabs.Trigger>
-      </Tabs.List>
-      <Tabs.Content value="text">
+    <Tabs defaultValue="text">
+      <TabsList>
+        <TabsTrigger value="text">Text</TabsTrigger>
+        <TabsTrigger value="image">Image</TabsTrigger>
+      </TabsList>
+      <TabsContent value="text">
         <TextUsages />
-      </Tabs.Content>
-      <Tabs.Content value="image">
+      </TabsContent>
+      <TabsContent value="image">
         <ImageUsages />
-      </Tabs.Content>
-    </Tabs.Root>
+      </TabsContent>
+    </Tabs>
   );
 }

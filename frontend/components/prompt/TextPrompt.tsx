@@ -4,7 +4,6 @@ import { TextPrompt as TextPromptType } from "gpinterface-shared/type";
 import Collapsible from "@/components/general/collapsible";
 import { inputsToObject, objectToInputs, stringify } from "@/util/string";
 import { Fragment, useCallback, useMemo, useState } from "react";
-import { Button } from "@radix-ui/themes";
 import callApi from "@/util/callApi";
 import Textarea from "@/components/general/inputs/Textarea";
 import { TextPromptExecuteResponse } from "gpinterface-shared/type/textPrompt";
@@ -12,6 +11,7 @@ import EstimatedPrice from "@/components/general/hover/EstimatedPrice";
 import { getValidBody } from "gpinterface-shared/util";
 import UserRequiredButton from "@/components/general/buttons/UserRequiredButton";
 import { getBasePrice } from "gpinterface-shared/models/text/model";
+import { Button } from "../ui";
 
 export default function TextPrompt({
   textPrompt,

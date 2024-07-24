@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@radix-ui/themes";
 import Textarea from "../general/inputs/Textarea";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -27,6 +26,7 @@ import EstimatedPrice from "../general/hover/EstimatedPrice";
 import { getValidBody } from "gpinterface-shared/util";
 import { useRouter } from "next/navigation";
 import UserRequiredButton from "../general/buttons/UserRequiredButton";
+import { Button } from "../ui";
 
 const defaultPrompt =
   "The {{subject}} teacher is teaching a class at the {{school}}";
@@ -291,7 +291,6 @@ export default function CreateImagePrompt({
                           ))}
                         </div>
                         <Button
-                          size="1"
                           onClick={onClickResetConfig}
                           loading={loading}
                           disabled={responsePost?.thread.isPublic}
@@ -386,7 +385,7 @@ export default function CreateImagePrompt({
       </div>
       <div className="flex justify-end gap-3 pb-3">
         <div>
-          <Button variant="soft" onClick={onClickCancel}>
+          <Button variant="secondary" onClick={onClickCancel}>
             Cancel
           </Button>
         </div>

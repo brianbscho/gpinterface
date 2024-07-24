@@ -1,8 +1,7 @@
 "use client";
 
-import { Button, Select } from "@radix-ui/themes";
 import Textarea from "../general/inputs/Textarea";
-import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import {
   getKeyAlignedInput,
   getKeys,
@@ -29,6 +28,13 @@ import { getValidBody } from "gpinterface-shared/util";
 import { useRouter } from "next/navigation";
 import UserRequiredButton from "../general/buttons/UserRequiredButton";
 import { Trash2 } from "lucide-react";
+import {
+  Button,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "../ui";
 
 const defaultSystemMessage = "{{systemMessage}}";
 
@@ -265,17 +271,17 @@ export default function CreateTextPrompt({
             {messages.map((m, index) => (
               <tr key={`message_${index}`}>
                 <td>
-                  <Select.Root
+                  <Select
                     value={m.role}
                     onValueChange={(v) => setMessage(index)({ role: v })}
                     disabled={loading || responsePost?.thread.isPublic}
                   >
-                    <Select.Trigger />
-                    <Select.Content>
-                      <Select.Item value="user">user</Select.Item>
-                      <Select.Item value="assistant">assistant</Select.Item>
-                    </Select.Content>
-                  </Select.Root>
+                    <SelectTrigger />
+                    <SelectContent>
+                      <SelectItem value="user">user</SelectItem>
+                      <SelectItem value="assistant">assistant</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </td>
                 <td>
                   <div className="flex items-start gap-3">
@@ -312,7 +318,6 @@ export default function CreateTextPrompt({
                     disabled={loading || responsePost?.thread.isPublic}
                   />
                   <Button
-                    size="1"
                     onClick={onClickResetConfig}
                     loading={loading}
                     disabled={responsePost?.thread.isPublic}
@@ -393,7 +398,7 @@ export default function CreateTextPrompt({
       )}
       <div className="flex justify-end gap-3 pb-3">
         <div>
-          <Button variant="soft" onClick={onClickCancel}>
+          <Button variant="secondary" onClick={onClickCancel}>
             Cancel
           </Button>
         </div>

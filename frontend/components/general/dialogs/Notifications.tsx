@@ -1,7 +1,6 @@
 "use client";
 
 import callApi from "@/util/callApi";
-import { Button, Dialog } from "@radix-ui/themes";
 import { useCallback, useEffect, useState } from "react";
 import { Notification } from "gpinterface-shared/type";
 import useUserStore from "@/store/user";
@@ -9,6 +8,14 @@ import Link from "next/link";
 import { NotificationsGetResponse } from "gpinterface-shared/type/notification";
 import List from "@/components/List";
 import { Bell, ChevronRight, X } from "lucide-react";
+import {
+  Button,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui";
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState<Notification[]>();
@@ -53,8 +60,8 @@ export default function Notifications() {
 
   if (!user) return null;
   return (
-    <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger>
         <div className="relative">
           {user.notification && (
             <div className="absolute -top-1 -right-1 rounded-full bg-yellow-300 h-2 w-2 z-10"></div>
@@ -63,29 +70,26 @@ export default function Notifications() {
             <Bell />
           </Button>
         </div>
-      </Dialog.Trigger>
-      <Dialog.Content width="100%">
+      </DialogTrigger>
+      <DialogContent className="w-full">
         <div className="h-[70vh] overflow-y-auto">
           <div className="flex items-start gap-3">
-            <Dialog.Title
+            <DialogTitle
               style={{ backgroundColor: "var(--color-panel-solid)" }}
               className="first:mt-0 mt-12 sticky top-0 z-10"
             >
               Notifications
-            </Dialog.Title>
+            </DialogTitle>
             <div className="flex-1"></div>
-            <Button onClick={onClickClear} size="1">
-              Clear Notifications
-            </Button>
-            <Dialog.Close>
+            <Button onClick={onClickClear}>Clear Notifications</Button>
+            <DialogClose>
               <Button
-                size="1"
                 style={{ width: "1.5rem", height: "1.5rem", padding: 0 }}
                 className="focus:outline-none"
               >
                 <X />
               </Button>
-            </Dialog.Close>
+            </DialogClose>
           </div>
           <List
             callApi={callNotificationsApi}
@@ -107,7 +111,7 @@ export default function Notifications() {
             ))}
           </List>
         </div>
-      </Dialog.Content>
-    </Dialog.Root>
+      </DialogContent>
+    </Dialog>
   );
 }

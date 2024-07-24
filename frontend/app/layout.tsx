@@ -1,4 +1,3 @@
-import "@radix-ui/themes/styles.css";
 import "./globals.css";
 
 import type { Metadata } from "next";

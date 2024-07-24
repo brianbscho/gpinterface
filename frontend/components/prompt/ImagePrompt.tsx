@@ -4,13 +4,13 @@ import { ImagePrompt as ImagePromptType } from "gpinterface-shared/type";
 import Collapsible from "@/components/general/collapsible";
 import { inputsToObject, objectToInputs, stringify } from "@/util/string";
 import { Fragment, useCallback, useMemo, useState } from "react";
-import { Button } from "@radix-ui/themes";
 import callApi from "@/util/callApi";
 import { ImagePromptExecuteResponse } from "gpinterface-shared/type/imagePrompt";
 import EstimatedPrice from "@/components/general/hover/EstimatedPrice";
 import Textarea from "@/components/general/inputs/Textarea";
 import { getValidBody } from "gpinterface-shared/util";
 import UserRequiredButton from "@/components/general/buttons/UserRequiredButton";
+import { Button } from "../ui";
 
 export default function ImagePrompt({
   imagePrompt,
