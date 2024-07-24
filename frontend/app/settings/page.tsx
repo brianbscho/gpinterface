@@ -13,7 +13,6 @@ import {
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Password from "@/components/general/dialogs/Password";
-import { CopyIcon, PersonIcon, TrashIcon } from "@radix-ui/react-icons";
 import {
   UserGetMeResponse,
   UserUpdateSchema,
@@ -26,6 +25,7 @@ import {
   ApiKeysGetResponse,
 } from "gpinterface-shared/type/apiKey";
 import { Static } from "@sinclair/typebox";
+import { Copy, Trash2, UserRound } from "lucide-react";
 
 export default function Page() {
   const { user, setUser } = useUserStore();
@@ -155,7 +155,7 @@ export default function Page() {
               onChange={(e) => setName(e.currentTarget.value)}
             >
               <TextField.Slot>
-                <PersonIcon />
+                <UserRound />
               </TextField.Slot>
             </TextField.Root>
             <div className="text-xs min-h-4 mt-1 mb-3 text-rose-500">
@@ -194,7 +194,7 @@ export default function Page() {
                             onClick={() => onClickApiKeyTrash(k.hashId)}
                             className="mb-3"
                           >
-                            <TrashIcon />
+                            <Trash2 />
                           </Button>
                         </div>
                       </td>
@@ -259,7 +259,7 @@ export default function Page() {
                     size="1"
                     onClick={() => navigator.clipboard.writeText(newKey)}
                   >
-                    <CopyIcon />
+                    <Copy />
                   </Button>
                 </div>
               </Card>

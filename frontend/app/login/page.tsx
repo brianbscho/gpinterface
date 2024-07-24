@@ -1,10 +1,5 @@
 "use client";
 
-import {
-  EnvelopeClosedIcon,
-  LockClosedIcon,
-  PersonIcon,
-} from "@radix-ui/react-icons";
 import { Button, Tabs, TextField } from "@radix-ui/themes";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { validateEmail, validatePassword } from "gpinterface-shared/string";
@@ -16,6 +11,7 @@ import {
   UserGetMeResponse,
 } from "gpinterface-shared/type/user";
 import { Static } from "@sinclair/typebox";
+import { Lock, Mail, UserRound } from "lucide-react";
 
 export default function Page() {
   const [isLogin, setIsLogin] = useState(true);
@@ -101,7 +97,7 @@ export default function Page() {
                 disabled={loading}
               >
                 <TextField.Slot>
-                  <PersonIcon />
+                  <UserRound />
                 </TextField.Slot>
               </TextField.Root>
               <div className="text-xs min-h-4 mt-1 mb-3 text-rose-500">
@@ -119,7 +115,7 @@ export default function Page() {
               disabled={loading}
             >
               <TextField.Slot>
-                <EnvelopeClosedIcon />
+                <Mail />
               </TextField.Slot>
             </TextField.Root>
             <div className="mt-1 text-xs h-4 text-rose-500">{emailMsg}</div>
@@ -133,7 +129,7 @@ export default function Page() {
               disabled={loading}
             >
               <TextField.Slot>
-                <LockClosedIcon />
+                <Lock />
               </TextField.Slot>
             </TextField.Root>
             <div className="mt-1 text-xs h-4 text-rose-500">{passwordMsg}</div>

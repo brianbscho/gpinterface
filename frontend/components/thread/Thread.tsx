@@ -1,6 +1,6 @@
-import { FileTextIcon } from "@radix-ui/react-icons";
 import { Badge, Separator } from "@radix-ui/themes";
 import { Thread as ThreadType } from "gpinterface-shared/type";
+import { FileText } from "lucide-react";
 
 export default function Thread({ thread }: { thread: ThreadType }) {
   const username = thread.user ? thread.user.name : "unknown";
@@ -11,7 +11,7 @@ export default function Thread({ thread }: { thread: ThreadType }) {
         <div className="text-lg">{thread.title}</div>
       </div>
       <div className="flex gap-3 justify-end items-center text-sm mt-1">
-        <FileTextIcon />
+        <FileText />
         <div>{thread.posts}</div>
         <Separator orientation="vertical" />
         <div className="font-bold">{username}</div>

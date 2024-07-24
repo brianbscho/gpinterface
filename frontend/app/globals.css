@@ -83,3 +83,8 @@ td:first-child {
 tr:first-child td {
   padding-top: 0;
 }
+
+.lucide {
+  width: 1rem;
+  height: 1rem;
+}

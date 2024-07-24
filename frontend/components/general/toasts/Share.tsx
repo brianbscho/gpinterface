@@ -1,9 +1,9 @@
 "use client";
 
-import { Share2Icon } from "@radix-ui/react-icons";
 import "./styles.css";
 
 import * as Toast from "@radix-ui/react-toast";
+import { ShareIcon } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Share({
@@ -35,7 +35,7 @@ export default function Share({
       <Toast.Provider swipeDirection="right" duration={1000}>
         <button onClick={onClickButton}>
           <div className="flex gap-3 items-end">
-            <Share2Icon className="h-5" />
+            <ShareIcon />
             <div className="text-sm">share</div>
           </div>
         </button>

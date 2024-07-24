@@ -4,15 +4,11 @@ import callApi from "@/util/callApi";
 import { Button, Dialog } from "@radix-ui/themes";
 import { useCallback, useEffect, useState } from "react";
 import { Notification } from "gpinterface-shared/type";
-import {
-  BellIcon,
-  Cross2Icon,
-  DoubleArrowRightIcon,
-} from "@radix-ui/react-icons";
 import useUserStore from "@/store/user";
 import Link from "next/link";
 import { NotificationsGetResponse } from "gpinterface-shared/type/notification";
 import List from "@/components/List";
+import { Bell, ChevronRight, X } from "lucide-react";
 
 export default function Notifications() {
   const [notifications, setNotifications] = useState<Notification[]>();
@@ -64,7 +60,7 @@ export default function Notifications() {
             <div className="absolute -top-1 -right-1 rounded-full bg-yellow-300 h-2 w-2 z-10"></div>
           )}
           <Button>
-            <BellIcon />
+            <Bell />
           </Button>
         </div>
       </Dialog.Trigger>
@@ -87,7 +83,7 @@ export default function Notifications() {
                 style={{ width: "1.5rem", height: "1.5rem", padding: 0 }}
                 className="focus:outline-none"
               >
-                <Cross2Icon />
+                <X />
               </Button>
             </Dialog.Close>
           </div>
@@ -104,7 +100,7 @@ export default function Notifications() {
                   <div className="flex w-full items-center gap-3 py-3 border-t">
                     <div>{n.message}</div>
                     <div className="flex-1"></div>
-                    <DoubleArrowRightIcon />
+                    <ChevronRight />
                   </div>
                 </Link>
               </div>

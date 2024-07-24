@@ -2,12 +2,6 @@
 
 import useUserStore from "@/store/user";
 import callApi from "@/util/callApi";
-import {
-  BookmarkFilledIcon,
-  BookmarkIcon,
-  HeartFilledIcon,
-  HeartIcon,
-} from "@radix-ui/react-icons";
 import { Button, Separator } from "@radix-ui/themes";
 import { Post as PostType } from "gpinterface-shared/type";
 import { useCallback } from "react";
@@ -24,6 +18,7 @@ import { Static } from "@sinclair/typebox";
 import Link from "@/components/general/links/Link";
 import ImagePrompt from "../../../components/prompt/ImagePrompt";
 import UserRequiredButton from "@/components/general/buttons/UserRequiredButton";
+import { Bookmark, Heart } from "lucide-react";
 
 export default function Post({
   post,
@@ -64,12 +59,12 @@ export default function Post({
       <div className="py-1 flex gap-3 justify-end items-center text-sm">
         <UserRequiredButton onClick={onClickBookmark}>
           <div className="cursor-pointer">
-            {post.isBookmarked ? <BookmarkFilledIcon /> : <BookmarkIcon />}
+            <Bookmark fill={post.isBookmarked ? "#FFF" : "#000"} />
           </div>
         </UserRequiredButton>
         <UserRequiredButton onClick={onClickLike}>
           <div className="flex gap-3 items-center cursor-pointer">
-            {post.isLiked ? <HeartFilledIcon /> : <HeartIcon />}
+            <Heart fill={post.isLiked ? "#FFF" : "#000"} />
             <div>{post.likes} likes</div>
           </div>
         </UserRequiredButton>

@@ -1,12 +1,12 @@
 "use client";
 
-import { AvatarIcon, HamburgerMenuIcon } from "@radix-ui/react-icons";
 import { Button, DropdownMenu } from "@radix-ui/themes";
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import callApi from "@/util/callApi";
 import useUserStore from "@/store/user";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { UserGetMeResponse } from "gpinterface-shared/type/user";
+import { Menu, UserRound } from "lucide-react";
 
 const loginRedirectPaths = ["login"];
 const logoutRedirectPaths = ["settings", "usages"];
@@ -61,7 +61,7 @@ function _Menus() {
   return (
     <DropdownMenu.Root open={open} onOpenChange={setOpen}>
       <DropdownMenu.Trigger className="focus:outline-none">
-        <Button>{!user ? <HamburgerMenuIcon /> : <AvatarIcon />}</Button>
+        <Button>{!user ? <Menu /> : <UserRound />}</Button>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content>
         {!user ? (

@@ -1,7 +1,7 @@
 "use client";
 
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Button, TextField } from "@radix-ui/themes";
+import { SearchIcon } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, Suspense, useCallback, useEffect, useState } from "react";
 
@@ -39,7 +39,7 @@ function Component() {
             onChange={(e) => setKeyword(e.currentTarget.value)}
           >
             <TextField.Slot>
-              <MagnifyingGlassIcon />
+              <SearchIcon />
             </TextField.Slot>
           </TextField.Root>
           <Button type="submit">Search</Button>

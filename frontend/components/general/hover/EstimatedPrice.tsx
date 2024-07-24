@@ -1,5 +1,5 @@
-import { QuestionMarkCircledIcon } from "@radix-ui/react-icons";
 import { HoverCard } from "@radix-ui/themes";
+import { HelpCircle } from "lucide-react";
 
 export default function EstimatedPrice() {
   return (
@@ -7,7 +7,7 @@ export default function EstimatedPrice() {
       <HoverCard.Trigger>
         <div className="flex items-start">
           <div>Estimated Price</div>
-          <QuestionMarkCircledIcon />
+          <HelpCircle />
         </div>
       </HoverCard.Trigger>
       <HoverCard.Content>

@@ -23,12 +23,12 @@ import useTextModel from "@/hooks/useTextModel";
 import Radio from "../general/inputs/Radio";
 import useLinkConfirmMessage from "@/hooks/useLinkConfirmMessage";
 import { PostGetResponse } from "gpinterface-shared/type/post";
-import { TrashIcon } from "@radix-ui/react-icons";
 import { TextMessageSchema } from "gpinterface-shared/type/textMessage";
 import EstimatedPrice from "../general/hover/EstimatedPrice";
 import { getValidBody } from "gpinterface-shared/util";
 import { useRouter } from "next/navigation";
 import UserRequiredButton from "../general/buttons/UserRequiredButton";
+import { Trash2 } from "lucide-react";
 
 const defaultSystemMessage = "{{systemMessage}}";
 
@@ -293,7 +293,7 @@ export default function CreateTextPrompt({
                       loading={loading}
                       disabled={responsePost?.thread.isPublic}
                     >
-                      <TrashIcon />
+                      <Trash2 />
                     </Button>
                   </div>
                 </td>
