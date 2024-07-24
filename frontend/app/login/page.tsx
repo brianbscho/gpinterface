@@ -133,7 +133,7 @@ export default function Page() {
           <div>
             <TabsContent value="login" className="mt-12">
               <Button
-                style={{ width: "100%" }}
+                className="w-full"
                 disabled={loginDisabled}
                 type="submit"
                 loading={loading}
@@ -181,7 +181,7 @@ export default function Page() {
               </div>
               <div className="mt-3"></div>
               <Button
-                style={{ width: "100%" }}
+                className="w-full"
                 disabled={signupDisabled}
                 type="submit"
                 loading={loading}

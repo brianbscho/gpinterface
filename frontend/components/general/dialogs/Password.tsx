@@ -54,7 +54,7 @@ export default function Password() {
       </DialogTrigger>
       <DialogContent>
         <table>
-          <tr style={{ height: "2rem" }}>
+          <tr>
             <td>Current password</td>
             <td>
               <Input
@@ -65,7 +65,7 @@ export default function Password() {
             </td>
           </tr>
           <Separator orientation="horizontal" className="my-3" />
-          <tr style={{ height: "2rem" }}>
+          <tr>
             <td>New password</td>
             <td>
               <Input
@@ -75,7 +75,7 @@ export default function Password() {
               ></Input>
             </td>
           </tr>
-          <tr style={{ height: "2rem" }}>
+          <tr>
             <td>New password Repeat</td>
             <td>
               <Input
