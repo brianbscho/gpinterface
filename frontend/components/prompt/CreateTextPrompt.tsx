@@ -230,7 +230,7 @@ export default function CreateTextPrompt({
         </div>
       )}
       {provider !== textModels[0].provider && (
-        <table className="w-full border-spacing-y-7 border-spacing-x-3 border-separate">
+        <table className="w-full">
           <tbody className="align-top">
             <tr>
               <td className="w-28 md:w-40">

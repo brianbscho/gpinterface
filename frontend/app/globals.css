@@ -31,3 +31,19 @@ body {
     text-wrap: balance;
   }
 }
+
+table {
+  border: none;
+  table-layout: fixed;
+}
+
+td {
+  padding-left: 0.75rem;
+  padding-top: 0.75rem;
+}
+td:first-child {
+  padding-left: 0;
+}
+tr:first-child td {
+  padding-top: 0;
+}

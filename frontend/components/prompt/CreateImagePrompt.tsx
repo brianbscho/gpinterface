@@ -238,7 +238,7 @@ export default function CreateImagePrompt({
       )}
       <div className="overflow-x-auto">
         {provider !== imageModels[0].provider && (
-          <table className="w-full border-spacing-y-7 border-spacing-x-3 border-separate">
+          <table className="w-full">
             <tbody className="align-top">
               <tr>
                 <td className="w-24 md:w-40">

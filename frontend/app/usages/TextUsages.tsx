@@ -53,7 +53,7 @@ export default function TextUsages() {
       spinnerHidden={spinnerHidden}
       useLastHashId={[lastHashId, setLastHashId]}
     >
-      <table className="border-spacing-3 border-separate w-full table-fixed">
+      <table className="w-full">
         <thead>
           <tr>
             <td className="hidden md:table-cell">Model</td>
