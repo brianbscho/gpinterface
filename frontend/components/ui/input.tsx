@@ -1,11 +1,12 @@
-import * as React from "react"
+import * as React from "react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
+import { LucideProps } from "lucide-react";
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
+const ShadcnInput = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, ...props }, ref) => {
     return (
       <input
@@ -17,9 +18,31 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         ref={ref}
         {...props}
       />
-    )
+    );
   }
-)
-Input.displayName = "Input"
+);
+ShadcnInput.displayName = "ShadcnInput";
 
-export { Input }
+function Input({
+  Icon,
+  ...props
+}: InputProps &
+  React.RefAttributes<HTMLInputElement> & {
+    Icon?: React.ForwardRefExoticComponent<
+      Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>
+    >;
+  }) {
+  return (
+    <div className="relative">
+      <ShadcnInput {...props} className={cn(props.className, "pl-10")} />
+      {!!Icon && (
+        <span className="absolute start-0 inset-y-0 flex items-center justify-center px-2">
+          <Icon />
+        </span>
+      )}
+    </div>
+  );
+}
+Input.displayName = "Input";
+
+export { Input };
