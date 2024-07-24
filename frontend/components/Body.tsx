@@ -21,18 +21,21 @@ export default function Body({
           <main className="h-screen flex flex-col items-center min-h-0 overflow-y-auto">
             <div
               style={{ backgroundColor: "var(--color-background)" }}
-              className="sticky top-0 left-0 w-full h-16 z-20 shrink-0 border-b"
+              className="sticky top-0 left-0 w-full z-20 shrink-0"
             >
-              <div className="w-full max-w-7xl h-full mx-auto px-3 flex gap-1 md:gap-3 items-center">
-                <Link href="/" className="font-bold text-lg">
-                  gpinterface
-                </Link>
-                <div className="flex-1">
-                  <Search />
+              <div className="w-full py-3 border-b">
+                <div className="w-full max-w-7xl h-full mx-auto px-3 flex gap-3 items-center">
+                  <Link href="/" className="font-bold text-lg">
+                    gpinterface
+                  </Link>
+                  <div className="flex-1"></div>
+                  <ThreadCreate />
+                  <Notifications />
+                  <Menus />
                 </div>
-                <ThreadCreate />
-                <Notifications />
-                <Menus />
+              </div>
+              <div className="w-full max-w-7xl mx-auto px-3">
+                <Search />
               </div>
             </div>
             {children}

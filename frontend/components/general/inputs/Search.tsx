@@ -2,9 +2,10 @@
 
 import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Button, TextField } from "@radix-ui/themes";
-import { useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, Suspense, useCallback, useEffect, useState } from "react";
 
+const nullRenderPathname = ["/", "/search"];
 function Component() {
   const [keyword, setKeyword] = useState("");
   const router = useRouter();
@@ -24,23 +25,27 @@ function Component() {
     setKeyword(_keyword);
   }, [searchParams]);
 
+  const pathname = usePathname();
+  if (!nullRenderPathname.includes(pathname)) return null;
   return (
-    <form className="w-full" onSubmit={onSubmit}>
-      <div className="w-full my-3 flex items-center gap-1 md:gap-3">
-        <TextField.Root
-          placeholder="Search"
-          className="flex-1"
-          name="keyword"
-          value={keyword}
-          onChange={(e) => setKeyword(e.currentTarget.value)}
-        >
-          <TextField.Slot>
-            <MagnifyingGlassIcon />
-          </TextField.Slot>
-        </TextField.Root>
-        <Button type="submit">Search</Button>
-      </div>
-    </form>
+    <div className="py-3">
+      <form className="w-full" onSubmit={onSubmit}>
+        <div className="w-full flex items-center gap-3">
+          <TextField.Root
+            placeholder="Search"
+            className="flex-1"
+            name="keyword"
+            value={keyword}
+            onChange={(e) => setKeyword(e.currentTarget.value)}
+          >
+            <TextField.Slot>
+              <MagnifyingGlassIcon />
+            </TextField.Slot>
+          </TextField.Root>
+          <Button type="submit">Search</Button>
+        </div>
+      </form>
+    </div>
   );
 }
 
