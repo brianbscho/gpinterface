@@ -71,6 +71,10 @@ export function getInputTextPriceByModel(input: number, model: string) {
       return 0.3 * input;
     case "jamba-instruct-preview":
       return 0.5 * input;
+    case "meta.llama3-1-70b-instruct-v1:0":
+      return 0.00265 * input * KILO;
+    case "meta.llama3-1-8b-instruct-v1:0":
+      return 0.0003 * input * KILO;
     case "meta.llama3-70b-instruct-v1:0":
       return 0.00265 * input * KILO;
     case "meta.llama3-8b-instruct-v1:0":
@@ -137,6 +141,10 @@ export function getOutputTextPriceByModel(output: number, model: string) {
       return 0.6 * output;
     case "jamba-instruct-preview":
       return 0.7 * output;
+    case "meta.llama3-1-70b-instruct-v1:0":
+      return 0.0035 * output * KILO;
+    case "meta.llama3-1-8b-instruct-v1:0":
+      return 0.0006 * output * KILO;
     case "meta.llama3-70b-instruct-v1:0":
       return 0.0035 * output * KILO;
     case "meta.llama3-8b-instruct-v1:0":

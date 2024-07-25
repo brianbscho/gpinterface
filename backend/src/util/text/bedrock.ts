@@ -8,7 +8,7 @@ export async function callBedrock(body: any) {
     console.log("🚀 ~ body:", body);
   }
 
-  const client = new BedrockRuntimeClient({ region: "us-east-1" });
+  const client = new BedrockRuntimeClient({ region: "us-west-2" });
   const command = new ConverseCommand(body);
   const response = await client.send(command);
   if (process.env.NODE_ENV === "development") {
