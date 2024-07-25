@@ -23,8 +23,8 @@ export async function uploadToS3(
 
     await parallelUploads3.done();
     return `https://${bucket}.s3.${region}.amazonaws.com/${key}`;
-  } catch (err) {
-    console.error("Failed to upload file with KMS.", err);
-    throw err;
+  } catch (ex) {
+    console.error("Failed to upload file with KMS.", ex);
+    throw "Image upload failed";
   }
 }

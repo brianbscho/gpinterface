@@ -36,9 +36,7 @@ export default async function (fastify: FastifyInstance) {
           user.hashId
         );
         if (todayPriceSum > 1) {
-          throw fastify.httpErrors.badRequest(
-            "You exceeded today's rate limit"
-          );
+          throw badRequest("You exceeded today's rate limit");
         }
 
         const { hashId } = request.params;
@@ -145,17 +143,13 @@ export default async function (fastify: FastifyInstance) {
           user.hashId
         );
         if (todayPriceSum > 1) {
-          throw fastify.httpErrors.badRequest(
-            "You exceeded today's rate limit"
-          );
+          throw badRequest("You exceeded today's rate limit");
         }
 
         let { systemMessage, messages } = request.body;
         messages = messages.filter((m) => m.content.trim().length > 0);
         if (messages.length === 0) {
-          throw fastify.httpErrors.badRequest(
-            "Message is empty. Please check it again."
-          );
+          throw badRequest("Message is empty. Please check it again.");
         }
 
         const body = getValidBody(
@@ -222,9 +216,7 @@ export default async function (fastify: FastifyInstance) {
 
         messages = messages.filter((m) => m.content.trim().length > 0);
         if (messages.length === 0) {
-          throw fastify.httpErrors.badRequest(
-            "Message is empty. Please check it again."
-          );
+          throw badRequest("Message is empty. Please check it again.");
         }
         if (!confirmTextPrompt([{ ...textPrompt, messages, examples }])) {
           throw badRequest("Provided prompt is invalid. Please check it again");
@@ -318,10 +310,10 @@ export default async function (fastify: FastifyInstance) {
           },
         });
         if (!textPrompt || textPrompt.post.userHashId !== user.hashId) {
-          throw fastify.httpErrors.badRequest("No text prompt");
+          throw badRequest("No text prompt");
         }
         if (!textPrompt.post.thread.isPublic) {
-          throw fastify.httpErrors.badRequest("Not allowed to delete");
+          throw badRequest("Not allowed to delete");
         }
 
         await fastify.prisma.textPrompt.delete({ where: { hashId } });

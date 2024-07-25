@@ -12,10 +12,12 @@ const httpErrorsPlugin: FastifyPluginAsync = fp(
   async (fastify: FastifyInstance) => {
     fastify.register(sensible);
 
-    fastify.addHook("onError", (request, reply, error) => {
-      reply
-        .status(error.statusCode || 500)
-        .send({ msg: error.message || "Internal Server Error" });
+    fastify.setErrorHandler((error, request, reply) => {
+      const message =
+        typeof error === "string"
+          ? error
+          : error.message || "Internal Server Error";
+      reply.status(error.statusCode || 500).send({ message });
     });
   }
 );

@@ -27,7 +27,7 @@ export async function callBedrock(body: any) {
   const inputTokens = response.usage?.inputTokens;
   const outputTokens = response.usage?.outputTokens;
   if (!text || !inputTokens || !outputTokens) {
-    throw "AWs bedrock issue";
+    throw "AWS bedrock issue";
   }
 
   return { response, content: text, inputTokens, outputTokens };

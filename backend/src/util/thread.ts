@@ -5,5 +5,5 @@ export function isAccessible(
   if (thread.isPublic) return true;
   if (thread.userHashId === user.hashId) return true;
 
-  throw { statusCode: 401, msg: "This thread is private" };
+  throw "This thread is private";
 }
