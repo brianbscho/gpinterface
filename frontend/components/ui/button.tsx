@@ -60,6 +60,10 @@ function Button({
   ...props
 }: ButtonProps &
   React.RefAttributes<HTMLButtonElement> & { loading?: boolean }) {
+  if (props.asChild) {
+    return <ShadcnButton {...props} />;
+  }
+
   return (
     <ShadcnButton {...props} disabled={props.disabled || loading}>
       {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -69,4 +73,4 @@ function Button({
 }
 Button.displayName = "Button";
 
-export { Button, buttonVariants };
+export { ShadcnButton, Button, buttonVariants };
