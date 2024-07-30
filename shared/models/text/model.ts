@@ -45,6 +45,8 @@ export function getInputTextPriceByModel(input: number, model: string) {
       return 0.3 * input;
     case "open-mixtral-8x22b-2404":
       return 2 * input;
+    case "mistral-large-2407":
+      return 3 * input;
     case "mistral-large-2402":
       return 4 * input;
     case "mistral-medium-2312":
@@ -115,6 +117,8 @@ export function getOutputTextPriceByModel(output: number, model: string) {
       return 0.3 * output;
     case "open-mixtral-8x22b-2404":
       return 6 * output;
+    case "mistral-large-2407":
+      return 9 * output;
     case "mistral-large-2402":
       return 12 * output;
     case "mistral-medium-2312":
