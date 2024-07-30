@@ -28,14 +28,12 @@ import {
   Button,
   Card,
   Input,
-  Textarea,
 } from "@/components/ui";
 
 export default function Page() {
   const { user, setUser } = useUserStore();
 
   const [name, setName] = useState("");
-  const [bio, setBio] = useState("");
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
 
   const [saveButtonText, setSaveButtonText] = useState("Save");
@@ -43,7 +41,6 @@ export default function Page() {
     if (!user) return;
 
     setName(user.name);
-    setBio(user.bio);
   }, [user]);
   const nameValid = useMemo(
     () => /^[a-zA-Z0-9-_~!@#$^&*()+=]+$/.test(name),
@@ -70,7 +67,7 @@ export default function Page() {
         setSaveButtonText("Save");
       }, 1000);
     }
-  }, [nameValid, setUser, name, bio]);
+  }, [nameValid, setUser, name]);
 
   const router = useRouter();
   const onClickDelete = useCallback(async () => {
@@ -165,17 +162,6 @@ export default function Page() {
                   special characters.
                 </div>
               )}
-            </td>
-          </tr>
-          <tr>
-            <td className="text-muted-foreground text-sm">Bio</td>
-            <td>
-              <Textarea
-                value={bio}
-                className="flex-1 h-40"
-                onChange={(e) => setBio(e.currentTarget.value)}
-                placeholder="Add your bio"
-              ></Textarea>
             </td>
           </tr>
           <tr>
