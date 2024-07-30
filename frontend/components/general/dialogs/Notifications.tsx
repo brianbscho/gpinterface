@@ -61,7 +61,7 @@ export default function Notifications() {
   if (!user) return null;
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <div className="relative">
           {user.notification && (
             <div className="absolute -top-1 -right-1 rounded-full bg-yellow-300 h-2 w-2 z-10"></div>
@@ -71,26 +71,9 @@ export default function Notifications() {
           </Button>
         </div>
       </DialogTrigger>
-      <DialogContent className="w-full">
+      <DialogContent className="w-full" close>
+        <DialogTitle>Notifications</DialogTitle>
         <div className="h-[70vh] overflow-y-auto">
-          <div className="flex items-start gap-3">
-            <DialogTitle
-              style={{ backgroundColor: "var(--color-panel-solid)" }}
-              className="first:mt-0 mt-12 sticky top-0 z-10"
-            >
-              Notifications
-            </DialogTitle>
-            <div className="flex-1"></div>
-            <Button onClick={onClickClear}>Clear Notifications</Button>
-            <DialogClose>
-              <Button
-                style={{ width: "1.5rem", height: "1.5rem", padding: 0 }}
-                className="focus:outline-none"
-              >
-                <X />
-              </Button>
-            </DialogClose>
-          </div>
           <List
             callApi={callNotificationsApi}
             emptyMessage="No notification yet"
@@ -110,6 +93,9 @@ export default function Notifications() {
               </div>
             ))}
           </List>
+        </div>
+        <div>
+          <Button onClick={onClickClear}>Clear Notifications</Button>
         </div>
       </DialogContent>
     </Dialog>
