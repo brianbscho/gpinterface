@@ -19,6 +19,7 @@ import {
   TabsTrigger,
 } from "@/components/ui";
 import { Lock, Mail, UserRound } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function Page() {
   const [isLogin, setIsLogin] = useState(true);
@@ -151,13 +152,14 @@ export default function Page() {
                 least one lowercase letter, and at least one digit
               </div>
               <div className="flex items-center gap-3 mt-12">
-                <input
+                <Checkbox
                   id="agree"
-                  type="checkbox"
                   className="w-4 h-4"
                   value=""
                   checked={agree}
-                  onChange={(e) => setAgree(e.currentTarget.checked)}
+                  onCheckedChange={(c) =>
+                    typeof c === "boolean" ? setAgree(c) : undefined
+                  }
                   disabled={loading}
                 />
                 <label htmlFor="agree" className="text-xs">
