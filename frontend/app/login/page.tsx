@@ -83,15 +83,19 @@ export default function Page() {
   const [termsOpen, setTermsOpen] = useState(false);
 
   return (
-    <div className="w-full max-w-7xl px-3">
+    <div className="w-full max-w-md px-3 mt-16">
       <Tabs
-        className="mt-12"
+        className="w-full"
         defaultValue="login"
         onValueChange={(e) => setIsLogin(e === "login")}
       >
-        <TabsList>
-          <TabsTrigger value="login">Login</TabsTrigger>
-          <TabsTrigger value="signup">Sign up</TabsTrigger>
+        <TabsList className="w-full">
+          <TabsTrigger value="login" className="flex-1">
+            Login
+          </TabsTrigger>
+          <TabsTrigger value="signup" className="flex-1">
+            Sign up
+          </TabsTrigger>
         </TabsList>
         <form onSubmit={onSubmit} noValidate>
           <div className="mt-12">
