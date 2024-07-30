@@ -60,7 +60,7 @@ export default function Page() {
     >({
       endpoint: "/user",
       method: "PUT",
-      body: { name, bio },
+      body: { name },
       showError: true,
     });
     if (response) {

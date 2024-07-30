@@ -11,7 +11,6 @@ export const UserGetSchema = Type.Object({
 });
 export const UserUpdateSchema = Type.Object({
   name: Type.String(),
-  bio: Type.String(),
 });
 export const UserLoginSchema = Type.Object({
   email: Type.String(),
