@@ -28,6 +28,7 @@ function Radio<T extends string | number>({
           variant={o === option ? "secondary" : "outline"}
           disabled={disabled}
           loading={loading}
+          className="border-box border"
         >
           {o}
         </Button>
@@ -114,6 +115,7 @@ function RadioImageModel({
           variant={m.name === model?.name ? "secondary" : "outline"}
           disabled={disabled}
           loading={loading}
+          className="border-box border"
         >
           {m.name}
         </Button>
