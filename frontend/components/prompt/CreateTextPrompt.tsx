@@ -398,7 +398,7 @@ export default function CreateTextPrompt({
       )}
       <div className="flex justify-end gap-3 pb-3">
         <div>
-          <Button variant="secondary" onClick={onClickCancel}>
+          <Button variant="secondary" onClick={onClickCancel} loading={loading}>
             Cancel
           </Button>
         </div>
