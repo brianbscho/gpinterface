@@ -17,14 +17,13 @@ import {
   ApiKeysGetResponse,
 } from "gpinterface-shared/type/apiKey";
 import { Static } from "@sinclair/typebox";
-import { Copy, Trash2, UserRound } from "lucide-react";
+import { Copy, Mail, Trash2, UserRound } from "lucide-react";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogContent,
   AlertDialogDescription,
+  AlertDialogFooter,
   AlertDialogTitle,
-  AlertDialogTrigger,
   Button,
   Card,
   Input,
@@ -141,12 +140,12 @@ export default function Page() {
   return (
     <div className="w-full max-w-7xl flex flex-col gap-3 px-3">
       <table className="mt-3">
-        <tbody className="align-top">
-          <tr>
+        <tbody className="align-middle">
+          <tr className="h-10">
             <td className="text-muted-foreground text-sm">Email</td>
             <td className="text-sm">{user.email}</td>
           </tr>
-          <tr className="align-middle">
+          <tr>
             <td className="text-muted-foreground text-sm">Username</td>
             <td>
               <Input
@@ -164,16 +163,19 @@ export default function Page() {
               )}
             </td>
           </tr>
-          <tr>
+          <tr className="align-top">
             <td className="text-muted-foreground text-sm">
-              <div className="mt-1">API Keys</div>
+              <div className="h-10 flex items-center">API Keys</div>
             </td>
             <td>
               <div>
                 <div>
                   <table>
                     {apiKeys.map((k) => (
-                      <tr key={k.hashId}>
+                      <tr
+                        key={k.hashId}
+                        className="h-[3.25rem] first:h-10 align-middle"
+                      >
                         <td className="text-sm">{k.key}</td>
                         <td>
                           <Button
@@ -210,25 +212,37 @@ export default function Page() {
               </div>
             </td>
           </tr>
+          <tr>
+            <td className="text-muted-foreground text-sm">
+              <div className="h-10 flex items-center">Customer support</div>
+            </td>
+            <td>
+              <div className="text-sm flex items-center gap-1">
+                <a href="mailto:brian.b.cho@bookquilt.com">Send email</a>
+                <span>
+                  <Mail />
+                </span>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td className="text-muted-foreground text-sm">
+              <div className="h-10 flex items-center">Password</div>
+            </td>
+            <td>
+              <Password />
+            </td>
+          </tr>
         </tbody>
       </table>
-      <div className="text-xs flex justify-end">
-        <a href="mailto:brian.b.cho@bookquilt.com">Customer Support</a>
-      </div>
-      <div className="w-full flex justify-end gap-3">
-        <Password />
+      <div className="w-full flex flex-col items-end gap-3">
         <Button onClick={onClickSave}>{saveButtonText}</Button>
-      </div>
-      <div className="self-end">
         <Button onClick={onClickDelete} variant="destructive">
           Delete account
         </Button>
       </div>
       <AlertDialog open={newKey.length > 0}>
-        <AlertDialogTrigger>
-          <div></div>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
+        <AlertDialogContent className="max-w-fit">
           <AlertDialogTitle>API Key</AlertDialogTitle>
           <AlertDialogDescription>
             <div>
@@ -240,8 +254,8 @@ export default function Page() {
                 </span>
               </div>
               <Card className="mt-3">
-                <div className="flex items-center gap-3">
-                  <div className="text-xs">{newKey}</div>
+                <div className="flex items-center">
+                  <div className="text-xs px-3">{newKey}</div>
                   <Button
                     variant="secondary"
                     onClick={() => navigator.clipboard.writeText(newKey)}
@@ -252,13 +266,13 @@ export default function Page() {
               </Card>
             </div>
           </AlertDialogDescription>
-          <AlertDialogAction>
+          <AlertDialogFooter>
             <div className="w-full flex justify-end mt-3">
               <div>
                 <Button onClick={() => setNewKey("")}>Confirm</Button>
               </div>
             </div>
-          </AlertDialogAction>
+          </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>
