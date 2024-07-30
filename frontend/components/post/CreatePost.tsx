@@ -14,7 +14,7 @@ import Radio, { modals } from "../general/inputs/Radio";
 import { TextPromptSchema } from "gpinterface-shared/type/textPrompt";
 import CreateImagePrompt from "../prompt/CreateImagePrompt";
 import { ImagePromptSchema } from "gpinterface-shared/type/imagePrompt";
-import { Button } from "../ui";
+import { Button, Textarea } from "../ui";
 
 export default function CreatePost({ thread }: { thread: Thread }) {
   const [post, setPost] = useState("");
@@ -109,8 +109,8 @@ export default function CreatePost({ thread }: { thread: Thread }) {
   return (
     <div className="w-full max-w-7xl px-3 flex flex-col gap-7 py-7">
       <div className="w-full">
-        <textarea
-          className="w-full focus:outline-none border rounded p-1 resize-none h-80"
+        <Textarea
+          className="w-full h-80"
           value={post}
           onChange={(e) => setPost(e.currentTarget.value)}
           placeholder="contents of the post"

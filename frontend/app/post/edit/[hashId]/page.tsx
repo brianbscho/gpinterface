@@ -27,7 +27,7 @@ import {
   ImagePromptUpdateResponse,
   ImagePromptUpdateSchema,
 } from "gpinterface-shared/type/imagePrompt";
-import { Button } from "@/components/ui";
+import { Button, Input, Textarea } from "@/components/ui";
 
 export default function Page({ params }: { params: { hashId: string } }) {
   const { hashId } = params;
@@ -175,16 +175,16 @@ export default function Page({ params }: { params: { hashId: string } }) {
   return (
     <div className="w-full max-w-7xl px-3 flex flex-col gap-7 py-7">
       <div className="w-full">
-        <input
-          className="w-full focus:outline-none border-b p-1"
+        <Input
+          className="w-full"
           value={title}
           onChange={(e) => setTitle(e.currentTarget.value)}
           placeholder="title of the thread"
         />
       </div>
       <div className="w-full">
-        <textarea
-          className="w-full focus:outline-none border rounded p-1 resize-none h-80"
+        <Textarea
+          className="w-full h-80"
           value={post}
           onChange={(e) => setPost(e.currentTarget.value)}
           placeholder="contents of the post"
@@ -198,7 +198,11 @@ export default function Page({ params }: { params: { hashId: string } }) {
       {modal === modals[0] && (
         <div className="flex justify-end gap-3 pb-3">
           <div>
-            <Button variant="secondary" onClick={onClickCancel}>
+            <Button
+              variant="secondary"
+              onClick={onClickCancel}
+              loading={loading}
+            >
               Cancel
             </Button>
           </div>

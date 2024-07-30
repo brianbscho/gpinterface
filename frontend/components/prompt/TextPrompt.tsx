@@ -5,13 +5,12 @@ import Collapsible from "@/components/general/collapsible";
 import { inputsToObject, objectToInputs, stringify } from "@/util/string";
 import { Fragment, useCallback, useMemo, useState } from "react";
 import callApi from "@/util/callApi";
-import IndentTextarea from "@/components/general/inputs/IndentTextarea";
 import { TextPromptExecuteResponse } from "gpinterface-shared/type/textPrompt";
 import EstimatedPrice from "@/components/general/hover/EstimatedPrice";
 import { getValidBody } from "gpinterface-shared/util";
 import UserRequiredButton from "@/components/general/buttons/UserRequiredButton";
 import { getBasePrice } from "gpinterface-shared/models/text/model";
-import { Button } from "../ui";
+import { Button, Textarea } from "../ui";
 
 export default function TextPrompt({
   textPrompt,
@@ -110,11 +109,15 @@ export default function TextPrompt({
               <div className="grid grid-cols-[auto_1fr] gap-3 w-full">
                 {inputs.map((i, index) => (
                   <Fragment key={i.name}>
-                    <div className="font-bold">{i.name}</div>
-                    <IndentTextarea
+                    <div className="pt-2 text-sm">{i.name}</div>
+                    <Textarea
                       placeholder={i.name}
-                      useValue={[i.value, setExampleInput(index)]}
+                      value={i.value}
+                      onChange={(e) =>
+                        setExampleInput(index)(e.currentTarget.value)
+                      }
                       disabled={loading}
+                      className="min-h-0 h-10"
                     />
                   </Fragment>
                 ))}
