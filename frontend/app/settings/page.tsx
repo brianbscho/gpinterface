@@ -143,93 +143,98 @@ export default function Page() {
   if (!user) return null;
   return (
     <div className="w-full max-w-7xl flex flex-col gap-3 px-3">
-      <table>
-        <tr>
-          <td>Email</td>
-          <td>{user.email}</td>
-        </tr>
-        <tr>
-          <td>Username</td>
-          <td>
-            <Input
-              type="text"
-              placeholder="Please type your username (no space)"
-              value={name}
-              onChange={(e) => setName(e.currentTarget.value)}
-              Icon={UserRound}
-            ></Input>
-            <div className="text-xs min-h-4 mt-1 mb-3 text-rose-500">
-              {name.length > 0 &&
-                !nameValid &&
-                "You can use only alphanumeric characters and -_,~!@#$^&*()+= special characters."}
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <td>Bio</td>
-          <td>
-            <Textarea
-              value={bio}
-              className="flex-1 h-40"
-              onChange={(e) => setBio(e.currentTarget.value)}
-            ></Textarea>
-          </td>
-        </tr>
-        <tr>
-          <td>API Keys</td>
-          <td>
-            <div>
+      <table className="mt-3">
+        <tbody className="align-top">
+          <tr>
+            <td className="text-muted-foreground text-sm">Email</td>
+            <td className="text-sm">{user.email}</td>
+          </tr>
+          <tr className="align-middle">
+            <td className="text-muted-foreground text-sm">Username</td>
+            <td>
+              <Input
+                type="text"
+                placeholder="Please type your username (no space)"
+                value={name}
+                onChange={(e) => setName(e.currentTarget.value)}
+                Icon={UserRound}
+              ></Input>
+              {name.length > 0 && !nameValid && (
+                <div className="text-xs min-h-4 mt-1 mb-3 text-rose-500">
+                  You can use only alphanumeric characters and -_,~!@#$^&*()+=
+                  special characters.
+                </div>
+              )}
+            </td>
+          </tr>
+          <tr>
+            <td className="text-muted-foreground text-sm">Bio</td>
+            <td>
+              <Textarea
+                value={bio}
+                className="flex-1 h-40"
+                onChange={(e) => setBio(e.currentTarget.value)}
+                placeholder="Add your bio"
+              ></Textarea>
+            </td>
+          </tr>
+          <tr>
+            <td className="text-muted-foreground text-sm">
+              <div className="mt-1">API Keys</div>
+            </td>
+            <td>
               <div>
-                <table>
-                  {apiKeys.map((k) => (
-                    <tr key={k.hashId}>
-                      <td>
-                        <div className="mb-3">{k.key}</div>
-                      </td>
-                      <td className="pl-3">
-                        <div className="mb-3">
+                <div>
+                  <table>
+                    {apiKeys.map((k) => (
+                      <tr key={k.hashId}>
+                        <td className="text-sm">{k.key}</td>
+                        <td>
                           <Button
                             variant="outline"
                             onClick={() => onClickApiKeyTrash(k.hashId)}
-                            className="mb-3"
+                            className="p-0 h-7 w-7"
                           >
                             <Trash2 />
                           </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </table>
-                <Button onClick={onClickGetApiKey}>Get API Key</Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </table>
+                  <Button onClick={onClickGetApiKey} className="mt-3">
+                    Get API Key
+                  </Button>
+                </div>
+                <div className="mt-3 text-sm">
+                  <ul>
+                    <li>
+                      1. We are currently in the beta phase of our product
+                      launch.
+                    </li>
+                    <li>
+                      2. During this beta period, there will be no charges for
+                      your use of the service.
+                    </li>
+                    <li>
+                      3. As part of our beta testing phase, your daily usage is
+                      capped at $1.
+                    </li>
+                  </ul>
+                </div>
               </div>
-              <div className="mt-3">
-                <ul>
-                  <li>
-                    1. We are currently in the beta phase of our product launch.
-                  </li>
-                  <li>
-                    2. During this beta period, there will be no charges for
-                    your use of the service.
-                  </li>
-                  <li>
-                    3. As part of our beta testing phase, your daily usage is
-                    capped at $1.
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </td>
-        </tr>
+            </td>
+          </tr>
+        </tbody>
       </table>
-      <div className="my-3 text-xs flex justify-end">
+      <div className="text-xs flex justify-end">
         <a href="mailto:brian.b.cho@bookquilt.com">Customer Support</a>
       </div>
-      <div className="w-full flex justify-end gap-3 mt-4">
+      <div className="w-full flex justify-end gap-3">
         <Password />
         <Button onClick={onClickSave}>{saveButtonText}</Button>
       </div>
       <div className="self-end">
-        <Button onClick={onClickDelete} color="crimson" variant="outline">
+        <Button onClick={onClickDelete} variant="destructive">
           Delete account
         </Button>
       </div>
