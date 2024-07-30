@@ -28,7 +28,7 @@ function Component() {
   const pathname = usePathname();
   if (!nullRenderPathname.includes(pathname)) return null;
   return (
-    <div className="py-3">
+    <div className="w-full max-w-7xl mx-auto h-16 flex items-center px-3">
       <form className="w-full" onSubmit={onSubmit}>
         <div className="w-full flex items-center gap-3">
           <Input
