@@ -7,7 +7,6 @@ import { llamaConfig, llamaModels } from "./meta";
 import { gemmaConfig, gemmaModels } from "./google";
 
 export const textModels = [
-  { provider: "None", models: [], config: {} },
   { provider: "OpenAI", models: gptModels, config: gptConfig },
   { provider: "Anthropic", models: claudeModels, config: claudeConfig },
   { provider: "Mistral", models: mistralModels, config: mistralConfig },
