@@ -18,7 +18,7 @@ export default function Login({
 }: {
   title?: string;
   open: boolean;
-  onClickLogin: () => void;
+  onClickLogin?: () => void;
 }) {
   const pathname = usePathname();
   const [redirect, setRedirect] = useState("");
