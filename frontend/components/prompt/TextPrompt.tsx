@@ -5,7 +5,7 @@ import Collapsible from "@/components/general/collapsible";
 import { inputsToObject, objectToInputs, stringify } from "@/util/string";
 import { Fragment, useCallback, useMemo, useState } from "react";
 import callApi from "@/util/callApi";
-import Textarea from "@/components/general/inputs/Textarea";
+import IndentTextarea from "@/components/general/inputs/IndentTextarea";
 import { TextPromptExecuteResponse } from "gpinterface-shared/type/textPrompt";
 import EstimatedPrice from "@/components/general/hover/EstimatedPrice";
 import { getValidBody } from "gpinterface-shared/util";
@@ -111,8 +111,7 @@ export default function TextPrompt({
                 {inputs.map((i, index) => (
                   <Fragment key={i.name}>
                     <div className="font-bold">{i.name}</div>
-                    <Textarea
-                      className="focus:outline-none border border-px rounded p-1 resize-none h-40"
+                    <IndentTextarea
                       placeholder={i.name}
                       useValue={[i.value, setExampleInput(index)]}
                       disabled={loading}

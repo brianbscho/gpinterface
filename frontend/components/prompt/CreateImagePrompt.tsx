@@ -1,6 +1,6 @@
 "use client";
 
-import Textarea from "../general/inputs/Textarea";
+import IndentTextarea from "../general/inputs/IndentTextarea";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import {
   getKeyAlignedInput,
@@ -262,8 +262,8 @@ export default function CreateImagePrompt({
                   <td>
                     <Collapsible>
                       <div className="flex flex-col gap-3 items-start">
-                        <Textarea
-                          className="w-full focus:outline-none border border-px rounded p-1 resize-none h-80"
+                        <IndentTextarea
+                          className="w-full h-80"
                           placeholder="advanced config"
                           useValue={[config, setConfig]}
                           disabled={loading || responsePost?.thread.isPublic}
@@ -321,8 +321,8 @@ export default function CreateImagePrompt({
                     {inputs.map((i, index) => (
                       <Fragment key={i.name}>
                         <div>{i.name}</div>
-                        <Textarea
-                          className="focus:outline-none border border-px rounded p-1 resize-none h-40"
+                        <IndentTextarea
+                          className="h-40"
                           placeholder={i.name}
                           useValue={[i.value, setExampleInput(index)]}
                           disabled={loading || responsePost?.thread.isPublic}

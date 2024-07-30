@@ -1,6 +1,6 @@
 "use client";
 
-import Textarea from "../general/inputs/Textarea";
+import IndentTextarea from "../general/inputs/IndentTextarea";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import {
   getKeyAlignedInput,
@@ -259,11 +259,10 @@ export default function CreateTextPrompt({
                 (optional)
               </td>
               <td>
-                <textarea
-                  className="w-full focus:outline-none border border-px rounded p-1 resize-none h-20"
+                <IndentTextarea
+                  className="w-full h-20"
                   placeholder="system message"
-                  value={systemMessage}
-                  onChange={(e) => setSystemMessage(e.currentTarget.value)}
+                  useValue={[systemMessage, setSystemMessage]}
                   disabled={loading || responsePost?.thread.isPublic}
                 />
               </td>
@@ -311,8 +310,8 @@ export default function CreateTextPrompt({
               </td>
               <td>
                 <Collapsible>
-                  <Textarea
-                    className="w-full focus:outline-none border border-px rounded p-1 resize-none h-80"
+                  <IndentTextarea
+                    className="w-full h-80"
                     placeholder="advanced config"
                     useValue={[config, setConfig]}
                     disabled={loading || responsePost?.thread.isPublic}
@@ -346,8 +345,8 @@ export default function CreateTextPrompt({
                   {inputs.map((i, index) => (
                     <Fragment key={i.name}>
                       <div>{i.name}</div>
-                      <Textarea
-                        className="focus:outline-none border border-px rounded p-1 resize-none h-40"
+                      <IndentTextarea
+                        className="h-40"
                         placeholder={i.name}
                         useValue={[i.value, setExampleInput(index)]}
                         disabled={loading || responsePost?.thread.isPublic}

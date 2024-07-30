@@ -7,7 +7,7 @@ import { Fragment, useCallback, useMemo, useState } from "react";
 import callApi from "@/util/callApi";
 import { ImagePromptExecuteResponse } from "gpinterface-shared/type/imagePrompt";
 import EstimatedPrice from "@/components/general/hover/EstimatedPrice";
-import Textarea from "@/components/general/inputs/Textarea";
+import IndentTextarea from "@/components/general/inputs/IndentTextarea";
 import { getValidBody } from "gpinterface-shared/util";
 import UserRequiredButton from "@/components/general/buttons/UserRequiredButton";
 import { Button } from "../ui";
@@ -92,8 +92,8 @@ export default function ImagePrompt({
                 {inputs.map((i, index) => (
                   <Fragment key={i.name}>
                     <div className="font-bold">{i.name}</div>
-                    <Textarea
-                      className="focus:outline-none border border-px rounded p-1 resize-none h-40"
+                    <IndentTextarea
+                      className="h-40"
                       placeholder={i.name}
                       useValue={[i.value, setExampleInput(index)]}
                       disabled={loading}
