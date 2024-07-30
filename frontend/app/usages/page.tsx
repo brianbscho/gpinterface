@@ -1,14 +1,17 @@
+"use client";
+
 import TextUsages from "./TextUsages";
 import ImageUsages from "./ImageUsages";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui";
+import { Tabs, TabsContent } from "@/components/ui";
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 
-export default function Page() {
+function Usages() {
+  const searchParams = useSearchParams();
+  const value = searchParams.get("value");
+
   return (
-    <Tabs defaultValue="text">
-      <TabsList>
-        <TabsTrigger value="text">Text</TabsTrigger>
-        <TabsTrigger value="image">Image</TabsTrigger>
-      </TabsList>
+    <Tabs value={value ?? "text"}>
       <TabsContent value="text">
         <TextUsages />
       </TabsContent>
@@ -16,5 +19,13 @@ export default function Page() {
         <ImageUsages />
       </TabsContent>
     </Tabs>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense>
+      <Usages />
+    </Suspense>
   );
 }
