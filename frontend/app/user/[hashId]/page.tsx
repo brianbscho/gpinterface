@@ -19,10 +19,7 @@ export async function generateMetadata({
   const { hashId } = params;
   const response = await getUser(hashId);
   if (response) {
-    return {
-      title: `gpinterface - ${response.user.name}`,
-      description: response.user.bio,
-    };
+    return { title: `gpinterface - ${response.user.name}` };
   }
   return { title: "gpinterface" };
 }
