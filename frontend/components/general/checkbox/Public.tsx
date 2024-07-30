@@ -14,6 +14,7 @@ export default function Public({
     <Button
       onClick={() => setIsPublic((prev) => !prev)}
       variant={isPublic ? "secondary" : "outline"}
+      className="w-24"
     >
       {isPublic ? "Public" : "Private"}
     </Button>
