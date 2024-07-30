@@ -5,14 +5,24 @@ import callApi from "@/util/callApi";
 import useUserStore from "@/store/user";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { UserGetMeResponse } from "gpinterface-shared/type/user";
-import { Menu, UserRound } from "lucide-react";
 import {
-  Button,
+  Bookmark,
+  LogOut,
+  ReceiptText,
+  Settings,
+  UserRound,
+} from "lucide-react";
+import {
+  ShadcnButton,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuGroup,
 } from "@/components/ui";
+import Link from "../links/Link";
 
 const loginRedirectPaths = ["login"];
 const logoutRedirectPaths = ["settings", "usages"];
@@ -64,30 +74,47 @@ function _Menus() {
 
   const [open, setOpen] = useState(false);
 
+  if (!user) {
+    return (
+      <ShadcnButton asChild>
+        <Link href={`/login${redirect}`}>
+          <UserRound />
+        </Link>
+      </ShadcnButton>
+    );
+  }
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
-      <DropdownMenuTrigger className="focus:outline-none">
-        <Button>{!user ? <Menu /> : <UserRound />}</Button>
+      <DropdownMenuTrigger asChild>
+        <ShadcnButton>
+          <UserRound />
+        </ShadcnButton>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        {!user ? (
-          <DropdownMenuItem onClick={() => push(`/login${redirect}`)}>
-            Login
+        <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem onClick={() => push(`/user/${user.hashId}`)}>
+            <UserRound />
+            <span className="ml-3">My page</span>
           </DropdownMenuItem>
-        ) : (
-          <>
-            <DropdownMenuItem onClick={() => push(`/user/${user.hashId}`)}>
-              My page
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => push("/settings")}>
-              Settings
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => push("/usages")}>
-              Usages
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={onClickLogout}>Logout</DropdownMenuItem>
-          </>
-        )}
+          <DropdownMenuItem onClick={() => push(`/bookmarks`)}>
+            <Bookmark />
+            <span className="ml-3">Bookmarks</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => push("/settings")}>
+            <Settings />
+            <span className="ml-3">Settings</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => push("/usages")}>
+            <ReceiptText />
+            <span className="ml-3">Usages</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={onClickLogout}>
+            <LogOut />
+            <span className="ml-3">Logout</span>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );
