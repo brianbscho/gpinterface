@@ -14,18 +14,19 @@ function formatBody(isV1: boolean, body: any) {
 }
 
 export async function callStabilityAi(model: string, body: any) {
+  const apiUrl = stabilityAiModels.find((m) => m.name === model)?.url;
   if (process.env.NODE_ENV === "development") {
     console.log("🚀 ~ body:", body);
+    console.log("🚀 ~ apiUrl:", apiUrl);
   }
 
-  const apiUrl = stabilityAiModels.find((m) => m.name === model)?.url;
   if (!apiUrl) {
     throw "Wrong stability.ai model name!";
   }
 
   const headers = {
     ...(apiUrl.includes("v1") && { "Content-Type": "application/json" }),
-    Accept: body.output_format ? `image/*` : "image/png",
+    Accept: apiUrl.includes("v1") ? "image/png" : `image/*`,
     Authorization: `Bearer ${process.env.STABILITY_AI_API_KEY}`,
   };
   const response = await fetch(apiUrl, {
@@ -38,6 +39,10 @@ export async function callStabilityAi(model: string, body: any) {
   }
 
   if (!response.ok) {
+    if (process.env.NODE_ENV === "development") {
+      const json = await response.json();
+      console.log("🚀 ~ callStabilityAi ~ json:", json);
+    }
     throw "Stability AI Api issue";
   }
 
