@@ -67,5 +67,5 @@ export async function getTodayPriceSum(
     },
   });
 
-  return result._sum.price || 0;
+  return result._sum.price || 999;
 }
