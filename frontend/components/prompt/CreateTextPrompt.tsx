@@ -17,49 +17,47 @@ import {
 } from "gpinterface-shared/type/textPrompt";
 import { Static } from "@sinclair/typebox";
 import Collapsible from "../general/collapsible";
-import { getBasePrice, textModels } from "gpinterface-shared/models/text/model";
+import { getBasePrice } from "gpinterface-shared/models/text/model";
 import useTextModel from "@/hooks/useTextModel";
-import Radio from "../general/inputs/Radio";
 import useLinkConfirmMessage from "@/hooks/useLinkConfirmMessage";
 import { PostGetResponse } from "gpinterface-shared/type/post";
 import { TextMessageSchema } from "gpinterface-shared/type/textMessage";
 import EstimatedPrice from "../general/hover/EstimatedPrice";
 import { getValidBody } from "gpinterface-shared/util";
 import { useRouter } from "next/navigation";
-import UserRequiredButton from "../general/buttons/UserRequiredButton";
-import { Trash2 } from "lucide-react";
+import { PlayCircle, PlusCircle, RotateCcw, Trash2 } from "lucide-react";
 import {
   Button,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
+  SelectValue,
+  Textarea,
 } from "../ui";
-
-const defaultSystemMessage = "{{systemMessage}}";
+import Title from "../thread/Title";
+import Provider from "../general/selects/Provider";
+import Footer from "./Footer";
 
 const defaultMessage: Static<typeof TextMessageSchema> = {
   role: "user",
   content: "What is {{a}} + {{b}}?",
 };
 
-const defaultExample = {
-  content: "",
-  response: null as any,
-  price: 0,
-};
+const defaultExample = { content: "", response: null as any, price: 0 };
 
 const defaultInputs = [
-  { name: "systemMessage", value: "You are a helpful math teacher." },
   { name: "a", value: "1" },
   { name: "b", value: "2" },
 ];
 
 export default function CreateTextPrompt({
+  useIsPublic,
   callCreate,
   useLoading,
   responsePost,
 }: {
+  useIsPublic: [boolean, (i: boolean) => void];
   callCreate: (
     textPrompt: Static<typeof TextPromptSchema>
   ) => Promise<{ hashId: string } | undefined>;
@@ -73,7 +71,7 @@ export default function CreateTextPrompt({
   const [provider, setProvider] = useProvider;
   const [model, setModel] = useModel;
   const [config, setConfig] = useConfig;
-  const [systemMessage, setSystemMessage] = useState(defaultSystemMessage);
+  const [systemMessage, setSystemMessage] = useState("");
 
   const [messages, setMessages] = useState([defaultMessage]);
   const [example, setExample] = useState(defaultExample);
@@ -184,8 +182,11 @@ export default function CreateTextPrompt({
   }, [provider, model, config, inputs, systemMessage, messages, setLoading]);
 
   const onClickCreate = useCallback(async () => {
-    if (messages.length === 0) {
+    if (messages.length === 0 || messages.some((m) => m.content.length === 0)) {
       alert("Please write the prompt message");
+      return;
+    } else if (messages[messages.length - 1].role !== "user") {
+      alert("Messages should end with user's message.");
       return;
     } else if (example.content.length === 0) {
       alert("Please complete the input test");
@@ -211,202 +212,167 @@ export default function CreateTextPrompt({
     systemMessage,
   ]);
 
-  useLinkConfirmMessage(provider !== textModels[0].provider);
+  useLinkConfirmMessage(true);
 
   const router = useRouter();
   const onClickCancel = useCallback(() => router.back(), [router]);
 
   return (
-    <>
-      <div className="w-full flex items-center gap-3">
-        <Radio.TextProvider
+    <div className="grid grid-cols-[8rem_auto_1fr_auto] gap-3 md:gap-7 items-center">
+      <Title>Model</Title>
+      <div>
+        <Provider.TextProvider
           useProvider={[provider, setProvider]}
-          loading={loading}
-          disabled={responsePost?.thread.isPublic}
+          disabled={responsePost?.thread.isPublic || loading}
         />
       </div>
-      {models.length > 0 && (
-        <div className="w-full flex items-center gap-3">
-          <Radio
-            options={models}
-            useOption={[model, setModel]}
+      <div className="col-span-2">
+        <Provider
+          options={models}
+          useOption={[model, setModel]}
+          disabled={responsePost?.thread.isPublic || loading}
+        />
+      </div>
+      <div className="self-start">
+        <div className="flex items-center gap-1">
+          <Title>Config</Title>
+          <Button
+            onClick={onClickResetConfig}
             loading={loading}
             disabled={responsePost?.thread.isPublic}
-          />
-        </div>
-      )}
-      {provider !== textModels[0].provider && (
-        <table className="w-full">
-          <tbody className="align-top">
-            <tr>
-              <td className="w-28 md:w-40">
-                <div className="font-bold text-nowrap">Messages</div>
-              </td>
-              <td>
-                <Button
-                  onClick={onClickAddMessages}
-                  loading={loading}
-                  disabled={responsePost?.thread.isPublic}
-                >
-                  Add messages
-                </Button>
-              </td>
-            </tr>
-            <tr>
-              <td className="text-sm">
-                system
-                <br />
-                (optional)
-              </td>
-              <td>
-                <IndentTextarea
-                  className="w-full h-20"
-                  placeholder="system message"
-                  useValue={[systemMessage, setSystemMessage]}
-                  disabled={loading || responsePost?.thread.isPublic}
-                />
-              </td>
-            </tr>
-            {messages.map((m, index) => (
-              <tr key={`message_${index}`}>
-                <td>
-                  <Select
-                    value={m.role}
-                    onValueChange={(v) => setMessage(index)({ role: v })}
-                    disabled={loading || responsePost?.thread.isPublic}
-                  >
-                    <SelectTrigger />
-                    <SelectContent>
-                      <SelectItem value="user">user</SelectItem>
-                      <SelectItem value="assistant">assistant</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </td>
-                <td>
-                  <div className="flex items-start gap-3">
-                    <textarea
-                      className="w-full focus:outline-none border border-px rounded p-1 resize-none h-20"
-                      placeholder="message"
-                      value={m.content}
-                      onChange={(e) =>
-                        setMessage(index)({ content: e.currentTarget.value })
-                      }
-                      disabled={loading || responsePost?.thread.isPublic}
-                    />
-                    <Button
-                      onClick={() => onClickDeleteMessage(index)}
-                      loading={loading}
-                      disabled={responsePost?.thread.isPublic}
-                    >
-                      <Trash2 />
-                    </Button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-            <tr>
-              <td>
-                <div className="font-bold text-nowrap">Config</div>
-              </td>
-              <td>
-                <Collapsible>
-                  <IndentTextarea
-                    className="w-full h-80"
-                    placeholder="advanced config"
-                    useValue={[config, setConfig]}
-                    disabled={loading || responsePost?.thread.isPublic}
-                  />
-                  <Button
-                    onClick={onClickResetConfig}
-                    loading={loading}
-                    disabled={responsePost?.thread.isPublic}
-                  >
-                    Reset to Default
-                  </Button>
-                </Collapsible>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <UserRequiredButton onClick={onClickTest}>
-                  <Button
-                    loading={loading}
-                    disabled={responsePost?.thread.isPublic}
-                  >
-                    Test
-                  </Button>
-                </UserRequiredButton>
-                <div className="text-sm text-rose-500 mb-3">
-                  {inputErrorMessage}
-                </div>
-              </td>
-              <td>
-                <div className="grid grid-cols-[auto_1fr] gap-3 w-full">
-                  {inputs.map((i, index) => (
-                    <Fragment key={i.name}>
-                      <div>{i.name}</div>
-                      <IndentTextarea
-                        className="h-40"
-                        placeholder={i.name}
-                        useValue={[i.value, setExampleInput(index)]}
-                        disabled={loading || responsePost?.thread.isPublic}
-                      />
-                    </Fragment>
-                  ))}
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td className="w-28 md:w-40">
-                <div className="font-bold text-nowrap">Base price</div>
-              </td>
-              <td>{getBasePrice(model)}</td>
-            </tr>
-            {example.content.length > 0 && example.response !== null && (
-              <>
-                <tr>
-                  <td>Content</td>
-                  <td className="whitespace-pre text-wrap">
-                    <div>{example.content}</div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <EstimatedPrice />
-                  </td>
-                  <td>
-                    <div>
-                      <div className="whitespace-pre text-wrap">
-                        ${example.price}
-                      </div>
-                    </div>
-                  </td>
-                </tr>
-                <tr>
-                  <td>Response</td>
-                  <td>
-                    <div className="whitespace-pre text-wrap">
-                      {stringify(example.response)}
-                    </div>
-                  </td>
-                </tr>
-              </>
-            )}
-          </tbody>
-        </table>
-      )}
-      <div className="flex justify-end gap-3 pb-3">
-        <div>
-          <Button variant="secondary" onClick={onClickCancel} loading={loading}>
-            Cancel
-          </Button>
-        </div>
-        <div>
-          <Button onClick={onClickCreate} loading={loading}>
-            {!!responsePost ? "Save" : "Create"}
+            className="rounded-full w-7 h-7 p-1"
+          >
+            <RotateCcw />
           </Button>
         </div>
       </div>
-    </>
+      <div className="col-span-3 self-start">
+        <div className="mt-2">
+          <Collapsible>
+            <IndentTextarea
+              className="w-full h-80"
+              placeholder="advanced config"
+              useValue={[config, setConfig]}
+              disabled={loading || responsePost?.thread.isPublic}
+            />
+          </Collapsible>
+        </div>
+      </div>
+      <div className="flex items-center gap-1">
+        <Title>Messages</Title>
+        <Button
+          onClick={onClickAddMessages}
+          loading={loading}
+          disabled={responsePost?.thread.isPublic}
+          className="rounded-full w-7 h-7 p-1 shrink-0"
+        >
+          <PlusCircle />
+        </Button>
+      </div>
+      <div className="text-sm leading-10">system (optional)</div>
+      <div className="col-span-2">
+        <Textarea
+          className="w-full min-h-0 h-10"
+          placeholder="system message (optional)"
+          value={systemMessage}
+          onChange={(e) => setSystemMessage(e.currentTarget.value)}
+          disabled={loading || responsePost?.thread.isPublic}
+        />
+      </div>
+      {messages.map((m, index) => (
+        <Fragment key={`message_${index}`}>
+          <div></div>
+          <div>
+            <Select
+              value={m.role}
+              onValueChange={(v) => setMessage(index)({ role: v })}
+              disabled={loading || responsePost?.thread.isPublic}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="user">user</SelectItem>
+                <SelectItem value="assistant">assistant</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Textarea
+              className="w-full min-h-0 h-10"
+              placeholder="message"
+              value={m.content}
+              onChange={(e) =>
+                setMessage(index)({ content: e.currentTarget.value })
+              }
+              disabled={loading || responsePost?.thread.isPublic}
+            />
+          </div>
+          <div>
+            <Button
+              onClick={() => onClickDeleteMessage(index)}
+              loading={loading}
+              disabled={responsePost?.thread.isPublic}
+            >
+              <Trash2 />
+            </Button>
+          </div>
+        </Fragment>
+      ))}
+      <div>
+        <div className="flex items-center gap-1">
+          <Title>Test</Title>
+          <Button
+            onClick={onClickTest}
+            loading={loading}
+            disabled={responsePost?.thread.isPublic}
+            className="rounded-full w-7 h-7 p-1"
+          >
+            <PlayCircle />
+          </Button>
+        </div>
+        <div className="text-sm text-rose-500">{inputErrorMessage}</div>
+      </div>
+      {inputs.map((i, index) => (
+        <Fragment key={i.name}>
+          {index > 0 && <div></div>}
+          <div className="text-sm">{i.name}</div>
+          <div className="col-span-2">
+            <Textarea
+              placeholder={i.name}
+              value={i.value}
+              onChange={(e) => setExampleInput(index)(e.currentTarget.value)}
+              disabled={loading || responsePost?.thread.isPublic}
+              className="min-h-0 h-10"
+            />
+          </div>
+        </Fragment>
+      ))}
+      {example.content.length > 0 && example.response !== null && (
+        <>
+          <Title>Content</Title>
+          <div className="col-span-3 text-xs md:text-sm whitespace-pre text-wrap">
+            {example.content}
+          </div>
+          <EstimatedPrice />
+          <div className="col-span-3 text-xs md:text-sm">${example.price}</div>
+          <Title>Response</Title>
+          <div className="col-span-3 text-xs md:text-sm whitespace-pre text-wrap">
+            {stringify(example.response)}
+          </div>
+        </>
+      )}
+      <Title>Base price</Title>
+      <div className="col-span-3 text-xs md:text-sm">{getBasePrice(model)}</div>
+      <div className="col-span-4">
+        <Footer
+          useIsPublic={[...useIsPublic, !responsePost]}
+          onClickCancel={onClickCancel}
+          onClickCreate={onClickCreate}
+          createText={!!responsePost ? "Save" : "Create"}
+          loading={loading}
+        />
+      </div>
+    </div>
   );
 }

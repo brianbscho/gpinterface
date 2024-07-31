@@ -21,12 +21,14 @@ import Radio from "../general/inputs/Radio";
 import useLinkConfirmMessage from "@/hooks/useLinkConfirmMessage";
 import { PostGetResponse } from "gpinterface-shared/type/post";
 import useImageModel, { ConfigSelectType } from "@/hooks/useImageModel";
-import { imageModels } from "gpinterface-shared/models/image/model";
 import EstimatedPrice from "../general/hover/EstimatedPrice";
 import { getValidBody } from "gpinterface-shared/util";
 import { useRouter } from "next/navigation";
-import UserRequiredButton from "../general/buttons/UserRequiredButton";
-import { Button } from "../ui";
+import { Button, Card, CardContent, Textarea } from "../ui";
+import Title from "../thread/Title";
+import Provider from "../general/selects/Provider";
+import { PlayCircle, RotateCcw } from "lucide-react";
+import Footer from "./Footer";
 
 const defaultPrompt =
   "The {{subject}} teacher is teaching a class at the {{school}}";
@@ -37,10 +39,12 @@ const defaultInputs = [
 const defaultExample = { url: "", response: null as any, price: 0 };
 
 export default function CreateImagePrompt({
+  useIsPublic,
   callCreate,
   useLoading,
   responsePost,
 }: {
+  useIsPublic: [boolean, (i: boolean) => void];
   callCreate: (
     imagePrompt: Static<typeof ImagePromptSchema>
   ) => Promise<{ hashId: string } | undefined>;
@@ -218,183 +222,155 @@ export default function CreateImagePrompt({
   const onClickCancel = useCallback(() => router.back(), [router]);
 
   return (
-    <>
-      <div className="w-full flex items-center gap-3">
-        <Radio.ImageProvider
+    <div className="grid grid-cols-[8rem_auto_1fr] gap-3 md:gap-7 items-center">
+      <Title>Model</Title>
+      <div>
+        <Provider.ImageProvider
           useProvider={[provider, setProvider]}
-          loading={loading}
-          disabled={responsePost?.thread.isPublic}
+          disabled={responsePost?.thread.isPublic || loading}
         />
       </div>
-      {models.length > 0 && (
-        <div className="w-full flex items-center gap-3">
-          <Radio.ImageModel
-            models={models}
-            useModel={[model, setModel]}
+      <div>
+        <Provider.ImageModel
+          models={models}
+          useModel={[model, setModel]}
+          disabled={responsePost?.thread.isPublic || loading}
+        />
+      </div>
+      <div className="self-start">
+        <div className="flex items-center gap-1">
+          <Title>Config</Title>
+          <Button
+            onClick={onClickResetConfig}
             loading={loading}
             disabled={responsePost?.thread.isPublic}
-          />
+            className="rounded-full w-7 h-7 p-1"
+          >
+            <RotateCcw />
+          </Button>
         </div>
+      </div>
+      <div className="col-span-2 self-start">
+        <div className="mt-2">
+          <Collapsible>
+            <div className="flex flex-col gap-3 items-start">
+              <IndentTextarea
+                className="w-full h-40"
+                placeholder="advanced config"
+                useValue={[config, setConfig]}
+                disabled={loading || responsePost?.thread.isPublic}
+              />
+              <div className="grid grid-cols-[auto_1fr] gap-3 w-full items-center">
+                {model.configSelects.map((c) => (
+                  <Fragment key={c.name}>
+                    <div className="text-xs md:text-sm">{c.title}</div>
+                    <Radio
+                      options={c.values}
+                      useOption={[
+                        configSelects[c.name],
+                        (option) => {
+                          setConfigSelects((prev) => {
+                            const newConfigSelects = { ...prev };
+                            newConfigSelects[c.name] = option;
+                            return newConfigSelects;
+                          });
+                        },
+                      ]}
+                      disabled={responsePost?.thread.isPublic || loading}
+                    />
+                  </Fragment>
+                ))}
+              </div>
+            </div>
+          </Collapsible>
+        </div>
+      </div>
+      <Title>Prompt</Title>
+      <div className="col-span-2">
+        <Textarea
+          className="w-full h-20"
+          placeholder="image generation prompt"
+          value={prompt}
+          onChange={(e) => setPrompt(e.currentTarget.value)}
+          disabled={loading || responsePost?.thread.isPublic}
+        />
+      </div>
+      <div>
+        <div className="flex items-center gap-1">
+          <Title>Test</Title>
+          <Button
+            onClick={onClickTest}
+            loading={loading}
+            disabled={responsePost?.thread.isPublic}
+            className="rounded-full w-7 h-7 p-1"
+          >
+            <PlayCircle />
+          </Button>
+        </div>
+        <div className="text-sm text-rose-500">{inputErrorMessage}</div>
+      </div>
+      {inputs.map((i, index) => (
+        <Fragment key={i.name}>
+          {index > 0 && <div></div>}
+          <div className="text-sm">{i.name}</div>
+          <div>
+            <Textarea
+              placeholder={i.name}
+              value={i.value}
+              onChange={(e) => setExampleInput(index)(e.currentTarget.value)}
+              disabled={loading || responsePost?.thread.isPublic}
+              className="min-h-0 h-10"
+            />
+          </div>
+        </Fragment>
+      ))}
+      {example.url.length > 0 && (
+        <>
+          <Title>Generated image</Title>
+          <div className="col-span-2">
+            <div className="w-full h-80">
+              <picture>
+                <img
+                  className="h-full"
+                  src={example.url}
+                  alt="ai_generated_image"
+                />
+              </picture>
+            </div>
+          </div>
+          <Title>URL</Title>
+          <div className="col-span-2 text-xs md:text-sm">
+            <div className="whitespace-pre text-wrap">
+              <a target="_blank" href={example.url}>
+                {example.url}
+              </a>
+            </div>
+          </div>
+          <EstimatedPrice />
+          <div className="col-span-2 text-xs md:text-sm">
+            <div className="whitespace-pre text-wrap">${example.price}</div>
+          </div>
+          <Title>Response</Title>
+          <div className="col-span-2 text-xs md:text-sm">
+            <Collapsible>
+              <Card>
+                <CardContent className="p-3">
+                  {stringify(example.response)}
+                </CardContent>
+              </Card>
+            </Collapsible>
+          </div>
+        </>
       )}
-      <div className="overflow-x-auto">
-        {provider !== imageModels[0].provider && (
-          <table className="w-full">
-            <tbody className="align-top">
-              <tr>
-                <td className="w-24 md:w-40">
-                  <div className="font-bold text-nowrap">Prompt</div>
-                </td>
-                <td>
-                  <textarea
-                    className="w-full focus:outline-none border border-px rounded p-1 resize-none h-20"
-                    placeholder="image generation prompt"
-                    value={prompt}
-                    onChange={(e) => setPrompt(e.currentTarget.value)}
-                    disabled={loading || responsePost?.thread.isPublic}
-                  />
-                </td>
-              </tr>
-              {!!model && (
-                <tr>
-                  <td>
-                    <div className="font-bold text-nowrap">Config</div>
-                  </td>
-                  <td>
-                    <Collapsible>
-                      <div className="flex flex-col gap-3 items-start">
-                        <IndentTextarea
-                          className="w-full h-80"
-                          placeholder="advanced config"
-                          useValue={[config, setConfig]}
-                          disabled={loading || responsePost?.thread.isPublic}
-                        />
-                        <div className="grid grid-cols-[auto_1fr] gap-3 w-full">
-                          {model.configSelects.map((c) => (
-                            <Fragment key={c.name}>
-                              <div>{c.title}</div>
-                              <Radio
-                                options={c.values}
-                                useOption={[
-                                  configSelects[c.name],
-                                  (option) => {
-                                    setConfigSelects((prev) => {
-                                      const newConfigSelects = { ...prev };
-                                      newConfigSelects[c.name] = option;
-                                      return newConfigSelects;
-                                    });
-                                  },
-                                ]}
-                                loading={loading}
-                                disabled={responsePost?.thread.isPublic}
-                              />
-                            </Fragment>
-                          ))}
-                        </div>
-                        <Button
-                          onClick={onClickResetConfig}
-                          loading={loading}
-                          disabled={responsePost?.thread.isPublic}
-                        >
-                          Reset to Default
-                        </Button>
-                      </div>
-                    </Collapsible>
-                  </td>
-                </tr>
-              )}
-              <tr>
-                <td>
-                  <UserRequiredButton onClick={onClickTest}>
-                    <Button
-                      loading={loading}
-                      disabled={responsePost?.thread.isPublic}
-                    >
-                      Test
-                    </Button>
-                  </UserRequiredButton>
-                  <div className="text-sm text-rose-500 mt-3">
-                    {inputErrorMessage}
-                  </div>
-                </td>
-                <td>
-                  <div className="grid grid-cols-[auto_1fr] gap-3 w-full">
-                    {inputs.map((i, index) => (
-                      <Fragment key={i.name}>
-                        <div>{i.name}</div>
-                        <IndentTextarea
-                          className="h-40"
-                          placeholder={i.name}
-                          useValue={[i.value, setExampleInput(index)]}
-                          disabled={loading || responsePost?.thread.isPublic}
-                        />
-                      </Fragment>
-                    ))}
-                  </div>
-                </td>
-              </tr>
-              {example.url.length > 0 && (
-                <>
-                  <tr>
-                    <td colSpan={2}>
-                      <div className="w-full h-80">
-                        <picture>
-                          <img
-                            className="h-full"
-                            src={example.url}
-                            alt="ai_generated_image"
-                          />
-                        </picture>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>URL</td>
-                    <td className="whitespace-pre text-wrap">
-                      <a target="_blank" href={example.url}>
-                        {example.url}
-                      </a>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>
-                      <EstimatedPrice />
-                    </td>
-                    <td>
-                      <div>
-                        <div className="whitespace-pre text-wrap">
-                          ${example.price}
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Response</td>
-                    <td>
-                      <Collapsible>
-                        <div className="border rounded p-1 whitespace-pre text-wrap">
-                          {stringify(example.response)}
-                        </div>
-                      </Collapsible>
-                    </td>
-                  </tr>
-                </>
-              )}
-            </tbody>
-          </table>
-        )}
+      <div className="col-span-3">
+        <Footer
+          useIsPublic={[...useIsPublic, !responsePost]}
+          onClickCancel={onClickCancel}
+          onClickCreate={onClickCreate}
+          createText={!!responsePost ? "Save" : "Create"}
+          loading={loading}
+        />
       </div>
-      <div className="flex justify-end gap-3 pb-3">
-        <div>
-          <Button variant="secondary" onClick={onClickCancel} loading={loading}>
-            Cancel
-          </Button>
-        </div>
-        <div>
-          <Button onClick={onClickCreate} loading={loading}>
-            {!!responsePost ? "Save" : "Create"}
-          </Button>
-        </div>
-      </div>
-    </>
+    </div>
   );
 }
