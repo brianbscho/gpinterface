@@ -66,8 +66,13 @@ function Button({
 
   return (
     <ShadcnButton {...props} disabled={props.disabled || loading}>
-      {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-      {props.children}
+      {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+      {loading && typeof props.children === "string" && (
+        <div className="mr-2"></div>
+      )}
+      {typeof props.children === "string" || !loading
+        ? props.children
+        : undefined}
     </ShadcnButton>
   );
 }
