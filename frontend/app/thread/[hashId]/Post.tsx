@@ -18,7 +18,7 @@ import Link from "@/components/general/links/Link";
 import ImagePrompt from "../../../components/prompt/ImagePrompt";
 import UserRequiredButton from "@/components/general/buttons/UserRequiredButton";
 import { Bookmark, Heart } from "lucide-react";
-import { Button, Separator } from "@/components/ui";
+import { Button } from "@/components/ui";
 
 export default function Post({
   post,
@@ -55,8 +55,19 @@ export default function Post({
   }, [post, setPost]);
 
   return (
-    <div className="py-1 border-b">
-      <div className="py-1 flex gap-3 justify-end items-center text-sm">
+    <div className="border-b mb-24">
+      <div className="mt-3 whitespace-pre-line">{post.post}</div>
+      {post.textPrompts.map((t) => (
+        <div key={t.hashId} className="mt-3 w-full overflow-x-auto">
+          <TextPrompt textPrompt={t} />
+        </div>
+      ))}
+      {post.imagePrompts.map((i) => (
+        <div key={i.hashId} className="mt-3 w-full overflow-x-auto">
+          <ImagePrompt imagePrompt={i} />
+        </div>
+      ))}
+      <div className="py-3 flex gap-3 items-center text-xs md:text-sm">
         <UserRequiredButton onClick={onClickBookmark}>
           <div className="cursor-pointer">
             <Bookmark fill={post.isBookmarked ? "#FFF" : "#000"} />
@@ -68,12 +79,15 @@ export default function Post({
             <div>{post.likes} likes</div>
           </div>
         </UserRequiredButton>
-      </div>
-      <div className="mt-3 whitespace-pre-line">{post.post}</div>
-      <div className="py-1 flex gap-3 justify-end items-center text-sm">
+        <div className="flex-1" />
         {post.user && post.user.hashId === user?.hashId && (
           <Button asChild>
-            <Link href={`/post/edit/${post.hashId}`}>edit</Link>
+            <Link
+              href={`/post/edit/${post.hashId}`}
+              className="h-7 text-xs md:text-sm"
+            >
+              edit
+            </Link>
           </Button>
         )}
         <div className="font-bold">
@@ -83,19 +97,8 @@ export default function Post({
             <div>unknown</div>
           )}
         </div>
-        <Separator orientation="vertical" />
         <div>{post.createdAt}</div>
       </div>
-      {post.textPrompts.map((t) => (
-        <div key={t.hashId} className="mt-3 w-full overflow-x-auto">
-          <TextPrompt textPrompt={t} />
-        </div>
-      ))}
-      {post.imagePrompts.map((i) => (
-        <div key={i.hashId} className="mt-3 w-full overflow-x-auto">
-          <ImagePrompt imagePrompt={i} />
-        </div>
-      ))}
     </div>
   );
 }

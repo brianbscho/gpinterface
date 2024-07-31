@@ -365,7 +365,7 @@ export default function CreateImagePrompt({
       <div className="col-span-3">
         <Footer
           useIsPublic={[...useIsPublic, !responsePost]}
-          onClickCancel={onClickCancel}
+          onClickCancel={!responsePost ? onClickCancel : undefined}
           onClickCreate={onClickCreate}
           createText={!!responsePost ? "Save" : "Create"}
           loading={loading}

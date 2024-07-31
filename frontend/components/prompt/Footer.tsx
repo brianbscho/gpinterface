@@ -12,7 +12,7 @@ export default function Footer({
   loading,
 }: {
   useIsPublic: [boolean, (i: boolean) => void, boolean];
-  onClickCancel: () => void;
+  onClickCancel?: () => void;
   onClickCreate: () => void;
   createText?: string;
   loading: boolean;
@@ -39,11 +39,13 @@ export default function Footer({
         </div>
       )}
       <div className="flex justify-end gap-3">
-        <div>
-          <Button variant="outline" onClick={onClickCancel} loading={loading}>
-            Cancel
-          </Button>
-        </div>
+        {onClickCancel !== undefined && (
+          <div>
+            <Button variant="outline" onClick={onClickCancel} loading={loading}>
+              Cancel
+            </Button>
+          </div>
+        )}
         <div>
           <Button onClick={onClickCreate} loading={loading}>
             {createText}

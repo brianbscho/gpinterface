@@ -371,7 +371,7 @@ export default function CreateTextPrompt({
       <div className="col-span-4">
         <Footer
           useIsPublic={[...useIsPublic, !responsePost]}
-          onClickCancel={onClickCancel}
+          onClickCancel={!responsePost ? onClickCancel : undefined}
           onClickCreate={onClickCreate}
           createText={!!responsePost ? "Save" : "Create"}
           loading={loading}
