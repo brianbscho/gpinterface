@@ -11,15 +11,20 @@ import {
 } from "@/components/ui";
 import { getBasePrice } from "gpinterface-shared/models/text/model";
 
+type TokensRemovedHistory = Omit<
+  TextPromptHistory,
+  "inputTokens" | "outputTokens"
+>;
 export default function TextUsage({
   textHistory,
 }: {
-  textHistory: TextPromptHistory;
+  textHistory: Partial<Pick<TokensRemovedHistory, "createdAt">> &
+    Omit<TokensRemovedHistory, "createdAt">;
 }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="w-full">Detail</Button>
+        <Button>Detail</Button>
       </DialogTrigger>
       <DialogContent close>
         <DialogHeader>
@@ -28,6 +33,10 @@ export default function TextUsage({
         <div className="h-[70vh] overflow-y-auto mt-7 mb-3">
           <DialogTitle>Model</DialogTitle>
           <DialogDescription className="mt-3 whitespace-pre text-wrap">{`${textHistory.provider} - ${textHistory.model}`}</DialogDescription>
+          <DialogTitle className="mt-7">Config</DialogTitle>
+          <DialogDescription className="mt-3 whitespace-pre text-wrap">
+            {stringify(textHistory.config)}
+          </DialogDescription>
           <DialogTitle className="mt-7">System Messages</DialogTitle>
           <DialogDescription className="mt-3 whitespace-pre text-wrap">
             {textHistory.systemMessage}
@@ -35,10 +44,6 @@ export default function TextUsage({
           <DialogTitle className="mt-7">Messages</DialogTitle>
           <DialogDescription className="mt-3 whitespace-pre text-wrap">
             {stringify(textHistory.messages)}
-          </DialogDescription>
-          <DialogTitle className="mt-7">Config</DialogTitle>
-          <DialogDescription className="mt-3 whitespace-pre text-wrap">
-            {stringify(textHistory.config)}
           </DialogDescription>
           <DialogTitle className="mt-7">Input</DialogTitle>
           <DialogDescription className="mt-3 whitespace-pre text-wrap">
@@ -60,10 +65,14 @@ export default function TextUsage({
           <DialogDescription className="mt-3 whitespace-pre text-wrap">
             {stringify(textHistory.response)}
           </DialogDescription>
-          <DialogTitle className="mt-7">Date</DialogTitle>
-          <DialogDescription className="mt-3 whitespace-pre text-wrap">
-            {textHistory.createdAt}
-          </DialogDescription>
+          {!!textHistory.createdAt && (
+            <>
+              <DialogTitle className="mt-7">Date</DialogTitle>
+              <DialogDescription className="mt-3 whitespace-pre text-wrap">
+                {textHistory.createdAt}
+              </DialogDescription>
+            </>
+          )}
         </div>
       </DialogContent>
     </Dialog>
