@@ -23,6 +23,7 @@ export interface Thread {
   isPublic: boolean;
   createdAt: string;
   posts: number;
+  likes: number;
 
   user?: User | null | undefined;
 }

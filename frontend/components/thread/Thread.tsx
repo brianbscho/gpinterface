@@ -1,5 +1,5 @@
 import { Thread as ThreadType } from "gpinterface-shared/type";
-import { FileText } from "lucide-react";
+import { FileText, Heart } from "lucide-react";
 import { Badge } from "../ui";
 
 export default function Thread({ thread }: { thread: ThreadType }) {
@@ -10,7 +10,11 @@ export default function Thread({ thread }: { thread: ThreadType }) {
         {!thread.isPublic && <Badge className="mr-3">private</Badge>}
         <div className="mr-3 text-sm md:text-base truncate">{thread.title}</div>
         <FileText className="mr-1 shrink-0" />
-        <div className="text-xs md:text-sm">{thread.posts}</div>
+        <div className="mr-3 text-xs md:text-sm">{thread.posts}</div>
+        <div className="flex gap-1 items-center cursor-pointer">
+          <Heart />
+          <div>{thread.likes} likes</div>
+        </div>
       </div>
       <div className="flex gap-3 items-center text-xs md:text-sm mt-1">
         <div>{username}</div>

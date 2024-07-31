@@ -74,7 +74,7 @@ export default function Post({
           </div>
         </UserRequiredButton>
         <UserRequiredButton onClick={onClickLike}>
-          <div className="flex gap-3 items-center cursor-pointer">
+          <div className="flex gap-1 items-center cursor-pointer">
             <Heart fill={post.isLiked ? "#FFF" : "#000"} />
             <div>{post.likes} likes</div>
           </div>

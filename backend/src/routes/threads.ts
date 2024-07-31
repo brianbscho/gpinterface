@@ -32,6 +32,11 @@ export default async function (fastify: FastifyInstance) {
             createdAt: true,
             user: { select: { hashId: true, name: true } },
             _count: { select: { posts: true } },
+            posts: {
+              select: {
+                _count: { select: { likes: { where: { isLiked: true } } } },
+              },
+            },
           },
           orderBy: { id: "desc" },
           take: 20,
@@ -39,9 +44,10 @@ export default async function (fastify: FastifyInstance) {
 
         return {
           threads: threads.map((t) => {
-            const { _count, ...thread } = t;
+            const { _count, posts, ...thread } = t;
             return {
               ...thread,
+              likes: posts.reduce((acc, curr) => acc + curr._count.likes, 0),
               createdAt: getDateString(t.createdAt),
               posts: _count.posts,
             };
@@ -111,6 +117,11 @@ export default async function (fastify: FastifyInstance) {
             createdAt: true,
             user: { select: { hashId: true, name: true } },
             _count: { select: { posts: true } },
+            posts: {
+              select: {
+                _count: { select: { likes: { where: { isLiked: true } } } },
+              },
+            },
           },
           orderBy: { id: "desc" },
           take: 20,
@@ -118,9 +129,10 @@ export default async function (fastify: FastifyInstance) {
 
         return {
           threads: threads.map((t) => {
-            const { _count, ...thread } = t;
+            const { _count, posts, ...thread } = t;
             return {
               ...thread,
+              likes: posts.reduce((acc, curr) => acc + curr._count.likes, 0),
               createdAt: getDateString(t.createdAt),
               posts: _count.posts,
             };
@@ -171,6 +183,11 @@ export default async function (fastify: FastifyInstance) {
             createdAt: true,
             user: { select: { hashId: true, name: true } },
             _count: { select: { posts: true } },
+            posts: {
+              select: {
+                _count: { select: { likes: { where: { isLiked: true } } } },
+              },
+            },
           },
           orderBy: { id: "desc" },
           take: 20,
@@ -178,9 +195,10 @@ export default async function (fastify: FastifyInstance) {
 
         return {
           threads: threads.map((t) => {
-            const { _count, ...thread } = t;
+            const { _count, posts, ...thread } = t;
             return {
               ...thread,
+              likes: posts.reduce((acc, curr) => acc + curr._count.likes, 0),
               createdAt: getDateString(t.createdAt),
               posts: _count.posts,
             };
