@@ -354,6 +354,12 @@ export default function CreateTextPrompt({
           <div className="col-span-3 text-xs md:text-sm whitespace-pre text-wrap">
             {example.content}
           </div>
+        </>
+      )}
+      <Title>Base price</Title>
+      <div className="col-span-3 text-xs md:text-sm">{getBasePrice(model)}</div>
+      {example.content.length > 0 && example.response !== null && (
+        <>
           <EstimatedPrice />
           <div className="col-span-3 text-xs md:text-sm">${example.price}</div>
           <Title>Response</Title>
@@ -362,8 +368,6 @@ export default function CreateTextPrompt({
           </div>
         </>
       )}
-      <Title>Base price</Title>
-      <div className="col-span-3 text-xs md:text-sm">{getBasePrice(model)}</div>
       <div className="col-span-4">
         <Footer
           useIsPublic={[...useIsPublic, !responsePost]}
