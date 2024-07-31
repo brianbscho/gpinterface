@@ -1,226 +1,86 @@
 "use client";
 
 import { TextPrompt as TextPromptType } from "gpinterface-shared/type";
-import Collapsible from "@/components/general/collapsible";
-import { inputsToObject, objectToInputs, stringify } from "@/util/string";
-import { Fragment, useCallback, useMemo, useState } from "react";
-import callApi from "@/util/callApi";
-import { TextPromptExecuteResponse } from "gpinterface-shared/type/textPrompt";
-import EstimatedPrice from "@/components/general/hover/EstimatedPrice";
-import { getValidBody } from "gpinterface-shared/util";
-import UserRequiredButton from "@/components/general/buttons/UserRequiredButton";
-import { getBasePrice } from "gpinterface-shared/models/text/model";
-import { Button, Textarea } from "../ui";
+import { getHighlightedPrompt, objectToInputs } from "@/util/string";
+import { Fragment, useMemo } from "react";
+import Title from "../thread/Title";
+import TextUsage from "../general/dialogs/TextUsage";
+import { Badge, Card, CardContent } from "../ui";
 
 export default function TextPrompt({
   textPrompt,
 }: {
   textPrompt: TextPromptType;
 }) {
-  const { systemMessage, messages, examples } = textPrompt;
-  const [example, setExample] = useState(examples[0]);
-  const [inputs, setInputs] = useState(objectToInputs(examples[0].input));
-  const setExampleInput = useCallback(
-    (index: number) => (value: string) =>
-      setInputs((prev) => {
-        const newInputs = [...prev];
-        newInputs[index].value = value;
-        return newInputs;
-      }),
-    []
-  );
-
-  const [loading, setLoading] = useState(false);
-  const [inputErrorMessage, setInputErrorMessage] = useState("");
-
-  const onClickTry = useCallback(async () => {
-    try {
-      const input = getValidBody(
-        JSON.stringify([systemMessage, messages]),
-        inputsToObject(inputs)
-      );
-      setInputErrorMessage("");
-
-      setLoading(true);
-      setExample({
-        hashId: "",
-        input: {},
-        content: "",
-        response: {},
-        price: 0,
-      });
-      const response = await callApi<TextPromptExecuteResponse>({
-        endpoint: `/text/prompt/${textPrompt.hashId}`,
-        method: "POST",
-        body: input,
-        showError: true,
-      });
-      if (response) {
-        setExample((prev) => ({ ...prev, ...response }));
-      }
-    } catch (e) {
-      const msg = typeof e === "string" ? e : "Provided JSON is invalid.";
-      setInputErrorMessage(msg);
-    } finally {
-      setLoading(false);
-    }
-  }, [inputs, systemMessage, messages, textPrompt.hashId]);
+  const { systemMessage, messages, examples, ...prompt } = textPrompt;
+  const example = examples[0];
 
   const curl = useMemo(() => {
-    const input = inputs.map((i) => `"${i.name}": "some_value"`).join(", ");
+    const inputs = objectToInputs(example.input);
+    const input = inputs.map((i) => `"${i.name}": "${i.value}"`).join(", ");
 
     return `curl -X POST ${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/text/${textPrompt.hashId} \\
     -H "Authorization: Bearer {your_api_key}" \\
     -H "Content-Type: application/json" \\
     -d '{${input}}'`;
-  }, [inputs, textPrompt.hashId]);
+  }, [example.input, textPrompt.hashId]);
 
   return (
-    <>
-      <table className="w-full">
-        <tbody className="align-top">
-          <tr>
-            <td>
-              <div className="font-bold text-nowrap">Messages</div>
-            </td>
-          </tr>
+    <Card>
+      <CardContent className="p-3 overflow-x-auto">
+        <div className="grid grid-cols-[8rem_auto_1fr] gap-3 md:gap-7 items-center text-sm">
+          <Title>Messages</Title>
           {systemMessage.length > 0 && (
-            <tr>
-              <td className="text-sm">system</td>
-              <td className="whitespace-pre">{systemMessage}</td>
-            </tr>
+            <>
+              <Badge className="justify-center" variant="secondary">
+                system
+              </Badge>
+              <div
+                className="whitespace-pre"
+                dangerouslySetInnerHTML={{
+                  __html: getHighlightedPrompt(systemMessage, example.input),
+                }}
+              />
+            </>
           )}
           {messages.map((m, index) => (
-            <tr key={`message_${index}`}>
-              <td className="text-sm">{m.role}</td>
-              <td className="whitespace-pre">{m.content}</td>
-            </tr>
+            <Fragment key={`message_${index}`}>
+              {(index > 0 || systemMessage.length > 0) && <div />}
+              <Badge className="justify-center" variant="secondary">
+                {m.role}
+              </Badge>
+              <div
+                className="whitespace-pre"
+                dangerouslySetInnerHTML={{
+                  __html: getHighlightedPrompt(m.content, example.input),
+                }}
+              />
+            </Fragment>
           ))}
-          <tr>
-            <td>
-              <UserRequiredButton onClick={onClickTry}>
-                <Button loading={loading}>Try</Button>
-              </UserRequiredButton>
-              <div className="text-sm text-rose-500 mt-3">
-                {inputErrorMessage}
-              </div>
-            </td>
-            <td>
-              <div className="grid grid-cols-[auto_1fr] gap-3 w-full">
-                {inputs.map((i, index) => (
-                  <Fragment key={i.name}>
-                    <div className="pt-2 text-sm">{i.name}</div>
-                    <Textarea
-                      placeholder={i.name}
-                      value={i.value}
-                      onChange={(e) =>
-                        setExampleInput(index)(e.currentTarget.value)
-                      }
-                      disabled={loading}
-                      className="min-h-0 h-10"
-                    />
-                  </Fragment>
-                ))}
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div className="font-bold">Output</div>
-            </td>
-            <td>
-              <div>
-                <div className="whitespace-pre text-wrap">
-                  {example.content}
-                </div>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div className="font-bold">
-                <EstimatedPrice />
-              </div>
-            </td>
-            <td>
-              <div>
-                <div className="whitespace-pre text-wrap">${example.price}</div>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div className="font-bold">Response</div>
-            </td>
-            <td>
-              <div>
-                <Collapsible>
-                  <div className="border rounded p-1">
-                    <pre className="whitespace-pre text-wrap">
-                      {example.response ? stringify(example.response) : ""}
-                    </pre>
-                  </div>
-                </Collapsible>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td className="w-28 md:w-40">
-              <div className="font-bold">{textPrompt.provider}</div>
-            </td>
-            <td>
-              <div>{textPrompt.model}</div>
-              <div>{getBasePrice(textPrompt.model)}</div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div className="font-bold text-nowrap">Config</div>
-            </td>
-            <td>
-              <div>
-                <Collapsible>
-                  <div className="border rounded p-1 whitespace-pre">
-                    {stringify(textPrompt.config)}
-                  </div>
-                </Collapsible>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div className="font-bold text-nowrap">How to call</div>
-            </td>
-            <td>
-              <div className="whitespace-pre">{curl}</div>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <div className="font-bold image-nowrap">Example response</div>
-            </td>
-            <td>
-              <div className="whitespace-pre text-wrap">
-                {stringify({
-                  content: example.content,
-                  price: example.price,
-                }).slice(0, -2) + ","}
-                <div className="flex items-start">
-                  <div className="text-nowrap">{`\t"response": `}</div>
-                  <div>
-                    <Collapsible title="response">
-                      <pre className="whitespace-pre text-wrap">
-                        {stringify(example.response)}
-                      </pre>
-                    </Collapsible>
-                  </div>
-                </div>
-                {`}`}
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </>
+          <div />
+          <Badge className="justify-center" variant="secondary">
+            assistant
+          </Badge>
+          <div>{example.content}</div>
+          <Title>Detail</Title>
+          <div>
+            <TextUsage
+              textHistory={{
+                systemMessage,
+                messages: messages.map((m) => ({
+                  content: m.content,
+                  role: m.role,
+                })),
+                ...prompt,
+                ...example,
+              }}
+            />
+          </div>
+          <div />
+          <Title>Request example</Title>
+          <div className="whitespace-pre col-span-2">{curl}</div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
