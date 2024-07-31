@@ -15,9 +15,9 @@ export default function Share({ threadHashId }: { threadHashId: string }) {
   }, [threadHashId, toast]);
 
   return (
-    <div className="h-5">
+    <div>
       <button onClick={onClickButton}>
-        <div className="flex gap-3 items-end">
+        <div className="flex gap-3 items-center">
           <ShareIcon />
           <div className="text-sm">share</div>
         </div>
