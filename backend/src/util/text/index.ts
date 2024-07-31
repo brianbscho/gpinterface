@@ -29,18 +29,18 @@ export async function getTextResponse(
       : messages;
 
   switch (provider) {
-    case textModels[1].provider:
+    case textModels[0].provider:
       return callOpenai({ model, messages: systemMergedMessages, ...config });
-    case textModels[2].provider:
+    case textModels[1].provider:
       return callClaude({
         model,
         messages,
         ...(systemMessage.length > 0 && { system: systemMessage }),
         ...config,
       });
-    case textModels[3].provider:
+    case textModels[2].provider:
       return callMistral({ model, messages: systemMergedMessages, ...config });
-    case textModels[4].provider:
+    case textModels[3].provider:
       const message = messages[messages.length - 1].content;
       const chatHistory = messages.slice(0, -1).map((m) => ({
         role: m.role !== "user" ? "CHATBOT" : "USER",
@@ -53,9 +53,9 @@ export async function getTextResponse(
         ...(systemMessage.length > 0 && { preamble: systemMessage }),
         ...config,
       });
-    case textModels[5].provider:
+    case textModels[4].provider:
       return callJamba({ model, messages: systemMergedMessages, ...config });
-    case textModels[6].provider:
+    case textModels[5].provider:
       return callBedrock({
         modelId: model,
         messages: messages.map(({ role, content }) => ({
@@ -65,7 +65,7 @@ export async function getTextResponse(
         ...(systemMessage.length > 0 && { system: [{ text: systemMessage }] }),
         inferenceConfig: config,
       });
-    case textModels[7].provider:
+    case textModels[6].provider:
       return callGroq({ model, messages: systemMergedMessages, ...config });
     default:
       return { content: "", response: null, inputTokens: 0, outputTokens: 0 };

@@ -11,14 +11,14 @@ type ImagePromptType = Static<typeof ImagePromptSchema>;
 export async function getImageResponse(imagePrompt: ImagePromptType) {
   const { provider, model, prompt, config } = imagePrompt;
   switch (provider) {
-    case imageModels[1].provider:
+    case imageModels[0].provider:
       return callStabilityAi(model, {
         ...(model.includes("v1")
           ? { text_prompts: [{ text: prompt, weight: 1 }] }
           : { prompt }),
         ...config,
       });
-    case imageModels[2].provider:
+    case imageModels[1].provider:
       return callModelsLab(model, { prompt, ...config });
     default:
       return { url: "", response: null };
