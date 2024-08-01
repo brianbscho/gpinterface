@@ -1,8 +1,7 @@
 "use client";
 
 import { ImagePrompt as ImagePromptType } from "gpinterface-shared/type";
-import { getHighlightedPrompt, objectToInputs } from "@/util/string";
-import { useMemo } from "react";
+import { getHighlightedPrompt } from "@/util/string";
 import { Card, CardContent } from "../ui";
 import Title from "../thread/Title";
 import ImageUsage from "../general/dialogs/ImageUsage";
@@ -14,16 +13,6 @@ export default function ImagePrompt({
 }) {
   const { examples, ...prompt } = imagePrompt;
   const example = examples[0];
-
-  const curl = useMemo(() => {
-    const inputs = objectToInputs(example.input);
-    const input = inputs.map((i) => `"${i.name}": "${i.value}"`).join(", ");
-
-    return `curl -X POST ${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/image/${prompt.hashId} \\
-    -H "Authorization: Bearer {YOUR_API_KEY}" \\
-    -H "Content-Type: application/json" \\
-    -d '{${input}}'`;
-  }, [example, prompt.hashId]);
 
   return (
     <Card>
@@ -56,8 +45,6 @@ export default function ImagePrompt({
               }}
             />
           </div>
-          <Title>Request example</Title>
-          <div className="whitespace-pre">{curl}</div>
         </div>
       </CardContent>
     </Card>

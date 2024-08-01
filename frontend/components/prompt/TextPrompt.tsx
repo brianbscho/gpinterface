@@ -1,8 +1,8 @@
 "use client";
 
 import { TextPrompt as TextPromptType } from "gpinterface-shared/type";
-import { getHighlightedPrompt, objectToInputs } from "@/util/string";
-import { Fragment, useMemo } from "react";
+import { getHighlightedPrompt } from "@/util/string";
+import { Fragment } from "react";
 import Title from "../thread/Title";
 import TextUsage from "../general/dialogs/TextUsage";
 import { Badge, Card, CardContent } from "../ui";
@@ -14,16 +14,6 @@ export default function TextPrompt({
 }) {
   const { systemMessage, messages, examples, ...prompt } = textPrompt;
   const example = examples[0];
-
-  const curl = useMemo(() => {
-    const inputs = objectToInputs(example.input);
-    const input = inputs.map((i) => `"${i.name}": "${i.value}"`).join(", ");
-
-    return `curl -X POST ${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/text/${textPrompt.hashId} \\
-    -H "Authorization: Bearer {your_api_key}" \\
-    -H "Content-Type: application/json" \\
-    -d '{${input}}'`;
-  }, [example.input, textPrompt.hashId]);
 
   return (
     <Card>
@@ -78,8 +68,6 @@ export default function TextPrompt({
             />
           </div>
           <div />
-          <Title>Request example</Title>
-          <div className="whitespace-pre col-span-2">{curl}</div>
         </div>
       </CardContent>
     </Card>
