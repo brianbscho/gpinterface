@@ -5,34 +5,20 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 export interface TextareaProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+  resizing?: boolean;
+}
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ className, ...props }, ref) => {
+  ({ resizing, className, ...props }, ref) => {
     const onKeyUp = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
       if (props.onKeyUp) props.onKeyUp(e);
 
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d");
-      if (!context) return;
-
-      const text = e.currentTarget.value;
-      const style = window.getComputedStyle(e.currentTarget);
-      const fontProps = `${style["fontSize"]} ${style["fontFamily"]}`;
-      context.font = fontProps;
-
-      let lineCount = 0;
-      const lines = text.split("\n");
-      const maxWidth = e.currentTarget.clientWidth;
-
-      lines.forEach((line) => {
-        const metrics = context.measureText(line);
-        const textWidth = metrics.width + 50;
-        lineCount += Math.ceil(textWidth / maxWidth);
-      });
+      if (!resizing) return;
+      e.currentTarget.setAttribute("style", "height: auto;");
       e.currentTarget.setAttribute(
         "style",
-        `height: ${lineCount * 20 + 16}px;`
+        `height: ${e.currentTarget.scrollHeight}px;`
       );
     };
 
