@@ -36,7 +36,7 @@ export default function TextPrompt({
                 system
               </Badge>
               <div
-                className="whitespace-pre"
+                className="whitespace-pre text-wrap"
                 dangerouslySetInnerHTML={{
                   __html: getHighlightedPrompt(systemMessage, example.input),
                 }}
@@ -50,7 +50,7 @@ export default function TextPrompt({
                 {m.role}
               </Badge>
               <div
-                className="whitespace-pre"
+                className="whitespace-pre text-wrap"
                 dangerouslySetInnerHTML={{
                   __html: getHighlightedPrompt(m.content, example.input),
                 }}
@@ -61,7 +61,7 @@ export default function TextPrompt({
           <Badge className="justify-center" variant="secondary">
             assistant
           </Badge>
-          <div>{example.content}</div>
+          <div className="whitespace-pre text-wrap">{example.content}</div>
           <Title>Detail</Title>
           <div>
             <TextUsage

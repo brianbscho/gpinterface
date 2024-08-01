@@ -31,6 +31,7 @@ export default function ImagePrompt({
         <div className="grid grid-cols-[8rem_1fr] gap-3 md:gap-7 items-center text-sm">
           <Title>Prompt</Title>
           <div
+            className="whitespace-pre text-wrap"
             dangerouslySetInnerHTML={{
               __html: getHighlightedPrompt(prompt.prompt, example.input),
             }}
