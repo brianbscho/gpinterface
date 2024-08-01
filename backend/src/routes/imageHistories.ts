@@ -27,6 +27,7 @@ export default async function (fastify: FastifyInstance) {
             },
             select: {
               hashId: true,
+              imagePromptHashId: true,
               provider: true,
               model: true,
               prompt: true,

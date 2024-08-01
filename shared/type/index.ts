@@ -52,6 +52,7 @@ export interface ImagePrompt {
 
 export interface ImagePromptHistory {
   hashId: string;
+  imagePromptHashId: string | null;
   provider: string;
   model: string;
   prompt: string;
@@ -94,6 +95,7 @@ export interface TextPrompt {
 
 export interface TextPromptHistory {
   hashId: string;
+  textPromptHashId: string | null;
   input: object;
   content: string;
   response: object;

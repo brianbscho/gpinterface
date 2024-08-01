@@ -23,6 +23,7 @@ export default async function (fastify: FastifyInstance) {
           where: { userHashId: user.hashId, ...(id > 0 && { id: { lt: id } }) },
           select: {
             hashId: true,
+            textPromptHashId: true,
             provider: true,
             model: true,
             systemMessage: true,

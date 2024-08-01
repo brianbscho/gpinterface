@@ -47,7 +47,13 @@ export default function ImagePrompt({
           </div>
           <Title>Detail</Title>
           <div>
-            <ImageUsage imageHistory={{ ...prompt, ...example }} />
+            <ImageUsage
+              imageHistory={{
+                imagePromptHashId: imagePrompt.hashId,
+                ...prompt,
+                ...example,
+              }}
+            />
           </div>
           <Title>Request example</Title>
           <div className="whitespace-pre">{curl}</div>

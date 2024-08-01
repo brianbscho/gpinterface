@@ -66,6 +66,7 @@ export default function TextPrompt({
           <div>
             <TextUsage
               textHistory={{
+                textPromptHashId: textPrompt.hashId,
                 systemMessage,
                 messages: messages.map((m) => ({
                   content: m.content,
