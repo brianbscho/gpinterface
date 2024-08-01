@@ -6,6 +6,7 @@ import { Fragment } from "react";
 import Title from "../thread/Title";
 import TextUsage from "../general/dialogs/TextUsage";
 import { Badge, Card, CardContent } from "../ui";
+import TryText from "../general/dialogs/TryText";
 
 export default function TextPrompt({
   textPrompt,
@@ -22,7 +23,7 @@ export default function TextPrompt({
           <Title>Messages</Title>
           {systemMessage.length > 0 && (
             <>
-              <Badge className="justify-center" variant="secondary">
+              <Badge className="justify-center self-start" variant="secondary">
                 system
               </Badge>
               <div
@@ -36,7 +37,7 @@ export default function TextPrompt({
           {messages.map((m, index) => (
             <Fragment key={`message_${index}`}>
               {(index > 0 || systemMessage.length > 0) && <div />}
-              <Badge className="justify-center" variant="secondary">
+              <Badge className="justify-center self-start" variant="secondary">
                 {m.role}
               </Badge>
               <div
@@ -48,12 +49,10 @@ export default function TextPrompt({
             </Fragment>
           ))}
           <div />
-          <Badge className="justify-center" variant="secondary">
-            assistant
-          </Badge>
+          <Badge className="justify-center self-start">assistant</Badge>
           <div className="whitespace-pre text-wrap">{example.content}</div>
           <Title>Detail</Title>
-          <div>
+          <div className="col-span-2">
             <TextUsage
               textHistory={{
                 textPromptHashId: textPrompt.hashId,
@@ -66,6 +65,10 @@ export default function TextPrompt({
                 ...example,
               }}
             />
+          </div>
+          <Title>Try</Title>
+          <div>
+            <TryText textPrompt={textPrompt} />
           </div>
           <div />
         </div>

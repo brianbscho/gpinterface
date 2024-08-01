@@ -1,3 +1,5 @@
+"use client";
+
 import { Textarea } from "@/components/ui";
 import { KeyboardEvent, TextareaHTMLAttributes, useRef } from "react";
 
@@ -40,6 +42,7 @@ function IndentTextarea({ useValue, ...props }: Props) {
       onKeyDown={handleKeyDown}
       value={value}
       onChange={(e) => setValue(e.currentTarget.value)}
+      resizing
     />
   );
 }
