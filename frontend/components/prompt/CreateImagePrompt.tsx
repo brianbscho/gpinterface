@@ -17,7 +17,7 @@ import {
 } from "gpinterface-shared/type/imagePrompt";
 import { Static } from "@sinclair/typebox";
 import Collapsible from "../general/collapsible";
-import Radio from "../general/inputs/Radio";
+import Select from "../general/selects/Select";
 import useLinkConfirmMessage from "@/hooks/useLinkConfirmMessage";
 import { PostGetResponse } from "gpinterface-shared/type/post";
 import useImageModel, { ConfigSelectType } from "@/hooks/useImageModel";
@@ -264,7 +264,7 @@ export default function CreateImagePrompt({
                 {model.configSelects.map((c) => (
                   <Fragment key={c.name}>
                     <div className="text-xs md:text-sm">{c.title}</div>
-                    <Radio
+                    <Select
                       options={c.values}
                       useOption={[
                         configSelects[c.name],

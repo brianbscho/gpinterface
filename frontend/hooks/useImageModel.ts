@@ -10,10 +10,10 @@ export type ModelType = {
   configSelects: {
     title: string;
     name: string;
-    values: (string | number)[];
+    values: string[];
   }[];
 };
-export type ConfigSelectType = { [key: string]: string | number };
+export type ConfigSelectType = { [key: string]: string };
 export default function useImageModel() {
   const [provider, setProvider] = useState(imageModels[0].provider);
   const [config, setConfig] = useState("{}");
