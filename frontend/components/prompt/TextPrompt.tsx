@@ -6,6 +6,7 @@ import { Fragment } from "react";
 import Title from "../thread/Title";
 import TextUsage from "../general/dialogs/TextUsage";
 import { Badge, Card, CardContent } from "../ui";
+import TryText from "../general/dialogs/TryText";
 
 export default function TextPrompt({
   textPrompt,
@@ -51,7 +52,7 @@ export default function TextPrompt({
           <Badge className="justify-center self-start">assistant</Badge>
           <div className="whitespace-pre text-wrap">{example.content}</div>
           <Title>Detail</Title>
-          <div>
+          <div className="col-span-2">
             <TextUsage
               textHistory={{
                 textPromptHashId: textPrompt.hashId,
@@ -64,6 +65,10 @@ export default function TextPrompt({
                 ...example,
               }}
             />
+          </div>
+          <Title>Try</Title>
+          <div>
+            <TryText textPrompt={textPrompt} />
           </div>
           <div />
         </div>
