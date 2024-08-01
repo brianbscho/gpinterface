@@ -20,6 +20,7 @@ import { getValidBody } from "gpinterface-shared/util";
 import callApi from "@/util/callApi";
 import { TextPromptExecuteResponse } from "gpinterface-shared/type/textPrompt";
 import { Loader2, PlayCircle } from "lucide-react";
+import UserRequiredButton from "../buttons/UserRequiredButton";
 
 export default function TryText({ textPrompt }: { textPrompt: TextPrompt }) {
   const { systemMessage, messages, examples } = textPrompt;
@@ -131,13 +132,14 @@ export default function TryText({ textPrompt }: { textPrompt: TextPrompt }) {
             <div>
               <div className="flex items-center gap-1">
                 <DialogTitle>Run</DialogTitle>
-                <Button
-                  onClick={onClickTry}
-                  loading={loading}
-                  className="rounded-full w-7 h-7 p-1"
-                >
-                  <PlayCircle />
-                </Button>
+                <UserRequiredButton onClick={onClickTry}>
+                  <Button
+                    loading={loading}
+                    className="rounded-full w-7 h-7 p-1"
+                  >
+                    <PlayCircle />
+                  </Button>
+                </UserRequiredButton>
               </div>
               <div className="text-sm text-rose-500">{inputErrorMessage}</div>
             </div>
