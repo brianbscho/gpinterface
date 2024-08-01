@@ -17,7 +17,7 @@ import {
 } from "gpinterface-shared/type/imagePrompt";
 import { Static } from "@sinclair/typebox";
 import Collapsible from "../general/collapsible";
-import Radio from "../general/inputs/Radio";
+import Select from "../general/selects/Select";
 import useLinkConfirmMessage from "@/hooks/useLinkConfirmMessage";
 import { PostGetResponse } from "gpinterface-shared/type/post";
 import useImageModel, { ConfigSelectType } from "@/hooks/useImageModel";
@@ -253,18 +253,18 @@ export default function CreateImagePrompt({
       <div className="col-span-2 self-start">
         <div className="mt-2">
           <Collapsible>
-            <div className="flex flex-col gap-3 items-start">
+            <div className="flex flex-col gap-3 md:gap-7 items-start">
               <IndentTextarea
                 className="w-full h-40"
                 placeholder="advanced config"
                 useValue={[config, setConfig]}
                 disabled={loading || responsePost?.thread.isPublic}
               />
-              <div className="grid grid-cols-[auto_1fr] gap-3 w-full items-center">
+              <div className="grid grid-cols-[auto_1fr] gap-3 md:gap-7 w-full items-center">
                 {model.configSelects.map((c) => (
                   <Fragment key={c.name}>
                     <div className="text-xs md:text-sm">{c.title}</div>
-                    <Radio
+                    <Select
                       options={c.values}
                       useOption={[
                         configSelects[c.name],
@@ -347,14 +347,12 @@ export default function CreateImagePrompt({
             </div>
           </div>
           <EstimatedPrice />
-          <div className="col-span-2 text-xs md:text-sm">
-            <div className="whitespace-pre text-wrap">${example.price}</div>
-          </div>
+          <div className="col-span-2 text-xs md:text-sm">${example.price}</div>
           <Title>Response</Title>
           <div className="col-span-2 text-xs md:text-sm">
             <Collapsible>
               <Card>
-                <CardContent className="p-3">
+                <CardContent className="p-3 whitespace-pre text-wrap">
                   {stringify(example.response)}
                 </CardContent>
               </Card>
