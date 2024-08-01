@@ -8,11 +8,7 @@ export type ThreadGetResponse = { thread: Thread };
 export const ThreadsUserGetSchema = Type.Object({ userHashId: Type.String() });
 export const ThreadsUserQueryParamSchema = Type.Object({
   lastHashId: Type.Optional(Type.String()),
-  type: Type.Union([
-    Type.Literal("thread"),
-    Type.Literal("post"),
-    Type.Literal("bookmark"),
-  ]),
+  type: Type.Union([Type.Literal("thread"), Type.Literal("post")]),
 });
 export type ThreadsGetResponse = { threads: Thread[] };
 

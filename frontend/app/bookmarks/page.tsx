@@ -12,7 +12,7 @@ export default function Bookmarks() {
   }
   return (
     <div className="w-full max-w-7xl px-3">
-      <Threads baseUrl={`/threads/user/${user.hashId}?type=bookmark`} />
+      <Threads baseUrl={`/threads/bookmarks?`} />
     </div>
   );
 }
