@@ -5,6 +5,7 @@ import { getHighlightedPrompt } from "@/util/string";
 import { Card, CardContent } from "../ui";
 import Title from "../thread/Title";
 import ImageUsage from "../general/dialogs/ImageUsage";
+import TryImage from "../general/dialogs/TryImage";
 
 export default function ImagePrompt({
   imagePrompt,
@@ -44,6 +45,10 @@ export default function ImagePrompt({
                 ...example,
               }}
             />
+          </div>
+          <Title>Try</Title>
+          <div>
+            <TryImage imagePrompt={imagePrompt} />
           </div>
         </div>
       </CardContent>
