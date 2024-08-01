@@ -1,60 +1,80 @@
 import { stringify } from "@/util/string";
-import { Button, Dialog } from "@radix-ui/themes";
 import { TextPromptHistory } from "gpinterface-shared/type";
-import EstimatedPrice from "../hover/EstimatedPrice";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui";
+import { getBasePrice } from "gpinterface-shared/models/text/model";
 
+type TokensRemovedHistory = Omit<
+  TextPromptHistory,
+  "inputTokens" | "outputTokens"
+>;
 export default function TextUsage({
   textHistory,
 }: {
-  textHistory: TextPromptHistory;
+  textHistory: Partial<Pick<TokensRemovedHistory, "createdAt">> &
+    Omit<TokensRemovedHistory, "createdAt">;
 }) {
   return (
-    <Dialog.Root>
-      <Dialog.Trigger>
+    <Dialog>
+      <DialogTrigger asChild>
         <Button>Detail</Button>
-      </Dialog.Trigger>
-      <Dialog.Content>
-        <Dialog.Title className="px-3">Usage Detail</Dialog.Title>
-        <div className="h-[70vh] overflow-y-auto py-12 px-3">
-          <div className="font-bold">Model</div>
-          <div className="mt-3">{`${textHistory.provider} - ${textHistory.model}`}</div>
-          <div className="font-bold mt-12">Input</div>
-          <div className="mt-3 whitespace-pre text-wrap">
-            {stringify(textHistory.input)}
-          </div>
-          <div className="font-bold mt-12">Answer</div>
-          <div className="mt-3 whitespace-pre text-wrap">
-            {textHistory.content}
-          </div>
-          <div className="font-bold mt-12">
-            <EstimatedPrice />
-          </div>
-          <div className="mt-3 whitespace-pre">${textHistory.price}</div>
-          <div className="font-bold mt-12">Response</div>
-          <div className="mt-3 whitespace-pre text-wrap">
-            {stringify(textHistory.response)}
-          </div>
-          <div className="font-bold mt-12">System Messages</div>
-          <div className="mt-3 whitespace-pre text-wrap">
-            {textHistory.systemMessage}
-          </div>
-          <div className="font-bold mt-12">Messages</div>
-          <div className="mt-3 whitespace-pre text-wrap">
-            {stringify(textHistory.messages)}
-          </div>
-          <div className="font-bold mt-12">Config</div>
-          <div className="mt-3 whitespace-pre text-wrap">
+      </DialogTrigger>
+      <DialogContent close>
+        <DialogHeader>
+          <DialogTitle>Text Prompt Usage Usage Detail</DialogTitle>
+        </DialogHeader>
+        <div className="h-[70vh] overflow-y-auto mt-7 mb-3">
+          <DialogTitle>Model</DialogTitle>
+          <DialogDescription className="mt-3 whitespace-pre text-wrap">{`${textHistory.provider} - ${textHistory.model}`}</DialogDescription>
+          <DialogTitle className="mt-7">Config</DialogTitle>
+          <DialogDescription className="mt-3 whitespace-pre text-wrap">
             {stringify(textHistory.config)}
-          </div>
-          <div className="font-bold mt-12">Date</div>
-          <div className="mt-3 whitespace-pre">{textHistory.createdAt}</div>
+          </DialogDescription>
+          <DialogTitle className="mt-7">System Messages</DialogTitle>
+          <DialogDescription className="mt-3 whitespace-pre text-wrap">
+            {textHistory.systemMessage}
+          </DialogDescription>
+          <DialogTitle className="mt-7">Messages</DialogTitle>
+          <DialogDescription className="mt-3 whitespace-pre text-wrap">
+            {stringify(textHistory.messages)}
+          </DialogDescription>
+          <DialogTitle className="mt-7">Input</DialogTitle>
+          <DialogDescription className="mt-3 whitespace-pre text-wrap">
+            {stringify(textHistory.input)}
+          </DialogDescription>
+          <DialogTitle className="mt-7">Answer</DialogTitle>
+          <DialogDescription className="mt-3 whitespace-pre text-wrap">
+            {textHistory.content}
+          </DialogDescription>
+          <DialogTitle className="mt-7">Base price</DialogTitle>
+          <DialogDescription className="mt-3 whitespace-pre text-wrap">
+            {getBasePrice(textHistory.model)}
+          </DialogDescription>
+          <DialogTitle className="mt-7">Price</DialogTitle>
+          <DialogDescription className="mt-3 whitespace-pre text-wrap">
+            ${textHistory.price}
+          </DialogDescription>
+          <DialogTitle className="mt-7">Response</DialogTitle>
+          <DialogDescription className="mt-3 whitespace-pre text-wrap">
+            {stringify(textHistory.response)}
+          </DialogDescription>
+          {!!textHistory.createdAt && (
+            <>
+              <DialogTitle className="mt-7">Date</DialogTitle>
+              <DialogDescription className="mt-3 whitespace-pre text-wrap">
+                {textHistory.createdAt}
+              </DialogDescription>
+            </>
+          )}
         </div>
-        <div className="w-full flex justify-end mt-7">
-          <Dialog.Close>
-            <Button>Close</Button>
-          </Dialog.Close>
-        </div>
-      </Dialog.Content>
-    </Dialog.Root>
+      </DialogContent>
+    </Dialog>
   );
 }

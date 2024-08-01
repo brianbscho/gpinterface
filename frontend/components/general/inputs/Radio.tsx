@@ -1,9 +1,9 @@
 "use client";
 
 import { textModels } from "gpinterface-shared/models/text/model";
-import { Button } from "@radix-ui/themes";
 import { imageModels } from "gpinterface-shared/models/image/model";
 import { ModelType } from "@/hooks/useImageModel";
+import { Button } from "@/components/ui";
 
 export const modals = ["None", "Text", "Image"];
 
@@ -25,9 +25,10 @@ function Radio<T extends string | number>({
         <Button
           key={`${o}_${index}`}
           onClick={() => setOption(o)}
-          variant={o === option ? "soft" : "outline"}
+          variant={o === option ? "secondary" : "outline"}
           disabled={disabled}
           loading={loading}
+          className="border-box border"
         >
           {o}
         </Button>
@@ -111,9 +112,10 @@ function RadioImageModel({
         <Button
           key={m.name}
           onClick={() => setModel(m)}
-          variant={m.name === model?.name ? "soft" : "outline"}
+          variant={m.name === model?.name ? "secondary" : "outline"}
           disabled={disabled}
           loading={loading}
+          className="border-box border"
         >
           {m.name}
         </Button>

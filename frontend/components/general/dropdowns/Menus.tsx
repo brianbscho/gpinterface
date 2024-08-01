@@ -1,12 +1,28 @@
 "use client";
 
-import { AvatarIcon, HamburgerMenuIcon } from "@radix-ui/react-icons";
-import { Button, DropdownMenu } from "@radix-ui/themes";
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import callApi from "@/util/callApi";
 import useUserStore from "@/store/user";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { UserGetMeResponse } from "gpinterface-shared/type/user";
+import {
+  Bookmark,
+  LogOut,
+  ReceiptText,
+  Settings,
+  UserRound,
+} from "lucide-react";
+import {
+  ShadcnButton,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuGroup,
+} from "@/components/ui";
+import Link from "../links/Link";
 
 const loginRedirectPaths = ["login"];
 const logoutRedirectPaths = ["settings", "usages"];
@@ -58,34 +74,49 @@ function _Menus() {
 
   const [open, setOpen] = useState(false);
 
+  if (!user) {
+    return (
+      <ShadcnButton asChild>
+        <Link href={`/login${redirect}`}>
+          <UserRound />
+        </Link>
+      </ShadcnButton>
+    );
+  }
   return (
-    <DropdownMenu.Root open={open} onOpenChange={setOpen}>
-      <DropdownMenu.Trigger className="focus:outline-none">
-        <Button>{!user ? <HamburgerMenuIcon /> : <AvatarIcon />}</Button>
-      </DropdownMenu.Trigger>
-      <DropdownMenu.Content>
-        {!user ? (
-          <DropdownMenu.Item onClick={() => push(`/login${redirect}`)}>
-            Login
-          </DropdownMenu.Item>
-        ) : (
-          <>
-            <DropdownMenu.Item onClick={() => push(`/user/${user.hashId}`)}>
-              My page
-            </DropdownMenu.Item>
-            <DropdownMenu.Item onClick={() => push("/settings")}>
-              Settings
-            </DropdownMenu.Item>
-            <DropdownMenu.Item onClick={() => push("/usages")}>
-              Usages
-            </DropdownMenu.Item>
-            <DropdownMenu.Item onClick={onClickLogout}>
-              Logout
-            </DropdownMenu.Item>
-          </>
-        )}
-      </DropdownMenu.Content>
-    </DropdownMenu.Root>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
+      <DropdownMenuTrigger asChild>
+        <ShadcnButton>
+          <UserRound />
+        </ShadcnButton>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem onClick={() => push(`/user/${user.hashId}`)}>
+            <UserRound />
+            <span className="ml-3">My page</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => push(`/bookmarks`)}>
+            <Bookmark />
+            <span className="ml-3">Bookmarks</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => push("/settings")}>
+            <Settings />
+            <span className="ml-3">Settings</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => push("/usages")}>
+            <ReceiptText />
+            <span className="ml-3">Usages</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={onClickLogout}>
+            <LogOut />
+            <span className="ml-3">Logout</span>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 

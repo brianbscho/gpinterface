@@ -16,7 +16,6 @@ export type ModelType = {
 export type ConfigSelectType = { [key: string]: string | number };
 export default function useImageModel() {
   const [provider, setProvider] = useState(imageModels[0].provider);
-  const [model, setModel] = useState<ModelType>();
   const [config, setConfig] = useState("{}");
   const [configSelects, setConfigSelects] = useState<ConfigSelectType>({});
 
@@ -26,6 +25,7 @@ export default function useImageModel() {
   }, [provider]);
   const models = useMemo(() => imageModels[aiIndex].models, [aiIndex]);
 
+  const [model, setModel] = useState<ModelType>(models[0]);
   useEffect(() => setModel(models[0]), [models]);
 
   const onClickResetConfig = useCallback(() => {

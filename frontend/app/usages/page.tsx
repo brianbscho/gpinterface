@@ -1,20 +1,31 @@
-import { Tabs } from "@radix-ui/themes";
+"use client";
+
 import TextUsages from "./TextUsages";
 import ImageUsages from "./ImageUsages";
+import { Tabs, TabsContent } from "@/components/ui";
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+
+function Usages() {
+  const searchParams = useSearchParams();
+  const value = searchParams.get("value");
+
+  return (
+    <Tabs value={value ?? "text"}>
+      <TabsContent value="text">
+        <TextUsages />
+      </TabsContent>
+      <TabsContent value="image">
+        <ImageUsages />
+      </TabsContent>
+    </Tabs>
+  );
+}
 
 export default function Page() {
   return (
-    <Tabs.Root defaultValue="text">
-      <Tabs.List>
-        <Tabs.Trigger value="text">Text</Tabs.Trigger>
-        <Tabs.Trigger value="image">Image</Tabs.Trigger>
-      </Tabs.List>
-      <Tabs.Content value="text">
-        <TextUsages />
-      </Tabs.Content>
-      <Tabs.Content value="image">
-        <ImageUsages />
-      </Tabs.Content>
-    </Tabs.Root>
+    <Suspense>
+      <Usages />
+    </Suspense>
   );
 }

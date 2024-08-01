@@ -1,7 +1,6 @@
 "use client";
 
 import callApi from "@/util/callApi";
-import { Button } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -12,16 +11,26 @@ import { Static } from "@sinclair/typebox";
 import useUserStore from "@/store/user";
 import CreateTextPrompt from "@/components/prompt/CreateTextPrompt";
 import useLinkConfirmMessage from "@/hooks/useLinkConfirmMessage";
-import Public from "@/components/general/checkbox/Public";
 import { TextPromptSchema } from "gpinterface-shared/type/textPrompt";
-import Radio, { modals } from "@/components/general/inputs/Radio";
+import { modals } from "@/components/general/inputs/Radio";
 import CreateImagePrompt from "@/components/prompt/CreateImagePrompt";
 import { ImagePromptSchema } from "gpinterface-shared/type/imagePrompt";
+import {
+  Card,
+  CardContent,
+  Input,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Textarea,
+} from "@/components/ui";
+import Footer from "@/components/prompt/Footer";
 
 export default function Page() {
   const [title, setTitle] = useState("");
   const [post, setPost] = useState("");
-  const [provider, setProvider] = useState(modals[0]);
+  const [modal, setModal] = useState(modals[0]);
   const [isPublic, setIsPublic] = useState(true);
 
   const [loading, setLoading] = useState(false);
@@ -120,59 +129,63 @@ export default function Page() {
   const onClickCancel = useCallback(() => router.back(), [router]);
 
   return (
-    <div className="w-full max-w-7xl px-3 flex flex-col gap-7 py-7">
+    <div className="w-full max-w-7xl flex flex-col gap-3 p-3">
       <div className="w-full">
-        <input
-          className="w-full focus:outline-none border-b p-1"
+        <Input
+          className="w-full"
           value={title}
           onChange={(e) => setTitle(e.currentTarget.value)}
           placeholder="title of the thread"
         />
       </div>
       <div className="w-full">
-        <textarea
-          className="w-full focus:outline-none border rounded p-1 resize-none h-80"
+        <Textarea
+          className="w-full h-80"
           value={post}
           onChange={(e) => setPost(e.currentTarget.value)}
           placeholder="contents of the post"
         />
       </div>
-      <Radio.Provider useProvider={[provider, setProvider]} loading={loading} />
-      {!!user && (
-        <div className="flex items-center gap-3">
-          <Public useIsPublic={[isPublic, setIsPublic]} />
-          <div className="text-sm">
-            AI content can only be edited when it is set to private; public
-            content cannot be modified.
-          </div>
-        </div>
-      )}
-      {provider === modals[0] && (
-        <div className="flex justify-end gap-3 pb-3">
-          <div>
-            <Button variant="soft" onClick={onClickCancel}>
-              Cancel
-            </Button>
-          </div>
-          <div>
-            <Button onClick={onClickCreate} loading={loading}>
-              Create
-            </Button>
-          </div>
-        </div>
-      )}
-      {provider === modals[1] && (
-        <CreateTextPrompt
-          callCreate={onClickTextPromptCreate}
-          useLoading={[loading, setLoading]}
-        />
-      )}
-      {provider === modals[2] && (
-        <CreateImagePrompt
-          callCreate={onClickImagePromptCreate}
-          useLoading={[loading, setLoading]}
-        />
-      )}
+      <Tabs
+        defaultValue={modals[0]}
+        value={modal}
+        onValueChange={(v) => setModal(v)}
+        className="w-full"
+      >
+        <TabsList className="w-full">
+          {modals.map((m) => (
+            <TabsTrigger key={m} value={m} className="flex-1">
+              {m}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        <Card className="mt-3">
+          <CardContent className="p-3">
+            <TabsContent value={modals[0]}>
+              <Footer
+                useIsPublic={[isPublic, setIsPublic, true]}
+                onClickCancel={onClickCancel}
+                onClickCreate={onClickCreate}
+                loading={loading}
+              />
+            </TabsContent>
+            <TabsContent value={modals[1]}>
+              <CreateTextPrompt
+                useIsPublic={[isPublic, setIsPublic]}
+                callCreate={onClickTextPromptCreate}
+                useLoading={[loading, setLoading]}
+              />
+            </TabsContent>
+            <TabsContent value={modals[2]}>
+              <CreateImagePrompt
+                useIsPublic={[isPublic, setIsPublic]}
+                callCreate={onClickImagePromptCreate}
+                useLoading={[loading, setLoading]}
+              />
+            </TabsContent>
+          </CardContent>
+        </Card>
+      </Tabs>
     </div>
   );
 }

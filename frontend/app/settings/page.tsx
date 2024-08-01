@@ -2,18 +2,9 @@
 
 import useUserStore from "@/store/user";
 import callApi from "@/util/callApi";
-import {
-  AlertDialog,
-  Button,
-  Card,
-  DataList,
-  TextArea,
-  TextField,
-} from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Password from "@/components/general/dialogs/Password";
-import { CopyIcon, PersonIcon, TrashIcon } from "@radix-ui/react-icons";
 import {
   UserGetMeResponse,
   UserUpdateSchema,
@@ -26,12 +17,22 @@ import {
   ApiKeysGetResponse,
 } from "gpinterface-shared/type/apiKey";
 import { Static } from "@sinclair/typebox";
+import { Copy, Mail, Trash2, UserRound } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  Button,
+  Card,
+  Input,
+} from "@/components/ui";
 
 export default function Page() {
   const { user, setUser } = useUserStore();
 
   const [name, setName] = useState("");
-  const [bio, setBio] = useState("");
   const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
 
   const [saveButtonText, setSaveButtonText] = useState("Save");
@@ -39,7 +40,6 @@ export default function Page() {
     if (!user) return;
 
     setName(user.name);
-    setBio(user.bio);
   }, [user]);
   const nameValid = useMemo(
     () => /^[a-zA-Z0-9-_~!@#$^&*()+=]+$/.test(name),
@@ -56,7 +56,7 @@ export default function Page() {
     >({
       endpoint: "/user",
       method: "PUT",
-      body: { name, bio },
+      body: { name },
       showError: true,
     });
     if (response) {
@@ -66,7 +66,7 @@ export default function Page() {
         setSaveButtonText("Save");
       }, 1000);
     }
-  }, [nameValid, setUser, name, bio]);
+  }, [nameValid, setUser, name]);
 
   const router = useRouter();
   const onClickDelete = useCallback(async () => {
@@ -139,110 +139,112 @@ export default function Page() {
   if (!user) return null;
   return (
     <div className="w-full max-w-7xl flex flex-col gap-3 px-3">
-      <DataList.Root>
-        <DataList.Item style={{ height: "2rem", alignItems: "center" }}>
-          <DataList.Label>Email</DataList.Label>
-          <DataList.Value>{user.email}</DataList.Value>
-        </DataList.Item>
-        <DataList.Item style={{ height: "2rem" }}>
-          <DataList.Label>Username</DataList.Label>
-          <DataList.Value>
-            <TextField.Root
-              type="text"
-              size="3"
-              placeholder="Please type your username (no space)"
-              value={name}
-              onChange={(e) => setName(e.currentTarget.value)}
-            >
-              <TextField.Slot>
-                <PersonIcon />
-              </TextField.Slot>
-            </TextField.Root>
-            <div className="text-xs min-h-4 mt-1 mb-3 text-rose-500">
-              {name.length > 0 &&
-                !nameValid &&
-                "You can use only alphanumeric characters and -_,~!@#$^&*()+= special characters."}
-            </div>
-          </DataList.Value>
-        </DataList.Item>
-        <DataList.Item>
-          <DataList.Label>Bio</DataList.Label>
-          <DataList.Value>
-            <TextArea
-              value={bio}
-              className="flex-1 h-40"
-              onChange={(e) => setBio(e.currentTarget.value)}
-            ></TextArea>
-          </DataList.Value>
-        </DataList.Item>
-        <DataList.Item>
-          <DataList.Label>API Keys</DataList.Label>
-          <DataList.Value>
-            <div>
+      <table className="mt-3">
+        <tbody className="align-middle">
+          <tr className="h-10">
+            <td className="text-muted-foreground text-sm">Email</td>
+            <td className="text-sm">{user.email}</td>
+          </tr>
+          <tr>
+            <td className="text-muted-foreground text-sm">Username</td>
+            <td>
+              <Input
+                type="text"
+                placeholder="Please type your username (no space)"
+                value={name}
+                onChange={(e) => setName(e.currentTarget.value)}
+                Icon={UserRound}
+              ></Input>
+              {name.length > 0 && !nameValid && (
+                <div className="text-xs min-h-4 mt-1 mb-3 text-rose-500">
+                  You can use only alphanumeric characters and -_,~!@#$^&*()+=
+                  special characters.
+                </div>
+              )}
+            </td>
+          </tr>
+          <tr className="align-top">
+            <td className="text-muted-foreground text-sm">
+              <div className="h-10 flex items-center">API Keys</div>
+            </td>
+            <td>
               <div>
-                <table>
-                  {apiKeys.map((k) => (
-                    <tr key={k.hashId}>
-                      <td>
-                        <div className="mb-3">{k.key}</div>
-                      </td>
-                      <td className="pl-3">
-                        <div className="mb-3">
+                <div>
+                  <table>
+                    {apiKeys.map((k) => (
+                      <tr
+                        key={k.hashId}
+                        className="h-[3.25rem] first:h-10 align-middle"
+                      >
+                        <td className="text-sm">{k.key}</td>
+                        <td>
                           <Button
                             variant="outline"
-                            size="1"
                             onClick={() => onClickApiKeyTrash(k.hashId)}
-                            className="mb-3"
+                            className="p-0 h-7 w-7"
                           >
-                            <TrashIcon />
+                            <Trash2 />
                           </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </table>
-                <Button size="1" onClick={onClickGetApiKey}>
-                  Get API Key
-                </Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </table>
+                  <Button onClick={onClickGetApiKey} className="mt-3">
+                    Get API Key
+                  </Button>
+                </div>
+                <div className="mt-3 text-sm">
+                  <ul>
+                    <li>
+                      1. We are currently in the beta phase of our product
+                      launch.
+                    </li>
+                    <li>
+                      2. During this beta period, there will be no charges for
+                      your use of the service.
+                    </li>
+                    <li>
+                      3. As part of our beta testing phase, your daily usage is
+                      capped at $1.
+                    </li>
+                  </ul>
+                </div>
               </div>
-              <div className="mt-3">
-                <ul>
-                  <li>
-                    1. We are currently in the beta phase of our product launch.
-                  </li>
-                  <li>
-                    2. During this beta period, there will be no charges for
-                    your use of the service.
-                  </li>
-                  <li>
-                    3. As part of our beta testing phase, your daily usage is
-                    capped at $1.
-                  </li>
-                </ul>
+            </td>
+          </tr>
+          <tr>
+            <td className="text-muted-foreground text-sm">
+              <div className="h-10 flex items-center">Customer support</div>
+            </td>
+            <td>
+              <div className="text-sm flex items-center gap-1">
+                <a href="mailto:brian.b.cho@bookquilt.com">Send email</a>
+                <span>
+                  <Mail />
+                </span>
               </div>
-            </div>
-          </DataList.Value>
-        </DataList.Item>
-      </DataList.Root>
-      <div className="my-3 text-xs flex justify-end">
-        <a href="mailto:brian.b.cho@bookquilt.com">Customer Support</a>
-      </div>
-      <div className="w-full flex justify-end gap-3 mt-4">
-        <Password />
+            </td>
+          </tr>
+          <tr>
+            <td className="text-muted-foreground text-sm">
+              <div className="h-10 flex items-center">Password</div>
+            </td>
+            <td>
+              <Password />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div className="w-full flex flex-col items-end gap-3">
         <Button onClick={onClickSave}>{saveButtonText}</Button>
-      </div>
-      <div className="self-end">
-        <Button onClick={onClickDelete} color="crimson" variant="outline">
+        <Button onClick={onClickDelete} variant="destructive">
           Delete account
         </Button>
       </div>
-      <AlertDialog.Root open={newKey.length > 0}>
-        <AlertDialog.Trigger>
-          <div></div>
-        </AlertDialog.Trigger>
-        <AlertDialog.Content>
-          <AlertDialog.Title>API Key</AlertDialog.Title>
-          <AlertDialog.Description>
+      <AlertDialog open={newKey.length > 0}>
+        <AlertDialogContent className="max-w-fit">
+          <AlertDialogTitle>API Key</AlertDialogTitle>
+          <AlertDialogDescription>
             <div>
               <div>
                 <span className="text-rose-500">Important: </span>
@@ -252,28 +254,27 @@ export default function Page() {
                 </span>
               </div>
               <Card className="mt-3">
-                <div className="flex items-center gap-3">
-                  <div className="text-xs">{newKey}</div>
+                <div className="flex items-center">
+                  <div className="text-xs px-3">{newKey}</div>
                   <Button
-                    variant="soft"
-                    size="1"
+                    variant="secondary"
                     onClick={() => navigator.clipboard.writeText(newKey)}
                   >
-                    <CopyIcon />
+                    <Copy />
                   </Button>
                 </div>
               </Card>
             </div>
-          </AlertDialog.Description>
-          <AlertDialog.Action>
+          </AlertDialogDescription>
+          <AlertDialogFooter>
             <div className="w-full flex justify-end mt-3">
               <div>
                 <Button onClick={() => setNewKey("")}>Confirm</Button>
               </div>
             </div>
-          </AlertDialog.Action>
-        </AlertDialog.Content>
-      </AlertDialog.Root>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

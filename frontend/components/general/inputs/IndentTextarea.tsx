@@ -1,10 +1,11 @@
+import { Textarea } from "@/components/ui";
 import { KeyboardEvent, TextareaHTMLAttributes, useRef } from "react";
 
 type Props = TextareaHTMLAttributes<HTMLTextAreaElement> & {
   useValue: [string, (v: string) => void];
 };
 
-function Textarea({ useValue, ...props }: Props) {
+function IndentTextarea({ useValue, ...props }: Props) {
   const [value, setValue] = useValue;
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -33,7 +34,7 @@ function Textarea({ useValue, ...props }: Props) {
   };
 
   return (
-    <textarea
+    <Textarea
       ref={textareaRef}
       {...props}
       onKeyDown={handleKeyDown}
@@ -43,4 +44,4 @@ function Textarea({ useValue, ...props }: Props) {
   );
 }
 
-export default Textarea;
+export default IndentTextarea;

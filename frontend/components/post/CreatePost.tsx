@@ -1,7 +1,6 @@
 "use client";
 
 import callApi from "@/util/callApi";
-import { Button } from "@radix-ui/themes";
 import { Thread } from "gpinterface-shared/type";
 import { useCallback, useState } from "react";
 import {
@@ -15,10 +14,21 @@ import Radio, { modals } from "../general/inputs/Radio";
 import { TextPromptSchema } from "gpinterface-shared/type/textPrompt";
 import CreateImagePrompt from "../prompt/CreateImagePrompt";
 import { ImagePromptSchema } from "gpinterface-shared/type/imagePrompt";
+import {
+  Button,
+  Card,
+  CardContent,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Textarea,
+} from "../ui";
+import Footer from "../prompt/Footer";
 
 export default function CreatePost({ thread }: { thread: Thread }) {
   const [post, setPost] = useState("");
-  const [provider, setProvider] = useState(modals[0]);
+  const [modal, setModal] = useState(modals[0]);
 
   const [loading, setLoading] = useState(false);
   const getOnClick = useCallback(
@@ -109,35 +119,52 @@ export default function CreatePost({ thread }: { thread: Thread }) {
   return (
     <div className="w-full max-w-7xl px-3 flex flex-col gap-7 py-7">
       <div className="w-full">
-        <textarea
-          className="w-full focus:outline-none border rounded p-1 resize-none h-80"
+        <Textarea
+          className="w-full h-80"
           value={post}
           onChange={(e) => setPost(e.currentTarget.value)}
           placeholder="contents of the post"
         />
       </div>
-      <Radio.Provider useProvider={[provider, setProvider]} loading={loading} />
-      {provider === modals[0] && (
-        <div className="flex justify-end">
-          <div>
-            <Button onClick={onClickCreate} loading={loading}>
-              Create Post
-            </Button>
-          </div>
-        </div>
-      )}
-      {provider === modals[1] && (
-        <CreateTextPrompt
-          callCreate={onClickTextPromptCreate}
-          useLoading={[loading, setLoading]}
-        />
-      )}
-      {provider === modals[2] && (
-        <CreateImagePrompt
-          callCreate={onClickImagePromptCreate}
-          useLoading={[loading, setLoading]}
-        />
-      )}
+      <Tabs
+        defaultValue={modals[0]}
+        value={modal}
+        onValueChange={(v) => setModal(v)}
+        className="w-full"
+      >
+        <TabsList className="w-full">
+          {modals.map((m) => (
+            <TabsTrigger key={m} value={m} className="flex-1">
+              {m}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        <Card className="mt-3">
+          <CardContent className="p-3">
+            <TabsContent value={modals[0]}>
+              <Footer
+                useIsPublic={[thread.isPublic, () => {}, false]}
+                onClickCreate={onClickCreate}
+                loading={loading}
+              />
+            </TabsContent>
+            <TabsContent value={modals[1]}>
+              <CreateTextPrompt
+                useIsPublic={[thread.isPublic, () => {}]}
+                callCreate={onClickTextPromptCreate}
+                useLoading={[loading, setLoading]}
+              />
+            </TabsContent>
+            <TabsContent value={modals[2]}>
+              <CreateImagePrompt
+                useIsPublic={[thread.isPublic, () => {}]}
+                callCreate={onClickImagePromptCreate}
+                useLoading={[loading, setLoading]}
+              />
+            </TabsContent>
+          </CardContent>
+        </Card>
+      </Tabs>
     </div>
   );
 }

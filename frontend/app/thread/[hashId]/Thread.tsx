@@ -9,8 +9,8 @@ import Share from "@/components/general/toasts/Share";
 import CreatePost from "@/components/post/CreatePost";
 import Collapsible from "@/components/general/collapsible";
 import { ThreadGetResponse } from "gpinterface-shared/type/thread";
-import { Badge } from "@radix-ui/themes";
 import UserRequiredButton from "@/components/general/buttons/UserRequiredButton";
+import { Badge } from "@/components/ui";
 
 export default function Thread({ hashId }: { hashId: string }) {
   const [thread, setThread] = useState<ThreadType>();
@@ -38,7 +38,7 @@ export default function Thread({ hashId }: { hashId: string }) {
       <div className="py-1 border-b flex items-end justify-between">
         <div className="flex items-center gap-3">
           {!thread.isPublic && <Badge>private</Badge>}
-          <div className="text-xl font-bold">{thread.title}</div>
+          <div className="text-lg font-bold">{thread.title}</div>
         </div>
         {thread.isPublic && <Share threadHashId={hashId} />}
       </div>

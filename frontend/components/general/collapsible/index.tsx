@@ -1,6 +1,6 @@
 "use client";
 
-import { ThickChevronRightIcon } from "@radix-ui/themes";
+import { ChevronRight } from "lucide-react";
 import React, {
   useRef,
   useState,
@@ -53,10 +53,12 @@ const Collapsible: React.FC<CollapsibleProps> = ({
 
   return (
     <>
-      <button onClick={toggle} className="w-full">
+      <button onClick={toggle} className="w-full h-6">
         <div className="flex flex-row items-start gap-3 text-left w-full">
-          <ThickChevronRightIcon className="w-3 h-6" style={chevronStyle} />
-          <div className={`flex-1 font-bold${isOpen ? "" : " truncate"}`}>
+          <ChevronRight className="mt-0.5" style={chevronStyle} />
+          <div
+            className={`flex-1 text-sm font-bold${isOpen ? "" : " truncate"}`}
+          >
             {title ? title : isOpen ? "Hide" : "Show"}
           </div>
         </div>

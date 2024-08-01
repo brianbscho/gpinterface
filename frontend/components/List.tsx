@@ -1,6 +1,6 @@
 "use client";
 
-import { Spinner } from "@radix-ui/themes";
+import { Loader } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 export default function List({
@@ -23,7 +23,7 @@ export default function List({
     callApi();
   }, [callApi]);
 
-  const spinnerRef = useRef<HTMLSpanElement>(null);
+  const spinnerRef = useRef<SVGSVGElement>(null);
   useEffect(() => {
     const current = spinnerRef.current;
     if (!current || !elements || elements.length === 0) return;
@@ -51,7 +51,7 @@ export default function List({
   return (
     <>
       {children}
-      {!spinnerHidden && <Spinner ref={spinnerRef} className="mx-auto my-12" />}
+      {!spinnerHidden && <Loader ref={spinnerRef} className="mx-auto my-12" />}
     </>
   );
 }

@@ -5,9 +5,8 @@ export function getDateString(d: Date) {
 
   const h = d.getHours().toString().padStart(2, "0");
   const m = d.getMinutes().toString().padStart(2, "0");
-  const s = d.getSeconds().toString().padStart(2, "0");
 
-  return `${year}.${month}.${date} ${h}:${m}:${s}`;
+  return `${year}.${month}.${date} ${h}:${m}`;
 }
 
 export function getInterpolatedString(originalString: string, body: any) {

@@ -38,3 +38,20 @@ export const inputsToObject = (inputs: Input[]) => {
     return acc;
   }, {});
 };
+
+export const getHighlightedPrompt = (prompt: string, body: any) => {
+  let interpolatedString = prompt;
+  Object.keys(body).forEach((key) => {
+    interpolatedString = interpolatedString.replaceAll(
+      `{{${key}}}`,
+      `{{${body[key]}}}`
+    );
+  });
+
+  const regex = /{{(.*?)}}/g;
+  const output = interpolatedString.replace(
+    regex,
+    '<span class="bg-primary text-primary-foreground">$1</span>'
+  );
+  return output;
+};

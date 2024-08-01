@@ -32,6 +32,11 @@ export default async function (fastify: FastifyInstance) {
             createdAt: true,
             user: { select: { hashId: true, name: true } },
             _count: { select: { posts: true } },
+            posts: {
+              select: {
+                _count: { select: { likes: { where: { isLiked: true } } } },
+              },
+            },
           },
         });
 
@@ -43,11 +48,12 @@ export default async function (fastify: FastifyInstance) {
           user
         );
 
-        const { _count, ...rest } = thread;
+        const { _count, posts, ...rest } = thread;
 
         return {
           thread: {
             ...rest,
+            likes: posts.reduce((acc, curr) => acc + curr._count.likes, 0),
             posts: thread._count.posts,
             createdAt: getDateString(thread.createdAt),
           },

@@ -1,7 +1,6 @@
 "use client";
 
 import callApi from "@/util/callApi";
-import { Button } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -21,13 +20,24 @@ import {
   TextPromptUpdateResponse,
   TextPromptUpdateSchema,
 } from "gpinterface-shared/type/textPrompt";
-import Radio, { modals } from "@/components/general/inputs/Radio";
+import { modals } from "@/components/general/inputs/Radio";
 import CreateImagePrompt from "@/components/prompt/CreateImagePrompt";
 import {
   ImagePromptSchema,
   ImagePromptUpdateResponse,
   ImagePromptUpdateSchema,
 } from "gpinterface-shared/type/imagePrompt";
+import {
+  Card,
+  CardContent,
+  Input,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Textarea,
+} from "@/components/ui";
+import Footer from "@/components/prompt/Footer";
 
 export default function Page({ params }: { params: { hashId: string } }) {
   const { hashId } = params;
@@ -173,56 +183,65 @@ export default function Page({ params }: { params: { hashId: string } }) {
 
   if (!responsePost) return null;
   return (
-    <div className="w-full max-w-7xl px-3 flex flex-col gap-7 py-7">
+    <div className="w-full max-w-7xl flex flex-col gap-3 p-3">
       <div className="w-full">
-        <input
-          className="w-full focus:outline-none border-b p-1"
+        <Input
+          className="w-full"
           value={title}
           onChange={(e) => setTitle(e.currentTarget.value)}
           placeholder="title of the thread"
         />
       </div>
       <div className="w-full">
-        <textarea
-          className="w-full focus:outline-none border rounded p-1 resize-none h-80"
+        <Textarea
+          className="w-full h-80"
           value={post}
           onChange={(e) => setPost(e.currentTarget.value)}
           placeholder="contents of the post"
         />
       </div>
-      <Radio.Provider
-        useProvider={[modal, setModal]}
-        loading={loading}
-        disabled={responsePost.thread.isPublic}
-      />
-      {modal === modals[0] && (
-        <div className="flex justify-end gap-3 pb-3">
-          <div>
-            <Button variant="soft" onClick={onClickCancel}>
-              Cancel
-            </Button>
-          </div>
-          <div>
-            <Button onClick={onClickSave} loading={loading}>
-              Save
-            </Button>
-          </div>
-        </div>
-      )}
-      {modal === modals[1] && (
-        <CreateTextPrompt
-          callCreate={onClickTextPromptSave}
-          useLoading={[loading, setLoading]}
-          responsePost={responsePost}
-        />
-      )}
-      {modal === modals[2] && (
-        <CreateImagePrompt
-          callCreate={onClickImagePromptSave}
-          useLoading={[loading, setLoading]}
-          responsePost={responsePost}
-        />
-      )}
+      <Tabs
+        defaultValue={modals[0]}
+        value={modal}
+        onValueChange={(v) => setModal(v)}
+        className="w-full"
+      >
+        <TabsList className="w-full">
+          {modals.map((m) => (
+            <TabsTrigger key={m} value={m} className="flex-1" disabled>
+              {m}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        <Card className="mt-3">
+          <CardContent className="p-3">
+            <TabsContent value={modals[0]}>
+              <Footer
+                useIsPublic={[responsePost.thread.isPublic, () => {}, true]}
+                onClickCancel={onClickCancel}
+                onClickCreate={onClickSave}
+                loading={loading}
+              />
+            </TabsContent>
+            <TabsContent value={modals[1]}>
+              <CreateTextPrompt
+                useIsPublic={[responsePost.thread.isPublic, () => {}]}
+                callCreate={onClickTextPromptSave}
+                useLoading={[loading, setLoading]}
+                responsePost={responsePost}
+              />
+            </TabsContent>
+            <TabsContent value={modals[2]}>
+              <CreateImagePrompt
+                useIsPublic={[responsePost.thread.isPublic, () => {}]}
+                callCreate={onClickImagePromptSave}
+                useLoading={[loading, setLoading]}
+                responsePost={responsePost}
+              />
+            </TabsContent>
+          </CardContent>
+        </Card>
+      </Tabs>
     </div>
   );
 }

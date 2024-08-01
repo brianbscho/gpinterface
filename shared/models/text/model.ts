@@ -7,7 +7,6 @@ import { llamaConfig, llamaModels } from "./meta";
 import { gemmaConfig, gemmaModels } from "./google";
 
 export const textModels = [
-  { provider: "None", models: [], config: {} },
   { provider: "OpenAI", models: gptModels, config: gptConfig },
   { provider: "Anthropic", models: claudeModels, config: claudeConfig },
   { provider: "Mistral", models: mistralModels, config: mistralConfig },
@@ -45,6 +44,8 @@ export function getInputTextPriceByModel(input: number, model: string) {
       return 0.3 * input;
     case "open-mixtral-8x22b-2404":
       return 2 * input;
+    case "mistral-large-2407":
+      return 3 * input;
     case "mistral-large-2402":
       return 4 * input;
     case "mistral-medium-2312":
@@ -71,6 +72,10 @@ export function getInputTextPriceByModel(input: number, model: string) {
       return 0.3 * input;
     case "jamba-instruct-preview":
       return 0.5 * input;
+    case "meta.llama3-1-70b-instruct-v1:0":
+      return 0.00265 * input * KILO;
+    case "meta.llama3-1-8b-instruct-v1:0":
+      return 0.0003 * input * KILO;
     case "meta.llama3-70b-instruct-v1:0":
       return 0.00265 * input * KILO;
     case "meta.llama3-8b-instruct-v1:0":
@@ -111,6 +116,8 @@ export function getOutputTextPriceByModel(output: number, model: string) {
       return 0.3 * output;
     case "open-mixtral-8x22b-2404":
       return 6 * output;
+    case "mistral-large-2407":
+      return 9 * output;
     case "mistral-large-2402":
       return 12 * output;
     case "mistral-medium-2312":
@@ -137,6 +144,10 @@ export function getOutputTextPriceByModel(output: number, model: string) {
       return 0.6 * output;
     case "jamba-instruct-preview":
       return 0.7 * output;
+    case "meta.llama3-1-70b-instruct-v1:0":
+      return 0.0035 * output * KILO;
+    case "meta.llama3-1-8b-instruct-v1:0":
+      return 0.0006 * output * KILO;
     case "meta.llama3-70b-instruct-v1:0":
       return 0.0035 * output * KILO;
     case "meta.llama3-8b-instruct-v1:0":

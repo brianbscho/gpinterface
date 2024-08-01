@@ -3,7 +3,6 @@
 import TextUsage from "@/components/general/dialogs/TextUsage";
 import List from "@/components/List";
 import callApi from "@/util/callApi";
-import { stringify } from "@/util/string";
 import { TextPromptHistory } from "gpinterface-shared/type";
 import { TextHistoriesGetResponse } from "gpinterface-shared/type/textHistory";
 import { Fragment, useCallback, useMemo, useState } from "react";
@@ -53,44 +52,31 @@ export default function TextUsages() {
       spinnerHidden={spinnerHidden}
       useLastHashId={[lastHashId, setLastHashId]}
     >
-      <table className="border-spacing-3 border-separate w-full table-fixed">
-        <thead>
-          <tr>
-            <td className="hidden md:table-cell">Model</td>
-            <td className="w-2/5 md:w-auto">Input</td>
-            <td className="w-2/5 md:w-auto">Answer</td>
-            <td className="hidden md:table-cell">Price</td>
-            <td className="w-1/5 md:w-auto">Details</td>
-          </tr>
-        </thead>
-        <tbody className="w-full">
-          {groupedTextHistories?.map(([date, history], index) => (
-            <Fragment key={date}>
-              {history.histories.map((t) => (
-                <tr key={t.hashId} className="w-full">
-                  <td className="text-nowrap hidden md:table-cell">
-                    {t.model}
-                  </td>
-                  <td className="truncate">{stringify(t.input)}</td>
-                  <td className="truncate">{t.content}</td>
-                  <td className="text-nowrap hidden md:table-cell">
-                    ${t.price}
-                  </td>
-                  <td className="text-nowrap">
-                    <TextUsage textHistory={t} />
-                  </td>
-                </tr>
-              ))}
-              {(spinnerHidden || index < groupedTextHistories.length) && (
-                <tr>
-                  <td className="font-bold text-lg">{date}</td>
-                  <td colSpan={4}>daily usage sum: ${history.priceSum}</td>
-                </tr>
-              )}
-            </Fragment>
-          ))}
-        </tbody>
-      </table>
+      <div className="w-full grid grid-cols-[auto_1fr_auto] gap-3 items-center">
+        {groupedTextHistories?.map(([date, history], index) => (
+          <Fragment key={date}>
+            {history.histories.map((t) => (
+              <Fragment key={t.hashId}>
+                <div className="w-28">
+                  <TextUsage textHistory={t} />
+                </div>
+                <div className="truncate col-span-2">{t.content}</div>
+              </Fragment>
+            ))}
+            {(spinnerHidden || index < groupedTextHistories.length) && (
+              <Fragment>
+                <div className="w-28 text-muted-foreground">Date</div>
+                <div className="col-span-2 text-muted-foreground">Price</div>
+                <div className="font-bold text-lg w-28">{date}</div>
+                <div className="col-span-2 leading-7">
+                  ${history.priceSum.toFixed(5)}
+                </div>
+                <div className="col-span-3 border-b"></div>
+              </Fragment>
+            )}
+          </Fragment>
+        ))}
+      </div>
     </List>
   );
 }

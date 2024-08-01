@@ -1,6 +1,7 @@
 export const mistralModels = [
   "open-mistral-nemo-2407",
   "open-mixtral-8x22b-2404",
+  "mistral-large-2407",
   "mistral-large-2402",
   "mistral-medium-2312",
   "mistral-small-2402",

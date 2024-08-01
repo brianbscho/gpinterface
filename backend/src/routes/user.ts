@@ -225,10 +225,10 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<UserGetMeResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
-        const { name, bio } = request.body;
+        const { name } = request.body;
         const updatedUser = await fastify.prisma.user.update({
           where: { hashId: user.hashId },
-          data: { name, bio },
+          data: { name },
           select: { hashId: true, email: true, name: true, bio: true },
         });
 

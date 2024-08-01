@@ -1,9 +1,15 @@
 "use client";
 
-import { Button, Dialog } from "@radix-ui/themes";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "../links/Link";
+import {
+  Button,
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui";
 
 export default function Login({
   title = "Please log in first :)",
@@ -12,7 +18,7 @@ export default function Login({
 }: {
   title?: string;
   open: boolean;
-  onClickLogin: () => void;
+  onClickLogin?: () => void;
 }) {
   const pathname = usePathname();
   const [redirect, setRedirect] = useState("");
@@ -26,19 +32,19 @@ export default function Login({
   }, [pathname]);
 
   return (
-    <Dialog.Root open={open}>
-      <Dialog.Content>
-        <Dialog.Title>{title}</Dialog.Title>
+    <Dialog open={open}>
+      <DialogContent>
+        <DialogTitle>{title}</DialogTitle>
         <div className="w-full flex justify-end">
-          <Dialog.Close>
+          <DialogClose>
             <Button asChild>
               <Link href={`/login${redirect}`} onClick={onClickLogin}>
                 Login
               </Link>
             </Button>
-          </Dialog.Close>
+          </DialogClose>
         </div>
-      </Dialog.Content>
-    </Dialog.Root>
+      </DialogContent>
+    </Dialog>
   );
 }

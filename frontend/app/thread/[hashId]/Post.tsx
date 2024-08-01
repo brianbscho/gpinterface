@@ -2,13 +2,6 @@
 
 import useUserStore from "@/store/user";
 import callApi from "@/util/callApi";
-import {
-  BookmarkFilledIcon,
-  BookmarkIcon,
-  HeartFilledIcon,
-  HeartIcon,
-} from "@radix-ui/react-icons";
-import { Button, Separator } from "@radix-ui/themes";
 import { Post as PostType } from "gpinterface-shared/type";
 import { useCallback } from "react";
 import TextPrompt from "../../../components/prompt/TextPrompt";
@@ -24,6 +17,8 @@ import { Static } from "@sinclair/typebox";
 import Link from "@/components/general/links/Link";
 import ImagePrompt from "../../../components/prompt/ImagePrompt";
 import UserRequiredButton from "@/components/general/buttons/UserRequiredButton";
+import { Bookmark, Heart } from "lucide-react";
+import { Button } from "@/components/ui";
 
 export default function Post({
   post,
@@ -60,37 +55,8 @@ export default function Post({
   }, [post, setPost]);
 
   return (
-    <div className="py-1 border-b">
-      <div className="py-1 flex gap-3 justify-end items-center text-sm">
-        <UserRequiredButton onClick={onClickBookmark}>
-          <div className="cursor-pointer">
-            {post.isBookmarked ? <BookmarkFilledIcon /> : <BookmarkIcon />}
-          </div>
-        </UserRequiredButton>
-        <UserRequiredButton onClick={onClickLike}>
-          <div className="flex gap-3 items-center cursor-pointer">
-            {post.isLiked ? <HeartFilledIcon /> : <HeartIcon />}
-            <div>{post.likes} likes</div>
-          </div>
-        </UserRequiredButton>
-      </div>
+    <div className="border-b mb-24">
       <div className="mt-3 whitespace-pre-line">{post.post}</div>
-      <div className="py-1 flex gap-3 justify-end items-center text-sm">
-        {post.user && post.user.hashId === user?.hashId && (
-          <Button size="1" asChild>
-            <Link href={`/post/edit/${post.hashId}`}>edit</Link>
-          </Button>
-        )}
-        <div className="font-bold">
-          {post.user ? (
-            <Link href={`/user/${post.user.hashId}`}>{post.user.name}</Link>
-          ) : (
-            <div>unknown</div>
-          )}
-        </div>
-        <Separator orientation="vertical" />
-        <div>{post.createdAt}</div>
-      </div>
       {post.textPrompts.map((t) => (
         <div key={t.hashId} className="mt-3 w-full overflow-x-auto">
           <TextPrompt textPrompt={t} />
@@ -101,6 +67,38 @@ export default function Post({
           <ImagePrompt imagePrompt={i} />
         </div>
       ))}
+      <div className="py-3 flex gap-3 items-center text-xs md:text-sm">
+        <UserRequiredButton onClick={onClickBookmark}>
+          <div className="cursor-pointer">
+            <Bookmark fill={post.isBookmarked ? "#FFF" : "#000"} />
+          </div>
+        </UserRequiredButton>
+        <UserRequiredButton onClick={onClickLike}>
+          <div className="flex gap-1 items-center cursor-pointer">
+            <Heart fill={post.isLiked ? "#FFF" : "#000"} />
+            <div>{post.likes} likes</div>
+          </div>
+        </UserRequiredButton>
+        <div className="flex-1" />
+        {post.user && post.user.hashId === user?.hashId && (
+          <Button asChild>
+            <Link
+              href={`/post/edit/${post.hashId}`}
+              className="h-7 text-xs md:text-sm"
+            >
+              edit
+            </Link>
+          </Button>
+        )}
+        <div className="font-bold">
+          {post.user ? (
+            <Link href={`/user/${post.user.hashId}`}>{post.user.name}</Link>
+          ) : (
+            <div>unknown</div>
+          )}
+        </div>
+        <div>{post.createdAt}</div>
+      </div>
     </div>
   );
 }
