@@ -272,7 +272,7 @@ export default function CreateTextPrompt({
       <div className="text-sm leading-10">system (optional)</div>
       <div className="col-span-2">
         <Textarea
-          className="w-full min-h-0 h-10"
+          resizing
           placeholder="system message (optional)"
           value={systemMessage}
           onChange={(e) => setSystemMessage(e.currentTarget.value)}
@@ -299,7 +299,7 @@ export default function CreateTextPrompt({
           </div>
           <div>
             <Textarea
-              className="w-full min-h-0 h-10"
+              resizing
               placeholder="message"
               value={m.content}
               onChange={(e) =>
@@ -343,7 +343,7 @@ export default function CreateTextPrompt({
               value={i.value}
               onChange={(e) => setExampleInput(index)(e.currentTarget.value)}
               disabled={loading || responsePost?.thread.isPublic}
-              className="min-h-0 h-10"
+              resizing
             />
           </div>
         </Fragment>

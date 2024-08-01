@@ -288,7 +288,7 @@ export default function CreateImagePrompt({
       <Title>Prompt</Title>
       <div className="col-span-2">
         <Textarea
-          className="w-full h-20"
+          resizing
           placeholder="image generation prompt"
           value={prompt}
           onChange={(e) => setPrompt(e.currentTarget.value)}
@@ -319,7 +319,7 @@ export default function CreateImagePrompt({
               value={i.value}
               onChange={(e) => setExampleInput(index)(e.currentTarget.value)}
               disabled={loading || responsePost?.thread.isPublic}
-              className="min-h-0 h-10"
+              resizing
             />
           </div>
         </Fragment>
