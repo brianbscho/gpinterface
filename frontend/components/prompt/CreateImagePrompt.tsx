@@ -347,14 +347,12 @@ export default function CreateImagePrompt({
             </div>
           </div>
           <EstimatedPrice />
-          <div className="col-span-2 text-xs md:text-sm">
-            <div className="whitespace-pre text-wrap">${example.price}</div>
-          </div>
+          <div className="col-span-2 text-xs md:text-sm">${example.price}</div>
           <Title>Response</Title>
           <div className="col-span-2 text-xs md:text-sm">
             <Collapsible>
               <Card>
-                <CardContent className="p-3">
+                <CardContent className="p-3 whitespace-pre text-wrap">
                   {stringify(example.response)}
                 </CardContent>
               </Card>
