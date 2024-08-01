@@ -59,13 +59,13 @@ export async function getTodayPriceSum(
   tomorrowStart.setDate(todayStart.getDate() + 1);
   tomorrowStart.setHours(0, 0, 0, 0);
 
-  const result = await history.aggregate({
-    _sum: { price: true },
+  const histories = await history.findMany({
     where: {
       userHashId,
       createdAt: { gte: todayStart, lt: tomorrowStart },
     },
+    select: { price: true },
   });
-
-  return result._sum.price || 999;
+  const priceSum = histories.reduce((acc, curr) => acc + curr.price, 0);
+  return priceSum;
 }

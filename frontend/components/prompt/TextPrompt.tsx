@@ -1,8 +1,8 @@
 "use client";
 
 import { TextPrompt as TextPromptType } from "gpinterface-shared/type";
-import { getHighlightedPrompt, objectToInputs } from "@/util/string";
-import { Fragment, useMemo } from "react";
+import { getHighlightedPrompt } from "@/util/string";
+import { Fragment } from "react";
 import Title from "../thread/Title";
 import TextUsage from "../general/dialogs/TextUsage";
 import { Badge, Card, CardContent } from "../ui";
@@ -15,16 +15,6 @@ export default function TextPrompt({
   const { systemMessage, messages, examples, ...prompt } = textPrompt;
   const example = examples[0];
 
-  const curl = useMemo(() => {
-    const inputs = objectToInputs(example.input);
-    const input = inputs.map((i) => `"${i.name}": "${i.value}"`).join(", ");
-
-    return `curl -X POST ${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/text/${textPrompt.hashId} \\
-    -H "Authorization: Bearer {your_api_key}" \\
-    -H "Content-Type: application/json" \\
-    -d '{${input}}'`;
-  }, [example.input, textPrompt.hashId]);
-
   return (
     <Card>
       <CardContent className="p-3 overflow-x-auto">
@@ -36,7 +26,7 @@ export default function TextPrompt({
                 system
               </Badge>
               <div
-                className="whitespace-pre"
+                className="whitespace-pre text-wrap"
                 dangerouslySetInnerHTML={{
                   __html: getHighlightedPrompt(systemMessage, example.input),
                 }}
@@ -50,7 +40,7 @@ export default function TextPrompt({
                 {m.role}
               </Badge>
               <div
-                className="whitespace-pre"
+                className="whitespace-pre text-wrap"
                 dangerouslySetInnerHTML={{
                   __html: getHighlightedPrompt(m.content, example.input),
                 }}
@@ -61,11 +51,12 @@ export default function TextPrompt({
           <Badge className="justify-center" variant="secondary">
             assistant
           </Badge>
-          <div>{example.content}</div>
+          <div className="whitespace-pre text-wrap">{example.content}</div>
           <Title>Detail</Title>
           <div>
             <TextUsage
               textHistory={{
+                textPromptHashId: textPrompt.hashId,
                 systemMessage,
                 messages: messages.map((m) => ({
                   content: m.content,
@@ -77,8 +68,6 @@ export default function TextPrompt({
             />
           </div>
           <div />
-          <Title>Request example</Title>
-          <div className="whitespace-pre col-span-2">{curl}</div>
         </div>
       </CardContent>
     </Card>

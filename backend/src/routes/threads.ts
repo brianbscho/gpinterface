@@ -171,9 +171,6 @@ export default async function (fastify: FastifyInstance) {
             ...(id > 0 && { id: { lt: id } }),
             ...(user.hashId !== userHashId && { isPublic: true }),
             ...(type === "post" && { posts: { some: { userHashId } } }),
-            ...(type === "bookmark" && {
-              posts: { some: { bookmarks: { some: { userHashId } } } },
-            }),
             ...(type === "thread" && { userHashId }),
           },
           select: {
@@ -207,6 +204,65 @@ export default async function (fastify: FastifyInstance) {
       } catch (ex) {
         console.error(
           "path: /threads/user/:userHashId?lastHashId, method: get, error:",
+          ex
+        );
+        throw ex;
+      }
+    }
+  );
+  fastify.get<{ Querystring: Static<typeof QueryParamSchema> }>(
+    "/bookmarks",
+    {
+      schema: { querystring: QueryParamSchema },
+    },
+    async (request, reply): Promise<ThreadsGetResponse> => {
+      try {
+        const { user } = await fastify.getUser(request, reply);
+        const { lastHashId } = request.query;
+
+        const id = await getIdByHashId(
+          fastify.prisma.thread.findFirst,
+          lastHashId
+        );
+
+        const threads = await fastify.prisma.thread.findMany({
+          where: {
+            ...(id > 0 && { id: { lt: id } }),
+            posts: {
+              some: { bookmarks: { some: { userHashId: user.hashId } } },
+            },
+          },
+          select: {
+            hashId: true,
+            title: true,
+            isPublic: true,
+            createdAt: true,
+            user: { select: { hashId: true, name: true } },
+            _count: { select: { posts: true } },
+            posts: {
+              select: {
+                _count: { select: { likes: { where: { isLiked: true } } } },
+              },
+            },
+          },
+          orderBy: { id: "desc" },
+          take: 20,
+        });
+
+        return {
+          threads: threads.map((t) => {
+            const { _count, posts, ...thread } = t;
+            return {
+              ...thread,
+              likes: posts.reduce((acc, curr) => acc + curr._count.likes, 0),
+              createdAt: getDateString(t.createdAt),
+              posts: _count.posts,
+            };
+          }),
+        };
+      } catch (ex) {
+        console.error(
+          "path: /threads/bookmarks?lastHashId, method: get, error:",
           ex
         );
         throw ex;
