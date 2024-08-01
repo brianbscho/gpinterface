@@ -10,12 +10,11 @@ import {
 import { Static } from "@sinclair/typebox";
 import CreateTextPrompt from "../prompt/CreateTextPrompt";
 import useLinkConfirmMessage from "@/hooks/useLinkConfirmMessage";
-import Radio, { modals } from "../general/inputs/Radio";
+import { modals } from "../general/inputs/Radio";
 import { TextPromptSchema } from "gpinterface-shared/type/textPrompt";
 import CreateImagePrompt from "../prompt/CreateImagePrompt";
 import { ImagePromptSchema } from "gpinterface-shared/type/imagePrompt";
 import {
-  Button,
   Card,
   CardContent,
   Tabs,
