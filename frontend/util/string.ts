@@ -1,4 +1,5 @@
-export const stringify = (obj: object) => JSON.stringify(obj, null, "\t");
+export const stringify = (obj: object) =>
+  JSON.stringify(obj, null, "\t").replace(/\\n/g, "\n");
 
 export function getKeys(content: string) {
   const regex = /{{(\S+)}}/g;
@@ -48,7 +49,7 @@ export const getHighlightedPrompt = (prompt: string, body: any) => {
     );
   });
 
-  const regex = /{{(.*?)}}/g;
+  const regex = /{{([\s\S]*?)}}/g;
   const output = interpolatedString.replace(
     regex,
     '<span class="bg-primary text-primary-foreground">$1</span>'
