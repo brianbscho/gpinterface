@@ -27,10 +27,10 @@ export default function ImagePrompt({
             }}
           />
           <Title>Generated image</Title>
-          <div className="w-full h-80">
+          <div className="w-full">
             <picture>
               <img
-                className="h-full"
+                className="w-full"
                 src={example.url}
                 alt="ai_generated_image"
               />
