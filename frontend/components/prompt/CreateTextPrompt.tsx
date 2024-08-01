@@ -26,18 +26,11 @@ import EstimatedPrice from "../general/hover/EstimatedPrice";
 import { getValidBody } from "gpinterface-shared/util";
 import { useRouter } from "next/navigation";
 import { PlayCircle, PlusCircle, RotateCcw, Trash2 } from "lucide-react";
-import {
-  Button,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Textarea,
-} from "../ui";
+import { Button, Textarea } from "../ui";
 import Title from "../thread/Title";
 import Provider from "../general/selects/Provider";
 import Footer from "./Footer";
+import Select from "../general/selects/Select";
 
 const defaultMessage: Static<typeof TextMessageSchema> = {
   role: "user",
@@ -227,7 +220,7 @@ export default function CreateTextPrompt({
         />
       </div>
       <div className="col-span-2">
-        <Provider
+        <Select
           options={models}
           useOption={[model, setModel]}
           disabled={responsePost?.thread.isPublic || loading}
@@ -284,18 +277,10 @@ export default function CreateTextPrompt({
           <div></div>
           <div>
             <Select
-              value={m.role}
-              onValueChange={(v) => setMessage(index)({ role: v })}
+              options={["user", "assistant"]}
+              useOption={[m.role, (v) => setMessage(index)({ role: v })]}
               disabled={loading || responsePost?.thread.isPublic}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="user">user</SelectItem>
-                <SelectItem value="assistant">assistant</SelectItem>
-              </SelectContent>
-            </Select>
+            />
           </div>
           <div>
             <Textarea
