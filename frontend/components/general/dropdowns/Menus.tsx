@@ -62,9 +62,9 @@ function _Menus() {
     }
   }, [user, push, pathname, searchParams]);
 
-  const onClickLogout = useCallback(() => {
+  const onClickLogout = useCallback(async () => {
     setOpen(false);
-    callApi({ endpoint: "/user/logout" });
+    await callApi({ endpoint: "/user/logout" });
     setUser(undefined);
     location.reload();
   }, [setUser]);

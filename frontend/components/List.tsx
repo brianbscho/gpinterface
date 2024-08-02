@@ -51,9 +51,9 @@ export default function List({
   return (
     <>
       {children}
-      <div className="mx-auto my-12 w-full h-4">
+      <div className="my-12 w-full h-4">
         {!spinnerHidden && (
-          <Loader ref={spinnerRef} className="w-4 h-4 animate-spin" />
+          <Loader ref={spinnerRef} className="mx-auto w-4 h-4 animate-spin" />
         )}
       </div>
     </>
