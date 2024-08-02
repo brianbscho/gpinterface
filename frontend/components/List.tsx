@@ -51,7 +51,9 @@ export default function List({
   return (
     <>
       {children}
-      {!spinnerHidden && <Loader ref={spinnerRef} className="mx-auto my-12" />}
+      {!spinnerHidden && (
+        <Loader ref={spinnerRef} className="mx-auto my-12 animate-spin" />
+      )}
     </>
   );
 }
