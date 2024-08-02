@@ -20,6 +20,7 @@ import textHistories from "./routes/textHistories";
 import imagePrompt from "./routes/imagePrompt";
 import imageHistories from "./routes/imageHistories";
 import notifications from "./routes/notifications";
+import bookmarks from "./routes/bookmarks";
 
 const fastify = Fastify({
   logger: {
@@ -51,6 +52,7 @@ fastify.get("/health", () => true);
 fastify.register(apiKey, { prefix: "/api/key" });
 fastify.register(apiKeys, { prefix: "/api/keys" });
 fastify.register(bookmark, { prefix: "/bookmark" });
+fastify.register(bookmarks, { prefix: "/bookmarks" });
 fastify.register(imageHistories, { prefix: "/image/histories" });
 fastify.register(imagePrompt, { prefix: "/image/prompt" });
 fastify.register(like, { prefix: "/like" });
