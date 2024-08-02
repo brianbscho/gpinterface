@@ -18,16 +18,19 @@ import TextUsage from "../general/dialogs/TextUsage";
 export default function RunTextPrompt({
   textPrompt,
   showDetail = false,
+  showDefault = false,
   titleClassName = "text-lg font-semibold leading-none tracking-tight",
 }: {
   textPrompt: TextPrompt;
   showDetail?: boolean;
+  showDefault?: boolean;
   titleClassName?: string;
 }) {
   const { systemMessage, messages, examples } = textPrompt;
   const example = examples[0];
   const [inputs, setInputs] = useState(objectToInputs(example.input));
   const inputObj = inputsToObject(inputs);
+  const [showDefaultContent, setShowDefaultContent] = useState(showDefault);
 
   const setExampleInput = useCallback(
     (name: string) => (value: string) =>
@@ -59,6 +62,7 @@ export default function RunTextPrompt({
 
       setLoading(true);
       setContent("");
+      setShowDefaultContent(false);
       const response = await callApi<TextPromptExecuteResponse>({
         endpoint: `/text/prompt/${textPrompt.hashId}`,
         method: "POST",
@@ -107,14 +111,16 @@ export default function RunTextPrompt({
         </Fragment>
       ))}
       <div />
-      {content.length > 0 || loading ? (
+      {showDefault || content.length > 0 || loading ? (
         <Badge className="justify-center self-start">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "assistant"}
         </Badge>
       ) : (
         <div />
       )}
-      <div className="whitespace-pre text-wrap">{content}</div>
+      <div className="whitespace-pre text-wrap">
+        {showDefault ? example.content : content}
+      </div>
       <div>
         <div className="flex items-center gap-1">
           <div className={titleClassName}>Run</div>

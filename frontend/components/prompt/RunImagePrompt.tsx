@@ -18,16 +18,19 @@ import ImageUsage from "../general/dialogs/ImageUsage";
 export default function RunImagePrompt({
   imagePrompt,
   showDetail = false,
+  showDefault = false,
   titleClassName = "text-lg font-semibold leading-none tracking-tight",
 }: {
   imagePrompt: ImagePrompt;
   showDetail?: boolean;
+  showDefault?: boolean;
   titleClassName?: string;
 }) {
   const { prompt, examples } = imagePrompt;
   const example = examples[0];
   const [inputs, setInputs] = useState(objectToInputs(example.input));
   const inputObj = inputsToObject(inputs);
+  const [showDefaultImage, setShowDefaultImage] = useState(showDefault);
 
   const setExampleInput = useCallback(
     (name: string) => (value: string) =>
@@ -56,6 +59,7 @@ export default function RunImagePrompt({
 
       setLoading(true);
       setImgUrl("");
+      setShowDefaultImage(false);
       const response = await callApi<ImagePromptExecuteResponse>({
         endpoint: `/image/prompt/${imagePrompt.hashId}`,
         method: "POST",
@@ -115,22 +119,24 @@ export default function RunImagePrompt({
           <Loader2 className="h-4 w-4 animate-spin mx-auto" />
         </div>
       )}
-      {imgUrl.length > 0 && (
+      {(showDefaultImage || imgUrl.length > 0) && (
         <>
           <div className={titleClassName}>Generated image</div>
           <div className="col-span-2">
             <div className="w-full h-80">
               <picture>
                 <img
-                  className="h-full  mx-auto"
-                  src={imgUrl}
+                  className="h-full mx-auto"
+                  src={showDefaultImage ? example.url : imgUrl}
                   alt="ai_generated_image"
                 />
               </picture>
             </div>
           </div>
           <div className={titleClassName}>URL</div>
-          <div className="col-span-2 text-wrap">{imgUrl}</div>
+          <div className="col-span-2 text-wrap">
+            {showDefaultImage ? example.url : imgUrl}
+          </div>
         </>
       )}
       {showDetail && (
