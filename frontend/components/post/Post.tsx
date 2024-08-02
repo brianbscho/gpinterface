@@ -4,7 +4,7 @@ import useUserStore from "@/store/user";
 import callApi from "@/util/callApi";
 import { Post as PostType } from "gpinterface-shared/type";
 import { useCallback } from "react";
-import TextPrompt from "../../../components/prompt/TextPrompt";
+import TextPrompt from "../prompt/TextPrompt";
 import {
   LikeUpdateResponse,
   LikeUpdateSchema,
@@ -15,7 +15,7 @@ import {
 } from "gpinterface-shared/type/bookmark";
 import { Static } from "@sinclair/typebox";
 import Link from "@/components/general/links/Link";
-import ImagePrompt from "../../../components/prompt/ImagePrompt";
+import ImagePrompt from "../prompt/ImagePrompt";
 import UserRequiredButton from "@/components/general/buttons/UserRequiredButton";
 import { Bookmark, Heart } from "lucide-react";
 import { Button } from "@/components/ui";
