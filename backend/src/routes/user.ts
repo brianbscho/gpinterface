@@ -257,6 +257,9 @@ export default async function (fastify: FastifyInstance) {
         if (newPassword !== newPasswordRepeat) {
           throw httpErrors.badRequest("New passwords don't match");
         }
+        if (!validatePassword(newPassword)) {
+          throw httpErrors.badRequest("Please use secure password");
+        }
 
         const user = await fastify.prisma.user.findFirst({
           where: { hashId },
