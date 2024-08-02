@@ -194,20 +194,7 @@ export default function Page() {
                   </Button>
                 </div>
                 <div className="mt-3 text-sm">
-                  <ul>
-                    <li>
-                      1. We are currently in the beta phase of our product
-                      launch.
-                    </li>
-                    <li>
-                      2. During this beta period, there will be no charges for
-                      your use of the service.
-                    </li>
-                    <li>
-                      3. As part of our beta testing phase, your daily usage is
-                      capped at $1.
-                    </li>
-                  </ul>
+                  Your daily usage is limited by $1.
                 </div>
               </div>
             </td>

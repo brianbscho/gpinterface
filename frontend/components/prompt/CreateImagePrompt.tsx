@@ -289,7 +289,7 @@ export default function CreateImagePrompt({
       <div className="col-span-2">
         <Textarea
           resizing
-          placeholder="image generation prompt"
+          placeholder="image generation prompt, use double curly brackets for variables, e.g., {{variable}}"
           value={prompt}
           onChange={(e) => setPrompt(e.currentTarget.value)}
           disabled={loading || responsePost?.thread.isPublic}

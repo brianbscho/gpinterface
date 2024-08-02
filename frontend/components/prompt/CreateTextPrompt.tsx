@@ -266,7 +266,7 @@ export default function CreateTextPrompt({
       <div className="col-span-2">
         <Textarea
           resizing
-          placeholder="system message (optional)"
+          placeholder="system message (optional), use double curly brackets for variables, e.g., {{variable}}"
           value={systemMessage}
           onChange={(e) => setSystemMessage(e.currentTarget.value)}
           disabled={loading || responsePost?.thread.isPublic}
@@ -285,7 +285,7 @@ export default function CreateTextPrompt({
           <div>
             <Textarea
               resizing
-              placeholder="message"
+              placeholder="message, use double curly brackets for variables, e.g., {{variable}}"
               value={m.content}
               onChange={(e) =>
                 setMessage(index)({ content: e.currentTarget.value })
