@@ -17,6 +17,7 @@ import {
   Input,
   Separator,
 } from "@/components/ui";
+import { validatePassword } from "gpinterface-shared/string";
 
 export default function Password() {
   const { user } = useUserStore();
@@ -25,13 +26,29 @@ export default function Password() {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordRepeat, setNewPasswordRepeat] = useState("");
+  const [passwordMsg, setPasswordMsg] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setOldPassword("");
     setNewPassword("");
     setNewPasswordRepeat("");
   }, [open]);
+  useEffect(() => {
+    if (validatePassword(newPassword)) setPasswordMsg("");
+  }, [newPassword]);
   const onClickUpdate = useCallback(async () => {
+    if (!validatePassword(newPassword)) {
+      setPasswordMsg(
+        "Please ensure your password meets the required criteria."
+      );
+      return;
+    }
+    if (newPassword !== newPasswordRepeat) {
+      setPasswordMsg("Passwords don't match.");
+      return;
+    }
+    setLoading(true);
     const response = await callApi<
       UserGetMeResponse,
       Static<typeof UserUpdatePasswordSchema>
@@ -43,7 +60,9 @@ export default function Password() {
     });
     if (response) {
       alert("Successfully updated the password!");
+      setOpen(false);
     }
+    setLoading(false);
   }, [oldPassword, newPassword, newPasswordRepeat]);
 
   if (!user) return null;
@@ -86,13 +105,20 @@ export default function Password() {
             </td>
           </tr>
         </table>
+        <div className="mt-1 text-xs h-4 text-rose-500">{passwordMsg}</div>
+        <div className="text-xs mt-1">
+          at least 8 characters long, at least one uppercase letter, at least
+          one lowercase letter, and at least one digit
+        </div>
         <div className="w-full flex justify-end gap-3 mt-7">
           <DialogClose>
-            <Button variant="outline">Cancel</Button>
+            <Button loading={loading} variant="outline">
+              Cancel
+            </Button>
           </DialogClose>
-          <DialogClose>
-            <Button onClick={onClickUpdate}>Update</Button>
-          </DialogClose>
+          <Button loading={loading} onClick={onClickUpdate}>
+            Update
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
