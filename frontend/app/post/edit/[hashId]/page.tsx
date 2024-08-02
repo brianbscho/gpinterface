@@ -179,8 +179,6 @@ export default function Page({ params }: { params: { hashId: string } }) {
 
   useLinkConfirmMessage(title.length > 0 || post.length > 0);
 
-  const onClickCancel = useCallback(() => router.back(), [router]);
-
   if (!responsePost) return null;
   return (
     <div className="w-full max-w-7xl flex flex-col gap-3 p-3">
@@ -218,7 +216,6 @@ export default function Page({ params }: { params: { hashId: string } }) {
             <TabsContent value={modals[0]}>
               <Footer
                 useIsPublic={[responsePost.thread.isPublic, () => {}, true]}
-                onClickCancel={onClickCancel}
                 onClickCreate={onClickSave}
                 loading={loading}
               />

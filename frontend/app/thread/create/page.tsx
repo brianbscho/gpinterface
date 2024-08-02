@@ -126,8 +126,6 @@ export default function Page() {
 
   useLinkConfirmMessage(title.length > 0 || post.length > 0);
 
-  const onClickCancel = useCallback(() => router.back(), [router]);
-
   return (
     <div className="w-full max-w-7xl flex flex-col gap-3 p-3">
       <div className="w-full">
@@ -164,7 +162,6 @@ export default function Page() {
             <TabsContent value={modals[0]}>
               <Footer
                 useIsPublic={[isPublic, setIsPublic, true]}
-                onClickCancel={onClickCancel}
                 onClickCreate={onClickCreate}
                 loading={loading}
               />

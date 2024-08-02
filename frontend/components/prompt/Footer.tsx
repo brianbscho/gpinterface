@@ -1,23 +1,28 @@
 "use client";
 
+import { usePathname, useRouter } from "next/navigation";
 import Title from "../thread/Title";
 import { Button } from "../ui";
 import { Checkbox } from "../ui/checkbox";
+import { useCallback } from "react";
 
 export default function Footer({
   useIsPublic,
-  onClickCancel,
   onClickCreate,
   createText = "Create",
   loading,
 }: {
   useIsPublic: [boolean, (i: boolean) => void, boolean];
-  onClickCancel?: () => void;
   onClickCreate: () => void;
   createText?: string;
   loading: boolean;
 }) {
   const [isPublic, setIsPublic, isEditable] = useIsPublic;
+  const router = useRouter();
+  const onClickCancel = useCallback(() => router.back(), [router]);
+  const pathname = usePathname();
+  const isCancelVisible =
+    pathname.includes("create") || pathname.includes("edit");
 
   return (
     <div className="w-full">
@@ -39,7 +44,7 @@ export default function Footer({
         </div>
       )}
       <div className="flex justify-end gap-3">
-        {onClickCancel !== undefined && (
+        {isCancelVisible && (
           <div>
             <Button variant="outline" onClick={onClickCancel} loading={loading}>
               Cancel

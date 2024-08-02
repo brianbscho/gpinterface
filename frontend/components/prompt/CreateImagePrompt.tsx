@@ -23,7 +23,6 @@ import { PostGetResponse } from "gpinterface-shared/type/post";
 import useImageModel, { ConfigSelectType } from "@/hooks/useImageModel";
 import EstimatedPrice from "../general/hover/EstimatedPrice";
 import { getValidBody } from "gpinterface-shared/util";
-import { useRouter } from "next/navigation";
 import { Button, Card, CardContent, Textarea } from "../ui";
 import Title from "../thread/Title";
 import Provider from "../general/selects/Provider";
@@ -218,9 +217,6 @@ export default function CreateImagePrompt({
 
   useLinkConfirmMessage(models.length > 0 && provider !== models[0].name);
 
-  const router = useRouter();
-  const onClickCancel = useCallback(() => router.back(), [router]);
-
   return (
     <div className="grid grid-cols-[8rem_auto_1fr] gap-3 md:gap-7 items-center">
       <Title>Model</Title>
@@ -363,7 +359,6 @@ export default function CreateImagePrompt({
       <div className="col-span-3">
         <Footer
           useIsPublic={[...useIsPublic, !responsePost]}
-          onClickCancel={!responsePost ? onClickCancel : undefined}
           onClickCreate={onClickCreate}
           createText={!!responsePost ? "Save" : "Create"}
           loading={loading}
