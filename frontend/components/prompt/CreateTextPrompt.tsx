@@ -24,7 +24,6 @@ import { PostGetResponse } from "gpinterface-shared/type/post";
 import { TextMessageSchema } from "gpinterface-shared/type/textMessage";
 import EstimatedPrice from "../general/hover/EstimatedPrice";
 import { getValidBody } from "gpinterface-shared/util";
-import { useRouter } from "next/navigation";
 import { PlayCircle, PlusCircle, RotateCcw, Trash2 } from "lucide-react";
 import { Button, Textarea } from "../ui";
 import Title from "../thread/Title";
@@ -207,9 +206,6 @@ export default function CreateTextPrompt({
 
   useLinkConfirmMessage(true);
 
-  const router = useRouter();
-  const onClickCancel = useCallback(() => router.back(), [router]);
-
   return (
     <div className="grid grid-cols-[8rem_auto_1fr_auto] gap-3 md:gap-7 items-center">
       <Title>Model</Title>
@@ -356,7 +352,6 @@ export default function CreateTextPrompt({
       <div className="col-span-4">
         <Footer
           useIsPublic={[...useIsPublic, !responsePost]}
-          onClickCancel={!responsePost ? onClickCancel : undefined}
           onClickCreate={onClickCreate}
           createText={!!responsePost ? "Save" : "Create"}
           loading={loading}

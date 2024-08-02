@@ -26,7 +26,7 @@ function Bookmarks() {
   const [spinnerHidden, setSpinnerHidden] = useState(false);
   const searchParams = useSearchParams();
   const queryType = useMemo(
-    () => searchParams.get("type") ?? "",
+    () => searchParams.get("type") ?? "post",
     [searchParams]
   );
 
