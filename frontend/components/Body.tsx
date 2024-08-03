@@ -6,6 +6,7 @@ import Link from "./general/links/Link";
 import Search from "./general/inputs/Search";
 import Notifications from "./general/dialogs/Notifications";
 import { Toaster } from "@/components/ui/toaster";
+import Image from "next/image";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,7 +23,22 @@ export default function Body({
             <div className="w-full border-b h-16">
               <div className="w-full max-w-7xl h-full mx-auto px-3 flex gap-3 items-center">
                 <Link href="/" className="font-bold text-lg">
-                  gpinterface
+                  <picture>
+                    <img
+                      src="/logo_black.png"
+                      alt="logo"
+                      height="27"
+                      width="117"
+                      className="block dark:hidden h-7 w-auto"
+                    />
+                  </picture>
+                  <picture>
+                    <img
+                      src="/logo_white.png"
+                      alt="logo"
+                      className="hidden dark:block h-7 w-auto"
+                    />
+                  </picture>
                 </Link>
                 <div className="flex-1"></div>
                 <ThreadCreate />
