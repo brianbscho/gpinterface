@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import UserRequiredButton from "./UserRequiredButton";
 import { Button } from "@/components/ui";
 
-export default function ThreadCreate() {
+export default function Create() {
   const router = useRouter();
 
   return (

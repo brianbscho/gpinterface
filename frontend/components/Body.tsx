@@ -1,12 +1,11 @@
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "next-themes";
-import ThreadCreate from "./general/buttons/ThreadCreate";
+import Create from "./general/buttons/Create";
 import Menus from "./general/dropdowns/Menus";
 import Link from "./general/links/Link";
 import Search from "./general/inputs/Search";
 import Notifications from "./general/dialogs/Notifications";
 import { Toaster } from "@/components/ui/toaster";
-import Image from "next/image";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -41,7 +40,7 @@ export default function Body({
                   </picture>
                 </Link>
                 <div className="flex-1"></div>
-                <ThreadCreate />
+                <Create />
                 <Notifications />
                 <Menus />
               </div>
