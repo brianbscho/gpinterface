@@ -119,10 +119,10 @@ export default function Page() {
   const onClickTextPromptCreate = getOnClick(callTextPromptThreadCreate);
   const onClickImagePromptCreate = getOnClick(callImagePromptThreadCreate);
 
-  const { user } = useUserStore();
+  const isLoggedOut = useUserStore((state) => state.isLoggedOut);
   useEffect(() => {
     setIsPublic(true);
-  }, [user]);
+  }, [isLoggedOut]);
 
   useLinkConfirmMessage(title.length > 0 || post.length > 0);
 

@@ -25,7 +25,7 @@ export default function Footer({
   post: PostType;
   setPost: (p: PostType) => void;
 }) {
-  const { user } = useUserStore();
+  const user = useUserStore((state) => state.user);
 
   const onClickLike = useCallback(async () => {
     const response = await callApi<

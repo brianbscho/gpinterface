@@ -11,11 +11,11 @@ export default function UserRequiredButton({
   children: ReactNode;
   onClick?: () => void;
 }) {
-  const { user } = useUserStore();
+  const isLoggedOut = useUserStore((state) => state.isLoggedOut);
   const [loginOpen, setLoginOpen] = useState(false);
 
   const onClickUserRequired = useCallback(() => {
-    if (!user) {
+    if (isLoggedOut) {
       setLoginOpen(true);
       return;
     }
@@ -23,7 +23,7 @@ export default function UserRequiredButton({
     if (onClick) {
       onClick();
     }
-  }, [onClick, user]);
+  }, [onClick, isLoggedOut]);
 
   return (
     <>

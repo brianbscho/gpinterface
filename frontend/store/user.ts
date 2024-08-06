@@ -4,6 +4,7 @@ import { create } from "zustand";
 type OptionalUserMe = { name?: string; bio?: string; notification?: boolean };
 type UserState = {
   user: UserMe | undefined;
+  isLoggedOut: boolean;
   setUser: (u: UserMe | undefined) => void;
   setUserProperty: (u: OptionalUserMe) => void;
 };
@@ -11,8 +12,9 @@ type UserState = {
 const useUserStore = create<UserState>((set) => {
   return {
     user: undefined,
-    setUser: (u: UserMe | undefined) => {
-      set({ user: u });
+    isLoggedOut: false,
+    setUser: (user: UserMe | undefined) => {
+      set({ user, isLoggedOut: !user });
     },
     setUserProperty: (u: OptionalUserMe) => {
       set((state) => {

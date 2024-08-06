@@ -50,7 +50,7 @@ export default function Page() {
     if (validatePassword(password)) setPasswordMsg("");
   }, [password]);
 
-  const { setUser } = useUserStore();
+  const setUser = useUserStore((state) => state.setUser);
   const [loading, setLoading] = useState(false);
   const onSubmit = useCallback(
     async (e: FormEvent) => {
