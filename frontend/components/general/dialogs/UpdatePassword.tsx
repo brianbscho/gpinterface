@@ -19,7 +19,7 @@ import {
 } from "@/components/ui";
 import { validatePassword } from "gpinterface-shared/string";
 
-export default function Password() {
+export default function UpdatePassword() {
   const isLoggedOut = useUserStore((state) => state.isLoggedOut);
   const [open, setOpen] = useState(false);
 
