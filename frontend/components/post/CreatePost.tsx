@@ -10,7 +10,6 @@ import {
 import { Static } from "@sinclair/typebox";
 import CreateTextPrompt from "../prompt/CreateTextPrompt";
 import useLinkConfirmMessage from "@/hooks/useLinkConfirmMessage";
-import { modals } from "../general/inputs/Radio";
 import { TextPromptSchema } from "gpinterface-shared/type/textPrompt";
 import CreateImagePrompt from "../prompt/CreateImagePrompt";
 import { ImagePromptSchema } from "gpinterface-shared/type/imagePrompt";
@@ -24,6 +23,7 @@ import {
   Textarea,
 } from "../ui";
 import Footer from "../prompt/Footer";
+import modals from "@/utils/modals";
 
 export default function CreatePost({ thread }: { thread: Thread }) {
   const [post, setPost] = useState("");

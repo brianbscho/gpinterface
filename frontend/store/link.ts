@@ -1,13 +1,14 @@
 import { create } from "zustand";
 
+type Message = string | undefined;
 type LinkState = {
-  confirmMessage: string | undefined;
-  setConfirmMessage: (m: string | undefined) => void;
+  confirmMessage: Message;
+  setConfirmMessage: (m: Message) => void;
 };
 
 const useLinkStore = create<LinkState>((set) => ({
   confirmMessage: undefined,
-  setConfirmMessage: (m: string | undefined) => set({ confirmMessage: m }),
+  setConfirmMessage: (m: Message) => set({ confirmMessage: m }),
 }));
 
 export default useLinkStore;

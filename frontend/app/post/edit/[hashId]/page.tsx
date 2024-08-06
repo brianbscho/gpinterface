@@ -20,7 +20,6 @@ import {
   TextPromptUpdateResponse,
   TextPromptUpdateSchema,
 } from "gpinterface-shared/type/textPrompt";
-import { modals } from "@/components/general/inputs/Radio";
 import CreateImagePrompt from "@/components/prompt/CreateImagePrompt";
 import {
   ImagePromptSchema,
@@ -38,6 +37,7 @@ import {
   Textarea,
 } from "@/components/ui";
 import Footer from "@/components/prompt/Footer";
+import modals from "@/utils/modals";
 
 export default function Page({ params }: { params: { hashId: string } }) {
   const { hashId } = params;
