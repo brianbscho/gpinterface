@@ -4,7 +4,7 @@ import { ReactNode, useCallback, useState } from "react";
 import Login from "../dialogs/Login";
 import useUserStore from "@/store/user";
 
-export default function UserRequiredButton({
+export default function LoginRequiredButton({
   children,
   onClick,
 }: {

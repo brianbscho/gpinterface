@@ -12,7 +12,7 @@ import { getValidBody } from "gpinterface-shared/util";
 import callApi from "@/utils/callApi";
 import { ImagePromptExecuteResponse } from "gpinterface-shared/type/imagePrompt";
 import { Loader2, PlayCircle } from "lucide-react";
-import UserRequiredButton from "../general/buttons/UserRequiredButton";
+import LoginRequiredButton from "../general/buttons/LoginRequiredButton";
 import ImageUsage from "../general/dialogs/ImageUsage";
 
 export default function RunImagePrompt({
@@ -91,11 +91,11 @@ export default function RunImagePrompt({
       <div>
         <div className="flex items-center gap-1">
           <div className={titleClassName}>Run</div>
-          <UserRequiredButton onClick={onClickTry}>
+          <LoginRequiredButton onClick={onClickTry}>
             <Button loading={loading} className="rounded-full w-7 h-7 p-1">
               <PlayCircle />
             </Button>
-          </UserRequiredButton>
+          </LoginRequiredButton>
         </div>
         <div className="text-sm text-rose-500">{inputErrorMessage}</div>
       </div>

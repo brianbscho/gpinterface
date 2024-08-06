@@ -14,7 +14,7 @@ import {
 } from "gpinterface-shared/type/bookmark";
 import { Static } from "@sinclair/typebox";
 import Link from "@/components/general/links/Link";
-import UserRequiredButton from "@/components/general/buttons/UserRequiredButton";
+import LoginRequiredButton from "@/components/general/buttons/LoginRequiredButton";
 import { Bookmark, Heart } from "lucide-react";
 import { Button } from "@/components/ui";
 
@@ -54,17 +54,17 @@ export default function Footer({
 
   return (
     <div className="py-3 flex gap-3 items-center text-xs md:text-sm">
-      <UserRequiredButton onClick={onClickBookmark}>
+      <LoginRequiredButton onClick={onClickBookmark}>
         <div className="cursor-pointer">
           <Bookmark fill={post.isBookmarked ? "#FFF" : "#000"} />
         </div>
-      </UserRequiredButton>
-      <UserRequiredButton onClick={onClickLike}>
+      </LoginRequiredButton>
+      <LoginRequiredButton onClick={onClickLike}>
         <div className="flex gap-1 items-center cursor-pointer">
           <Heart fill={post.isLiked ? "#FFF" : "#000"} />
           <div>{post.likes} likes</div>
         </div>
-      </UserRequiredButton>
+      </LoginRequiredButton>
       <div className="flex-1" />
       {post.user && post.user.hashId === user?.hashId && (
         <Button asChild>
