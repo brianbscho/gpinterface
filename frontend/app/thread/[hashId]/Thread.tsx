@@ -1,6 +1,6 @@
 "use client";
 
-import callApi from "@/util/callApi";
+import callApi from "@/utils/callApi";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Thread as ThreadType } from "gpinterface-shared/type";

@@ -2,7 +2,7 @@
 
 import ImageUsage from "@/components/general/dialogs/ImageUsage";
 import List from "@/components/List";
-import callApi from "@/util/callApi";
+import callApi from "@/utils/callApi";
 import { ImagePromptHistory } from "gpinterface-shared/type";
 import { ImageHistoriesGetResponse } from "gpinterface-shared/type/imageHistory";
 import { Fragment, useCallback, useMemo, useState } from "react";

@@ -1,4 +1,4 @@
-import callApi from "@/util/callApi";
+import callApi from "@/utils/callApi";
 import { Metadata } from "next";
 import Thread from "./Thread";
 import { cache } from "react";

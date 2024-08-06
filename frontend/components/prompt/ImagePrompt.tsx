@@ -1,7 +1,7 @@
 "use client";
 
 import { ImagePrompt as ImagePromptType } from "gpinterface-shared/type";
-import { getHighlightedPrompt } from "@/util/string";
+import { getHighlightedPrompt } from "@/utils/string";
 import { Card, CardContent } from "../ui";
 import Title from "../thread/Title";
 import ImageUsage from "../general/dialogs/ImageUsage";

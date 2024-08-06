@@ -1,7 +1,7 @@
 "use client";
 
 import useUserStore from "@/store/user";
-import callApi from "@/util/callApi";
+import callApi from "@/utils/callApi";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import {
   UserGetMeResponse,

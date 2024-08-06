@@ -1,6 +1,6 @@
 "use client";
 
-import { stringify } from "@/util/string";
+import { stringify } from "@/utils/string";
 import { textModels } from "gpinterface-shared/models/text/model";
 import { useCallback, useEffect, useMemo, useState } from "react";
 

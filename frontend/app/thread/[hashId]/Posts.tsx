@@ -1,7 +1,7 @@
 "use client";
 
 import Post from "../../../components/post/Post";
-import callApi from "@/util/callApi";
+import callApi from "@/utils/callApi";
 import { useCallback, useState } from "react";
 import { Post as PostType } from "gpinterface-shared/type";
 import { PostsGetResponse } from "gpinterface-shared/type/post";

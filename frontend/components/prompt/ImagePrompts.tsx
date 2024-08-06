@@ -1,7 +1,7 @@
 "use client";
 
 import ImagePrompt from "./ImagePrompt";
-import callApi from "@/util/callApi";
+import callApi from "@/utils/callApi";
 import { Fragment, useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import List from "@/components/List";

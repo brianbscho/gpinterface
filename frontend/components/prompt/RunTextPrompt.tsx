@@ -4,12 +4,12 @@ import {
   getHighlightedPrompt,
   inputsToObject,
   objectToInputs,
-} from "@/util/string";
+} from "@/utils/string";
 import { TextPrompt } from "gpinterface-shared/type";
 import { Badge, Button, Textarea } from "@/components/ui";
 import { Fragment, useCallback, useState } from "react";
 import { getValidBody } from "gpinterface-shared/util";
-import callApi from "@/util/callApi";
+import callApi from "@/utils/callApi";
 import { TextPromptExecuteResponse } from "gpinterface-shared/type/textPrompt";
 import { Loader2, PlayCircle } from "lucide-react";
 import UserRequiredButton from "../general/buttons/UserRequiredButton";
