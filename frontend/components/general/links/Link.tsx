@@ -9,7 +9,7 @@ type Props = AnchorHTMLAttributes<HTMLAnchorElement> & LinkProps;
 
 export default function Link({ ...props }: Props) {
   const router = useRouter();
-  const { confirmMessage } = useLinkStore();
+  const confirmMessage = useLinkStore((state) => state.confirmMessage);
 
   return (
     <NextLink

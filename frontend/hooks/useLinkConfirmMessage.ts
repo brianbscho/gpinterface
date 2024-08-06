@@ -2,7 +2,7 @@ import useLinkStore from "@/store/link";
 import { useEffect } from "react";
 
 export default function useLinkConfirmMessage(change: boolean) {
-  const { setConfirmMessage } = useLinkStore();
+  const setConfirmMessage = useLinkStore((state) => state.setConfirmMessage);
   useEffect(() => {
     if (change) {
       setConfirmMessage(
