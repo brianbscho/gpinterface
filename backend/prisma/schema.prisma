@@ -15,7 +15,7 @@ datasource db {
 }
 
 // * * * * * * * * * * * *
-// Thread
+// Prompt
 // 
 
 model Bookmark {
@@ -58,10 +58,8 @@ model Post {
 
   post String
 
-  threadHashId String  @map("thread_hash_id")
-  thread       Thread  @relation(fields: [threadHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
-  userHashId   String? @map("user_hash_id")
-  user         User?   @relation(fields: [userHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+  userHashId String? @map("user_hash_id")
+  user       User?   @relation(fields: [userHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
 
   bookmarks    Bookmark[]
   likes        Like[]
@@ -69,23 +67,6 @@ model Post {
   textPrompts  TextPrompt[]
 
   @@map("posts")
-}
-
-model Thread {
-  id        Int      @id @default(autoincrement())
-  hashId    String   @unique @map("hash_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  title    String
-  isPublic Boolean @map("is_public")
-
-  userHashId String? @map("user_hash_id")
-  user       User?   @relation(fields: [userHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
-
-  posts Post[]
-
-  @@map("threads")
 }
 
 // * * * * * * * * * * * *
@@ -291,7 +272,6 @@ model User {
   likes                Like[]
   notifications        Notification[]
   posts                Post[]
-  threads              Thread[]
   imagePromptHistories ImagePromptHistory[]
   textPromptHistories  TextPromptHistory[]
 
