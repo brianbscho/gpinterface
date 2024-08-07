@@ -1,6 +1,6 @@
 "use client";
 
-import callApi from "@/util/callApi";
+import callApi from "@/utils/callApi";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Thread as ThreadType } from "gpinterface-shared/type";
@@ -9,7 +9,7 @@ import Share from "@/components/general/toasts/Share";
 import CreatePost from "@/components/post/CreatePost";
 import Collapsible from "@/components/general/collapsible";
 import { ThreadGetResponse } from "gpinterface-shared/type/thread";
-import UserRequiredButton from "@/components/general/buttons/UserRequiredButton";
+import LoginRequiredButton from "@/components/general/buttons/LoginRequiredButton";
 import { Badge } from "@/components/ui";
 
 export default function Thread({ hashId }: { hashId: string }) {
@@ -44,11 +44,11 @@ export default function Thread({ hashId }: { hashId: string }) {
       </div>
       <Posts baseUrl={`/posts/${hashId}`} />
       <div className="w-full mt-3">
-        <UserRequiredButton>
+        <LoginRequiredButton>
           <Collapsible title="Write Post">
             <CreatePost thread={thread} />
           </Collapsible>
-        </UserRequiredButton>
+        </LoginRequiredButton>
       </div>
     </div>
   );

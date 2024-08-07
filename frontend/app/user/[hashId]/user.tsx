@@ -1,7 +1,7 @@
 "use client";
 
 import Threads from "@/components/thread/Threads";
-import callApi from "@/util/callApi";
+import callApi from "@/utils/callApi";
 import { useEffect, useMemo, useState } from "react";
 import { UserInfo } from "gpinterface-shared/type";
 import { UserGetResponse } from "gpinterface-shared/type/user";

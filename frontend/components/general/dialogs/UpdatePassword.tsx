@@ -1,7 +1,7 @@
 "use client";
 
 import useUserStore from "@/store/user";
-import callApi from "@/util/callApi";
+import callApi from "@/utils/callApi";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import {
   UserGetMeResponse,
@@ -19,8 +19,8 @@ import {
 } from "@/components/ui";
 import { validatePassword } from "gpinterface-shared/string";
 
-export default function Password() {
-  const { user } = useUserStore();
+export default function UpdatePassword() {
+  const isLoggedOut = useUserStore((state) => state.isLoggedOut);
   const [open, setOpen] = useState(false);
 
   const [oldPassword, setOldPassword] = useState("");
@@ -72,7 +72,7 @@ export default function Password() {
     [oldPassword, newPassword, newPasswordRepeat]
   );
 
-  if (!user) return null;
+  if (isLoggedOut) return null;
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>

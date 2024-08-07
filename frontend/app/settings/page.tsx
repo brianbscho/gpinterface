@@ -1,10 +1,10 @@
 "use client";
 
 import useUserStore from "@/store/user";
-import callApi from "@/util/callApi";
+import callApi from "@/utils/callApi";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Password from "@/components/general/dialogs/Password";
+import UpdatePassword from "@/components/general/dialogs/UpdatePassword";
 import {
   UserGetMeResponse,
   UserUpdateSchema,
@@ -217,7 +217,7 @@ export default function Page() {
               <div className="h-10 flex items-center">Password</div>
             </td>
             <td>
-              <Password />
+              <UpdatePassword />
             </td>
           </tr>
         </tbody>

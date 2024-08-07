@@ -4,18 +4,18 @@ import { ReactNode, useCallback, useState } from "react";
 import Login from "../dialogs/Login";
 import useUserStore from "@/store/user";
 
-export default function UserRequiredButton({
+export default function LoginRequiredButton({
   children,
   onClick,
 }: {
   children: ReactNode;
   onClick?: () => void;
 }) {
-  const { user } = useUserStore();
+  const isLoggedOut = useUserStore((state) => state.isLoggedOut);
   const [loginOpen, setLoginOpen] = useState(false);
 
   const onClickUserRequired = useCallback(() => {
-    if (!user) {
+    if (isLoggedOut) {
       setLoginOpen(true);
       return;
     }
@@ -23,7 +23,7 @@ export default function UserRequiredButton({
     if (onClick) {
       onClick();
     }
-  }, [onClick, user]);
+  }, [onClick, isLoggedOut]);
 
   return (
     <>

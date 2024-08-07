@@ -2,7 +2,7 @@
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { validateEmail, validatePassword } from "gpinterface-shared/string";
-import callApi from "@/util/callApi";
+import callApi from "@/utils/callApi";
 import TermsAndConditions from "@/components/general/dialogs/TermsAndConditions";
 import useUserStore from "@/store/user";
 import {
@@ -50,7 +50,7 @@ export default function Page() {
     if (validatePassword(password)) setPasswordMsg("");
   }, [password]);
 
-  const { setUser } = useUserStore();
+  const setUser = useUserStore((state) => state.setUser);
   const [loading, setLoading] = useState(false);
   const onSubmit = useCallback(
     async (e: FormEvent) => {

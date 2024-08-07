@@ -1,6 +1,6 @@
 "use client";
 
-import callApi from "@/util/callApi";
+import callApi from "@/utils/callApi";
 import { useCallback, useEffect, useState } from "react";
 import { Notification } from "gpinterface-shared/type";
 import useUserStore from "@/store/user";

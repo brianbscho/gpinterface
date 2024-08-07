@@ -6,12 +6,10 @@ import {
   TextPromptExecuteResponse,
   TextPromptUpdateSchema,
   TextPromptUpdateResponse,
-  TextPromptDeleteSchema,
-  TextPromptBookmarksGetResponse,
 } from "gpinterface-shared/type/textPrompt";
 import { isAccessible } from "../util/thread";
-import { confirmTextPrompt, getTypedTextPrompts } from "../util/textPrompt";
-import { createEntity, getIdByHashId, upsertEntity } from "../util/prisma";
+import { confirmTextPrompt } from "../util/textPrompt";
+import { createEntity, upsertEntity } from "../util/prisma";
 import { textModels } from "gpinterface-shared/models/text/model";
 import {
   getTextPriceByModel,
@@ -20,7 +18,6 @@ import {
 } from "../util/text";
 import { getInterpolatedString } from "../util/string";
 import { getValidBody } from "gpinterface-shared/util";
-import { QueryParamSchema } from "gpinterface-shared/type";
 
 export default async function (fastify: FastifyInstance) {
   const { unauthorized, badRequest } = fastify.httpErrors;
@@ -286,111 +283,6 @@ export default async function (fastify: FastifyInstance) {
         return { hashId: textPromptHashId };
       } catch (ex) {
         console.error("path: /text/prompt, method: put, error:", ex);
-        throw ex;
-      }
-    }
-  );
-  fastify.delete<{ Body: Static<typeof TextPromptDeleteSchema> }>(
-    "/",
-    { schema: { body: TextPromptDeleteSchema } },
-    async (request, reply): Promise<TextPromptUpdateResponse> => {
-      try {
-        const { user } = await fastify.getUser(request, reply);
-        const { hashId } = request.body;
-
-        const textPrompt = await fastify.prisma.textPrompt.findFirst({
-          where: { hashId },
-          select: {
-            post: {
-              select: {
-                userHashId: true,
-                thread: { select: { isPublic: true } },
-              },
-            },
-          },
-        });
-        if (!textPrompt || textPrompt.post.userHashId !== user.hashId) {
-          throw badRequest("No text prompt");
-        }
-        if (!textPrompt.post.thread.isPublic) {
-          throw badRequest("Not allowed to delete");
-        }
-
-        await fastify.prisma.textPrompt.delete({ where: { hashId } });
-        return { hashId };
-      } catch (ex) {
-        console.error("path: /text/prompt, method: delete, error:", ex);
-        throw ex;
-      }
-    }
-  );
-  fastify.get<{ Querystring: Static<typeof QueryParamSchema> }>(
-    "/bookmarks",
-    { schema: { querystring: QueryParamSchema } },
-    async (request, reply): Promise<TextPromptBookmarksGetResponse> => {
-      try {
-        const { user } = await fastify.getUser(request, reply, true);
-        const { lastHashId } = request.query;
-
-        const id = await getIdByHashId(
-          fastify.prisma.bookmark.findFirst,
-          lastHashId
-        );
-
-        const bookmarks = await fastify.prisma.bookmark.findMany({
-          where: { ...(id > 0 && { id: { lt: id } }), userHashId: user.hashId },
-          select: {
-            hashId: true,
-            post: {
-              select: {
-                hashId: true,
-                user: { select: { hashId: true, name: true } },
-                textPrompts: {
-                  select: {
-                    hashId: true,
-                    provider: true,
-                    model: true,
-                    systemMessage: true,
-                    config: true,
-                    examples: {
-                      select: {
-                        hashId: true,
-                        input: true,
-                        content: true,
-                        response: true,
-                        price: true,
-                      },
-                    },
-                    messages: {
-                      select: { hashId: true, role: true, content: true },
-                    },
-                  },
-                },
-              },
-            },
-          },
-          orderBy: { id: "desc" },
-          take: 20,
-        });
-
-        return {
-          textPrompts: bookmarks
-            .filter((b) => b.post.textPrompts.length > 0)
-            .map((b) => {
-              const { hashId, post } = b;
-              const { textPrompts, ..._post } = post;
-              return {
-                hashId,
-                post: _post,
-                textPrompt: getTypedTextPrompts(textPrompts)[0],
-              };
-            }),
-        };
-      } catch (ex) {
-        console.error(
-          "path: /text/propmt/bookmarks?lashHashId, method: get, error:",
-          ex
-        );
         throw ex;
       }
     }

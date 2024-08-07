@@ -8,8 +8,8 @@ import {
   inputsToObject,
   objectToInputs,
   stringify,
-} from "@/util/string";
-import callApi from "@/util/callApi";
+} from "@/utils/string";
+import callApi from "@/utils/callApi";
 import {
   TextPromptDraftExecuteSchema,
   TextPromptExecuteResponse,

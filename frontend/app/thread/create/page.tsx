@@ -1,6 +1,6 @@
 "use client";
 
-import callApi from "@/util/callApi";
+import callApi from "@/utils/callApi";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -12,7 +12,6 @@ import useUserStore from "@/store/user";
 import CreateTextPrompt from "@/components/prompt/CreateTextPrompt";
 import useLinkConfirmMessage from "@/hooks/useLinkConfirmMessage";
 import { TextPromptSchema } from "gpinterface-shared/type/textPrompt";
-import { modals } from "@/components/general/inputs/Radio";
 import CreateImagePrompt from "@/components/prompt/CreateImagePrompt";
 import { ImagePromptSchema } from "gpinterface-shared/type/imagePrompt";
 import {
@@ -26,6 +25,7 @@ import {
   Textarea,
 } from "@/components/ui";
 import Footer from "@/components/prompt/Footer";
+import modals from "@/utils/modals";
 
 export default function Page() {
   const [title, setTitle] = useState("");
@@ -119,10 +119,10 @@ export default function Page() {
   const onClickTextPromptCreate = getOnClick(callTextPromptThreadCreate);
   const onClickImagePromptCreate = getOnClick(callImagePromptThreadCreate);
 
-  const { user } = useUserStore();
+  const isLoggedOut = useUserStore((state) => state.isLoggedOut);
   useEffect(() => {
     setIsPublic(true);
-  }, [user]);
+  }, [isLoggedOut]);
 
   useLinkConfirmMessage(title.length > 0 || post.length > 0);
 

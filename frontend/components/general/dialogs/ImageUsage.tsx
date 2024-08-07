@@ -1,4 +1,4 @@
-import { objectToInputs, stringify } from "@/util/string";
+import { objectToInputs, stringify } from "@/utils/string";
 import { ImagePromptHistory } from "gpinterface-shared/type";
 import {
   Button,

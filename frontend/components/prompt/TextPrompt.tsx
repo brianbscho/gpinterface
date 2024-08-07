@@ -1,7 +1,7 @@
 "use client";
 
 import { TextPrompt as TextPromptType } from "gpinterface-shared/type";
-import { getHighlightedPrompt } from "@/util/string";
+import { getHighlightedPrompt } from "@/utils/string";
 import { Fragment } from "react";
 import Title from "../thread/Title";
 import TextUsage from "../general/dialogs/TextUsage";

@@ -2,7 +2,6 @@ import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
 import { createPost } from "../controllers/post";
 import {
-  PostCopySchema,
   PostCreateResponse,
   PostCreateSchema,
   PostGetSchema,
@@ -12,7 +11,6 @@ import {
 import { getDateString } from "../util/string";
 import { confirmTextPrompt, getTypedTextPrompts } from "../util/textPrompt";
 import { isAccessible } from "../util/thread";
-import { createThread } from "../controllers/thread";
 import { confirmImagePrompt, getTypedImagePrompts } from "../util/imagePrompt";
 import { createEntity } from "../util/prisma";
 
@@ -162,92 +160,6 @@ export default async function (fastify: FastifyInstance) {
         return { hashId: newPost.hashId };
       } catch (ex) {
         console.error("path: /post, method: post, error:", ex);
-        throw ex;
-      }
-    }
-  );
-  fastify.post<{ Body: Static<typeof PostCopySchema> }>(
-    "/copy",
-    { schema: { body: PostCopySchema } },
-    async (request, reply): Promise<PostCreateResponse> => {
-      try {
-        const { user } = await fastify.getUser(request, reply);
-        const { hashId } = request.body;
-
-        const post = await fastify.prisma.post.findFirst({
-          where: { hashId },
-          select: {
-            post: true,
-            textPrompts: {
-              select: {
-                provider: true,
-                model: true,
-                systemMessage: true,
-                config: true,
-                examples: {
-                  select: {
-                    input: true,
-                    content: true,
-                    response: true,
-                    price: true,
-                  },
-                },
-                messages: {
-                  select: { role: true, content: true },
-                },
-              },
-            },
-            imagePrompts: {
-              select: {
-                hashId: true,
-                provider: true,
-                model: true,
-                prompt: true,
-                config: true,
-                examples: {
-                  select: {
-                    hashId: true,
-                    input: true,
-                    url: true,
-                    response: true,
-                    price: true,
-                  },
-                },
-              },
-            },
-            thread: {
-              select: {
-                hashId: true,
-                title: true,
-                isPublic: true,
-                userHashId: true,
-              },
-            },
-          },
-        });
-        if (!post) {
-          throw fastify.httpErrors.badRequest("This thread is not available.");
-        }
-        isAccessible(post.thread, user);
-
-        const { textPrompts, imagePrompts } = post;
-        if (textPrompts.length > 0 && !confirmTextPrompt(textPrompts)) {
-          throw httpErrors.internalServerError("Text prompt is broken.");
-        }
-        if (imagePrompts.length > 0 && !confirmImagePrompt(imagePrompts)) {
-          throw httpErrors.internalServerError("Image prompt is broken.");
-        }
-
-        const thread = await createThread(fastify.prisma.thread, {
-          userHashId: user.hashId,
-          title: post.thread.title,
-          isPublic: false,
-          posts: [post],
-        });
-
-        return { hashId: thread.hashId };
-      } catch (ex) {
-        console.error("path: /post/copy, method: post, error:", ex);
         throw ex;
       }
     }

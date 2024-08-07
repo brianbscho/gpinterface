@@ -1,6 +1,6 @@
 "use client";
 
-import callApi from "@/util/callApi";
+import callApi from "@/utils/callApi";
 import { Suspense, useCallback, useMemo, useState } from "react";
 import { Post as PostType } from "gpinterface-shared/type";
 import { useRouter, useSearchParams } from "next/navigation";

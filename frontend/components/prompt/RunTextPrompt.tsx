@@ -4,15 +4,15 @@ import {
   getHighlightedPrompt,
   inputsToObject,
   objectToInputs,
-} from "@/util/string";
+} from "@/utils/string";
 import { TextPrompt } from "gpinterface-shared/type";
 import { Badge, Button, Textarea } from "@/components/ui";
 import { Fragment, useCallback, useState } from "react";
 import { getValidBody } from "gpinterface-shared/util";
-import callApi from "@/util/callApi";
+import callApi from "@/utils/callApi";
 import { TextPromptExecuteResponse } from "gpinterface-shared/type/textPrompt";
 import { Loader2, PlayCircle } from "lucide-react";
-import UserRequiredButton from "../general/buttons/UserRequiredButton";
+import LoginRequiredButton from "../general/buttons/LoginRequiredButton";
 import TextUsage from "../general/dialogs/TextUsage";
 
 export default function RunTextPrompt({
@@ -124,11 +124,11 @@ export default function RunTextPrompt({
       <div>
         <div className="flex items-center gap-1">
           <div className={titleClassName}>Run</div>
-          <UserRequiredButton onClick={onClickTry}>
+          <LoginRequiredButton onClick={onClickTry}>
             <Button loading={loading} className="rounded-full w-7 h-7 p-1">
               <PlayCircle />
             </Button>
-          </UserRequiredButton>
+          </LoginRequiredButton>
         </div>
         <div className="text-sm text-rose-500">{inputErrorMessage}</div>
       </div>

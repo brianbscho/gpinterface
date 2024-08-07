@@ -2,7 +2,7 @@
 
 import TextUsage from "@/components/general/dialogs/TextUsage";
 import List from "@/components/List";
-import callApi from "@/util/callApi";
+import callApi from "@/utils/callApi";
 import { TextPromptHistory } from "gpinterface-shared/type";
 import { TextHistoriesGetResponse } from "gpinterface-shared/type/textHistory";
 import { Fragment, useCallback, useMemo, useState } from "react";
