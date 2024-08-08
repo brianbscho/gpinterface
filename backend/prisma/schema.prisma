@@ -176,6 +176,8 @@ model Chat {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
+  systemMessage String @default("") @map("system_message")
+
   userHashId String @map("user_hash_id")
   user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
