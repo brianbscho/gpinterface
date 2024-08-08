@@ -1,5 +1,17 @@
 import { Type } from "@sinclair/typebox";
 
+export interface Chat {
+  hashId: string;
+
+  isApi: boolean;
+  isPost: boolean;
+  likes: number;
+
+  systemMessage: string;
+  messages: { hashId: string; role: string; content: string }[];
+  createdAt: string;
+}
+
 // * * * * * * * * * * * *
 // Thread
 //
