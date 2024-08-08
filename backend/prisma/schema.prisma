@@ -124,7 +124,9 @@ model Model {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
-  name String
+  name                  String
+  inputPricePerMillion  Float  @map("input_price_per_million")
+  outputPricePerMillion Float  @map("output_price_per_million")
 
   providerHashId String   @map("provider_hash_id")
   provider       Provider @relation(fields: [providerHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
