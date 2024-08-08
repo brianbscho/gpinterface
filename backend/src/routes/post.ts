@@ -1,26 +1,23 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
-import { createPost } from "../controllers/post";
 import {
   PostCreateResponse,
   PostCreateSchema,
-  PostGetSchema,
-  PostGetResponse,
   PostUpdateSchema,
 } from "gpinterface-shared/type/post";
 import { getDateString } from "../util/string";
-import { confirmTextPrompt, getTypedTextPrompts } from "../util/textPrompt";
-import { isAccessible } from "../util/thread";
-import { confirmImagePrompt, getTypedImagePrompts } from "../util/imagePrompt";
 import { createEntity } from "../util/prisma";
+import { ParamSchema, Post } from "gpinterface-shared/type";
+import { createChat } from "../controllers/chat";
+import { getTypedContent } from "../util/content";
 
 export default async function (fastify: FastifyInstance) {
   const { httpErrors } = fastify;
 
-  fastify.get<{ Params: Static<typeof PostGetSchema> }>(
+  fastify.get<{ Params: Static<typeof ParamSchema> }>(
     "/:hashId",
-    { schema: { params: PostGetSchema } },
-    async (request, reply): Promise<PostGetResponse> => {
+    { schema: { params: ParamSchema } },
+    async (request, reply): Promise<{ post: Post }> => {
       try {
         const { user } = await fastify.getUser(request, reply);
         const { hashId } = request.params;
@@ -28,8 +25,8 @@ export default async function (fastify: FastifyInstance) {
         const post = await fastify.prisma.post.findFirst({
           where: { hashId },
           select: {
-            thread: { select: { hashId: true, isPublic: true, title: true } },
             hashId: true,
+            title: true,
             post: true,
             bookmarks: {
               select: { isBookmarked: true },
@@ -42,45 +39,17 @@ export default async function (fastify: FastifyInstance) {
             _count: { select: { likes: { where: { isLiked: true } } } },
             createdAt: true,
             user: { select: { hashId: true, name: true } },
-            textPrompts: {
+            chat: {
               select: {
                 hashId: true,
-                provider: true,
-                model: true,
                 systemMessage: true,
-                config: true,
-                examples: {
-                  select: {
-                    hashId: true,
-                    input: true,
-                    content: true,
-                    response: true,
-                    price: true,
-                  },
-                },
-                messages: {
+                contents: {
                   select: {
                     hashId: true,
                     role: true,
                     content: true,
-                  },
-                },
-              },
-            },
-            imagePrompts: {
-              select: {
-                hashId: true,
-                provider: true,
-                model: true,
-                prompt: true,
-                config: true,
-                examples: {
-                  select: {
-                    hashId: true,
-                    input: true,
-                    url: true,
-                    response: true,
-                    price: true,
+                    config: true,
+                    model: { select: { hashId: true, providerHashId: true } },
                   },
                 },
               },
@@ -90,22 +59,19 @@ export default async function (fastify: FastifyInstance) {
         if (!post) {
           throw fastify.httpErrors.badRequest("The post is not available.");
         }
-        isAccessible(
-          { isPublic: post.thread.isPublic, userHashId: post.user?.hashId },
-          user
-        );
 
-        const { thread, bookmarks, likes, _count, ...rest } = post;
+        const { bookmarks, likes, _count, chat, ...rest } = post;
         return {
-          thread,
           post: {
             ...rest,
             createdAt: getDateString(post.createdAt),
             isBookmarked: bookmarks[0]?.isBookmarked || false,
             isLiked: likes[0]?.isLiked || false,
             likes: _count.likes,
-            textPrompts: getTypedTextPrompts(post.textPrompts),
-            imagePrompts: getTypedImagePrompts(post.imagePrompts),
+            chat: {
+              ...chat,
+              contents: chat.contents.map((c) => getTypedContent(c)),
+            },
           },
         };
       } catch (ex) {
@@ -120,42 +86,43 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<PostCreateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
-        const { threadHashId, post, textPrompts, imagePrompts } = request.body;
+        const { title, post, chatHashId } = request.body;
 
-        if (!confirmTextPrompt(textPrompts)) {
-          throw httpErrors.badRequest("Provided text prompt is invalid.");
-        }
-        if (!confirmImagePrompt(imagePrompts)) {
-          throw httpErrors.badRequest("Provided image prompt is invalid.");
+        if (title.trim() === "" || post.trim() === "") {
+          throw httpErrors.badRequest("title or post is empty.");
         }
 
-        const thread = await fastify.prisma.thread.findFirst({
-          where: { hashId: threadHashId },
-          select: { isPublic: true, userHashId: true },
-        });
-        if (!thread) {
-          throw httpErrors.badRequest("The thread is not available.");
-        }
-        isAccessible(thread, user);
-
-        const newPost = await createPost(fastify.prisma.post, {
-          post,
-          textPrompts,
-          imagePrompts,
-          threadHashId,
-          userHashId: user.hashId,
-        });
-
-        const { userHashId } = thread;
-        if (userHashId !== null && userHashId !== user.hashId) {
-          await createEntity(fastify.prisma.notification.create, {
-            data: {
-              userHashId: userHashId,
-              message: `${user.name} wrote a post on your thread!`,
-              url: `/thread/${threadHashId}`,
+        const oldChat = await fastify.prisma.chat.findFirst({
+          where: { hashId: chatHashId },
+          select: {
+            systemMessage: true,
+            contents: {
+              select: {
+                role: true,
+                content: true,
+                config: true,
+                modelHashId: true,
+              },
+              orderBy: { id: "asc" },
             },
-          });
+          },
+        });
+        if (!oldChat) {
+          throw httpErrors.badRequest("chat is not available.");
         }
+        const newChat = await createChat(fastify.prisma.chat, {
+          userHashId: user.hashId,
+          ...oldChat,
+        });
+
+        const newPost = await createEntity(fastify.prisma.post.create, {
+          data: {
+            title,
+            post,
+            userHashId: user.hashId,
+            chatHashId: newChat.hashId,
+          },
+        });
 
         return { hashId: newPost.hashId };
       } catch (ex) {
@@ -164,37 +131,37 @@ export default async function (fastify: FastifyInstance) {
       }
     }
   );
-  fastify.put<{ Body: Static<typeof PostUpdateSchema> }>(
-    "/",
-    { schema: { body: PostUpdateSchema } },
+  fastify.put<{
+    Params: Static<typeof ParamSchema>;
+    Body: Static<typeof PostUpdateSchema>;
+  }>(
+    "/:hashId",
+    { schema: { params: ParamSchema, body: PostUpdateSchema } },
     async (request, reply): Promise<PostCreateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
-        const { hashId, post: _post } = request.body;
+        const { hashId } = request.params;
+        const { title, post } = request.body;
 
-        const post = await fastify.prisma.post.findFirst({
-          where: { hashId },
+        const oldPost = await fastify.prisma.post.findFirst({
+          where: { hashId, userHashId: user.hashId },
           select: {
             userHashId: true,
             post: true,
-            thread: { select: { isPublic: true, userHashId: true } },
           },
         });
-        if (!post) {
+        if (!oldPost) {
           throw fastify.httpErrors.unauthorized("Post not found.");
         }
-        isAccessible(post.thread, user);
 
-        if (post.post !== _post) {
-          await fastify.prisma.post.update({
-            where: { hashId: hashId },
-            data: { post: _post },
-          });
-        }
+        await fastify.prisma.post.update({
+          where: { hashId },
+          data: { title, post },
+        });
 
         return { hashId };
       } catch (ex) {
-        console.error("path: /post, method: put, error:", ex);
+        console.error("path: /post/:hashId, method: put, error:", ex);
         throw ex;
       }
     }

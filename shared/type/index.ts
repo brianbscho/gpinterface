@@ -13,6 +13,13 @@ export interface Chat {
   createdAt: string;
 }
 
+export interface Comment {
+  hashId: string;
+  comment: string;
+  user?: User | null;
+  createdAt: string;
+}
+
 export interface Content {
   hashId: string;
 
@@ -28,6 +35,7 @@ export interface Content {
 //
 export interface Post {
   hashId: string;
+  title: string;
   post: string;
   createdAt: string;
 
@@ -35,18 +43,11 @@ export interface Post {
   isLiked: boolean;
   likes: number;
 
-  user?: User | null | undefined;
-  textPrompts: TextPrompt[];
-  imagePrompts: ImagePrompt[];
-}
-
-export interface Thread {
-  hashId: string;
-  title: string;
-  isPublic: boolean;
-  createdAt: string;
-  posts: number;
-  likes: number;
+  chat: {
+    hashId: string;
+    systemMessage: string;
+    contents: Content[];
+  };
 
   user?: User | null | undefined;
 }
