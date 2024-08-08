@@ -12,6 +12,16 @@ export interface Chat {
   createdAt: string;
 }
 
+export interface Content {
+  hashId: string;
+
+  providerHashId?: string | null;
+  modelHashId?: string | null;
+  role: string;
+  content: string;
+  config: object;
+}
+
 // * * * * * * * * * * * *
 // Thread
 //
