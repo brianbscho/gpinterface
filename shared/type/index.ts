@@ -1,5 +1,11 @@
 import { Type } from "@sinclair/typebox";
 
+export interface Api {
+  hashId: string;
+  description: string;
+  chat: { hashId: string; systemMessage: string; contents: Content[] };
+}
+
 export interface Chat {
   hashId: string;
 
