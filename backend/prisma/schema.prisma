@@ -82,8 +82,25 @@ model Post {
 
   bookmarks Bookmark[]
   likes     Like[]
+  comments  Comment[]
 
   @@map("posts")
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  comment String
+
+  postHashId String  @map("post_hash_id")
+  post       Post    @relation(fields: [postHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
+  userHashId String? @map("user_hash_id")
+  user       User?   @relation(fields: [userHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+
+  @@map("comments")
 }
 
 // * * * * * * * * * * * *
@@ -432,6 +449,7 @@ model User {
   notifications        Notification[]
   apis                 Api[]
   posts                Post[]
+  comments             Comment[]
   imagePromptHistories ImagePromptHistory[]
   textPromptHistories  TextPromptHistory[]
   chats                Chat[]
