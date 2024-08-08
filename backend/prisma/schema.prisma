@@ -142,8 +142,11 @@ model Model {
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
   name                  String
-  inputPricePerMillion  Float  @map("input_price_per_million")
-  outputPricePerMillion Float  @map("output_price_per_million")
+  inputPricePerMillion  Float   @map("input_price_per_million")
+  outputPricePerMillion Float   @map("output_price_per_million")
+  isFree                Boolean @map("is_free")
+  isLoginRequired       Boolean @map("is_login_required")
+  available             Boolean
 
   providerHashId String   @map("provider_hash_id")
   provider       Provider @relation(fields: [providerHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
