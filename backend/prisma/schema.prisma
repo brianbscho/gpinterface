@@ -179,9 +179,10 @@ model Chat {
   userHashId String @map("user_hash_id")
   user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
-  contents Content[]
-  apis     Api[]
-  posts    Post[]
+  contents  Content[]
+  apis      Api[]
+  posts     Post[]
+  histories History[]
 
   @@map("chats")
 }
@@ -202,6 +203,32 @@ model Content {
   model       Model?  @relation(fields: [modelHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
   @@map("contents")
+}
+
+model History {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  provider     String
+  model        String
+  config       Json
+  messages     Json
+  content      String
+  response     Json
+  price        Float
+  inputTokens  Int    @map("input_tokens")
+  outputTokens Int    @map("output_tokens")
+
+  apiKeyHashId String? @map("api_key_hash_id")
+  apiKey       ApiKey? @relation(fields: [apiKeyHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+  chatHashId   String? @map("chat_hash_id")
+  chat         Chat?   @relation(fields: [chatHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+  userHashId   String  @map("user_hash_id")
+  user         User    @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@map("histories")
 }
 
 // * * * * * * * * * * * *
@@ -365,6 +392,7 @@ model ApiKey {
 
   imagePromptHistories ImagePromptHistory[]
   textPromptHistories  TextPromptHistory[]
+  histories            History[]
 
   @@map("api_keys")
 }
@@ -405,6 +433,7 @@ model User {
   imagePromptHistories ImagePromptHistory[]
   textPromptHistories  TextPromptHistory[]
   chats                Chat[]
+  histories            History[]
 
   @@map("users")
 }
