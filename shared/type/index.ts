@@ -6,6 +6,7 @@ export interface Chat {
   isApi: boolean;
   isPost: boolean;
   likes: number;
+  comments: number;
 
   systemMessage: string;
   messages: { hashId: string; role: string; content: string }[];

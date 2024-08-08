@@ -26,7 +26,12 @@ export default async function (fastify: FastifyInstance) {
             _count: { select: { apis: true, posts: true } },
             posts: {
               select: {
-                _count: { select: { likes: { where: { isLiked: true } } } },
+                _count: {
+                  select: {
+                    likes: { where: { isLiked: true } },
+                    comments: true,
+                  },
+                },
               },
             },
             systemMessage: true,
@@ -49,7 +54,8 @@ export default async function (fastify: FastifyInstance) {
               messages: contents,
               isApi: _count.apis > 0,
               isPost: _count.posts > 0,
-              likes: posts.reduce((acc, curr) => acc + curr._count.likes, 0),
+              likes: posts.reduce((sum, p) => sum + p._count.likes, 0),
+              comments: posts.reduce((sum, p) => sum + p._count.comments, 0),
               createdAt: getDateString(createdAt),
             };
           }),
