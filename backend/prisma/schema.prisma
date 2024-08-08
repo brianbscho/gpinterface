@@ -56,15 +56,16 @@ model Post {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
-  post String
+  title String
+  post  String
 
+  chatHashId String  @map("chat_hash_id")
+  chat       Chat    @relation(fields: [chatHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
   userHashId String? @map("user_hash_id")
   user       User?   @relation(fields: [userHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
 
-  bookmarks    Bookmark[]
-  likes        Like[]
-  imagePrompts ImagePrompt[]
-  textPrompts  TextPrompt[]
+  bookmarks Bookmark[]
+  likes     Like[]
 
   @@map("posts")
 }
@@ -161,6 +162,7 @@ model Chat {
   user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
   contents Content[]
+  posts    Post[]
 
   @@map("chats")
 }
@@ -213,9 +215,6 @@ model ImagePrompt {
   model    String
   prompt   String
   config   Json
-
-  postHashId String @map("post_hash_id")
-  post       Post   @relation(fields: [postHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
 
   examples  ImageExample[]
   histories ImagePromptHistory[]
@@ -294,9 +293,6 @@ model TextPrompt {
   model         String
   systemMessage String @map("system_message")
   config        Json
-
-  postHashId String @map("post_hash_id")
-  post       Post   @relation(fields: [postHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
 
   examples  TextExample[]
   messages  TextMessage[]
