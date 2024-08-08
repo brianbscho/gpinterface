@@ -50,6 +50,22 @@ model Like {
   @@map("likes")
 }
 
+model Api {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  description String
+
+  chatHashId String  @map("chat_hash_id")
+  chat       Chat    @relation(fields: [chatHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+  userHashId String? @map("user_hash_id")
+  user       User?   @relation(fields: [userHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+
+  @@map("apis")
+}
+
 model Post {
   id        Int      @id @default(autoincrement())
   hashId    String   @unique @map("hash_id")
@@ -162,6 +178,7 @@ model Chat {
   user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
   contents Content[]
+  apis     Api[]
   posts    Post[]
 
   @@map("chats")
@@ -381,6 +398,7 @@ model User {
   bookmarks            Bookmark[]
   likes                Like[]
   notifications        Notification[]
+  apis                 Api[]
   posts                Post[]
   imagePromptHistories ImagePromptHistory[]
   textPromptHistories  TextPromptHistory[]
