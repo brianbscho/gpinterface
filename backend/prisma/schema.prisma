@@ -70,6 +70,120 @@ model Post {
 }
 
 // * * * * * * * * * * * *
+// Chat
+// 
+model ProviderType {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  type String
+
+  providers Provider[]
+
+  @@map("provider_types")
+}
+
+model Provider {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  name String
+
+  typeHashId String       @map("provider_type_hash_id")
+  type       ProviderType @relation(fields: [typeHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  models Model[]
+
+  @@map("providers")
+}
+
+model Model {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  name String
+
+  providerHashId String   @map("provider_hash_id")
+  provider       Provider @relation(fields: [providerHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  configs  Config[]
+  contents Content[]
+
+  @@map("models")
+}
+
+model Config {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  name        String
+  type        String
+  description String
+  default     String
+
+  modelHashId String @map("model_hash_id")
+  model       Model  @relation(fields: [modelHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  options ConfigOption[]
+
+  @@map("configs")
+}
+
+model ConfigOption {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  value String
+
+  configHashId String @map("config_hash_id")
+  config       Config @relation(fields: [configHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@map("config_options")
+}
+
+model Chat {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  userHashId String @map("user_hash_id")
+  user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  contents Content[]
+
+  @@map("chats")
+}
+
+model Content {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  role    String
+  content String
+  config  Json
+
+  chatHashId  String @map("chat_hash_id")
+  chat        Chat   @relation(fields: [chatHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+  modelHashId String @map("model_hash_id")
+  model       Model  @relation(fields: [modelHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@map("contents")
+}
+
+// * * * * * * * * * * * *
 // Image Prompt
 // 
 model ImageExample {
@@ -274,6 +388,7 @@ model User {
   posts                Post[]
   imagePromptHistories ImagePromptHistory[]
   textPromptHistories  TextPromptHistory[]
+  chats                Chat[]
 
   @@map("users")
 }
