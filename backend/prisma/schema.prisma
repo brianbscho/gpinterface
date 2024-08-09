@@ -155,7 +155,9 @@ model Config {
   name        String
   type        String
   description String
-  default     String
+  default     String?
+  min         Float?
+  max         Float?
 
   modelHashId String @map("model_hash_id")
   model       Model  @relation(fields: [modelHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
