@@ -10,6 +10,7 @@ import { createEntity } from "../util/prisma";
 import { ParamSchema } from "gpinterface-shared/type";
 import { createChat } from "../controllers/chat";
 import { getTypedContent } from "../util/content";
+import { createApi } from "../controllers/api";
 
 export default async function (fastify: FastifyInstance) {
   const { httpErrors } = fastify;
@@ -94,17 +95,11 @@ export default async function (fastify: FastifyInstance) {
         if (!oldChat) {
           throw httpErrors.badRequest("chat is not available.");
         }
-        const newChat = await createChat(fastify.prisma.chat, {
+
+        const newApi = await createApi(fastify.prisma.chat, {
           userHashId: user.hashId,
           ...oldChat,
-        });
-
-        const newApi = await createEntity(fastify.prisma.api.create, {
-          data: {
-            description,
-            userHashId: user.hashId,
-            chatHashId: newChat.hashId,
-          },
+          apis: { description, userHashId: user.hashId },
         });
 
         return { hashId: newApi.hashId };

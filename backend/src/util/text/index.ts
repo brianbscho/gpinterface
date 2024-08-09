@@ -1,6 +1,3 @@
-import { Static, Type } from "@sinclair/typebox";
-import { TextPrompt } from "gpinterface-shared/type/textPrompt";
-import { TextMessageSchema } from "gpinterface-shared/type/textMessage";
 import {
   getInputTextPriceByModel,
   getOutputTextPriceByModel,
@@ -15,9 +12,13 @@ import { callBedrock } from "./bedrock";
 import { callGroq } from "./google";
 import { Prisma } from "@prisma/client";
 
-const TextPromptSchema = Type.Object(TextPrompt);
-type TextPromptType = Static<typeof TextPromptSchema>;
-type TextMessageType = Static<typeof TextMessageSchema>;
+type TextPromptType = {
+  provider: string;
+  model: string;
+  systemMessage: string;
+  config: object;
+};
+type TextMessageType = { role: string; content: string };
 
 export async function getTextResponse(
   textPrompt: TextPromptType & { messages: TextMessageType[] }
@@ -85,7 +86,7 @@ export function getTextPriceByModel(
 }
 
 export async function getTodayPriceSum(
-  history: Prisma.TextPromptHistoryDelegate,
+  history: Prisma.HistoryDelegate,
   userHashId: string
 ) {
   const todayStart = new Date();

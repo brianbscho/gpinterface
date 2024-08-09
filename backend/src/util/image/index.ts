@@ -1,14 +1,14 @@
-import { Static, Type } from "@sinclair/typebox";
-import { ImagePrompt } from "gpinterface-shared/type/imagePrompt";
 import { callStabilityAi } from "./stability.ai";
 import { imageModels } from "gpinterface-shared/models/image/model";
 import { callModelsLab } from "./modelslab";
 import { Prisma } from "@prisma/client";
 
-const ImagePromptSchema = Type.Object(ImagePrompt);
-type ImagePromptType = Static<typeof ImagePromptSchema>;
-
-export async function getImageResponse(imagePrompt: ImagePromptType) {
+export async function getImageResponse(imagePrompt: {
+  provider: string;
+  model: string;
+  prompt: string;
+  config: object;
+}) {
   const { provider, model, prompt, config } = imagePrompt;
   switch (provider) {
     case imageModels[0].provider:
@@ -50,7 +50,7 @@ export function getImagePriceByModel(model: string) {
 }
 
 export async function getTodayPriceSum(
-  history: Prisma.ImagePromptHistoryDelegate,
+  history: Prisma.HistoryDelegate,
   userHashId: string
 ) {
   const todayStart = new Date();

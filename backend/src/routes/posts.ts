@@ -38,7 +38,7 @@ const PostsSelectQuery = {
   take: 20,
 } as const;
 
-const getTypedPostResponse = (post: {
+export const getTypedPostResponse = (post: {
   post: string;
   hashId: string;
   createdAt: Date;

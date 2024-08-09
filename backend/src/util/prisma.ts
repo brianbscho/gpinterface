@@ -80,3 +80,22 @@ export async function getIdByHashId(
   }
   return prompt.id;
 }
+
+export async function getUpdatedAtByHashId(
+  findFirst: (args: {
+    where: { hashId: string };
+    select: { updatedAt: true };
+  }) => Promise<{ updatedAt: Date | null } | null>,
+  hashId?: string
+) {
+  if (!hashId) return null;
+
+  const prompt = await findFirst({
+    where: { hashId },
+    select: { updatedAt: true },
+  });
+  if (!prompt) {
+    return null;
+  }
+  return prompt.updatedAt;
+}

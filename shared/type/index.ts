@@ -55,7 +55,7 @@ export interface History {
 }
 
 // * * * * * * * * * * * *
-// Thread
+// Post
 //
 export interface Post {
   hashId: string;
@@ -67,95 +67,9 @@ export interface Post {
   isLiked: boolean;
   likes: number;
 
-  chat: {
-    hashId: string;
-    systemMessage: string;
-    contents: Content[];
-  };
+  chat: { hashId: string; systemMessage: string; contents: Content[] };
 
   user?: User | null | undefined;
-}
-
-// * * * * * * * * * * * *
-// Image Prompt
-//
-
-export interface ImageExample {
-  hashId: string;
-  input: object;
-  url: string;
-  response: object;
-  price: number;
-}
-
-export interface ImagePrompt {
-  hashId: string;
-  provider: string;
-  model: string;
-  prompt: string;
-  config: object;
-
-  examples: ImageExample[];
-}
-
-export interface ImagePromptHistory {
-  hashId: string;
-  imagePromptHashId: string | null;
-  provider: string;
-  model: string;
-  prompt: string;
-  config: object;
-  input: object;
-  url: string;
-  response: object;
-  price: number;
-  createdAt: string;
-}
-
-// * * * * * * * * * * * *
-// Text Prompt
-//
-
-export interface TextExample {
-  hashId: string;
-  input: object;
-  content: string;
-  response: object;
-  price: number;
-}
-
-export interface TextMessage {
-  hashId: string;
-  role: string;
-  content: string;
-}
-
-export interface TextPrompt {
-  hashId: string;
-  provider: string;
-  model: string;
-  systemMessage: string;
-  config: object;
-
-  examples: TextExample[];
-  messages: TextMessage[];
-}
-
-export interface TextPromptHistory {
-  hashId: string;
-  textPromptHashId: string | null;
-  input: object;
-  content: string;
-  response: object;
-  inputTokens: number;
-  outputTokens: number;
-  provider: string;
-  model: string;
-  systemMessage: string;
-  config: object;
-  messages: object;
-  price: number;
-  createdAt: string;
 }
 
 // * * * * * * * * * * * *

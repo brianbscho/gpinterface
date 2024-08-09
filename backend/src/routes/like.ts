@@ -5,7 +5,6 @@ import {
   LikeUpdateResponse,
   LikeUpdateSchema,
 } from "gpinterface-shared/type/like";
-import { isAccessible } from "../util/thread";
 
 export default async function (fastify: FastifyInstance) {
   const { httpErrors } = fastify;
@@ -20,17 +19,11 @@ export default async function (fastify: FastifyInstance) {
 
         const post = await fastify.prisma.post.findFirst({
           where: { hashId: postHashId },
-          select: {
-            thread: {
-              select: { hashId: true, isPublic: true, userHashId: true },
-            },
-            userHashId: true,
-          },
+          select: { hashId: true, userHashId: true },
         });
         if (!post) {
           throw httpErrors.badRequest("The post is not available.");
         }
-        isAccessible(post.thread, user);
 
         const likeEntry = await fastify.prisma.like.findFirst({
           where: { userHashId: user.hashId, postHashId },
@@ -53,7 +46,7 @@ export default async function (fastify: FastifyInstance) {
               data: {
                 userHashId,
                 message: `${user.name} liked your post!`,
-                url: `/thread/${post.thread.hashId}`,
+                url: `/posts/${post.hashId}`,
               },
             });
           }

@@ -4,17 +4,12 @@ import cors from "@fastify/cors";
 import httpErrorsPlugin from "../plugins/httpErrors";
 import prismaPlugin from "../plugins/prisma";
 
-import text from "./text";
-import image from "./image";
-
 const fastify = Fastify({ logger: true });
 
 fastify.register(httpErrorsPlugin);
 fastify.register(prismaPlugin);
 
 fastify.get("/health", () => true);
-fastify.register(image, { prefix: "/image" });
-fastify.register(text, { prefix: "/text" });
 
 const start = async () => {
   try {

@@ -1,27 +1,6 @@
 import { Type } from "@sinclair/typebox";
 import { Post, User } from ".";
-import { TextMessageSchema } from "./textMessage";
-import { TextExampleSchema } from "./textExample";
-import { ImageExampleSchema } from "./imageExample";
-import { ImagePrompt } from "./imagePrompt";
-import { TextPrompt } from "./textPrompt";
 
-export const PostSchema = {
-  post: Type.String(),
-  textPrompts: Type.Array(
-    Type.Object({
-      ...TextPrompt,
-      examples: Type.Array(TextExampleSchema),
-      messages: Type.Array(TextMessageSchema),
-    })
-  ),
-  imagePrompts: Type.Array(
-    Type.Object({
-      ...ImagePrompt,
-      examples: Type.Array(ImageExampleSchema),
-    })
-  ),
-};
 export const PostCreateSchema = Type.Object({
   title: Type.String(),
   post: Type.String(),

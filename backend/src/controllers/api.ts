@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 import { getDataWithHashId } from "../util/prisma";
 import { getTypedContent } from "../util/content";
 
-export async function createPost(
+export async function createApi(
   chatDelegate: Prisma.ChatDelegate,
   chat: {
     userHashId: string;
@@ -13,14 +13,14 @@ export async function createPost(
       config: Prisma.JsonValue;
       modelHashId: string;
     }[];
-    posts: { title: string; post: string; userHashId: string };
+    apis: { description: string; userHashId: string };
   }
 ) {
   let retries = 0;
 
   while (retries < 5) {
     try {
-      const newPost = await chatDelegate.create({
+      const newApi = await chatDelegate.create({
         data: {
           ...getDataWithHashId({
             ...chat,
@@ -31,16 +31,16 @@ export async function createPost(
                 ),
               },
             },
-            posts: { create: getDataWithHashId(chat.posts) },
+            apis: { create: getDataWithHashId(chat.apis) },
           }),
         },
-        select: { posts: { select: { hashId: true } } },
+        select: { apis: { select: { hashId: true } } },
       });
 
-      if (newPost.posts.length === 0) {
-        throw "Failed to create post";
+      if (newApi.apis.length === 0) {
+        throw "Failed to create api";
       }
-      return newPost.posts[0];
+      return newApi.apis[0];
     } catch (error) {
       retries++;
       console.log("🚀 ~ error:", error);

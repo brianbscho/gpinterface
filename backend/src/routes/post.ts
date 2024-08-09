@@ -3,13 +3,13 @@ import { Static } from "@sinclair/typebox";
 import {
   PostCreateResponse,
   PostCreateSchema,
+  PostGetResponse,
   PostUpdateSchema,
 } from "gpinterface-shared/type/post";
 import { getDateString } from "../util/string";
-import { createEntity } from "../util/prisma";
-import { ParamSchema, Post } from "gpinterface-shared/type";
-import { createChat } from "../controllers/chat";
+import { ParamSchema } from "gpinterface-shared/type";
 import { getTypedContent } from "../util/content";
+import { createPost } from "../controllers/post";
 
 export default async function (fastify: FastifyInstance) {
   const { httpErrors } = fastify;
@@ -17,7 +17,7 @@ export default async function (fastify: FastifyInstance) {
   fastify.get<{ Params: Static<typeof ParamSchema> }>(
     "/:hashId",
     { schema: { params: ParamSchema } },
-    async (request, reply): Promise<{ post: Post }> => {
+    async (request, reply): Promise<PostGetResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
         const { hashId } = request.params;
@@ -110,18 +110,11 @@ export default async function (fastify: FastifyInstance) {
         if (!oldChat) {
           throw httpErrors.badRequest("chat is not available.");
         }
-        const newChat = await createChat(fastify.prisma.chat, {
+
+        const newPost = await createPost(fastify.prisma.chat, {
           userHashId: user.hashId,
           ...oldChat,
-        });
-
-        const newPost = await createEntity(fastify.prisma.post.create, {
-          data: {
-            title,
-            post,
-            userHashId: user.hashId,
-            chatHashId: newChat.hashId,
-          },
+          posts: { title, post, userHashId: user.hashId },
         });
 
         return { hashId: newPost.hashId };
@@ -145,10 +138,7 @@ export default async function (fastify: FastifyInstance) {
 
         const oldPost = await fastify.prisma.post.findFirst({
           where: { hashId, userHashId: user.hashId },
-          select: {
-            userHashId: true,
-            post: true,
-          },
+          select: { hashId: true },
         });
         if (!oldPost) {
           throw fastify.httpErrors.unauthorized("Post not found.");
