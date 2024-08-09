@@ -254,150 +254,6 @@ model History {
 }
 
 // * * * * * * * * * * * *
-// Image Prompt
-// 
-model ImageExample {
-  id        Int      @id @default(autoincrement())
-  hashId    String   @unique @map("hash_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  input    Json
-  url      String
-  response Json
-  price    Float
-
-  imagePromptHashId String      @map("image_prompt_hash_id")
-  imagePrompt       ImagePrompt @relation(fields: [imagePromptHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
-
-  @@map("image_examples")
-}
-
-model ImagePrompt {
-  id        Int      @id @default(autoincrement())
-  hashId    String   @unique @map("hash_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  provider String
-  model    String
-  prompt   String
-  config   Json
-
-  examples  ImageExample[]
-  histories ImagePromptHistory[]
-
-  @@map("image_prompts")
-}
-
-model ImagePromptHistory {
-  id        Int      @id @default(autoincrement())
-  hashId    String   @unique @map("hash_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  provider String
-  model    String
-  prompt   String
-  config   Json
-  input    Json
-  url      String
-  response Json
-  price    Float
-
-  imagePromptHashId String?      @map("image_prompt_hash_id")
-  imagePrompt       ImagePrompt? @relation(fields: [imagePromptHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
-  apiKeyHashId      String?      @map("api_key_hash_id")
-  apiKey            ApiKey?      @relation(fields: [apiKeyHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
-  userHashId        String       @map("user_hash_id")
-  user              User         @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
-
-  @@map("image_prompt_histories")
-}
-
-// * * * * * * * * * * * *
-// Text Prompt
-// 
-
-model TextExample {
-  id        Int      @id @default(autoincrement())
-  hashId    String   @unique @map("hash_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  input    Json
-  content  String
-  response Json
-  price    Float
-
-  textPromptHashId String     @map("text_prompt_hash_id")
-  textPrompt       TextPrompt @relation(fields: [textPromptHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
-
-  @@map("text_examples")
-}
-
-model TextMessage {
-  id        Int      @id @default(autoincrement())
-  hashId    String   @unique @map("hash_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  role    String
-  content String
-
-  textPromptHashId String     @map("text_prompt_hash_id")
-  textPrompt       TextPrompt @relation(fields: [textPromptHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
-
-  @@map("text_messages")
-}
-
-model TextPrompt {
-  id        Int      @id @default(autoincrement())
-  hashId    String   @unique @map("hash_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  provider      String
-  model         String
-  systemMessage String @map("system_message")
-  config        Json
-
-  examples  TextExample[]
-  messages  TextMessage[]
-  histories TextPromptHistory[]
-
-  @@map("text_prompts")
-}
-
-model TextPromptHistory {
-  id        Int      @id @default(autoincrement())
-  hashId    String   @unique @map("hash_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  provider      String
-  model         String
-  systemMessage String @map("system_message")
-  config        Json
-  input         Json
-  content       String
-  response      Json
-  inputTokens   Int    @map("input_tokens")
-  outputTokens  Int    @map("output_tokens")
-  messages      Json
-  price         Float
-
-  textPromptHashId String?     @map("text_prompt_hash_id")
-  textPrompt       TextPrompt? @relation(fields: [textPromptHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
-  apiKeyHashId     String?     @map("api_key_hash_id")
-  apiKey           ApiKey?     @relation(fields: [apiKeyHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
-  userHashId       String      @map("user_hash_id")
-  user             User        @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
-
-  @@map("text_prompt_histories")
-}
-
-// * * * * * * * * * * * *
 // User
 // 
 
@@ -412,9 +268,7 @@ model ApiKey {
   userHashId String @map("user_hash_id")
   user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
-  imagePromptHistories ImagePromptHistory[]
-  textPromptHistories  TextPromptHistory[]
-  histories            History[]
+  histories History[]
 
   @@map("api_keys")
 }
@@ -446,17 +300,15 @@ model User {
   bio                   String   @default("")
   notificationCheckedAt DateTime @default(now()) @map("notification_checked_at")
 
-  apiKeys              ApiKey[]
-  bookmarks            Bookmark[]
-  likes                Like[]
-  notifications        Notification[]
-  apis                 Api[]
-  posts                Post[]
-  comments             Comment[]
-  imagePromptHistories ImagePromptHistory[]
-  textPromptHistories  TextPromptHistory[]
-  chats                Chat[]
-  histories            History[]
+  apiKeys       ApiKey[]
+  bookmarks     Bookmark[]
+  likes         Like[]
+  notifications Notification[]
+  apis          Api[]
+  posts         Post[]
+  comments      Comment[]
+  chats         Chat[]
+  histories     History[]
 
   @@map("users")
 }
