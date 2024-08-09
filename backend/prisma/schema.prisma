@@ -15,7 +15,7 @@ datasource db {
 }
 
 // * * * * * * * * * * * *
-// Prompt
+// Post
 // 
 
 model Bookmark {
@@ -34,6 +34,22 @@ model Bookmark {
   @@map("bookmarks")
 }
 
+model Comment {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  comment String
+
+  postHashId String  @map("post_hash_id")
+  post       Post    @relation(fields: [postHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
+  userHashId String? @map("user_hash_id")
+  user       User?   @relation(fields: [userHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+
+  @@map("comments")
+}
+
 model Like {
   id        Int      @id @default(autoincrement())
   hashId    String   @unique @map("hash_id")
@@ -48,22 +64,6 @@ model Like {
   user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
 
   @@map("likes")
-}
-
-model Api {
-  id        Int      @id @default(autoincrement())
-  hashId    String   @unique @map("hash_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  description String
-
-  chatHashId String @map("chat_hash_id")
-  chat       Chat   @relation(fields: [chatHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
-  userHashId String @map("user_hash_id")
-  user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
-
-  @@map("apis")
 }
 
 model Post {
@@ -87,74 +87,63 @@ model Post {
   @@map("posts")
 }
 
-model Comment {
+// * * * * * * * * * * * *
+// Api
+// 
+
+model Api {
   id        Int      @id @default(autoincrement())
   hashId    String   @unique @map("hash_id")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
-  comment String
+  description String
 
-  postHashId String  @map("post_hash_id")
-  post       Post    @relation(fields: [postHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
-  userHashId String? @map("user_hash_id")
-  user       User?   @relation(fields: [userHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+  chatHashId String @map("chat_hash_id")
+  chat       Chat   @relation(fields: [chatHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+  userHashId String @map("user_hash_id")
+  user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
 
-  @@map("comments")
+  @@map("apis")
+}
+
+model ApiKey {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  key String @unique @map("key")
+
+  userHashId String @map("user_hash_id")
+  user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  histories History[]
+
+  @@map("api_keys")
 }
 
 // * * * * * * * * * * * *
 // Chat
 // 
-model ProviderType {
+
+model Chat {
   id        Int      @id @default(autoincrement())
   hashId    String   @unique @map("hash_id")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
-  type String
+  systemMessage String @default("") @map("system_message")
 
-  providers Provider[]
+  userHashId String @map("user_hash_id")
+  user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
-  @@map("provider_types")
-}
+  contents  Content[]
+  apis      Api[]
+  posts     Post[]
+  histories History[]
 
-model Provider {
-  id        Int      @id @default(autoincrement())
-  hashId    String   @unique @map("hash_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  name String
-
-  typeHashId String       @map("provider_type_hash_id")
-  type       ProviderType @relation(fields: [typeHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
-
-  models Model[]
-
-  @@map("providers")
-}
-
-model Model {
-  id        Int      @id @default(autoincrement())
-  hashId    String   @unique @map("hash_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  name                  String
-  inputPricePerMillion  Float   @map("input_price_per_million")
-  outputPricePerMillion Float   @map("output_price_per_million")
-  isFree                Boolean @map("is_free")
-  isLoginRequired       Boolean @map("is_login_required")
-  available             Boolean
-
-  providerHashId String   @map("provider_hash_id")
-  provider       Provider @relation(fields: [providerHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
-
-  configs  Config[]
-  contents Content[]
-
-  @@map("models")
+  @@map("chats")
 }
 
 model Config {
@@ -190,25 +179,6 @@ model ConfigOption {
   @@map("config_options")
 }
 
-model Chat {
-  id        Int      @id @default(autoincrement())
-  hashId    String   @unique @map("hash_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  systemMessage String @default("") @map("system_message")
-
-  userHashId String @map("user_hash_id")
-  user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
-
-  contents  Content[]
-  apis      Api[]
-  posts     Post[]
-  histories History[]
-
-  @@map("chats")
-}
-
 model Content {
   id        Int      @id @default(autoincrement())
   hashId    String   @unique @map("hash_id")
@@ -226,6 +196,61 @@ model Content {
 
   @@map("contents")
 }
+
+model Model {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  name                  String
+  inputPricePerMillion  Float   @map("input_price_per_million")
+  outputPricePerMillion Float   @map("output_price_per_million")
+  isFree                Boolean @map("is_free")
+  isLoginRequired       Boolean @map("is_login_required")
+  available             Boolean
+
+  providerHashId String   @map("provider_hash_id")
+  provider       Provider @relation(fields: [providerHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  configs  Config[]
+  contents Content[]
+
+  @@map("models")
+}
+
+model Provider {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  name String
+
+  typeHashId String       @map("provider_type_hash_id")
+  type       ProviderType @relation(fields: [typeHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  models Model[]
+
+  @@map("providers")
+}
+
+model ProviderType {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  type String
+
+  providers Provider[]
+
+  @@map("provider_types")
+}
+
+// * * * * * * * * * * * *
+// User
+// 
 
 model History {
   id        Int      @id @default(autoincrement())
@@ -251,26 +276,6 @@ model History {
   user         User    @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
   @@map("histories")
-}
-
-// * * * * * * * * * * * *
-// User
-// 
-
-model ApiKey {
-  id        Int      @id @default(autoincrement())
-  hashId    String   @unique @map("hash_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  key String @unique @map("key")
-
-  userHashId String @map("user_hash_id")
-  user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
-
-  histories History[]
-
-  @@map("api_keys")
 }
 
 model Notification {
