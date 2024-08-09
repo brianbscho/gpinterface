@@ -36,6 +36,24 @@ export interface Content {
   config: object;
 }
 
+export interface History {
+  hashId: string;
+  provider: string;
+  model: string;
+  config: object;
+  messages: object;
+  content: string;
+  response: object;
+  price: number;
+  inputTokens: number;
+  outputTokens: number;
+  createdAt: string;
+
+  chatHashId?: string | null;
+  isApi: boolean;
+  isPost: boolean;
+}
+
 // * * * * * * * * * * * *
 // Thread
 //
