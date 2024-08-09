@@ -159,10 +159,8 @@ model Config {
   min         Float?
   max         Float?
 
-  modelHashId String @map("model_hash_id")
-  model       Model  @relation(fields: [modelHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
-
-  options ConfigOption[]
+  options         ConfigOption[]
+  configsOnModels ConfigOnModel[]
 
   @@map("configs")
 }
@@ -179,6 +177,20 @@ model ConfigOption {
   config       Config @relation(fields: [configHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
   @@map("config_options")
+}
+
+model ConfigOnModel {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  configHashId String @map("config_hash_id")
+  config       Config @relation(fields: [configHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+  modelHashId  String @map("model_hash_id")
+  model        Model  @relation(fields: [modelHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@map("configs_on_models")
 }
 
 model Content {
@@ -215,8 +227,8 @@ model Model {
   providerHashId String   @map("provider_hash_id")
   provider       Provider @relation(fields: [providerHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
-  configs  Config[]
-  contents Content[]
+  configsOnModels ConfigOnModel[]
+  contents        Content[]
 
   @@map("models")
 }
