@@ -55,6 +55,45 @@ export interface History {
 }
 
 // * * * * * * * * * * * *
+// Chat
+//
+
+export interface Config {
+  hashId: string;
+  name: string;
+  type: string;
+  description: string;
+  default?: string | null;
+  min?: number | null;
+  max?: number | null;
+}
+
+export interface ConfigOption {
+  hashId: string;
+  value: string;
+}
+
+export interface Model {
+  hashId: string;
+  name: string;
+  inputPricePerMillion: number;
+  outputPricePerMillion: number;
+  isFree: boolean;
+  isLoginRequired: boolean;
+  isAvailable: boolean;
+}
+
+export interface Provider {
+  hashId: string;
+  name: string;
+}
+
+export interface ProviderType {
+  hashId: string;
+  type: string;
+}
+
+// * * * * * * * * * * * *
 // Post
 //
 export interface Post {

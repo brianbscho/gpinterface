@@ -24,6 +24,7 @@ import comments from "./routes/comments";
 import content from "./routes/content";
 import contents from "./routes/contents";
 import histories from "./routes/histories";
+import providerTypes from "./routes/providerTypes";
 
 const fastify = Fastify({
   logger: {
@@ -69,6 +70,7 @@ fastify.register(like, { prefix: "/like" });
 fastify.register(notifications, { prefix: "/notifications" });
 fastify.register(post, { prefix: "/post" });
 fastify.register(posts, { prefix: "/posts" });
+fastify.register(providerTypes, { prefix: "/provider/types" });
 fastify.register(user, { prefix: "/user" });
 
 const start = async () => {
