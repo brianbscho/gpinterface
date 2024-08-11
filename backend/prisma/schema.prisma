@@ -138,7 +138,7 @@ model Chat {
   userHashId String @map("user_hash_id")
   user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
-  contents  Content[]
+  contents  ChatContent[]
   apis      Api[]
   posts     Post[]
   histories History[]
@@ -193,7 +193,7 @@ model ConfigOnModel {
   @@map("configs_on_models")
 }
 
-model Content {
+model ChatContent {
   id        Int      @id @default(autoincrement())
   hashId    String   @unique @map("hash_id")
   createdAt DateTime @default(now()) @map("created_at")
@@ -208,7 +208,7 @@ model Content {
   modelHashId String @map("model_hash_id")
   model       Model  @relation(fields: [modelHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
-  @@map("contents")
+  @@map("chat_contents")
 }
 
 model Model {
@@ -228,7 +228,7 @@ model Model {
   provider       Provider @relation(fields: [providerHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
   configsOnModels ConfigOnModel[]
-  contents        Content[]
+  chatContents    ChatContent[]
 
   @@map("models")
 }
