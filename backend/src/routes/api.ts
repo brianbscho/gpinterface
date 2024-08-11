@@ -6,9 +6,7 @@ import {
   ApiGetResponse,
   ApiUpdateSchema,
 } from "gpinterface-shared/type/api";
-import { createEntity } from "../util/prisma";
 import { ParamSchema } from "gpinterface-shared/type";
-import { createChat } from "../controllers/chat";
 import { getTypedContent } from "../util/content";
 import { createApi } from "../controllers/api";
 
@@ -71,13 +69,13 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<ApiCreateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
-        const { description, chatHashId } = request.body;
+        const { description, chatHashId, modelHashId, config } = request.body;
 
         if (description.trim() === "") {
           throw httpErrors.badRequest("description is empty.");
         }
 
-        const oldChat = await fastify.prisma.chat.findFirst({
+        const chat = await fastify.prisma.chat.findFirst({
           where: { hashId: chatHashId },
           select: {
             systemMessage: true,
@@ -92,14 +90,14 @@ export default async function (fastify: FastifyInstance) {
             },
           },
         });
-        if (!oldChat) {
+        if (!chat) {
           throw httpErrors.badRequest("chat is not available.");
         }
 
         const newApi = await createApi(fastify.prisma.chat, {
           userHashId: user.hashId,
-          ...oldChat,
-          apis: { description, userHashId: user.hashId },
+          ...chat,
+          apis: { description, userHashId: user.hashId, modelHashId, config },
         });
 
         return { hashId: newApi.hashId };

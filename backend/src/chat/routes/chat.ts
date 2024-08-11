@@ -11,9 +11,7 @@ const ChatCompletionSchema = Type.Object({
   message: Type.String(),
 });
 
-type ChatCompletionResponse = {
-  content: string;
-};
+type ChatCompletionResponse = { content: string };
 
 export default async function (fastify: FastifyInstance) {
   fastify.post<{ Body: Static<typeof ChatCompletionSchema> }>(

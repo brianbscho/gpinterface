@@ -4,6 +4,8 @@ import { Api } from ".";
 export const ApiCreateSchema = Type.Object({
   description: Type.String(),
   chatHashId: Type.String(),
+  modelHashId: Type.String(),
+  config: Type.Any(),
 });
 export type ApiCreateResponse = { hashId: string };
 

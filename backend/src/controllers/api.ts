@@ -13,7 +13,12 @@ export async function createApi(
       config: Prisma.JsonValue;
       modelHashId: string;
     }[];
-    apis: { description: string; userHashId: string };
+    apis: {
+      description: string;
+      userHashId: string;
+      config: object;
+      modelHashId: string;
+    };
   }
 ) {
   let retries = 0;
