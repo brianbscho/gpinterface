@@ -21,11 +21,11 @@ export default async function (fastify: FastifyInstance) {
         const { chatHashId } = request.params;
 
         const id = await getIdByHashId(
-          fastify.prisma.content.findFirst,
+          fastify.prisma.chatContent.findFirst,
           lastHashId
         );
 
-        const contents = await fastify.prisma.content.findMany({
+        const contents = await fastify.prisma.chatContent.findMany({
           where: {
             ...(id > 0 && { id: { lt: id } }),
             chat: { hashId: chatHashId, userHashId: user.hashId },

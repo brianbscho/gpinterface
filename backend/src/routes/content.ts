@@ -77,7 +77,7 @@ export default async function (fastify: FastifyInstance) {
             outputTokens,
           },
         });
-        await createEntity(fastify.prisma.content.create, {
+        await createEntity(fastify.prisma.chatContent.create, {
           data: {
             modelHashId: body.modelHashId,
             chatHashId: body.chatHashId,
@@ -86,16 +86,19 @@ export default async function (fastify: FastifyInstance) {
           },
           select: {},
         });
-        const newContent = await createEntity(fastify.prisma.content.create, {
-          data: {
-            modelHashId: body.modelHashId,
-            chatHashId: body.chatHashId,
-            role: "assistant",
-            content,
-            config: body.config,
-          },
-          select: { hashId: true, role: true, content: true, config: true },
-        });
+        const newContent = await createEntity(
+          fastify.prisma.chatContent.create,
+          {
+            data: {
+              modelHashId: body.modelHashId,
+              chatHashId: body.chatHashId,
+              role: "assistant",
+              content,
+              config: body.config,
+            },
+            select: { hashId: true, role: true, content: true, config: true },
+          }
+        );
 
         return getTypedContent(newContent);
       } catch (ex) {
@@ -116,7 +119,7 @@ export default async function (fastify: FastifyInstance) {
         const { hashId } = request.params;
         const { content } = request.body;
 
-        const oldContent = await fastify.prisma.content.findFirst({
+        const oldContent = await fastify.prisma.chatContent.findFirst({
           where: { hashId, chat: { userHashId: user.hashId } },
           select: { hashId: true },
         });
@@ -124,7 +127,7 @@ export default async function (fastify: FastifyInstance) {
           throw fastify.httpErrors.badRequest("content is not available.");
         }
 
-        await fastify.prisma.content.update({
+        await fastify.prisma.chatContent.update({
           where: { hashId: oldContent.hashId },
           data: { content },
         });
@@ -169,13 +172,13 @@ export default async function (fastify: FastifyInstance) {
         }
 
         const id = await getIdByHashId(
-          fastify.prisma.content.findFirst,
+          fastify.prisma.chatContent.findFirst,
           hashId
         );
         if (id < 1) {
           throw fastify.httpErrors.badRequest("content is not available.");
         }
-        const messages = await fastify.prisma.content.findMany({
+        const messages = await fastify.prisma.chatContent.findMany({
           where: { chatHashId, id: { lt: id } },
           select: { role: true, content: true },
           orderBy: { id: "asc" },
@@ -209,7 +212,7 @@ export default async function (fastify: FastifyInstance) {
             outputTokens,
           },
         });
-        await fastify.prisma.content.update({
+        await fastify.prisma.chatContent.update({
           where: { hashId },
           data: { content, config, modelHashId },
         });
