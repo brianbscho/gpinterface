@@ -3,7 +3,7 @@ import { callOpenai } from "./openai";
 import { callClaude } from "./anthropic";
 import { callMistral } from "./mistral";
 import { callCommand } from "./cohere";
-import { callJamba } from "./ai21";
+import { callJamba } from "./ai21_labs";
 import { callBedrock } from "./bedrock";
 import { callGroq } from "./google";
 import { Prisma } from "@prisma/client";
