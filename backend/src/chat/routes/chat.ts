@@ -25,7 +25,10 @@ export default async function (fastify: FastifyInstance) {
         const { apiHashId, message } = request.body;
 
         const api = await fastify.prisma.api.findFirst({
-          where: { hashId: apiHashId },
+          where: {
+            hashId: apiHashId,
+            model: { isAvailable: true, isFree: true },
+          },
           select: {
             config: true,
             model: {

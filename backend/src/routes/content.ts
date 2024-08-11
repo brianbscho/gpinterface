@@ -20,11 +20,16 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: ContentCreateSchema } },
     async (request, reply): Promise<ContentCreateResponse> => {
       try {
-        const { user } = await fastify.getUser(request, reply);
+        const { user } = await fastify.getUser(request, reply, true);
         const { body } = request;
 
         const model = await fastify.prisma.model.findFirst({
-          where: { hashId: body.modelHashId },
+          where: {
+            hashId: body.modelHashId,
+            isAvailable: true,
+            isFree: true,
+            ...(user.hashId.length === 0 && { isLoginRequired: false }),
+          },
           select: {
             name: true,
             inputPricePerMillion: true,
@@ -61,21 +66,23 @@ export default async function (fastify: FastifyInstance) {
           (model.inputPricePerMillion * inputTokens) / MILLION +
           (model.outputPricePerMillion * outputTokens) / MILLION;
 
-        await createEntity(fastify.prisma.history.create, {
-          data: {
-            userHashId: user.hashId,
-            chatHashId: body.chatHashId,
-            provider: model.provider.name,
-            model: model.name,
-            config: body.config,
-            messages,
-            content,
-            response,
-            price,
-            inputTokens,
-            outputTokens,
-          },
-        });
+        if (user.hashId.length > 0) {
+          await createEntity(fastify.prisma.history.create, {
+            data: {
+              userHashId: user.hashId,
+              chatHashId: body.chatHashId,
+              provider: model.provider.name,
+              model: model.name,
+              config: body.config,
+              messages,
+              content,
+              response,
+              price,
+              inputTokens,
+              outputTokens,
+            },
+          });
+        }
         await createEntity(fastify.prisma.chatContent.create, {
           data: {
             modelHashId: body.modelHashId,
@@ -146,12 +153,17 @@ export default async function (fastify: FastifyInstance) {
     { schema: { params: ParamSchema, body: ContentRefreshSchema } },
     async (request, reply): Promise<ContentRefreshResponse> => {
       try {
-        const { user } = await fastify.getUser(request, reply);
+        const { user } = await fastify.getUser(request, reply, true);
         const { hashId } = request.params;
         const { chatHashId, modelHashId, config } = request.body;
 
         const model = await fastify.prisma.model.findFirst({
-          where: { hashId: modelHashId },
+          where: {
+            hashId: modelHashId,
+            isAvailable: true,
+            isFree: true,
+            ...(user.hashId.length === 0 && { isLoginRequired: false }),
+          },
           select: {
             name: true,
             inputPricePerMillion: true,
@@ -196,21 +208,23 @@ export default async function (fastify: FastifyInstance) {
           (model.inputPricePerMillion * inputTokens) / MILLION +
           (model.outputPricePerMillion * outputTokens) / MILLION;
 
-        await createEntity(fastify.prisma.history.create, {
-          data: {
-            userHashId: user.hashId,
-            chatHashId,
-            provider: model.provider.name,
-            model: model.name,
-            config,
-            messages,
-            content,
-            response,
-            price,
-            inputTokens,
-            outputTokens,
-          },
-        });
+        if (user.hashId.length > 0) {
+          await createEntity(fastify.prisma.history.create, {
+            data: {
+              userHashId: user.hashId,
+              chatHashId,
+              provider: model.provider.name,
+              model: model.name,
+              config,
+              messages,
+              content,
+              response,
+              price,
+              inputTokens,
+              outputTokens,
+            },
+          });
+        }
         await fastify.prisma.chatContent.update({
           where: { hashId },
           data: { content, config, modelHashId },
