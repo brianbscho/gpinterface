@@ -3,6 +3,8 @@ import cors from "@fastify/cors";
 
 import httpErrorsPlugin from "../plugins/httpErrors";
 import prismaPlugin from "../plugins/prisma";
+import chat from "./routes/chat";
+import session from "./routes/session";
 
 const fastify = Fastify({ logger: true });
 
@@ -10,6 +12,8 @@ fastify.register(httpErrorsPlugin);
 fastify.register(prismaPlugin);
 
 fastify.get("/health", () => true);
+fastify.register(chat, { prefix: "/chat" });
+fastify.register(session, { prefix: "/session" });
 
 const start = async () => {
   try {
