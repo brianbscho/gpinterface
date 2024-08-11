@@ -75,10 +75,10 @@ model Post {
   title String
   post  String
 
-  chatHashId String  @map("chat_hash_id")
-  chat       Chat    @relation(fields: [chatHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
-  userHashId String? @map("user_hash_id")
-  user       User?   @relation(fields: [userHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+  chatHashId String @map("chat_hash_id")
+  chat       Chat   @relation(fields: [chatHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+  userHashId String @map("user_hash_id")
+  user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
   bookmarks Bookmark[]
   likes     Like[]
@@ -102,7 +102,7 @@ model Api {
   chatHashId String @map("chat_hash_id")
   chat       Chat   @relation(fields: [chatHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
   userHashId String @map("user_hash_id")
-  user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
+  user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
   @@map("apis")
 }
@@ -204,7 +204,7 @@ model Content {
   config  Json?
 
   chatHashId  String @map("chat_hash_id")
-  chat        Chat   @relation(fields: [chatHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+  chat        Chat   @relation(fields: [chatHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
   modelHashId String @map("model_hash_id")
   model       Model  @relation(fields: [modelHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
