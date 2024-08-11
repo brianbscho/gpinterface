@@ -97,12 +97,18 @@ model Api {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
+  config      Json
   description String
 
-  chatHashId String @map("chat_hash_id")
-  chat       Chat   @relation(fields: [chatHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
-  userHashId String @map("user_hash_id")
-  user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+  histories History[]
+  sessions  Session[]
+
+  chatHashId  String @map("chat_hash_id")
+  chat        Chat   @relation(fields: [chatHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+  modelHashId String @map("model_hash_id")
+  model       Model  @relation(fields: [modelHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+  userHashId  String @map("user_hash_id")
+  user        User   @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
   @@map("apis")
 }
@@ -118,9 +124,37 @@ model ApiKey {
   userHashId String @map("user_hash_id")
   user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
-  histories History[]
-
   @@map("api_keys")
+}
+
+model Session {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  apiHashId String
+  api       Api    @relation(fields: [apiHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  histories History[]
+  messages  SessionMessage[]
+
+  @@map("sessions")
+}
+
+model SessionMessage {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  role    String
+  content String
+
+  sessionHashId String
+  session       Session @relation(fields: [sessionHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@map("session_messages")
 }
 
 // * * * * * * * * * * * *
@@ -229,6 +263,7 @@ model Model {
 
   configsOnModels ConfigOnModel[]
   chatContents    ChatContent[]
+  apis            Api[]
 
   @@map("models")
 }
@@ -282,12 +317,14 @@ model History {
   inputTokens  Int    @map("input_tokens")
   outputTokens Int    @map("output_tokens")
 
-  apiKeyHashId String? @map("api_key_hash_id")
-  apiKey       ApiKey? @relation(fields: [apiKeyHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
-  chatHashId   String? @map("chat_hash_id")
-  chat         Chat?   @relation(fields: [chatHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
-  userHashId   String  @map("user_hash_id")
-  user         User    @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+  apiHashId     String?  @map("api_hash_id")
+  api           Api?     @relation(fields: [apiHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+  sessionHashId String?  @map("session_hash_id")
+  session       Session? @relation(fields: [sessionHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+  chatHashId    String?  @map("chat_hash_id")
+  chat          Chat?    @relation(fields: [chatHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+  userHashId    String   @map("user_hash_id")
+  user          User     @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
   @@map("histories")
 }
