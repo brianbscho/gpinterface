@@ -1,8 +1,4 @@
-import {
-  getInputTextPriceByModel,
-  getOutputTextPriceByModel,
-  textModels,
-} from "gpinterface-shared/models/text/model";
+import { textModels } from "gpinterface-shared/models/text/model";
 import { callOpenai } from "./openai";
 import { callClaude } from "./anthropic";
 import { callMistral } from "./mistral";
@@ -71,18 +67,6 @@ export async function getTextResponse(
     default:
       return { content: "", response: null, inputTokens: 0, outputTokens: 0 };
   }
-}
-
-const MILLION = 1000000;
-export function getTextPriceByModel(
-  model: string,
-  input: number,
-  output: number
-) {
-  return (
-    getInputTextPriceByModel(input, model) / MILLION +
-    getOutputTextPriceByModel(output, model) / MILLION
-  );
 }
 
 export async function getTodayPriceSum(

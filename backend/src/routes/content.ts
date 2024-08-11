@@ -12,8 +12,7 @@ import { Static } from "@sinclair/typebox";
 import { getTextResponse } from "../util/text";
 import { getTypedContent } from "../util/content";
 import { ParamSchema } from "gpinterface-shared/type";
-
-const MILLION = 1000000;
+import { MILLION } from "../util/model";
 
 export default async function (fastify: FastifyInstance) {
   fastify.post<{ Body: Static<typeof ContentCreateSchema> }>(
