@@ -13,7 +13,7 @@ async function main() {
         name: "command-r-plus",
         inputPricePerMillion: 3,
         outputPricePerMillion: 15,
-        isFree: true,
+        isFree: false,
         isLoginRequired: true,
         isAvailable: true,
         providerHashId,
