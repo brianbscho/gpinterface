@@ -21,7 +21,7 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<ContentCreateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
-        const { body } = request;
+        const { messages, content: userContent, ...body } = request.body;
 
         const model = await fastify.prisma.model.findFirst({
           where: {
@@ -50,10 +50,7 @@ export default async function (fastify: FastifyInstance) {
         }
 
         const { systemMessage } = chat;
-        const messages = body.messages.concat({
-          role: "user",
-          content: body.content,
-        });
+        messages.push({ role: "user", content: userContent });
         let { content, response, inputTokens, outputTokens } =
           await getTextResponse({
             provider: model.provider.name,
@@ -84,24 +81,13 @@ export default async function (fastify: FastifyInstance) {
           });
         }
         await createEntity(fastify.prisma.chatContent.create, {
-          data: {
-            modelHashId: body.modelHashId,
-            chatHashId: body.chatHashId,
-            role: "user",
-            content: body.content,
-          },
+          data: { ...body, role: "user", content: userContent },
           select: {},
         });
         const newContent = await createEntity(
           fastify.prisma.chatContent.create,
           {
-            data: {
-              modelHashId: body.modelHashId,
-              chatHashId: body.chatHashId,
-              role: "assistant",
-              content,
-              config: body.config,
-            },
+            data: { ...body, role: "assistant", content },
             select: { hashId: true, role: true, content: true, config: true },
           }
         );

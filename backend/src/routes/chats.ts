@@ -4,6 +4,7 @@ import { getDateString } from "../util/string";
 import { QueryParamSchema } from "gpinterface-shared/type";
 import { getIdByHashId } from "../util/prisma";
 import { ChatsGetResponse } from "gpinterface-shared/type/chat";
+import { getTypedContent } from "../util/content";
 
 export default async function (fastify: FastifyInstance) {
   fastify.get<{ Querystring: Static<typeof QueryParamSchema> }>(
@@ -36,14 +37,19 @@ export default async function (fastify: FastifyInstance) {
             },
             systemMessage: true,
             contents: {
-              select: { hashId: true, role: true, content: true },
+              select: {
+                hashId: true,
+                model: { select: { providerHashId: true, hashId: true } },
+                role: true,
+                content: true,
+                config: true,
+              },
               orderBy: { id: "asc" },
-              take: 2,
             },
             createdAt: true,
           },
           orderBy: { id: "desc" },
-          take: 20,
+          take: 5,
         });
 
         return {
@@ -51,10 +57,13 @@ export default async function (fastify: FastifyInstance) {
             const { _count, posts, createdAt, contents, ...chat } = c;
             return {
               ...chat,
-              messages: contents,
+              contents: contents.map((c) => ({
+                ...getTypedContent(c),
+                providerHashId: c.model.providerHashId,
+                modelHashId: c.model.hashId,
+              })),
               isApi: _count.apis > 0,
               isPost: _count.posts > 0,
-              likes: posts.reduce((sum, p) => sum + p._count.likes, 0),
               comments: posts.reduce((sum, p) => sum + p._count.comments, 0),
               createdAt: getDateString(createdAt),
             };

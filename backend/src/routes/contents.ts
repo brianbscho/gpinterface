@@ -6,6 +6,7 @@ import {
   ContentsGetResponse,
   ContentsGetSchema,
 } from "gpinterface-shared/type/content";
+import { getTypedContent } from "../util/content";
 
 export default async function (fastify: FastifyInstance) {
   fastify.get<{
@@ -46,12 +47,11 @@ export default async function (fastify: FastifyInstance) {
         return {
           contents: contents
             .map((c) => {
-              const { model, config, ...content } = c;
+              const { model, ...content } = c;
               return {
-                ...content,
-                config: config as any,
-                providerHashId: model?.providerHashId,
-                modelHashId: model?.hashId,
+                ...getTypedContent(content),
+                providerHashId: model.providerHashId,
+                modelHashId: model.hashId,
               };
             })
             .reverse(),

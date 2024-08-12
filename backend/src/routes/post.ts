@@ -70,7 +70,11 @@ export default async function (fastify: FastifyInstance) {
             likes: _count.likes,
             chat: {
               ...chat,
-              contents: chat.contents.map((c) => getTypedContent(c)),
+              contents: chat.contents.map((c) => ({
+                ...getTypedContent(c),
+                modelHashId: c.model.hashId,
+                providerHashId: c.model.providerHashId,
+              })),
             },
           },
         };

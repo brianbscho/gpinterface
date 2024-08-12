@@ -11,11 +11,10 @@ export interface Chat {
 
   isApi: boolean;
   isPost: boolean;
-  likes: number;
   comments: number;
 
   systemMessage: string;
-  messages: { hashId: string; role: string; content: string }[];
+  contents: Content[];
   createdAt: string;
 }
 
@@ -29,11 +28,11 @@ export interface Comment {
 export interface Content {
   hashId: string;
 
-  providerHashId?: string | null;
-  modelHashId?: string | null;
+  providerHashId: string;
+  modelHashId: string;
   role: string;
   content: string;
-  config: object;
+  config?: object | null;
 }
 
 export interface History {
