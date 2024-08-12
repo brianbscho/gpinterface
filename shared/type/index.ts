@@ -11,7 +11,6 @@ export interface Chat {
 
   isApi: boolean;
   isPost: boolean;
-  comments: number;
 
   systemMessage: string;
   contents: Content[];
@@ -85,11 +84,6 @@ export interface Model {
 export interface Provider {
   hashId: string;
   name: string;
-}
-
-export interface ProviderType {
-  hashId: string;
-  type: string;
 }
 
 // * * * * * * * * * * * *

@@ -33,7 +33,6 @@ export default async function (fastify: FastifyInstance) {
                 _count: {
                   select: {
                     likes: { where: { isLiked: true } },
-                    comments: true,
                   },
                 },
               },
@@ -67,7 +66,6 @@ export default async function (fastify: FastifyInstance) {
               })),
               isApi: _count.apis > 0,
               isPost: _count.posts > 0,
-              comments: posts.reduce((sum, p) => sum + p._count.comments, 0),
               createdAt: getDateString(createdAt),
             };
           }),
