@@ -1,15 +1,9 @@
-import { Config, ConfigOption, Model, Provider } from ".";
+import { Model, Provider } from ".";
 
 export type ProviderType = {
   hashId: string;
   type: string;
-  providers: (Provider & {
-    models: (Model & {
-      configs: (Config & {
-        options: ConfigOption[];
-      })[];
-    })[];
-  })[];
+  providers: (Provider & { models: Model[] })[];
 };
 export type ProviderTypesGetResponse = {
   providerTypes: ProviderType[];

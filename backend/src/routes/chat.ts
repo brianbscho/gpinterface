@@ -1,9 +1,13 @@
 import { FastifyInstance } from "fastify";
 import { createEntity } from "../util/prisma";
-import { ChatCreateResponse } from "gpinterface-shared/type/chat";
+import {
+  ChatCreateResponse,
+  ChatDuplicateResponse,
+} from "gpinterface-shared/type/chat";
 import { Static } from "@sinclair/typebox";
 import { ParamSchema } from "gpinterface-shared/type";
 import { createChat } from "../controllers/chat";
+import { getDateString } from "../util/string";
 
 export default async function (fastify: FastifyInstance) {
   fastify.post("/", async (request, reply): Promise<ChatCreateResponse> => {
@@ -12,9 +16,18 @@ export default async function (fastify: FastifyInstance) {
 
       const chat = await createEntity(fastify.prisma.chat.create, {
         data: { userHashId: user.hashId },
-        select: { hashId: true },
+        select: { hashId: true, createdAt: true },
       });
-      return chat;
+      return {
+        chat: {
+          ...chat,
+          isApi: false,
+          isPost: false,
+          systemMessage: "",
+          createdAt: getDateString(chat.createdAt),
+          contents: [],
+        },
+      };
     } catch (ex) {
       console.error("path: /chat, method: post, error:", ex);
       throw ex;
@@ -23,7 +36,7 @@ export default async function (fastify: FastifyInstance) {
   fastify.post<{ Params: Static<typeof ParamSchema> }>(
     "/duplicate/:hashId",
     { schema: { params: ParamSchema } },
-    async (request, reply): Promise<ChatCreateResponse> => {
+    async (request, reply): Promise<ChatDuplicateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
         const { hashId } = request.params;

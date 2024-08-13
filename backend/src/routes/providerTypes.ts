@@ -56,10 +56,13 @@ export default async function (fastify: FastifyInstance) {
             ...providerType,
             providers: providerType.providers.map((provider) => ({
               ...provider,
-              models: provider.models.map((model) => ({
-                ...model,
-                configs: model.configsOnModels.map((config) => config.config),
-              })),
+              models: provider.models.map((model) => {
+                const { configsOnModels, ...m } = model;
+                return {
+                  ...m,
+                  configs: model.configsOnModels.map((config) => config.config),
+                };
+              }),
             })),
           })),
         };

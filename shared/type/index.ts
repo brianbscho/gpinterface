@@ -56,7 +56,7 @@ export interface History {
 // Chat
 //
 
-export interface Config {
+interface Config {
   hashId: string;
   name: string;
   type: string;
@@ -66,12 +66,12 @@ export interface Config {
   max?: number | null;
 }
 
-export interface ConfigOption {
+interface ConfigOption {
   hashId: string;
   value: string;
 }
 
-export interface Model {
+export type Model = {
   hashId: string;
   name: string;
   inputPricePerMillion: number;
@@ -79,7 +79,11 @@ export interface Model {
   isFree: boolean;
   isLoginRequired: boolean;
   isAvailable: boolean;
-}
+} & {
+  configs: (Config & {
+    options: ConfigOption[];
+  })[];
+};
 
 export interface Provider {
   hashId: string;
