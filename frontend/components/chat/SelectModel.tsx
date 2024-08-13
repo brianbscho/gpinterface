@@ -43,10 +43,32 @@ export default function SelectModel({
     state.setModelHashId,
   ]);
 
+  useEffect(() => {
+    if (
+      !providerTypes ||
+      providerTypes.length === 0 ||
+      providerTypes[0].providers.length === 0 ||
+      providerTypes[0].providers[0].models.length === 0
+    )
+      return;
+
+    const { models } = providerTypes[0].providers[0];
+
+    if (isLoggedOut) {
+      const index = models.findIndex(
+        (m) => m.isAvailable && m.isFree && !m.isLoginRequired
+      );
+      setModelHashId(models[index].hashId);
+    } else {
+      const index = models.findIndex((m) => m.isAvailable && m.isFree);
+      setModelHashId(models[index].hashId);
+    }
+  }, [isLoggedOut, setModelHashId, providerTypes]);
+
   if (!providerTypes) return null;
 
   return (
-    <div className="sticky top-0 py-3 bg-background">
+    <div className="sticky top-0 py-3 bg-muted z-10">
       <Select value={modelHashId} onValueChange={(v) => setModelHashId(v)}>
         <SelectTrigger className="w-80">
           <SelectValue placeholder="Please select model"></SelectValue>
