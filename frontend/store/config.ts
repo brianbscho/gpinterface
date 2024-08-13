@@ -1,20 +1,21 @@
 import { create } from "zustand";
 
+export type ConfigType = { [key: string]: string };
 type ConfigState = {
   modelHashId: string;
-  config?: object | null;
+  config: ConfigType;
   setModelHashId: (hashId: string) => void;
-  setConfig: (c: object) => void;
+  setConfig: (c: ConfigType) => void;
 };
 
 const useConfigStore = create<ConfigState>((set) => {
   return {
     modelHashId: "",
-    config: undefined,
+    config: {},
     setModelHashId: (hashId: string) => {
       set({ modelHashId: hashId });
     },
-    setConfig: (config: object) => {
+    setConfig: (config: ConfigType) => {
       set({ config });
     },
   };
