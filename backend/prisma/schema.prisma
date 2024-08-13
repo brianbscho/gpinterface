@@ -169,8 +169,8 @@ model Chat {
 
   systemMessage String @default("") @map("system_message")
 
-  userHashId String @map("user_hash_id")
-  user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+  userHashId String? @map("user_hash_id")
+  user       User?   @relation(fields: [userHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
 
   contents  ChatContent[]
   apis      Api[]
