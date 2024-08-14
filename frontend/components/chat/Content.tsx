@@ -8,7 +8,7 @@ import { Loader } from "lucide-react";
 type Props = {
   content: {
     hashId?: string;
-    modelHashId?: string;
+    model?: { hashId: string; name: string };
     role: string;
     content: string;
     config?: ConfigType | null;
@@ -23,12 +23,12 @@ export default function Content({ content }: Props) {
 
   const [newContent, setNewContent] = useState(content.content);
   const onFocus = useCallback(() => {
-    const { config, modelHashId } = content;
+    const { config, model } = content;
     if (config) {
       setConfig(config);
     }
-    if (modelHashId) {
-      setModelHashId(modelHashId);
+    if (model) {
+      setModelHashId(model.hashId);
     }
   }, [content, setConfig, setModelHashId]);
 
@@ -36,6 +36,9 @@ export default function Content({ content }: Props) {
     <CardContent className="p-3">
       <div className="flex items-center mb-3">
         <Badge className="">{content.role}</Badge>
+        {!!content.model && content.role === "assistant" && (
+          <div className="ml-1 text-xs">{content.model.name}</div>
+        )}
         <Loader className="ml-3 animate-spin" />
         <div className="ml-1 text-xs">saving...</div>
       </div>
