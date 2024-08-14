@@ -107,15 +107,19 @@ export default async function (fastify: FastifyInstance) {
     { schema: { params: ParamSchema, body: ContentUpdateSchema } },
     async (request, reply): Promise<ContentUpdateResponse> => {
       try {
-        const { user } = await fastify.getUser(request, reply);
+        const { user } = await fastify.getUser(request, reply, true);
         const { hashId } = request.params;
         const { content } = request.body;
 
         const oldContent = await fastify.prisma.chatContent.findFirst({
-          where: { hashId, chat: { userHashId: user.hashId } },
-          select: { hashId: true },
+          where: { hashId },
+          select: { hashId: true, chat: { select: { userHashId: true } } },
         });
-        if (!oldContent) {
+        if (
+          !oldContent ||
+          (oldContent.chat.userHashId &&
+            oldContent.chat.userHashId !== user.hashId)
+        ) {
           throw fastify.httpErrors.badRequest("content is not available.");
         }
 
