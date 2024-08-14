@@ -34,7 +34,7 @@ export default async function (fastify: FastifyInstance) {
           select: {
             hashId: true,
             model: {
-              select: { providerHashId: true, hashId: true },
+              select: { hashId: true, name: true },
             },
             role: true,
             content: true,
@@ -48,11 +48,7 @@ export default async function (fastify: FastifyInstance) {
           contents: contents
             .map((c) => {
               const { model, ...content } = c;
-              return {
-                ...getTypedContent(content),
-                providerHashId: model.providerHashId,
-                modelHashId: model.hashId,
-              };
+              return { ...getTypedContent(content), model };
             })
             .reverse(),
         };

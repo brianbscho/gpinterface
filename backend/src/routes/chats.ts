@@ -41,7 +41,7 @@ export default async function (fastify: FastifyInstance) {
             contents: {
               select: {
                 hashId: true,
-                model: { select: { providerHashId: true, hashId: true } },
+                model: { select: { hashId: true, name: true } },
                 role: true,
                 content: true,
                 config: true,
@@ -59,11 +59,7 @@ export default async function (fastify: FastifyInstance) {
             const { _count, posts, createdAt, contents, ...chat } = c;
             return {
               ...chat,
-              contents: contents.map((c) => ({
-                ...getTypedContent(c),
-                providerHashId: c.model.providerHashId,
-                modelHashId: c.model.hashId,
-              })),
+              contents: contents.map((c) => getTypedContent(c)),
               isApi: _count.apis > 0,
               isPost: _count.posts > 0,
               createdAt: getDateString(createdAt),

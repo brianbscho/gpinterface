@@ -27,7 +27,7 @@ export interface Comment {
 export interface Content {
   hashId: string;
 
-  modelHashId: string;
+  model: { hashId: string; name: string };
   role: string;
   content: string;
   config?: object | null;

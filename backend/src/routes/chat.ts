@@ -88,7 +88,7 @@ export default async function (fastify: FastifyInstance) {
             },
             select: {
               hashId: true,
-              modelHashId: true,
+              model: { select: { hashId: true, name: true } },
               role: true,
               content: true,
             },
@@ -106,7 +106,7 @@ export default async function (fastify: FastifyInstance) {
             },
             select: {
               hashId: true,
-              modelHashId: true,
+              model: { select: { hashId: true, name: true } },
               role: true,
               content: true,
             },
