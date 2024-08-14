@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type ConfigType = { [key: string]: string };
+export type ConfigType<T extends object = { [key: string]: any }> = T;
 type ConfigState = {
   modelHashId: string;
   config: ConfigType;
