@@ -27,7 +27,6 @@ export interface Comment {
 export interface Content {
   hashId: string;
 
-  providerHashId: string;
   modelHashId: string;
   role: string;
   content: string;
