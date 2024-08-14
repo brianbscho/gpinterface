@@ -2,7 +2,7 @@
 
 import useConfigStore, { ConfigType } from "@/store/config";
 import { Badge, CardContent, CardDescription, Textarea } from "../ui";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Loader } from "lucide-react";
 
 type Props = {
@@ -13,15 +13,17 @@ type Props = {
     content: string;
     config?: ConfigType | null;
   };
+  updateContent: (content: string) => Promise<string | undefined>;
 };
 
-export default function Content({ content }: Props) {
+export default function Content({ content, updateContent }: Props) {
   const [setConfig, setModelHashId] = useConfigStore((state) => [
     state.setConfig,
     state.setModelHashId,
   ]);
 
   const [newContent, setNewContent] = useState(content.content);
+  const [oldContent, setOldContent] = useState(content.content);
   const onFocus = useCallback(() => {
     const { config, model } = content;
     if (config) {
@@ -32,6 +34,23 @@ export default function Content({ content }: Props) {
     }
   }, [content, setConfig, setModelHashId]);
 
+  const [isSaving, setIsSaving] = useState(false);
+  useEffect(() => {
+    if (oldContent === newContent) return;
+
+    setIsSaving(true);
+    const timer = setTimeout(async () => {
+      const responseContent = await updateContent(newContent);
+      if (responseContent) {
+        setOldContent(responseContent);
+      }
+
+      setIsSaving(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [newContent, oldContent, updateContent]);
+
   return (
     <CardContent className="p-3">
       <div className="flex items-center mb-3">
@@ -39,8 +58,12 @@ export default function Content({ content }: Props) {
         {!!content.model && content.role === "assistant" && (
           <div className="ml-1 text-xs">{content.model.name}</div>
         )}
-        <Loader className="ml-3 animate-spin" />
-        <div className="ml-1 text-xs">saving...</div>
+        {isSaving && (
+          <>
+            <Loader className="ml-3 animate-spin" />
+            <div className="ml-1 text-xs">saving...</div>
+          </>
+        )}
       </div>
       <CardDescription>
         <div className="relative">
