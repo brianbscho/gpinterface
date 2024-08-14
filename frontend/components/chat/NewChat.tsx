@@ -63,7 +63,7 @@ export default function NewChat({
         placeholder="Your message"
         onFocus={() => setOpen(true)}
       />
-      <Dialog open={open} onOpenChange={(o) => setOpen(o)} modal={!loading}>
+      <Dialog open={open} onOpenChange={loading ? undefined : setOpen}>
         <DialogContent className="max-w-full w-11/12">
           <DialogHeader>New Chat</DialogHeader>
           <form onSubmit={onSubmit}>
