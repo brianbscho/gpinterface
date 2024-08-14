@@ -7,6 +7,14 @@ export const ChatCreateSchema = Type.Object({
   content: Type.String(),
   config: Type.Any(),
 });
+
+export type ChatUpdateResponse = {
+  systemMessage: string;
+};
+export const ChatUpdateSchema = Type.Object({
+  systemMessage: Type.String(),
+});
+
 export type ChatCreateResponse = {
   hashId: string;
 
