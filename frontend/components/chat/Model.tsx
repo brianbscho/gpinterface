@@ -64,7 +64,7 @@ export default function Model({
   if (!model) return null;
 
   return (
-    <div className="flex flex-col gap-3 whitespace-pre-line">
+    <div className="flex flex-col gap-3 whitespace-pre-wrap">
       <div>
         <div className="font-bold">Price</div>
         <div className="text-muted-foreground text-sm">
@@ -76,7 +76,7 @@ export default function Model({
           <Collapsible title="Config Preview">
             <Card>
               <CardContent className="p-3 w-72">
-                <div className="whitespace-pre text-wrap text-xs">
+                <div className="whitespace-pre-wrap text-xs">
                   {stringify(getApiConfig(model, config))}
                 </div>
               </CardContent>

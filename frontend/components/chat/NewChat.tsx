@@ -67,7 +67,7 @@ export default function NewChat({
         <DialogContent className="max-w-full w-11/12">
           <DialogHeader>New Chat</DialogHeader>
           <form onSubmit={onSubmit}>
-            <div className="w-full h-full my-12 flex gap-3">
+            <div className="w-full my-12 flex gap-3">
               <Input
                 className="flex-1 bg-secondary"
                 placeholder="Your message"
