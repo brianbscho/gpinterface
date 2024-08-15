@@ -15,6 +15,7 @@ import {
   ChatUpdateSchema,
 } from "gpinterface-shared/type/chat";
 import ContentInput from "./ContentInput";
+import Deploy from "../api/Deploy";
 
 export default function Chat({ chat }: { chat: ChatType }) {
   const [contents, setContents] = useState(chat.contents);
@@ -55,6 +56,9 @@ export default function Chat({ chat }: { chat: ChatType }) {
 
   return (
     <Card className="w-full mb-3 flex flex-col gap-3">
+      <div className="sticky top-3 pr-3 text-right z-20 inline">
+        <Deploy chatHashId={chat.hashId} />
+      </div>
       <Content
         content={systemContent}
         chatHashId={chat.hashId}
