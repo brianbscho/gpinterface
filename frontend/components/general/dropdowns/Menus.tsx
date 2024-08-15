@@ -6,10 +6,10 @@ import useUserStore from "@/store/user";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { UserGetMeResponse } from "gpinterface-shared/type/user";
 import {
-  Bookmark,
   LogOut,
   ReceiptText,
   Settings,
+  SquareCode,
   UserRound,
 } from "lucide-react";
 import {
@@ -104,9 +104,9 @@ function _Menus() {
             <UserRound />
             <span className="ml-3">My page</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => push(`/bookmarks`)}>
-            <Bookmark />
-            <span className="ml-3">Bookmarks</span>
+          <DropdownMenuItem onClick={() => push(`/apis`)}>
+            <SquareCode />
+            <span className="ml-3">Apis</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => push("/settings")}>
             <Settings />

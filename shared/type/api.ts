@@ -13,7 +13,7 @@ export type ApiGetResponse = {
   api: Api;
 };
 
-type ApiResponse = {
+export type ApiResponse = {
   hashId: string;
   description: string;
 
