@@ -1,9 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { createEntity, getIdByHashId } from "../util/prisma";
 import {
-  ContentCreateResponse,
   ContentCreateSchema,
-  ContentRefreshResponse,
   ContentRefreshSchema,
   ContentUpdateResponse,
   ContentUpdateSchema,
@@ -11,17 +9,17 @@ import {
 import { Static } from "@sinclair/typebox";
 import { getTextResponse } from "../util/text";
 import { getTypedContent } from "../util/content";
-import { ParamSchema } from "gpinterface-shared/type";
+import { Content, ParamSchema } from "gpinterface-shared/type";
 import { MILLION } from "../util/model";
 
 export default async function (fastify: FastifyInstance) {
   fastify.post<{ Body: Static<typeof ContentCreateSchema> }>(
     "/",
     { schema: { body: ContentCreateSchema } },
-    async (request, reply): Promise<ContentCreateResponse> => {
+    async (request, reply): Promise<Content> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
-        const { messages, content: userContent, ...body } = request.body;
+        const { content: userContent, ...body } = request.body;
 
         const model = await fastify.prisma.model.findFirst({
           where: {
@@ -43,13 +41,20 @@ export default async function (fastify: FastifyInstance) {
 
         const chat = await fastify.prisma.chat.findFirst({
           where: { hashId: body.chatHashId },
-          select: { systemMessage: true },
+          select: {
+            systemMessage: true,
+            contents: {
+              select: { role: true, content: true },
+              orderBy: { id: "asc" },
+            },
+          },
         });
         if (!chat) {
           throw fastify.httpErrors.badRequest("chat is not available.");
         }
 
-        const { systemMessage } = chat;
+        const { systemMessage, contents } = chat;
+        const messages = [...contents];
         messages.push({ role: "user", content: userContent });
         let { content, response, inputTokens, outputTokens } =
           await getTextResponse({
@@ -88,7 +93,13 @@ export default async function (fastify: FastifyInstance) {
           fastify.prisma.chatContent.create,
           {
             data: { ...body, role: "assistant", content },
-            select: { hashId: true, role: true, content: true, config: true },
+            select: {
+              hashId: true,
+              model: { select: { hashId: true, name: true } },
+              role: true,
+              content: true,
+              config: true,
+            },
           }
         );
 
@@ -141,7 +152,7 @@ export default async function (fastify: FastifyInstance) {
   }>(
     "/refresh/:hashId",
     { schema: { params: ParamSchema, body: ContentRefreshSchema } },
-    async (request, reply): Promise<ContentRefreshResponse> => {
+    async (request, reply): Promise<Content> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
         const { hashId } = request.params;
@@ -215,12 +226,19 @@ export default async function (fastify: FastifyInstance) {
             },
           });
         }
-        await fastify.prisma.chatContent.update({
+        const newContent = await fastify.prisma.chatContent.update({
           where: { hashId },
           data: { content, config, modelHashId },
+          select: {
+            hashId: true,
+            model: { select: { hashId: true, name: true } },
+            role: true,
+            content: true,
+            config: true,
+          },
         });
 
-        return { hashId, content };
+        return getTypedContent(newContent);
       } catch (ex) {
         console.error(
           "path: /content/refresh/:hashId, method: put, error:",
