@@ -73,7 +73,7 @@ export default function NewChat({
                 onChange={(e) => setContent(e.currentTarget.value)}
                 disabled={loading}
               />
-              <Button type="submit" loading={loading}>
+              <Button type="submit" disabled={content === ""} loading={loading}>
                 <CornerDownLeft />
               </Button>
             </div>
