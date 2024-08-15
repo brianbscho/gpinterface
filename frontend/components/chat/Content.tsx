@@ -77,9 +77,9 @@ export default function Content({
   const onFocus = useCallback(() => {
     if (content.hashId === contentStore.hashId) return;
 
-    setContentStore({ hashId: content.hashId, model: content.model });
-    if (content.config) {
-      setContentStore({ config: content.config });
+    setContentStore({ hashId: content.hashId });
+    if (content.config && content.model) {
+      setContentStore({ config: content.config, model: content.model });
     }
   }, [content, contentStore.hashId, setContentStore]);
 
