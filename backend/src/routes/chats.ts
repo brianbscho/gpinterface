@@ -55,16 +55,18 @@ export default async function (fastify: FastifyInstance) {
         });
 
         return {
-          chats: chats.map((c) => {
-            const { _count, posts, createdAt, contents, ...chat } = c;
-            return {
-              ...chat,
-              contents: contents.map((c) => getTypedContent(c)),
-              isApi: _count.apis > 0,
-              isPost: _count.posts > 0,
-              createdAt: getDateString(createdAt),
-            };
-          }),
+          chats: chats
+            .filter((c) => c._count.apis === 0 && c._count.posts === 0)
+            .map((c) => {
+              const { _count, posts, createdAt, contents, ...chat } = c;
+              return {
+                ...chat,
+                contents: contents.map((c) => getTypedContent(c)),
+                isApi: _count.apis > 0,
+                isPost: _count.posts > 0,
+                createdAt: getDateString(createdAt),
+              };
+            }),
         };
       } catch (ex) {
         console.error("path: /chats, method: get, error:", ex);
