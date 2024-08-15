@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo } from "react";
 import { ProviderType } from "gpinterface-shared/type/providerType";
-import useConfigStore, { ConfigType } from "@/store/config";
+import useContentStore, { ConfigType } from "@/store/content";
 import Select from "../general/selects/Select";
 import { Button, Card, CardContent, Input } from "../ui";
 import { Slider } from "../ui/slider";
@@ -16,11 +16,12 @@ export default function Model({
 }: {
   providerTypes: ProviderType[] | undefined;
 }) {
-  const [modelHashId, config, setConfig] = useConfigStore((state) => [
-    state.modelHashId,
-    state.config,
-    state.setConfig,
-  ]);
+  const [{ modelHashId, config }, setContentStore] = useContentStore(
+    (state) => [
+      { modelHashId: state.model?.hashId, config: state.config },
+      state.setContentStore,
+    ]
+  );
   const model = useMemo(() => {
     if (!providerTypes) return undefined;
 
@@ -42,9 +43,9 @@ export default function Model({
     (name: string) => (value: string) => {
       const newConfig = { ...config };
       newConfig[name] = value;
-      setConfig(newConfig);
+      setContentStore({ config: newConfig });
     },
-    [config, setConfig]
+    [config, setContentStore]
   );
   const onClickReset = useCallback(() => {
     if (!model) return;
@@ -58,8 +59,8 @@ export default function Model({
       }
     });
 
-    setConfig(newConfig);
-  }, [model, setConfig]);
+    setContentStore({ config: newConfig });
+  }, [model, setContentStore]);
 
   if (!model) return null;
 

@@ -1,7 +1,7 @@
 "use client";
 
 import callApi from "@/utils/callApi";
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import {
   ProviderType,
   ProviderTypesGetResponse,
@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from "../ui";
 import useUserStore from "@/store/user";
-import useConfigStore from "@/store/config";
+import useContentStore from "@/store/content";
 
 export default function SelectModel({
   useProviderTypes,
@@ -38,22 +38,17 @@ export default function SelectModel({
   }, [setProviderTypes]);
 
   const isLoggedOut = useUserStore((state) => state.isLoggedOut);
-  const [modelHashId, setModelHashId] = useConfigStore((state) => [
-    state.modelHashId,
-    state.setModelHashId,
-  ]);
+  const [modelHashId, setModelHashId] = useState("");
 
+  const models = useMemo(() => {
+    if (!providerTypes) return [];
+
+    return providerTypes
+      .flatMap((type) => type.providers)
+      .flatMap((provider) => provider.models);
+  }, [providerTypes]);
   useEffect(() => {
-    if (
-      !providerTypes ||
-      providerTypes.length === 0 ||
-      providerTypes[0].providers.length === 0 ||
-      providerTypes[0].providers[0].models.length === 0
-    )
-      return;
-
-    const { models } = providerTypes[0].providers[0];
-
+    if (models.length === 0) return;
     if (isLoggedOut) {
       const index = models.findIndex(
         (m) => m.isAvailable && m.isFree && !m.isLoginRequired
@@ -63,13 +58,19 @@ export default function SelectModel({
       const index = models.findIndex((m) => m.isAvailable && m.isFree);
       setModelHashId(models[index].hashId);
     }
-  }, [isLoggedOut, setModelHashId, providerTypes]);
+  }, [isLoggedOut, models]);
+
+  const setContentStore = useContentStore((state) => state.setContentStore);
+  useEffect(() => {
+    const model = models.find((m) => m.hashId === modelHashId);
+    setContentStore({ model });
+  }, [models, modelHashId, setContentStore]);
 
   if (!providerTypes) return null;
 
   return (
     <div className="sticky top-0 py-3 bg-muted z-10">
-      <Select value={modelHashId} onValueChange={(v) => setModelHashId(v)}>
+      <Select value={modelHashId} onValueChange={setModelHashId}>
         <SelectTrigger className="w-80">
           <SelectValue placeholder="Please select model"></SelectValue>
         </SelectTrigger>

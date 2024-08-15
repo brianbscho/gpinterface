@@ -16,7 +16,7 @@ import {
   ChatCreateSchema,
 } from "gpinterface-shared/type/chat";
 import { Static } from "@sinclair/typebox";
-import useConfigStore from "@/store/config";
+import useContentStore from "@/store/content";
 
 export default function NewChat({
   setChats,
@@ -26,14 +26,16 @@ export default function NewChat({
   const [open, setOpen] = useState(false);
 
   const [content, setContent] = useState("");
-  const [modelHashId, config] = useConfigStore((state) => [
-    state.modelHashId,
+  const [modelHashId, config] = useContentStore((state) => [
+    state.model?.hashId,
     state.config,
   ]);
   const [loading, setLoading] = useState(false);
   const onSubmit = useCallback(
     async (e: FormEvent) => {
       e.preventDefault();
+
+      if (!modelHashId) return;
       setLoading(true);
       const response = await callApi<
         ChatCreateResponse,
@@ -41,12 +43,8 @@ export default function NewChat({
       >({
         endpoint: "/chat",
         method: "POST",
+        body: { modelHashId, content, config },
         showError: true,
-        body: {
-          modelHashId,
-          content,
-          config,
-        },
       });
       if (response) {
         setChats((prev) => (!prev ? [response] : [response, ...prev]));

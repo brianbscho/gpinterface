@@ -1,4 +1,4 @@
-import { ConfigType } from "@/store/config";
+import { ConfigType } from "@/store/content";
 import { Model } from "gpinterface-shared/type";
 
 export const getApiConfig = (model: Model, config: ConfigType) => {
