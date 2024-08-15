@@ -1,12 +1,11 @@
-import { textModels } from "gpinterface-shared/models/text/model";
 import { callOpenai } from "./openai";
 import { callClaude } from "./anthropic";
 import { callMistral } from "./mistral";
 import { callCommand } from "./cohere";
 import { callJamba } from "./ai21_labs";
 import { callBedrock } from "./bedrock";
-import { callGroq } from "./google";
 import { Prisma } from "@prisma/client";
+import { providers } from "../provider";
 
 type TextPromptType = {
   provider: string;
@@ -26,18 +25,18 @@ export async function getTextResponse(
       : messages;
 
   switch (provider) {
-    case textModels[0].provider:
+    case providers.OpenAI:
       return callOpenai({ model, messages: systemMergedMessages, ...config });
-    case textModels[1].provider:
+    case providers.Anthropic:
       return callClaude({
         model,
         messages,
         ...(systemMessage.length > 0 && { system: systemMessage }),
         ...config,
       });
-    case textModels[2].provider:
+    case providers.MistralAI:
       return callMistral({ model, messages: systemMergedMessages, ...config });
-    case textModels[3].provider:
+    case providers.Cohere:
       const message = messages[messages.length - 1].content;
       const chatHistory = messages.slice(0, -1).map((m) => ({
         role: m.role !== "user" ? "CHATBOT" : "USER",
@@ -50,9 +49,9 @@ export async function getTextResponse(
         ...(systemMessage.length > 0 && { preamble: systemMessage }),
         ...config,
       });
-    case textModels[4].provider:
+    case providers.AI21Labs:
       return callJamba({ model, messages: systemMergedMessages, ...config });
-    case textModels[5].provider:
+    case providers.Meta:
       return callBedrock({
         modelId: model,
         messages: messages.map(({ role, content }) => ({
@@ -62,8 +61,6 @@ export async function getTextResponse(
         ...(systemMessage.length > 0 && { system: [{ text: systemMessage }] }),
         inferenceConfig: config,
       });
-    case textModels[6].provider:
-      return callGroq({ model, messages: systemMergedMessages, ...config });
     default:
       return { content: "", response: null, inputTokens: 0, outputTokens: 0 };
   }

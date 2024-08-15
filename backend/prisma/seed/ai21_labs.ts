@@ -1,11 +1,12 @@
 import { PrismaClient } from "@prisma/client";
 import { nanoid } from "nanoid";
 import { getProviderHashId } from "./provider";
+import { providers } from "../../src/util/provider";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  const providerHashId = await getProviderHashId("AI21 Labs");
+  const providerHashId = await getProviderHashId(providers.AI21Labs);
   const models = await Promise.all(
     [
       {

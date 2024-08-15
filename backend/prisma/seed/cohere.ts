@@ -1,11 +1,12 @@
 import { PrismaClient } from "@prisma/client";
 import { nanoid } from "nanoid";
 import { getProviderHashId } from "./provider";
+import { providers } from "../../src/util/provider";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  const providerHashId = await getProviderHashId("Cohere");
+  const providerHashId = await getProviderHashId(providers.Cohere);
   const models = await Promise.all(
     [
       {
