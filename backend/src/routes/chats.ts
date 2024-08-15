@@ -13,7 +13,7 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<ChatsGetResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
-        if (user.hashId.length === 0) {
+        if (user.hashId === "") {
           return { chats: [] };
         }
         const { lastHashId } = request.query;

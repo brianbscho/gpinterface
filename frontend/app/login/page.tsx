@@ -29,7 +29,7 @@ export default function Page() {
   const [agree, setAgree] = useState(false);
 
   const loginDisabled = useMemo(
-    () => email.length === 0 || password.length === 0,
+    () => email === "" || password === "",
     [email, password]
   );
   const nameValid = useMemo(

@@ -81,10 +81,10 @@ export default function Page({ params }: { params: { hashId: string } }) {
       return async (...args: T): Promise<{ hashId: string } | undefined> => {
         if (!responsePost) {
           return;
-        } else if (title.trim().length === 0) {
+        } else if (title.trim() === "") {
           alert("Please enter a title");
           return;
-        } else if (post.trim().length === 0) {
+        } else if (post.trim() === "") {
           alert("Please write a post");
           return;
         }

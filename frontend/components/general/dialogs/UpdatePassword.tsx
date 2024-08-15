@@ -128,7 +128,7 @@ export default function UpdatePassword() {
               loading={loading}
               type="submit"
               disabled={[oldPassword, newPassword, newPasswordRepeat].some(
-                (p) => p.length === 0
+                (p) => p === ""
               )}
             >
               Update

@@ -27,7 +27,7 @@ export default async function (fastify: FastifyInstance) {
             hashId: body.modelHashId,
             isAvailable: true,
             isFree: true,
-            ...(user.hashId.length === 0 && { isLoginRequired: false }),
+            ...(user.hashId === "" && { isLoginRequired: false }),
           },
           select: {
             name: true,
@@ -177,7 +177,7 @@ export default async function (fastify: FastifyInstance) {
             hashId: modelHashId,
             isAvailable: true,
             isFree: true,
-            ...(user.hashId.length === 0 && { isLoginRequired: false }),
+            ...(user.hashId === "" && { isLoginRequired: false }),
           },
           select: {
             name: true,
