@@ -32,6 +32,7 @@ export async function getTextResponse(
         model,
         messages,
         ...(systemMessage.length > 0 && { system: systemMessage }),
+        max_tokens: 4096,
         ...config,
       });
     case providers.MistralAI:
