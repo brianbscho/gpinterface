@@ -1,7 +1,7 @@
 "use client";
 
 import { Chat as ChatType } from "gpinterface-shared/type";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Card } from "../ui";
 import Content from "./Content";
 import callApi from "@/utils/callApi";
@@ -14,16 +14,17 @@ import {
   ChatUpdateResponse,
   ChatUpdateSchema,
 } from "gpinterface-shared/type/chat";
+import ContentInput from "./ContentInput";
 
 export default function Chat({ chat }: { chat: ChatType }) {
-  const contents = useMemo(() => chat.contents, [chat.contents]);
+  const [contents, setContents] = useState(chat.contents);
 
   const systemContent = useMemo(
     () => ({ role: "system", content: chat.systemMessage }),
     [chat.systemMessage]
   );
 
-  const updateSystemMessage = useCallback(
+  const callUpdateSystemMessage = useCallback(
     async (systemMessage: string) => {
       const response = await callApi<
         ChatUpdateResponse,
@@ -37,7 +38,7 @@ export default function Chat({ chat }: { chat: ChatType }) {
     },
     [chat.hashId]
   );
-  const updateContent = useCallback(
+  const callUpdateContent = useCallback(
     (hashId: string) => async (content: string) => {
       const response = await callApi<
         ContentUpdateResponse,
@@ -54,14 +55,22 @@ export default function Chat({ chat }: { chat: ChatType }) {
 
   return (
     <Card className="w-full mb-3 flex flex-col gap-3">
-      <Content content={systemContent} updateContent={updateSystemMessage} />
+      <Content
+        content={systemContent}
+        chatHashId={chat.hashId}
+        setContents={setContents}
+        callUpdateContent={callUpdateSystemMessage}
+      />
       {contents.map((c) => (
         <Content
           key={c.hashId}
           content={c}
-          updateContent={updateContent(c.hashId)}
+          chatHashId={chat.hashId}
+          setContents={setContents}
+          callUpdateContent={callUpdateContent(c.hashId)}
         />
       ))}
+      <ContentInput chatHashId={chat.hashId} setContents={setContents} />
     </Card>
   );
 }
