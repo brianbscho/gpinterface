@@ -110,7 +110,9 @@ export default function Model({
           {typeof c.min === "number" && typeof c.max === "number" && (
             <div className="flex items-center gap-1">
               <div className="w-12">
-                {Number(config[c.name] ?? c.default).toFixed(2)}
+                {Number(config[c.name] ?? c.default).toFixed(
+                  c.type === "integer" ? 0 : 2
+                )}
               </div>
               <Slider
                 min={c.min}
