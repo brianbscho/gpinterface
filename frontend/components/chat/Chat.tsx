@@ -55,7 +55,7 @@ export default function Chat({ chat }: { chat: ChatType }) {
   );
 
   return (
-    <Card className="w-full mb-3 flex flex-col gap-3">
+    <Card className="w-full mb-12 flex flex-col gap-3">
       <div className="sticky top-3 pr-3 text-right z-20 inline">
         <Deploy chatHashId={chat.hashId} />
       </div>
