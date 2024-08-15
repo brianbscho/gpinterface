@@ -26,8 +26,8 @@ export default function Chats() {
   }, [lastHashId]);
 
   return (
-    <div className="p-3 pr-0 w-full h-full overflow-hidden flex flex-col gap-3 bg-primary">
-      <div className="flex-1 overflow-y-auto pr-3">
+    <div className="px-3 pr-0 w-full h-full overflow-hidden flex flex-col gap-3 bg-primary">
+      <div className="flex-1 overflow-y-auto pt-3 pr-3">
         <List
           callApi={callChatsApi}
           emptyMessage="Start your chat!"
@@ -39,8 +39,10 @@ export default function Chats() {
             <Chat key={t.hashId} chat={t} />
           ))}
         </List>
+        <div className="sticky bottom-0 z-10 py-3 bg-primary">
+          <NewChat setChats={setChats} />
+        </div>
       </div>
-      <NewChat setChats={setChats} />
     </div>
   );
 }
