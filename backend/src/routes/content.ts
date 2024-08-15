@@ -3,6 +3,7 @@ import { createEntity, getIdByHashId } from "../util/prisma";
 import {
   ContentCreateSchema,
   ContentRefreshSchema,
+  ContentsGetResponse,
   ContentUpdateResponse,
   ContentUpdateSchema,
 } from "gpinterface-shared/type/content";
@@ -16,7 +17,7 @@ export default async function (fastify: FastifyInstance) {
   fastify.post<{ Body: Static<typeof ContentCreateSchema> }>(
     "/",
     { schema: { body: ContentCreateSchema } },
-    async (request, reply): Promise<Content> => {
+    async (request, reply): Promise<ContentsGetResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
         const { content: userContent, ...body } = request.body;
@@ -85,11 +86,20 @@ export default async function (fastify: FastifyInstance) {
             },
           });
         }
-        await createEntity(fastify.prisma.chatContent.create, {
-          data: { ...body, role: "user", content: userContent },
-          select: {},
-        });
-        const newContent = await createEntity(
+        const _userContent = await createEntity(
+          fastify.prisma.chatContent.create,
+          {
+            data: { ...body, role: "user", content: userContent },
+            select: {
+              hashId: true,
+              model: { select: { hashId: true, name: true } },
+              role: true,
+              content: true,
+              config: true,
+            },
+          }
+        );
+        const _assistantContent = await createEntity(
           fastify.prisma.chatContent.create,
           {
             data: { ...body, role: "assistant", content },
@@ -103,7 +113,11 @@ export default async function (fastify: FastifyInstance) {
           }
         );
 
-        return getTypedContent(newContent);
+        return {
+          contents: [_userContent, _assistantContent].map((c) =>
+            getTypedContent(c)
+          ),
+        };
       } catch (ex) {
         console.error("path: /content, method: post, error:", ex);
         throw ex;
