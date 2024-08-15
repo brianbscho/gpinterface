@@ -1,7 +1,7 @@
 "use client";
 
 import callApi from "@/utils/callApi";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo } from "react";
 import {
   ProviderType,
   ProviderTypesGetResponse,
@@ -38,7 +38,10 @@ export default function SelectModel({
   }, [setProviderTypes]);
 
   const isLoggedOut = useUserStore((state) => state.isLoggedOut);
-  const [modelHashId, setModelHashId] = useState("");
+  const [model, setContentStore] = useContentStore((state) => [
+    state.model,
+    state.setContentStore,
+  ]);
 
   const models = useMemo(() => {
     if (!providerTypes) return [];
@@ -53,24 +56,27 @@ export default function SelectModel({
       const index = models.findIndex(
         (m) => m.isAvailable && m.isFree && !m.isLoginRequired
       );
-      setModelHashId(models[index].hashId);
+      setContentStore({ model: models[index] });
     } else {
       const index = models.findIndex((m) => m.isAvailable && m.isFree);
-      setModelHashId(models[index].hashId);
+      setContentStore({ model: models[index] });
     }
-  }, [isLoggedOut, models]);
-
-  const setContentStore = useContentStore((state) => state.setContentStore);
-  useEffect(() => {
-    const model = models.find((m) => m.hashId === modelHashId);
-    setContentStore({ model });
-  }, [models, modelHashId, setContentStore]);
+  }, [isLoggedOut, models, setContentStore]);
+  const onValueChange = useCallback(
+    (modelHashId: string) => {
+      const _model = models.find((m) => m.hashId === modelHashId);
+      if (_model) {
+        setContentStore({ model: _model });
+      }
+    },
+    [models, setContentStore]
+  );
 
   if (!providerTypes) return null;
 
   return (
     <div className="sticky top-0 py-3 bg-muted z-10">
-      <Select value={modelHashId} onValueChange={setModelHashId}>
+      <Select value={model?.hashId} onValueChange={onValueChange}>
         <SelectTrigger className="w-80">
           <SelectValue placeholder="Please select model"></SelectValue>
         </SelectTrigger>
