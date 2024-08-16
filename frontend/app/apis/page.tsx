@@ -4,12 +4,12 @@ import callApi from "@/utils/callApi";
 import { Fragment, useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import List from "@/components/List";
-import { ApiResponse, ApisGetResponse } from "gpinterface-shared/type/api";
+import { ApisGetResponse } from "gpinterface-shared/type/api";
 import { Badge } from "@/components/ui";
 import Link from "next/link";
 
 export default function Apis() {
-  const [apis, setApis] = useState<ApiResponse[]>();
+  const [apis, setApis] = useState<ApisGetResponse["apis"]>();
   const [lastHashId, setLastHashId] = useState("");
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 

@@ -19,7 +19,7 @@ export type ApiGetResponse = {
   api: Api;
 };
 
-export type ApiResponse = {
+type ApiResponse = {
   hashId: string;
   description: string;
 
