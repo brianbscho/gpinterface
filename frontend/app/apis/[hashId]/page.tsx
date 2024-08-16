@@ -5,6 +5,7 @@ import Provider from "@/components/chat/Provider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui";
 import Chats from "./Chats";
 import Sessions from "./Sessions";
+import Document from "./Document";
 
 export default function Page({ params }: { params: { hashId: string } }) {
   const { hashId } = params;
@@ -43,6 +44,9 @@ export default function Page({ params }: { params: { hashId: string } }) {
         </TabsContent>
         <TabsContent value="sessions" className="w-full flex-1 overflow-y-auto">
           <Sessions apiHashId={hashId} />
+        </TabsContent>
+        <TabsContent value="document" className="w-full flex-1 overflow-y-auto">
+          <Document apiHashId={hashId} />
         </TabsContent>
       </Tabs>
     </div>
