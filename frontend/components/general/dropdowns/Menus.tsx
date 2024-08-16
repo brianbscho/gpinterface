@@ -25,13 +25,7 @@ import {
 import Link from "../links/Link";
 
 const loginRedirectPaths = ["login"];
-const logoutRedirectPaths = [
-  "settings",
-  "bookmarks",
-  "usages",
-  "create",
-  "edit",
-];
+const logoutRedirectPaths = ["apis", "histories", "settings"];
 
 function _Menus() {
   const { user, setUser } = useUserStore();
