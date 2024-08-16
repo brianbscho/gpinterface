@@ -20,10 +20,11 @@ export default function Page() {
       showError: true,
     });
     if (response) {
-      setHistories((prev) => [...(prev ?? []), ...response.histories]);
-    }
-    if (response?.histories.length === 0) {
-      setSpinnerHidden(true);
+      if (response.histories.length > 0) {
+        setHistories((prev) => [...(prev ?? []), ...response.histories]);
+      } else {
+        setSpinnerHidden(true);
+      }
     }
   }, [lastHashId]);
 

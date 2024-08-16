@@ -52,14 +52,11 @@ function _Chats() {
       endpoint: `/chats?lastHashId=${lastHashId}`,
     });
     if (response) {
-      setChats((prev) => [...(prev ?? []), ...response.chats]);
-    } else {
-      if (!chatHashId) {
-        callPostChatApi();
+      if (response.chats.length > 0) {
+        setChats((prev) => [...(prev ?? []), ...response.chats]);
+      } else {
+        setSpinnerHidden(true);
       }
-    }
-    if (response?.chats.length === 0) {
-      setSpinnerHidden(true);
     }
   }, [lastHashId, chatHashId, callPostChatApi]);
 

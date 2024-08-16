@@ -35,10 +35,14 @@ export default function Notifications() {
       endpoint: `/notifications?lastHashId=${lastHashId}`,
     });
     if (response) {
-      setNotifications((prev) => [...(prev ?? []), ...response.notifications]);
-    }
-    if (response?.notifications.length === 0) {
-      setSpinnerHidden(true);
+      if (response.notifications.length > 0) {
+        setNotifications((prev) => [
+          ...(prev ?? []),
+          ...response.notifications,
+        ]);
+      } else {
+        setSpinnerHidden(true);
+      }
     }
   }, [lastHashId]);
 
