@@ -148,8 +148,8 @@ export default async function (fastify: FastifyInstance) {
       }
     }
   );
-  fastify.post<{ Params: Static<typeof SessionMessagesGetSchema> }>(
-    "/:sessionHashId",
+  fastify.get<{ Params: Static<typeof SessionMessagesGetSchema> }>(
+    "/:sessionHashId/messages",
     { schema: { params: SessionMessagesGetSchema } },
     async (request, reply): Promise<SessionMessagesGetResponse> => {
       try {
@@ -173,7 +173,7 @@ export default async function (fastify: FastifyInstance) {
         return session;
       } catch (ex) {
         console.error(
-          "path: /session/:sessionHashId, method: post, error:",
+          "path: /session/:sessionHashId/messages, method: get, error:",
           ex
         );
         throw ex;
