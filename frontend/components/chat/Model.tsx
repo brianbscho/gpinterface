@@ -1,7 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
-import { ProviderTypesGetResponse } from "gpinterface-shared/type/providerType";
+import { useCallback } from "react";
 import useContentStore, { ConfigType } from "@/store/content";
 import Select from "../general/selects/Select";
 import { Button, Card, CardContent, Input } from "../ui";
@@ -11,34 +10,11 @@ import Collapsible from "../general/collapsible";
 import { stringify } from "@/utils/string";
 import { getApiConfig } from "@/utils/model";
 
-export default function Model({
-  providerTypes,
-}: {
-  providerTypes: ProviderTypesGetResponse["providerTypes"] | undefined;
-}) {
-  const [{ modelHashId, config }, setContentStore] = useContentStore(
-    (state) => [
-      { modelHashId: state.model?.hashId, config: state.config },
-      state.setContentStore,
-    ]
-  );
-  const model = useMemo(() => {
-    if (!providerTypes) return undefined;
-
-    for (let i = 0; i < providerTypes.length; i++) {
-      const { providers } = providerTypes[i];
-      for (let j = 0; j < providers.length; j++) {
-        const { models } = providers[j];
-        for (let k = 0; k < models.length; k++) {
-          if (modelHashId === models[k].hashId) {
-            return models[k];
-          }
-        }
-      }
-
-      return undefined;
-    }
-  }, [providerTypes, modelHashId]);
+export default function Model() {
+  const [{ model, config }, setContentStore] = useContentStore((state) => [
+    { model: state.model, config: state.config },
+    state.setContentStore,
+  ]);
   const onChange = useCallback(
     (name: string) => (value: string) => {
       const newConfig = { ...config };

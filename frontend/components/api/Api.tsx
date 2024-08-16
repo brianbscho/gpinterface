@@ -14,11 +14,13 @@ import {
 import Content from "../chat/Content";
 import ContentInput from "../chat/ContentInput";
 import { ApiGetResponse } from "gpinterface-shared/type/api";
+import useContentStore from "@/store/content";
 
 type ApiType = ApiGetResponse["api"];
 type ContentsType = ApiType["chat"]["contents"];
 export default function Api({ hashId }: { hashId: string }) {
   const [api, setApi] = useState<ApiType>();
+  const setContentStore = useContentStore((state) => state.setContentStore);
   useEffect(() => {
     const callApiApi = async () => {
       const response = await callApi<ApiGetResponse>({
@@ -26,11 +28,14 @@ export default function Api({ hashId }: { hashId: string }) {
         showError: true,
       });
       if (response) {
+        console.log("🚀 ~ callApiApi ~ response:", response);
         setApi(response.api);
+        const { config, modelHashId } = response.api;
+        setContentStore({ config, modelHashId });
       }
     };
     callApiApi();
-  }, [hashId]);
+  }, [hashId, setContentStore]);
 
   const [contents, setContents] = useState<ContentsType>([]);
   useEffect(() => {

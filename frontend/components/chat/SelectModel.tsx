@@ -1,7 +1,7 @@
 "use client";
 
 import callApi from "@/utils/callApi";
-import { Fragment, useCallback, useEffect, useMemo } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { ProviderTypesGetResponse } from "gpinterface-shared/type/providerType";
 import {
   Select,
@@ -14,16 +14,11 @@ import {
 } from "../ui";
 import useUserStore from "@/store/user";
 import useContentStore from "@/store/content";
+import { Model } from "gpinterface-shared/type";
 
-export default function SelectModel({
-  useProviderTypes,
-}: {
-  useProviderTypes: [
-    ProviderTypesGetResponse["providerTypes"] | undefined,
-    (p: ProviderTypesGetResponse["providerTypes"] | undefined) => void
-  ];
-}) {
-  const [providerTypes, setProviderTypes] = useProviderTypes;
+export default function SelectModel() {
+  const [providerTypes, setProviderTypes] =
+    useState<ProviderTypesGetResponse["providerTypes"]>();
   useEffect(() => {
     const getProviderGetTypes = async () => {
       const response = await callApi<ProviderTypesGetResponse>({
@@ -36,8 +31,8 @@ export default function SelectModel({
   }, [setProviderTypes]);
 
   const isLoggedOut = useUserStore((state) => state.isLoggedOut);
-  const [model, setContentStore] = useContentStore((state) => [
-    state.model,
+  const [modelHashId, setContentStore] = useContentStore((state) => [
+    state.modelHashId,
     state.setContentStore,
   ]);
 
@@ -49,23 +44,20 @@ export default function SelectModel({
       .flatMap((provider) => provider.models);
   }, [providerTypes]);
   useEffect(() => {
-    if (models.length === 0) return;
-    if (isLoggedOut) {
-      const index = models.findIndex(
-        (m) => m.isAvailable && m.isFree && !m.isLoginRequired
-      );
-      setContentStore({ model: models[index] });
-    } else {
-      const index = models.findIndex((m) => m.isAvailable && m.isFree);
-      setContentStore({ model: models[index] });
-    }
-  }, [isLoggedOut, models, setContentStore]);
+    setContentStore({ models });
+  }, [setContentStore, models]);
+  useEffect(() => {
+    if (modelHashId) return;
+
+    const index = models.findIndex(
+      (m) => m.isAvailable && m.isFree && (!isLoggedOut || !m.isLoginRequired)
+    );
+    setContentStore({ modelHashId: models[index]?.hashId });
+  }, [isLoggedOut, models, modelHashId, setContentStore]);
   const onValueChange = useCallback(
     (modelHashId: string) => {
       const _model = models.find((m) => m.hashId === modelHashId);
-      if (_model) {
-        setContentStore({ model: _model });
-      }
+      setContentStore({ modelHashId: _model?.hashId });
     },
     [models, setContentStore]
   );
@@ -74,7 +66,7 @@ export default function SelectModel({
 
   return (
     <div className="sticky top-0 py-3 bg-muted z-10 w-full">
-      <Select value={model?.hashId} onValueChange={onValueChange}>
+      <Select value={modelHashId} onValueChange={onValueChange}>
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Please select model"></SelectValue>
         </SelectTrigger>

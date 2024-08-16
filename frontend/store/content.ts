@@ -1,24 +1,35 @@
-import { Content } from "gpinterface-shared/type";
+import { Model } from "gpinterface-shared/type";
 import { create } from "zustand";
 
 export type ConfigType<T extends object = { [key: string]: any }> = T;
-type ContentState = Partial<Omit<Content, "role" | "content" | "config">> & {
+type ContentState = {
+  hashId?: string;
+  refreshingHashId?: string;
   config: ConfigType;
-} & { refreshingHashId?: string } & {
+  modelHashId?: string;
+  models: Model[];
+};
+type SetContentState = {
   setContentStore: (content: Partial<ContentState>) => void;
 };
 
-const useContentStore = create<ContentState>((set) => {
+const useContentStore = create<
+  ContentState & SetContentState & { model: Model | undefined }
+>((set) => {
   return {
     hashId: undefined,
-    model: undefined,
-    config: {},
     refreshingHashId: undefined,
+    config: {},
+    modelHashId: undefined,
+    models: [],
+    model: undefined,
     setContentStore: (content: Partial<ContentState>) => {
       set((state) => ({
         ...state,
         ...content,
-        config: content.config || state.config,
+        model: state.models
+          .concat(content.models ?? [])
+          .find((m) => m.hashId === (content.modelHashId || state.modelHashId)),
       }));
     },
   };

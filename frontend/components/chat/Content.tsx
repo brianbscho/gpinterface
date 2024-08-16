@@ -16,6 +16,7 @@ import { Content as ContentType } from "gpinterface-shared/type";
 import { ContentRefreshSchema } from "gpinterface-shared/type/content";
 import { Static } from "@sinclair/typebox";
 import callApi from "@/utils/callApi";
+import { getApiConfig } from "@/utils/model";
 
 type Props = {
   chatHashId: string;
@@ -78,10 +79,15 @@ export default function Content({
     if (content.hashId === contentStore.hashId) return;
 
     setContentStore({ hashId: content.hashId });
-    if (content.config && content.model) {
-      setContentStore({ config: content.config, model: content.model });
+    if (content.config) {
+      setContentStore({ config: content.config });
     }
-  }, [content, contentStore.hashId, setContentStore]);
+    if (content.model && content.model.hashId !== contentStore.modelHashId) {
+      setContentStore({
+        modelHashId: content.model.hashId,
+      });
+    }
+  }, [content, contentStore, setContentStore]);
 
   const onClickRefresh = useCallback(async () => {
     if (!contentStore.model) return;
@@ -94,7 +100,7 @@ export default function Content({
       endpoint: `/content/refresh/${content.hashId}`,
       method: "PUT",
       body: {
-        config: contentStore.config,
+        config: getApiConfig(contentStore.model, contentStore.config),
         modelHashId: contentStore.model.hashId,
         chatHashId,
       },

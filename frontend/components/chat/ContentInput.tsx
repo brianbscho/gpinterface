@@ -11,6 +11,7 @@ import {
   ContentsGetResponse,
 } from "gpinterface-shared/type/content";
 import useContentStore from "@/store/content";
+import { getApiConfig } from "@/utils/model";
 
 type Props = {
   chatHashId: string;
@@ -20,15 +21,13 @@ type Props = {
 export default function ContentInput({ chatHashId, setContents }: Props) {
   const [content, setContent] = useState("");
 
-  const [{ config, modelHashId }, setContentStore] = useContentStore(
-    (state) => [
-      { config: state.config, modelHashId: state.model?.hashId },
-      state.setContentStore,
-    ]
-  );
+  const [{ config, model }, setContentStore] = useContentStore((state) => [
+    { config: state.config, model: state.model },
+    state.setContentStore,
+  ]);
   const [loading, setLoading] = useState(false);
   const onClick = useCallback(async () => {
-    if (!modelHashId) return;
+    if (!model) return;
 
     setContentStore({ refreshingHashId: "" });
     setLoading(true);
@@ -38,7 +37,12 @@ export default function ContentInput({ chatHashId, setContents }: Props) {
     >({
       endpoint: `/content`,
       method: "POST",
-      body: { chatHashId, modelHashId, content, config },
+      body: {
+        chatHashId,
+        modelHashId: model.hashId,
+        content,
+        config: getApiConfig(model, config),
+      },
       showError: true,
     });
     if (response) {
@@ -47,7 +51,7 @@ export default function ContentInput({ chatHashId, setContents }: Props) {
       setContentStore({ refreshingHashId: undefined });
       setLoading(false);
     }
-  }, [chatHashId, modelHashId, content, config, setContents, setContentStore]);
+  }, [chatHashId, model, content, config, setContents, setContentStore]);
   return (
     <CardContent className="p-3">
       <div className="flex items-center mb-3">

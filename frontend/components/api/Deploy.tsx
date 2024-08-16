@@ -12,13 +12,14 @@ import {
 } from "gpinterface-shared/type/api";
 import LoginRequiredButton from "../general/buttons/LoginRequiredButton";
 import { useRouter } from "next/navigation";
+import { getApiConfig } from "@/utils/model";
 
 export default function Deploy({ chatHashId }: { chatHashId: string }) {
   const [open, setOpen] = useState(false);
 
   const [description, setDescription] = useState("");
-  const [modelHashId, config] = useContentStore((state) => [
-    state.model?.hashId,
+  const [model, config] = useContentStore((state) => [
+    state.model,
     state.config,
   ]);
   const [loading, setLoading] = useState(false);
@@ -27,7 +28,7 @@ export default function Deploy({ chatHashId }: { chatHashId: string }) {
     async (e: FormEvent) => {
       e.preventDefault();
 
-      if (!modelHashId) return;
+      if (!model) return;
       setLoading(true);
       const response = await callApi<
         ApiCreateResponse,
@@ -35,7 +36,12 @@ export default function Deploy({ chatHashId }: { chatHashId: string }) {
       >({
         endpoint: "/api",
         method: "POST",
-        body: { description, chatHashId, modelHashId, config },
+        body: {
+          description,
+          chatHashId,
+          modelHashId: model.hashId,
+          config: getApiConfig(model, config),
+        },
         showError: true,
       });
 
@@ -45,7 +51,7 @@ export default function Deploy({ chatHashId }: { chatHashId: string }) {
         setLoading(false);
       }
     },
-    [config, description, modelHashId, chatHashId, router]
+    [config, description, model, chatHashId, router]
   );
 
   return (

@@ -14,6 +14,7 @@ import { Static } from "@sinclair/typebox";
 import useContentStore from "@/store/content";
 import { useRouter, useSearchParams } from "next/navigation";
 import useUserStore from "@/store/user";
+import { getApiConfig } from "@/utils/model";
 
 function _Chats() {
   const [chats, setChats] = useState<ChatsGetResponse["chats"]>();
@@ -21,8 +22,8 @@ function _Chats() {
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 
   const router = useRouter();
-  const [modelHashId, config] = useContentStore((state) => [
-    state.model?.hashId,
+  const [model, config] = useContentStore((state) => [
+    state.model,
     state.config,
   ]);
 
@@ -32,21 +33,31 @@ function _Chats() {
     () => searchParams.get("chatHashId"),
     [searchParams]
   );
-  const callPostChatApi = useCallback(async () => {
-    if (!modelHashId) return;
 
-    const response = await callApi<
-      ChatCreateResponse,
-      Static<typeof ChatCreateSchema>
-    >({
-      endpoint: "/chat",
-      method: "POST",
-      body: { modelHashId, config },
-    });
-    if (response) {
-      router.push(`/?chatHashId=${response.hashId}`);
-    }
-  }, [modelHashId, config, router]);
+  const [shouldCallChat, setShouldCallChat] = useState(false);
+  useEffect(() => {
+    if (!shouldCallChat) return;
+
+    const callPostChatApi = async () => {
+      if (!model) return;
+
+      const response = await callApi<
+        ChatCreateResponse,
+        Static<typeof ChatCreateSchema>
+      >({
+        endpoint: "/chat",
+        method: "POST",
+        body: {
+          modelHashId: model.hashId,
+          config: getApiConfig(model, config),
+        },
+      });
+      if (response) {
+        router.push(`/?chatHashId=${response.hashId}`);
+      }
+    };
+    callPostChatApi();
+  }, [shouldCallChat, model, config, router]);
   const callChatsApi = useCallback(async () => {
     const response = await callApi<ChatsGetResponse>({
       endpoint: `/chats?lastHashId=${lastHashId}`,
@@ -57,8 +68,10 @@ function _Chats() {
       } else {
         setSpinnerHidden(true);
       }
+    } else {
+      setShouldCallChat(true);
     }
-  }, [lastHashId, chatHashId, callPostChatApi]);
+  }, [lastHashId]);
 
   useEffect(() => {
     if (!isLoggedOut || !chatHashId) return;
