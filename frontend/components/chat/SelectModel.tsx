@@ -89,8 +89,8 @@ export default function SelectModel({
                   <SelectLabel className="bg-muted text-muted-foreground font-normal">
                     {provider.name}
                   </SelectLabel>
-                  {provider.models.map((model) => {
-                    const { isLoginRequired, isAvailable, isFree } = model;
+                  {provider.models.map((m) => {
+                    const { isLoginRequired, isAvailable, isFree } = m;
                     const loginRequired = isLoggedOut && isLoginRequired;
                     const disableMessage = loginRequired
                       ? " (login required)"
@@ -102,11 +102,11 @@ export default function SelectModel({
 
                     return (
                       <SelectItem
-                        key={model.hashId}
-                        value={model.hashId}
+                        key={m.hashId}
+                        value={m.hashId}
                         disabled={loginRequired || !isAvailable || !isFree}
                       >
-                        {`${model.name}${disableMessage}`}
+                        {`${m.name}${disableMessage}`}
                       </SelectItem>
                     );
                   })}
