@@ -73,9 +73,9 @@ export default function SelectModel({
   if (!providerTypes) return null;
 
   return (
-    <div className="sticky top-0 py-3 bg-muted z-10">
+    <div className="sticky top-0 py-3 bg-muted z-10 w-full">
       <Select value={model?.hashId} onValueChange={onValueChange}>
-        <SelectTrigger className="w-80">
+        <SelectTrigger className="w-full">
           <SelectValue placeholder="Please select model"></SelectValue>
         </SelectTrigger>
         <SelectContent>
