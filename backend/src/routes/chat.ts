@@ -6,9 +6,10 @@ import {
   ChatDuplicateResponse,
   ChatUpdateSchema,
   ChatUpdateResponse,
+  ChatsGetResponse,
 } from "gpinterface-shared/type/chat";
 import { Static } from "@sinclair/typebox";
-import { Chat, ParamSchema } from "gpinterface-shared/type";
+import { ParamSchema } from "gpinterface-shared/type";
 import { createChat } from "../controllers/chat";
 import { getDateString } from "../util/string";
 import { getTextResponse } from "../util/text";
@@ -19,7 +20,7 @@ export default async function (fastify: FastifyInstance) {
   fastify.get<{ Params: Static<typeof ParamSchema> }>(
     "/:hashId",
     { schema: { params: ParamSchema } },
-    async (request, reply): Promise<Chat> => {
+    async (request, reply): Promise<ChatsGetResponse["chats"][0]> => {
       try {
         const { user } = await fastify.getUser(request, reply);
         const { hashId } = request.params;
