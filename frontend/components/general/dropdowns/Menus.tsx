@@ -22,7 +22,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuGroup,
 } from "@/components/ui";
-import Link from "../links/Link";
+import Link from "next/link";
 
 const loginRedirectPaths = ["login"];
 const logoutRedirectPaths = ["apis", "histories", "settings"];

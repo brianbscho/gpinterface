@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import Link from "../links/Link";
+import Link from "next/link";
 import {
   Button,
   Dialog,
