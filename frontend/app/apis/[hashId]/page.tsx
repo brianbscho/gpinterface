@@ -3,6 +3,7 @@
 import Api from "@/components/api/Api";
 import Provider from "@/components/chat/Provider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui";
+import Chats from "./Chats";
 
 export default function Page({ params }: { params: { hashId: string } }) {
   const { hashId } = params;
@@ -32,6 +33,12 @@ export default function Page({ params }: { params: { hashId: string } }) {
             <Api hashId={hashId} />
             <Provider />
           </div>
+        </TabsContent>
+        <TabsContent
+          value="chat_completion"
+          className="w-full flex-1 overflow-y-auto"
+        >
+          <Chats apiHashId={hashId} />
         </TabsContent>
       </Tabs>
     </div>

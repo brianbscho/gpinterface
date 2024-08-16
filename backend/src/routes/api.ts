@@ -1,14 +1,17 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
 import {
+  ApiChatsGetResponse,
   ApiCreateResponse,
   ApiCreateSchema,
   ApiGetResponse,
   ApiUpdateSchema,
 } from "gpinterface-shared/type/api";
-import { ParamSchema } from "gpinterface-shared/type";
+import { ParamSchema, QueryParamSchema } from "gpinterface-shared/type";
 import { getTypedContent } from "../util/content";
 import { createApi } from "../controllers/api";
+import { getIdByHashId } from "../util/prisma";
+import { getDateString } from "../util/string";
 
 export default async function (fastify: FastifyInstance) {
   const { httpErrors } = fastify;
@@ -59,6 +62,72 @@ export default async function (fastify: FastifyInstance) {
         };
       } catch (ex) {
         console.error("path: /api/:hashId, method: get, error:", ex);
+        throw ex;
+      }
+    }
+  );
+  fastify.get<{
+    Params: Static<typeof ParamSchema>;
+    Querystring: Static<typeof QueryParamSchema>;
+  }>(
+    "/:hashId/chats",
+    { schema: { params: ParamSchema, querystring: QueryParamSchema } },
+    async (request, reply): Promise<ApiChatsGetResponse> => {
+      try {
+        const { user } = await fastify.getUser(request, reply);
+        const { hashId } = request.params;
+        const { lastHashId } = request.query;
+
+        const id = await getIdByHashId(
+          fastify.prisma.history.findFirst,
+          lastHashId
+        );
+
+        const histories = await fastify.prisma.history.findMany({
+          where: {
+            ...(id > 0 && { id: { lt: id } }),
+            apiHashId: hashId,
+            userHashId: user.hashId,
+          },
+          select: {
+            hashId: true,
+            messages: true,
+            content: true,
+            createdAt: true,
+          },
+          orderBy: { id: "desc" },
+          take: 20,
+        });
+
+        return {
+          chats: histories.map((h) => {
+            const messages = [];
+            if (
+              Array.isArray(h.messages) &&
+              h.messages.every(
+                (m: any) =>
+                  typeof m === "object" &&
+                  m !== null &&
+                  typeof m.role === "string" &&
+                  typeof m.content === "string"
+              )
+            ) {
+              const message = h.messages[h.messages.length - 1] as {
+                role: string;
+                content: string;
+              };
+              messages.push(message);
+            }
+            messages.push({ role: "assistant", content: h.content });
+            return {
+              hashId: h.hashId,
+              createdAt: getDateString(h.createdAt),
+              messages,
+            };
+          }),
+        };
+      } catch (ex) {
+        console.error("path: /api/:hashId/chats, method: get, error:", ex);
         throw ex;
       }
     }
