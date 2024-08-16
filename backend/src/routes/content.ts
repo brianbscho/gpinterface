@@ -77,7 +77,10 @@ export default async function (fastify: FastifyInstance) {
               provider: model.provider.name,
               model: model.name,
               config: body.config,
-              messages,
+              messages: (systemMessage
+                ? [{ role: "system", content: systemMessage }]
+                : []
+              ).concat(messages),
               content,
               response,
               price,
@@ -231,7 +234,10 @@ export default async function (fastify: FastifyInstance) {
               provider: model.provider.name,
               model: model.name,
               config,
-              messages,
+              messages: (systemMessage
+                ? [{ role: "system", content: systemMessage }]
+                : []
+              ).concat(messages),
               content,
               response,
               price,

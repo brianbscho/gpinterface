@@ -132,7 +132,10 @@ export default async function (fastify: FastifyInstance) {
             provider: model.provider.name,
             model: model.name,
             config: config ?? Prisma.JsonNull,
-            messages,
+            messages: (systemMessage
+              ? [{ role: "system", content: systemMessage }]
+              : []
+            ).concat(messages),
             content,
             response,
             price,
