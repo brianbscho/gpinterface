@@ -2,27 +2,82 @@
 
 import Chat from "./Chat";
 import callApi from "@/utils/callApi";
-import { useCallback, useState } from "react";
-import { ChatsGetResponse } from "gpinterface-shared/type/chat";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  ChatCreateResponse,
+  ChatCreateSchema,
+  ChatsGetResponse,
+} from "gpinterface-shared/type/chat";
 import List from "../List";
 import NewChat from "./NewChat";
+import { Static } from "@sinclair/typebox";
+import useContentStore from "@/store/content";
+import { useRouter, useSearchParams } from "next/navigation";
+import useUserStore from "@/store/user";
 
-export default function Chats() {
+function _Chats() {
   const [chats, setChats] = useState<ChatsGetResponse["chats"]>();
   const [lastHashId, setLastHashId] = useState("");
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 
+  const router = useRouter();
+  const [modelHashId, config] = useContentStore((state) => [
+    state.model?.hashId,
+    state.config,
+  ]);
+
+  const isLoggedOut = useUserStore((state) => state.isLoggedOut);
+  const searchParams = useSearchParams();
+  const chatHashId = useMemo(
+    () => searchParams.get("chatHashId"),
+    [searchParams]
+  );
+  const callPostChatApi = useCallback(async () => {
+    if (!modelHashId) return;
+
+    const response = await callApi<
+      ChatCreateResponse,
+      Static<typeof ChatCreateSchema>
+    >({
+      endpoint: "/chat",
+      method: "POST",
+      body: { modelHashId, config },
+      showError: true,
+    });
+    if (response) {
+      router.push(`/?chatHashId=${response.hashId}`);
+    }
+  }, [modelHashId, config, router]);
   const callChatsApi = useCallback(async () => {
     const response = await callApi<ChatsGetResponse>({
       endpoint: `/chats?lastHashId=${lastHashId}`,
     });
     if (response) {
       setChats((prev) => [...(prev ?? []), ...response.chats]);
+    } else {
+      if (!chatHashId) {
+        callPostChatApi();
+      }
     }
     if (response?.chats.length === 0) {
       setSpinnerHidden(true);
     }
-  }, [lastHashId]);
+  }, [lastHashId, chatHashId, callPostChatApi]);
+
+  useEffect(() => {
+    if (!isLoggedOut || !chatHashId) return;
+
+    const callGetChatApi = async () => {
+      const response = await callApi<ChatsGetResponse["chats"][0]>({
+        endpoint: `/chat/${chatHashId}`,
+      });
+      if (response) {
+        setChats([response]);
+        setSpinnerHidden(true);
+      }
+    };
+    callGetChatApi();
+  }, [isLoggedOut, chatHashId]);
 
   return (
     <div className="px-3 pr-0 w-full h-full overflow-hidden bg-muted">
@@ -43,5 +98,13 @@ export default function Chats() {
         </List>
       </div>
     </div>
+  );
+}
+
+export default function Chats() {
+  return (
+    <Suspense>
+      <_Chats />
+    </Suspense>
   );
 }

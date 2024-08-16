@@ -18,6 +18,7 @@ export const UserCreateSchema = Type.Object({
   email: Type.String(),
   name: Type.String(),
   password: Type.String(),
+  chatHashId: Type.Union([Type.String(), Type.Null()]),
 });
 export const UserGetSchema = Type.Object({
   hashId: Type.String(),

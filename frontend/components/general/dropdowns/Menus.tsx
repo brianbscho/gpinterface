@@ -63,21 +63,21 @@ function _Menus() {
     location.reload();
   }, [setUser]);
 
-  const redirect = useMemo(() => {
-    if (pathname.includes("login")) return "";
-    if (pathname === "/") {
-      return "";
-    } else {
-      return `?redirect=${pathname}`;
-    }
-  }, [pathname]);
+  const chatHashId = useMemo(
+    () => searchParams.get("chatHashId"),
+    [searchParams]
+  );
+  const param = useMemo(() => {
+    if (chatHashId) return `?chatHashId=${chatHashId}`;
+    return "";
+  }, [chatHashId]);
 
   const [open, setOpen] = useState(false);
 
   if (!user) {
     return (
       <ShadcnButton asChild>
-        <Link href={`/login${redirect}`}>
+        <Link href={`/login${param}`}>
           <UserRound />
         </Link>
       </ShadcnButton>

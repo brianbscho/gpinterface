@@ -20,11 +20,11 @@ export default async function (fastify: FastifyInstance) {
     { schema: { params: ParamSchema } },
     async (request, reply): Promise<ChatsGetResponse["chats"][0]> => {
       try {
-        const { user } = await fastify.getUser(request, reply);
+        const { user } = await fastify.getUser(request, reply, true);
         const { hashId } = request.params;
 
         const chat = await fastify.prisma.chat.findFirst({
-          where: { hashId, userHashId: user.hashId },
+          where: { hashId, userHashId: user.hashId || null },
           select: {
             hashId: true,
             _count: { select: { apis: true, posts: true } },

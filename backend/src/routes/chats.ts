@@ -12,10 +12,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { querystring: QueryParamSchema } },
     async (request, reply): Promise<ChatsGetResponse> => {
       try {
-        const { user } = await fastify.getUser(request, reply, true);
-        if (user.hashId === "") {
-          return { chats: [] };
-        }
+        const { user } = await fastify.getUser(request, reply);
         const { lastHashId } = request.query;
 
         const id = await getIdByHashId(

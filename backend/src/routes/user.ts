@@ -160,7 +160,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: UserCreateSchema } },
     async (request, reply) => {
       try {
-        const { email, password, name } = request.body;
+        const { email, password, name, chatHashId } = request.body;
         if (!validateEmail(email)) {
           throw httpErrors.badRequest("Please check the email and try again");
         }
@@ -188,6 +188,12 @@ export default async function (fastify: FastifyInstance) {
           },
           12
         );
+        if (chatHashId) {
+          await fastify.prisma.chat.update({
+            where: { hashId: chatHashId, userHashId: null },
+            data: { userHashId: user.hashId },
+          });
+        }
 
         const accessToken = getAccessToken(httpErrors.internalServerError, {
           user: { hashId: user.hashId, name },

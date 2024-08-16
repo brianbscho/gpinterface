@@ -1,6 +1,13 @@
 "use client";
 
-import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  FormEvent,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { validateEmail, validatePassword } from "gpinterface-shared/string";
 import callApi from "@/utils/callApi";
 import TermsAndConditions from "@/components/general/dialogs/TermsAndConditions";
@@ -20,8 +27,15 @@ import {
 } from "@/components/ui";
 import { Lock, Mail, UserRound } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useSearchParams } from "next/navigation";
 
-export default function Page() {
+function Login() {
+  const searchParams = useSearchParams();
+  const chatHashId = useMemo(
+    () => searchParams.get("chatHashId"),
+    [searchParams]
+  );
+
   const [isLogin, setIsLogin] = useState(true);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -73,13 +87,13 @@ export default function Page() {
       >({
         endpoint,
         method: "POST",
-        body: { email, password, name },
+        body: { email, password, name, chatHashId },
         showError: true,
       });
       setUser(response?.user);
       setLoading(false);
     },
-    [email, name, password, isLogin, setUser]
+    [email, name, password, isLogin, setUser, chatHashId]
   );
   const [termsOpen, setTermsOpen] = useState(false);
 
@@ -200,5 +214,13 @@ export default function Page() {
       </Tabs>
       <TermsAndConditions useOpen={[termsOpen, setTermsOpen]} />
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense>
+      <Login />
+    </Suspense>
   );
 }
