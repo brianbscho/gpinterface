@@ -17,6 +17,7 @@ export default function Page() {
   const callTextHistoriesApi = useCallback(async () => {
     const response = await callApi<HistoriesGetResponse>({
       endpoint: `/histories?lastHashId=${lastHashId}`,
+      showError: true,
     });
     if (response) {
       setHistories((prev) => [...(prev ?? []), ...response.histories]);

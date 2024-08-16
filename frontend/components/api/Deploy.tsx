@@ -34,6 +34,7 @@ export default function Deploy({ chatHashId }: { chatHashId: string }) {
         endpoint: "/api",
         method: "POST",
         body: { description, chatHashId, modelHashId, config },
+        showError: true,
       });
       setLoading(false);
     },

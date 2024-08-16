@@ -98,6 +98,7 @@ export default function Content({
         modelHashId: contentStore.model.hashId,
         chatHashId,
       },
+      showError: true,
     });
     if (response) {
       setContents((prev) =>

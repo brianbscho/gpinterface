@@ -28,6 +28,7 @@ export default function SelectModel({
     const getProviderGetTypes = async () => {
       const response = await callApi<ProviderTypesGetResponse>({
         endpoint: "/provider/types",
+        showError: true,
       });
       setProviderTypes(response?.providerTypes);
     };

@@ -23,6 +23,7 @@ export default function Api({ hashId }: { hashId: string }) {
     const callApiApi = async () => {
       const response = await callApi<ApiGetResponse>({
         endpoint: `/api/${hashId}`,
+        showError: true,
       });
       if (response) {
         setApi(response.api);

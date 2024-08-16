@@ -39,6 +39,7 @@ export default function ContentInput({ chatHashId, setContents }: Props) {
       endpoint: `/content`,
       method: "POST",
       body: { chatHashId, modelHashId, content, config },
+      showError: true,
     });
     if (response) {
       setContent("");

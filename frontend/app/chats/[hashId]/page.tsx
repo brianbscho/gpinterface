@@ -12,7 +12,10 @@ export default function Page({ params }: { params: { hashId: string } }) {
   const [chat, setChat] = useState<ChatType>();
   useEffect(() => {
     const callChatApi = async () => {
-      const response = await callApi<ChatType>({ endpoint: `/chat/${hashId}` });
+      const response = await callApi<ChatType>({
+        endpoint: `/chat/${hashId}`,
+        showError: true,
+      });
       if (response) {
         setChat(response);
       }

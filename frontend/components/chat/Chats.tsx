@@ -42,7 +42,6 @@ function _Chats() {
       endpoint: "/chat",
       method: "POST",
       body: { modelHashId, config },
-      showError: true,
     });
     if (response) {
       router.push(`/?chatHashId=${response.hashId}`);
