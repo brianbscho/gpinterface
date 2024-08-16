@@ -2,10 +2,7 @@
 
 import callApi from "@/utils/callApi";
 import { Fragment, useCallback, useEffect, useMemo } from "react";
-import {
-  ProviderType,
-  ProviderTypesGetResponse,
-} from "gpinterface-shared/type/providerType";
+import { ProviderTypesGetResponse } from "gpinterface-shared/type/providerType";
 import {
   Select,
   SelectContent,
@@ -22,8 +19,8 @@ export default function SelectModel({
   useProviderTypes,
 }: {
   useProviderTypes: [
-    ProviderType[] | undefined,
-    (p: ProviderType[] | undefined) => void
+    ProviderTypesGetResponse["providerTypes"] | undefined,
+    (p: ProviderTypesGetResponse["providerTypes"] | undefined) => void
   ];
 }) {
   const [providerTypes, setProviderTypes] = useProviderTypes;

@@ -1,5 +1,18 @@
 import { Type } from "@sinclair/typebox";
-import { UserInfo, UserMe } from ".";
+
+interface UserInfo {
+  hashId: string;
+  name: string;
+  bio: string;
+}
+
+interface UserMe {
+  hashId: string;
+  email: string;
+  name: string;
+  bio: string;
+  notification: boolean;
+}
 
 export const UserCreateSchema = Type.Object({
   email: Type.String(),

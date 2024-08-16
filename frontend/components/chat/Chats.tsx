@@ -3,13 +3,12 @@
 import Chat from "./Chat";
 import callApi from "@/utils/callApi";
 import { useCallback, useState } from "react";
-import { Chat as ChatType } from "gpinterface-shared/type";
 import { ChatsGetResponse } from "gpinterface-shared/type/chat";
 import List from "../List";
 import NewChat from "./NewChat";
 
 export default function Chats() {
-  const [chats, setChats] = useState<ChatType[]>();
+  const [chats, setChats] = useState<ChatsGetResponse["chats"]>();
   const [lastHashId, setLastHashId] = useState("");
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 

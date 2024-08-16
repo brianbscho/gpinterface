@@ -1,5 +1,16 @@
 import { Type } from "@sinclair/typebox";
-import { Chat, Content } from ".";
+import { Content } from ".";
+
+interface Chat {
+  hashId: string;
+
+  isApi: boolean;
+  isPost: boolean;
+
+  systemMessage: string;
+  contents: Content[];
+  createdAt: string;
+}
 
 export type ChatsGetResponse = { chats: Chat[] };
 export const ChatCreateSchema = Type.Object({

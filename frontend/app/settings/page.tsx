@@ -9,7 +9,6 @@ import {
   UserGetMeResponse,
   UserUpdateSchema,
 } from "gpinterface-shared/type/user";
-import { ApiKey } from "gpinterface-shared/type";
 import {
   ApiKeyCreateResponse,
   ApiKeyDeleteResponse,
@@ -33,7 +32,7 @@ export default function Page() {
   const { user, setUser } = useUserStore();
 
   const [name, setName] = useState("");
-  const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
+  const [apiKeys, setApiKeys] = useState<ApiKeysGetResponse["apiKeys"]>([]);
 
   const [saveButtonText, setSaveButtonText] = useState("Save");
   useEffect(() => {

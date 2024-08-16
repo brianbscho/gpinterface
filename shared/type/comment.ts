@@ -1,5 +1,12 @@
 import { Type } from "@sinclair/typebox";
-import { Comment } from ".";
+import { User } from ".";
+
+interface Comment {
+  hashId: string;
+  comment: string;
+  user?: User | null;
+  createdAt: string;
+}
 
 export const CommentsGetSchema = Type.Object({
   postHashId: Type.String(),

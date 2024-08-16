@@ -9,11 +9,11 @@ import {
   useCallback,
   useState,
 } from "react";
-import { Chat } from "gpinterface-shared/type";
 import callApi from "@/utils/callApi";
 import {
   ChatCreateResponse,
   ChatCreateSchema,
+  ChatsGetResponse,
 } from "gpinterface-shared/type/chat";
 import { Static } from "@sinclair/typebox";
 import useContentStore from "@/store/content";
@@ -21,7 +21,7 @@ import useContentStore from "@/store/content";
 export default function NewChat({
   setChats,
 }: {
-  setChats: Dispatch<SetStateAction<Chat[] | undefined>>;
+  setChats: Dispatch<SetStateAction<ChatsGetResponse["chats"] | undefined>>;
 }) {
   const [open, setOpen] = useState(false);
 

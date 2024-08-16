@@ -1,5 +1,11 @@
 import { Type } from "@sinclair/typebox";
-import { Api } from ".";
+import { Content } from ".";
+
+interface Api {
+  hashId: string;
+  description: string;
+  chat: { hashId: string; systemMessage: string; contents: Content[] };
+}
 
 export const ApiCreateSchema = Type.Object({
   description: Type.String(),

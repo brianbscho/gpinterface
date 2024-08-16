@@ -2,15 +2,15 @@
 
 import List from "@/components/List";
 import callApi from "@/utils/callApi";
-import { History as HistoryType } from "gpinterface-shared/type";
 import { HistoriesGetResponse } from "gpinterface-shared/type/history";
 import { Fragment, useCallback, useMemo, useState } from "react";
 import History from "./History";
 import { Badge } from "@/components/ui";
 import Link from "next/link";
 
+type HistoriesType = HistoriesGetResponse["histories"];
 export default function Page() {
-  const [histories, setHistories] = useState<HistoryType[]>();
+  const [histories, setHistories] = useState<HistoriesType>();
   const [lastHashId, setLastHashId] = useState("");
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 
@@ -28,7 +28,7 @@ export default function Page() {
 
   const groupedTextHistories = useMemo(() => {
     type HistoryWithPriceSum = {
-      [date: string]: { priceSum: number; histories: HistoryType[] };
+      [date: string]: { priceSum: number; histories: HistoriesType };
     };
     const grouped = histories?.reduce((acc: HistoryWithPriceSum, curr) => {
       const date = curr.createdAt.split(" ")[0];

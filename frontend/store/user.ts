@@ -1,11 +1,12 @@
-import { UserMe } from "gpinterface-shared/type";
+import { UserGetMeResponse } from "gpinterface-shared/type/user";
 import { create } from "zustand";
 
-type OptionalUserMe = { name?: string; bio?: string; notification?: boolean };
+type UserType = UserGetMeResponse["user"];
+type OptionalUserMe = Partial<Pick<UserType, "name" | "bio" | "notification">>;
 type UserState = {
-  user: UserMe | undefined;
+  user: UserType | undefined;
   isLoggedOut: boolean;
-  setUser: (u: UserMe | undefined) => void;
+  setUser: (u: UserType | undefined) => void;
   setUserProperty: (u: OptionalUserMe) => void;
 };
 
@@ -13,7 +14,7 @@ const useUserStore = create<UserState>((set) => {
   return {
     user: undefined,
     isLoggedOut: false,
-    setUser: (user: UserMe | undefined) => {
+    setUser: (user: UserType | undefined) => {
       set({ user, isLoggedOut: !user });
     },
     setUserProperty: (u: OptionalUserMe) => {

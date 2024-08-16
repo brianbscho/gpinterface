@@ -3,9 +3,10 @@
 import Chat from "@/components/chat/Chat";
 import Provider from "@/components/chat/Provider";
 import callApi from "@/utils/callApi";
-import { Chat as ChatType } from "gpinterface-shared/type";
+import { ChatsGetResponse } from "gpinterface-shared/type/chat";
 import { useEffect, useState } from "react";
 
+type ChatType = ChatsGetResponse["chats"][0];
 export default function Page({ params }: { params: { hashId: string } }) {
   const { hashId } = params;
   const [chat, setChat] = useState<ChatType>();

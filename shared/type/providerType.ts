@@ -1,10 +1,14 @@
-import { Model, Provider } from ".";
+import { Model } from ".";
 
-export type ProviderType = {
+interface Provider {
+  hashId: string;
+  name: string;
+}
+
+type ProviderType = {
   hashId: string;
   type: string;
   providers: (Provider & { models: Model[] })[];
 };
-export type ProviderTypesGetResponse = {
-  providerTypes: ProviderType[];
-};
+
+export type ProviderTypesGetResponse = { providerTypes: ProviderType[] };

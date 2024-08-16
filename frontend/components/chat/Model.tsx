@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useMemo } from "react";
-import { ProviderType } from "gpinterface-shared/type/providerType";
+import { ProviderTypesGetResponse } from "gpinterface-shared/type/providerType";
 import useContentStore, { ConfigType } from "@/store/content";
 import Select from "../general/selects/Select";
 import { Button, Card, CardContent, Input } from "../ui";
@@ -14,7 +14,7 @@ import { getApiConfig } from "@/utils/model";
 export default function Model({
   providerTypes,
 }: {
-  providerTypes: ProviderType[] | undefined;
+  providerTypes: ProviderTypesGetResponse["providerTypes"] | undefined;
 }) {
   const [{ modelHashId, config }, setContentStore] = useContentStore(
     (state) => [

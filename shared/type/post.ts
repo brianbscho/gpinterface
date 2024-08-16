@@ -1,5 +1,20 @@
 import { Type } from "@sinclair/typebox";
-import { Post, User } from ".";
+import { Content, User } from ".";
+
+export interface Post {
+  hashId: string;
+  title: string;
+  post: string;
+  createdAt: string;
+
+  isBookmarked: boolean;
+  isLiked: boolean;
+  likes: number;
+
+  chat: { hashId: string; systemMessage: string; contents: Content[] };
+
+  user?: User | null | undefined;
+}
 
 export const PostCreateSchema = Type.Object({
   title: Type.String(),
@@ -8,9 +23,7 @@ export const PostCreateSchema = Type.Object({
 });
 export type PostCreateResponse = { hashId: string };
 
-export type PostGetResponse = {
-  post: Post;
-};
+export type PostGetResponse = { post: Post };
 
 type PostResponse = {
   hashId: string;
@@ -26,9 +39,7 @@ type PostResponse = {
 
   user?: User | null;
 };
-export type PostsGetResponse = {
-  posts: PostResponse[];
-};
+export type PostsGetResponse = { posts: PostResponse[] };
 export type PostsCommentGetResponse = {
   posts: (PostResponse & { comment: string })[];
 };

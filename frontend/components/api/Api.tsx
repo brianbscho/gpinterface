@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Api as ApiType,
-  Content as ContentType,
-} from "gpinterface-shared/type";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Card } from "../ui";
 import callApi from "@/utils/callApi";
 import {
   ContentUpdateResponse,
@@ -20,6 +15,8 @@ import Content from "../chat/Content";
 import ContentInput from "../chat/ContentInput";
 import { ApiGetResponse } from "gpinterface-shared/type/api";
 
+type ApiType = ApiGetResponse["api"];
+type ContentsType = ApiType["chat"]["contents"];
 export default function Api({ hashId }: { hashId: string }) {
   const [api, setApi] = useState<ApiType>();
   useEffect(() => {
@@ -34,7 +31,7 @@ export default function Api({ hashId }: { hashId: string }) {
     callApiApi();
   }, [hashId]);
 
-  const [contents, setContents] = useState<ContentType[]>([]);
+  const [contents, setContents] = useState<ContentsType>([]);
   useEffect(() => {
     if (!api) return;
     setContents(api.chat.contents);

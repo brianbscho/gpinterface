@@ -1,5 +1,4 @@
 import { stringify } from "@/utils/string";
-import { History as HistoryType } from "gpinterface-shared/type";
 import {
   Button,
   Dialog,
@@ -9,8 +8,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui";
+import { HistoriesGetResponse } from "gpinterface-shared/type/history";
 
-export default function History({ history }: { history: HistoryType }) {
+type Props = { history: HistoriesGetResponse["histories"][0] };
+export default function History({ history }: Props) {
   return (
     <Dialog>
       <DialogTrigger asChild>
