@@ -79,7 +79,7 @@ export default function Api({ hashId }: { hashId: string }) {
   if (!api) return null;
   return (
     <div className="h-full overflow-y-auto">
-      <Card className="w-full mb-3 flex flex-col gap-3">
+      <div className="w-full flex flex-col gap-3">
         <Content
           content={systemContent}
           chatHashId={api.chat.hashId}
@@ -96,7 +96,7 @@ export default function Api({ hashId }: { hashId: string }) {
           />
         ))}
         <ContentInput chatHashId={api.chat.hashId} setContents={setContents} />
-      </Card>
+      </div>
     </div>
   );
 }
