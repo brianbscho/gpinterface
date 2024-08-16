@@ -77,6 +77,7 @@ export default function Api({ hashId }: { hashId: string }) {
   if (!api) return null;
   return (
     <div className="h-full overflow-y-auto">
+      <div className="p-3 whitespace-pre-wrap">{api.description}</div>
       <div className="w-full flex flex-col gap-3">
         <Content
           content={systemContent}

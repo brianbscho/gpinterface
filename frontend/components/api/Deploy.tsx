@@ -11,6 +11,7 @@ import {
   ApiCreateSchema,
 } from "gpinterface-shared/type/api";
 import LoginRequiredButton from "../general/buttons/LoginRequiredButton";
+import { useRouter } from "next/navigation";
 
 export default function Deploy({ chatHashId }: { chatHashId: string }) {
   const [open, setOpen] = useState(false);
@@ -21,6 +22,7 @@ export default function Deploy({ chatHashId }: { chatHashId: string }) {
     state.config,
   ]);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const onSubmit = useCallback(
     async (e: FormEvent) => {
       e.preventDefault();
@@ -36,9 +38,14 @@ export default function Deploy({ chatHashId }: { chatHashId: string }) {
         body: { description, chatHashId, modelHashId, config },
         showError: true,
       });
-      setLoading(false);
+
+      if (response) {
+        router.push(`apis/${response.hashId}`);
+      } else {
+        setLoading(false);
+      }
     },
-    [config, description, modelHashId, chatHashId]
+    [config, description, modelHashId, chatHashId, router]
   );
 
   return (
