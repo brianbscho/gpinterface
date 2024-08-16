@@ -45,16 +45,19 @@ export default async function (fastify: FastifyInstance) {
                 },
               },
             },
+            config: true,
+            modelHashId: true,
           },
         });
         if (!api) {
           throw fastify.httpErrors.badRequest("The api is not available.");
         }
 
-        const { chat, ...rest } = api;
+        const { chat, config, ...rest } = api;
         return {
           api: {
             ...rest,
+            config: config as any,
             chat: {
               ...chat,
               contents: chat.contents.map((c) => getTypedContent(c)),
@@ -230,7 +233,7 @@ export default async function (fastify: FastifyInstance) {
       try {
         const { user } = await fastify.getUser(request, reply);
         const { hashId } = request.params;
-        const { description } = request.body;
+        const { description, config, modelHashId } = request.body;
 
         const oldApi = await fastify.prisma.api.findFirst({
           where: { hashId, userHashId: user.hashId },
@@ -240,10 +243,16 @@ export default async function (fastify: FastifyInstance) {
           throw fastify.httpErrors.unauthorized("Api not found.");
         }
 
-        await fastify.prisma.api.update({
-          where: { hashId },
-          data: { description },
-        });
+        if (description || config || modelHashId) {
+          await fastify.prisma.api.update({
+            where: { hashId },
+            data: {
+              ...(!!description && { description }),
+              ...(!!config && { config }),
+              ...(!!modelHashId && { modelHashId }),
+            },
+          });
+        }
 
         return { hashId };
       } catch (ex) {

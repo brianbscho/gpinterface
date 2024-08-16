@@ -5,6 +5,8 @@ interface Api {
   hashId: string;
   description: string;
   chat: { hashId: string; systemMessage: string; contents: Content[] };
+  config: object;
+  modelHashId: string;
 }
 
 export const ApiCreateSchema = Type.Object({
@@ -46,5 +48,7 @@ export type ApiSessionsGetResponse = {
 };
 
 export const ApiUpdateSchema = Type.Object({
-  description: Type.String(),
+  description: Type.Optional(Type.String()),
+  config: Type.Optional(Type.Any()),
+  modelHashId: Type.Optional(Type.Any()),
 });
