@@ -46,6 +46,7 @@ export interface History {
   outputTokens: number;
   createdAt: string;
 
+  apiHashId?: string | null;
   chatHashId?: string | null;
   isApi: boolean;
   isPost: boolean;

@@ -36,12 +36,8 @@ export default async function (fastify: FastifyInstance) {
             inputTokens: true,
             outputTokens: true,
             createdAt: true,
-            chat: {
-              select: {
-                hashId: true,
-                _count: { select: { apis: true, posts: true } },
-              },
-            },
+            chatHashId: true,
+            apiHashId: true,
           },
           orderBy: { id: "desc" },
           take: 20,
@@ -49,17 +45,15 @@ export default async function (fastify: FastifyInstance) {
 
         return {
           histories: histories.map((h) => {
-            const { createdAt, chat, config, messages, response, ...history } =
-              h;
+            const { createdAt, config, messages, response, ...history } = h;
             return {
               ...history,
               response: response as any,
               config: config as any,
               messages: messages as any,
               createdAt: getDateString(createdAt),
-              chatHashId: chat?.hashId,
-              isApi: (chat?._count.apis ?? -1) > 0,
-              isPost: (chat?._count.posts ?? -1) > 0,
+              isApi: typeof history.apiHashId === "string",
+              isPost: false,
             };
           }),
         };
