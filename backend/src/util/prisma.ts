@@ -33,35 +33,6 @@ export async function createEntity<
   throw "Too many collision and failed to create entity";
 }
 
-export async function upsertEntity<
-  UpsertArgs extends { where: any; update: any; create: any; select?: any },
-  Result
->(
-  upsert: (
-    args: UpsertArgs & { create: UpsertArgs["create"] & { hashId: string } }
-  ) => Promise<Result>,
-  args: UpsertArgs,
-  nanoidSize?: number
-) {
-  let retries = 0;
-
-  while (retries < 5) {
-    try {
-      const createWithHashId = {
-        ...args,
-        create: getDataWithHashId(args.create, nanoidSize),
-      };
-      const result = await upsert(createWithHashId);
-      return result;
-    } catch (error) {
-      retries++;
-      console.log("🚀 ~ error:", error);
-    }
-  }
-
-  throw "Too many collision and failed to create entity";
-}
-
 export async function getIdByHashId(
   findFirst: (args: {
     where: { hashId: string };
