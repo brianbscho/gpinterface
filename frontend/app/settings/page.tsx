@@ -192,9 +192,6 @@ export default function Page() {
                     Get API Key
                   </Button>
                 </div>
-                <div className="mt-3 text-sm">
-                  Your daily usage is limited by $1.
-                </div>
               </div>
             </td>
           </tr>
