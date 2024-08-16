@@ -56,7 +56,7 @@ export default function Chat({ chat }: { chat: ChatsGetResponse["chats"][0] }) {
 
   return (
     <Card className="w-full mb-12 flex flex-col gap-3">
-      <div className="sticky top-3 pr-3 text-right z-20 inline">
+      <div className="sticky top-[3.25rem] mt-3 ml-3 z-20 w-20">
         <Deploy chatHashId={chat.hashId} />
       </div>
       <Content

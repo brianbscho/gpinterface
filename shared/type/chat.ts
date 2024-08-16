@@ -15,7 +15,6 @@ interface Chat {
 export type ChatsGetResponse = { chats: Chat[] };
 export const ChatCreateSchema = Type.Object({
   modelHashId: Type.String(),
-  content: Type.String(),
   config: Type.Any(),
 });
 

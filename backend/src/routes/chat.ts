@@ -12,8 +12,6 @@ import { Static } from "@sinclair/typebox";
 import { ParamSchema } from "gpinterface-shared/type";
 import { createChat } from "../controllers/chat";
 import { getDateString } from "../util/string";
-import { getTextResponse } from "../util/text";
-import { MILLION } from "../util/model";
 import { getTypedContent } from "../util/content";
 
 export default async function (fastify: FastifyInstance) {
@@ -79,7 +77,7 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<ChatCreateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
-        const { modelHashId, content: userContent, config } = request.body;
+        const { modelHashId, config } = request.body;
 
         const model = await fastify.prisma.model.findFirst({
           where: {
@@ -104,83 +102,14 @@ export default async function (fastify: FastifyInstance) {
           select: { hashId: true, createdAt: true },
         });
 
-        const messages = [];
-        messages.push({ role: "user", content: userContent });
-        let { content, response, inputTokens, outputTokens } =
-          await getTextResponse({
-            provider: model.provider.name,
-            model: model.name,
-            systemMessage: "",
-            config,
-            messages,
-          });
-        const price =
-          (model.inputPricePerMillion * inputTokens) / MILLION +
-          (model.outputPricePerMillion * outputTokens) / MILLION;
-
-        if (user.hashId.length > 0) {
-          await createEntity(fastify.prisma.history.create, {
-            data: {
-              userHashId: user.hashId,
-              chatHashId: chat.hashId,
-              provider: model.provider.name,
-              model: model.name,
-              config,
-              messages,
-              content,
-              response,
-              price,
-              inputTokens,
-              outputTokens,
-            },
-          });
-        }
-        const userNewContent = await createEntity(
-          fastify.prisma.chatContent.create,
-          {
-            data: {
-              chatHashId: chat.hashId,
-              modelHashId,
-              config,
-              role: "user",
-              content: userContent,
-            },
-            select: {
-              hashId: true,
-              model: { select: { hashId: true, name: true } },
-              role: true,
-              content: true,
-            },
-          }
-        );
-        const assistantNewContent = await createEntity(
-          fastify.prisma.chatContent.create,
-          {
-            data: {
-              chatHashId: chat.hashId,
-              modelHashId,
-              config,
-              role: "assistant",
-              content,
-            },
-            select: {
-              hashId: true,
-              model: { select: { hashId: true, name: true } },
-              role: true,
-              content: true,
-            },
-          }
-        );
-
-        return getTypedContent({
+        return {
           hashId: chat.hashId,
           isApi: false,
           isPost: false,
           systemMessage: "",
-          contents: [userNewContent, assistantNewContent],
-          config,
+          contents: [],
           createdAt: getDateString(chat.createdAt),
-        });
+        };
       } catch (ex) {
         console.error("path: /chat, method: post, error:", ex);
         throw ex;

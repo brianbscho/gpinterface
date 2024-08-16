@@ -43,7 +43,9 @@ export default function Deploy({ chatHashId }: { chatHashId: string }) {
   return (
     <div>
       <LoginRequiredButton onClick={() => setOpen(true)}>
-        <Button variant="default">Deploy</Button>
+        <Button variant="default" className="w-full">
+          Deploy
+        </Button>
       </LoginRequiredButton>
       <Dialog open={open} onOpenChange={loading ? undefined : setOpen}>
         <DialogContent className="max-w-full w-11/12">
