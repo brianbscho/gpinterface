@@ -35,7 +35,7 @@ export default function Sessions({ apiHashId }: { apiHashId: string }) {
     } else {
       router.push("/");
     }
-  }, [lastHashId, router]);
+  }, [apiHashId, lastHashId, router]);
 
   const [messages, setMessages] = useState<
     ApiSessionsGetResponse["sessions"][0]["messages"]
@@ -52,6 +52,7 @@ export default function Sessions({ apiHashId }: { apiHashId: string }) {
       >
         {sessions?.map((session) => (
           <div
+            key={session.hashId}
             className="w-full p-3 border-b cursor-pointer"
             onClick={() => setMessages(session.messages)}
           >

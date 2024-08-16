@@ -28,7 +28,7 @@ export default function Chats({ apiHashId }: { apiHashId: string }) {
     } else {
       router.push("/");
     }
-  }, [lastHashId, router]);
+  }, [apiHashId, lastHashId, router]);
 
   return (
     <div className="w-full">
@@ -40,7 +40,7 @@ export default function Chats({ apiHashId }: { apiHashId: string }) {
         useLastHashId={[lastHashId, setLastHashId]}
       >
         {chats?.map((chat) => (
-          <div className="w-full p-3 border-b">
+          <div key={chat.hashId} className="w-full p-3 border-b">
             <div className="text-xs mb-3">{chat.createdAt}</div>
             <Badge className="mb-1">{chat.messages[0].role}</Badge>
             <div className="whitespace-pre-wrap text-sm">
