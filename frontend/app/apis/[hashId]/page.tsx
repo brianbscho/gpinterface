@@ -4,6 +4,7 @@ import Api from "@/components/api/Api";
 import Provider from "@/components/chat/Provider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui";
 import Chats from "./Chats";
+import Sessions from "./Sessions";
 
 export default function Page({ params }: { params: { hashId: string } }) {
   const { hashId } = params;
@@ -39,6 +40,9 @@ export default function Page({ params }: { params: { hashId: string } }) {
           className="w-full flex-1 overflow-y-auto"
         >
           <Chats apiHashId={hashId} />
+        </TabsContent>
+        <TabsContent value="sessions" className="w-full flex-1 overflow-y-auto">
+          <Sessions apiHashId={hashId} />
         </TabsContent>
       </Tabs>
     </div>

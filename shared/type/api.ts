@@ -31,6 +31,13 @@ export type ApiChatsGetResponse = {
     createdAt: string;
   }[];
 };
+export type ApiSessionsGetResponse = {
+  sessions: {
+    hashId: string;
+    messages: { hashId: string; role: string; content: string }[];
+    createdAt: string;
+  }[];
+};
 
 export const ApiUpdateSchema = Type.Object({
   description: Type.String(),

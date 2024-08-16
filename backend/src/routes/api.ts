@@ -5,6 +5,7 @@ import {
   ApiCreateResponse,
   ApiCreateSchema,
   ApiGetResponse,
+  ApiSessionsGetResponse,
   ApiUpdateSchema,
 } from "gpinterface-shared/type/api";
 import { ParamSchema, QueryParamSchema } from "gpinterface-shared/type";
@@ -128,6 +129,49 @@ export default async function (fastify: FastifyInstance) {
         };
       } catch (ex) {
         console.error("path: /api/:hashId/chats, method: get, error:", ex);
+        throw ex;
+      }
+    }
+  );
+  fastify.get<{
+    Params: Static<typeof ParamSchema>;
+    Querystring: Static<typeof QueryParamSchema>;
+  }>(
+    "/:hashId/sessions",
+    { schema: { params: ParamSchema, querystring: QueryParamSchema } },
+    async (request, reply): Promise<ApiSessionsGetResponse> => {
+      try {
+        const { user } = await fastify.getUser(request, reply);
+        const { hashId } = request.params;
+        const { lastHashId } = request.query;
+
+        const id = await getIdByHashId(
+          fastify.prisma.session.findFirst,
+          lastHashId
+        );
+
+        const sessions = await fastify.prisma.session.findMany({
+          where: {
+            ...(id > 0 && { id: { lt: id } }),
+            api: { hashId, userHashId: user.hashId },
+          },
+          select: {
+            hashId: true,
+            messages: { select: { hashId: true, role: true, content: true } },
+            createdAt: true,
+          },
+          orderBy: { id: "desc" },
+          take: 20,
+        });
+
+        return {
+          sessions: sessions.map((s) => ({
+            ...s,
+            createdAt: getDateString(s.createdAt),
+          })),
+        };
+      } catch (ex) {
+        console.error("path: /api/:hashId/sessions, method: get, error:", ex);
         throw ex;
       }
     }

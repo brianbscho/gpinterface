@@ -5,6 +5,7 @@ import { getApiKey } from "../controllers/apiKey";
 import { getTextResponse } from "../../util/text";
 import { MILLION } from "../../util/model";
 import { Prisma } from "@prisma/client";
+import { createSession } from "../../controllers/session";
 
 const SessionCreateSchema = Type.Object({
   apiHashId: Type.String(),
@@ -34,15 +35,20 @@ export default async function (fastify: FastifyInstance) {
         const { apiHashId } = request.body;
         const api = await fastify.prisma.api.findFirst({
           where: { hashId: apiHashId, userHashId: user.hashId },
-          select: { hashId: true },
+          select: {
+            hashId: true,
+            chat: {
+              select: { contents: { select: { role: true, content: true } } },
+            },
+          },
         });
         if (!api) {
           throw fastify.httpErrors.badRequest("no api");
         }
 
-        const session = await createEntity(fastify.prisma.session.create, {
-          data: { apiHashId },
-          select: { hashId: true },
+        const session = await createSession(fastify.prisma.session, {
+          apiHashId,
+          messages: api.chat.contents,
         });
         return session;
       } catch (ex) {
