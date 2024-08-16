@@ -21,7 +21,7 @@ export default async function (fastify: FastifyInstance) {
         const { lastHashId } = request.query;
 
         const id = await getIdByHashId(
-          fastify.prisma.post.findFirst,
+          fastify.prisma.comment.findFirst,
           lastHashId
         );
 
