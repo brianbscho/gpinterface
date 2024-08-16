@@ -15,9 +15,9 @@ export default function Document({ apiHashId }: Props) {
         <CardHeader>
           <CardTitle>Chat Completion</CardTitle>
           <CardDescription>
-            Send a message and receive an response for one-time chat
-            interactions. Ideal for isolated queries without session
-            persistence.
+            Send a message that will be added to the end of a predefined
+            messages and receive an response for one-time chat interactions.
+            Ideal for isolated queries without session persistence.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -62,8 +62,9 @@ export default function Document({ apiHashId }: Props) {
         <CardHeader>
           <CardTitle>Session Completion</CardTitle>
           <CardDescription>
-            Submit query within an active session to receive response that will
-            be stored within the session, allowing ongoing dialogue.
+            Submit query within an active session, where it will be appended to
+            the end of existing messages, to receive response that will be
+            stored within the session, allowing ongoing dialogue.
           </CardDescription>
         </CardHeader>
         <CardContent>
