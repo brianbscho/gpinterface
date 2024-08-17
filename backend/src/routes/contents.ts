@@ -17,7 +17,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { params: ContentsGetSchema, querystring: QueryParamSchema } },
     async (request, reply): Promise<ContentsGetResponse> => {
       try {
-        const { user } = await fastify.getUser(request, reply);
+        const { user } = await fastify.getUser(request, reply, true);
         const { lastHashId } = request.query;
         const { chatHashId } = request.params;
 
@@ -29,7 +29,7 @@ export default async function (fastify: FastifyInstance) {
         const contents = await fastify.prisma.chatContent.findMany({
           where: {
             ...(id > 0 && { id: { lt: id } }),
-            chat: { hashId: chatHashId, userHashId: user.hashId },
+            chat: { hashId: chatHashId, userHashId: user.hashId || null },
           },
           select: {
             hashId: true,

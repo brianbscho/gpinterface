@@ -22,11 +22,11 @@ export default async function (fastify: FastifyInstance) {
     { schema: { params: ParamSchema } },
     async (request, reply): Promise<ApiGetResponse> => {
       try {
-        const { user } = await fastify.getUser(request, reply);
+        const { user } = await fastify.getUser(request, reply, true);
         const { hashId } = request.params;
 
         const api = await fastify.prisma.api.findFirst({
-          where: { hashId, userHashId: user.hashId },
+          where: { hashId, userHashId: user.hashId || null },
           select: {
             hashId: true,
             description: true,
@@ -78,7 +78,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { params: ParamSchema, querystring: QueryParamSchema } },
     async (request, reply): Promise<ApiChatsGetResponse> => {
       try {
-        const { user } = await fastify.getUser(request, reply);
+        const { user } = await fastify.getUser(request, reply, true);
         const { hashId } = request.params;
         const { lastHashId } = request.query;
 
@@ -91,7 +91,7 @@ export default async function (fastify: FastifyInstance) {
           where: {
             ...(id > 0 && { id: { lt: id } }),
             apiHashId: hashId,
-            userHashId: user.hashId,
+            userHashId: user.hashId || null,
           },
           select: {
             hashId: true,
@@ -144,7 +144,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { params: ParamSchema, querystring: QueryParamSchema } },
     async (request, reply): Promise<ApiSessionsGetResponse> => {
       try {
-        const { user } = await fastify.getUser(request, reply);
+        const { user } = await fastify.getUser(request, reply, true);
         const { hashId } = request.params;
         const { lastHashId } = request.query;
 
@@ -156,7 +156,7 @@ export default async function (fastify: FastifyInstance) {
         const sessions = await fastify.prisma.session.findMany({
           where: {
             ...(id > 0 && { id: { lt: id } }),
-            api: { hashId, userHashId: user.hashId },
+            api: { hashId, userHashId: user.hashId || null },
           },
           select: {
             hashId: true,
@@ -184,7 +184,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: ApiCreateSchema } },
     async (request, reply): Promise<ApiCreateResponse> => {
       try {
-        const { user } = await fastify.getUser(request, reply);
+        const { user } = await fastify.getUser(request, reply, true);
         const { description, chatHashId, modelHashId, config } = request.body;
 
         if (description.trim() === "") {
@@ -211,9 +211,14 @@ export default async function (fastify: FastifyInstance) {
         }
 
         const newApi = await createApi(fastify.prisma.chat, {
-          userHashId: user.hashId,
+          userHashId: user.hashId || null,
           ...chat,
-          apis: { description, userHashId: user.hashId, modelHashId, config },
+          apis: {
+            description,
+            userHashId: user.hashId || null,
+            modelHashId,
+            config,
+          },
         });
 
         return { hashId: newApi.hashId };
@@ -231,12 +236,12 @@ export default async function (fastify: FastifyInstance) {
     { schema: { params: ParamSchema, body: ApiUpdateSchema } },
     async (request, reply): Promise<ApiCreateResponse> => {
       try {
-        const { user } = await fastify.getUser(request, reply);
+        const { user } = await fastify.getUser(request, reply, true);
         const { hashId } = request.params;
         const { description, config, modelHashId } = request.body;
 
         const oldApi = await fastify.prisma.api.findFirst({
-          where: { hashId, userHashId: user.hashId },
+          where: { hashId, userHashId: user.hashId || null },
           select: { hashId: true },
         });
         if (!oldApi) {
