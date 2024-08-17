@@ -1,7 +1,14 @@
 "use client";
 
 import { CornerDownLeft } from "lucide-react";
-import { Button, Dialog, DialogContent, DialogHeader, Input } from "../ui";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTrigger,
+  Input,
+} from "../ui";
 import { FormEvent, useCallback, useState } from "react";
 import callApi from "@/utils/callApi";
 import { Static } from "@sinclair/typebox";
@@ -10,7 +17,6 @@ import {
   ApiCreateResponse,
   ApiCreateSchema,
 } from "gpinterface-shared/type/api";
-import LoginRequiredButton from "../general/buttons/LoginRequiredButton";
 import { useRouter } from "next/navigation";
 import { getApiConfig } from "@/utils/model";
 
@@ -56,12 +62,12 @@ export default function Deploy({ chatHashId }: { chatHashId: string }) {
 
   return (
     <div>
-      <LoginRequiredButton onClick={() => setOpen(true)}>
-        <Button variant="default" className="w-full">
-          Deploy
-        </Button>
-      </LoginRequiredButton>
       <Dialog open={open} onOpenChange={loading ? undefined : setOpen}>
+        <DialogTrigger asChild>
+          <Button variant="default" className="w-full">
+            Deploy
+          </Button>
+        </DialogTrigger>
         <DialogContent className="max-w-full w-11/12">
           <DialogHeader>Deploy API</DialogHeader>
           <form onSubmit={onSubmit}>

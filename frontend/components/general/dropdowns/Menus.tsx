@@ -25,7 +25,7 @@ import {
 import Link from "next/link";
 
 const loginRedirectPaths = ["login"];
-const logoutRedirectPaths = ["apis", "histories", "settings"];
+const logoutRedirectPaths = ["histories", "settings"];
 
 function _Menus() {
   const { user, setUser } = useUserStore();
