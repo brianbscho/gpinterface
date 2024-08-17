@@ -99,6 +99,7 @@ model Api {
 
   config      Json
   description String
+  isPublic    Boolean @default(false) @map("is_public")
 
   histories History[]
   sessions  Session[]
