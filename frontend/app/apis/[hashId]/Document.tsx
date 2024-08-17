@@ -54,7 +54,7 @@ export default function Document({ apiHashId }: Props) {
             <Button disabled>Body</Button>
             <div className="text-sm">{`{apiHashId: "${apiHashId}"}`}</div>
             <Button disabled>Response</Button>
-            <div className="text-sm">{`{hashId: string}`}</div>
+            <div className="text-sm">{`{hashId: "SESSION_ID"}`}</div>
           </div>
         </CardContent>
       </Card>
@@ -93,12 +93,12 @@ export default function Document({ apiHashId }: Props) {
           <div className="grid grid-cols-[auto_1fr] gap-3 items-center">
             <Button disabled>GET</Button>
             <div className="text-sm">
-              {`${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/session/{sessionId}/messages`}
+              {`${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/session/{sessionHashId}/messages`}
             </div>
             <Button disabled>Header</Button>
             <div className="text-sm">{`Authorization: Bearer {GPINTERFACE_API_KEY}`}</div>
             <Button disabled>Query Parameter</Button>
-            <div className="text-sm">{`{sessionId: "SESSION_ID"}`}</div>
+            <div className="text-sm">{`{sessionHashId: "SESSION_ID"}`}</div>
             <Button disabled>Response</Button>
             <div className="text-sm">{`{ messages: {role: string; content: string;}[] }`}</div>
           </div>

@@ -28,7 +28,6 @@ export default function Api({ hashId }: { hashId: string }) {
         showError: true,
       });
       if (response) {
-        console.log("🚀 ~ callApiApi ~ response:", response);
         setApi(response.api);
         const { config, modelHashId } = response.api;
         setContentStore({ config, modelHashId });

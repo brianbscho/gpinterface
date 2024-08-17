@@ -63,9 +63,8 @@ function _Chats() {
       endpoint: `/chats?lastHashId=${lastHashId}`,
     });
     if (response) {
-      if (response.chats.length > 0) {
-        setChats((prev) => [...(prev ?? []), ...response.chats]);
-      } else {
+      setChats((prev) => [...(prev ?? []), ...response.chats]);
+      if (response.chats.length == 0) {
         setSpinnerHidden(true);
       }
     } else {

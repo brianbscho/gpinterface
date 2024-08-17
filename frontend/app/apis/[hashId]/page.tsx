@@ -54,7 +54,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
         className="w-full h-full flex flex-col overflow-hidden"
         defaultValue="api"
       >
-        <TabsList className="w-full">
+        <TabsList className="w-full rounded-none">
           <TabsTrigger value="api" className="flex-1">
             API
           </TabsTrigger>

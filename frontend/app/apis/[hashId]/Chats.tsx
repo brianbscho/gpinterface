@@ -2,7 +2,6 @@
 
 import callApi from "@/utils/callApi";
 import { useCallback, useState } from "react";
-import { useRouter } from "next/navigation";
 import List from "@/components/List";
 import { ApiChatsGetResponse } from "gpinterface-shared/type/api";
 import { Badge } from "@/components/ui";
@@ -13,22 +12,18 @@ export default function Chats({ apiHashId }: { apiHashId: string }) {
   const [lastHashId, setLastHashId] = useState("");
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 
-  const router = useRouter();
   const callChatsApi = useCallback(async () => {
     const response = await callApi<ApiChatsGetResponse>({
       endpoint: `/api/${apiHashId}/chats?lastHashId=${lastHashId}`,
       showError: true,
     });
     if (response) {
-      if (response.chats.length > 0) {
-        setChats((prev) => [...(prev ?? []), ...response.chats]);
-      } else {
+      setChats((prev) => [...(prev ?? []), ...response.chats]);
+      if (response.chats.length === 0) {
         setSpinnerHidden(true);
       }
-    } else {
-      router.push("/");
     }
-  }, [apiHashId, lastHashId, router]);
+  }, [apiHashId, lastHashId]);
 
   return (
     <div className="w-full">

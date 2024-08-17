@@ -2,7 +2,6 @@
 
 import callApi from "@/utils/callApi";
 import { Fragment, useCallback, useState } from "react";
-import { useRouter } from "next/navigation";
 import List from "@/components/List";
 import { ApisGetResponse } from "gpinterface-shared/type/api";
 import { Badge } from "@/components/ui";
@@ -13,22 +12,18 @@ export default function Apis() {
   const [lastHashId, setLastHashId] = useState("");
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 
-  const router = useRouter();
   const callApisApi = useCallback(async () => {
     const response = await callApi<ApisGetResponse>({
       endpoint: `/apis?lastHashId=${lastHashId}`,
       showError: true,
     });
     if (response) {
-      if (response.apis.length > 0) {
-        setApis((prev) => [...(prev ?? []), ...response.apis]);
-      } else {
+      setApis((prev) => [...(prev ?? []), ...response.apis]);
+      if (response.apis.length === 0) {
         setSpinnerHidden(true);
       }
-    } else {
-      router.push("/");
     }
-  }, [lastHashId, router]);
+  }, [lastHashId]);
 
   return (
     <div className="w-full">

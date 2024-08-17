@@ -20,9 +20,8 @@ export default function Page() {
       showError: true,
     });
     if (response) {
-      if (response.histories.length > 0) {
-        setHistories((prev) => [...(prev ?? []), ...response.histories]);
-      } else {
+      setHistories((prev) => [...(prev ?? []), ...response.histories]);
+      if (response.histories.length === 0) {
         setSpinnerHidden(true);
       }
     }

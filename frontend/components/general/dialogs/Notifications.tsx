@@ -35,12 +35,8 @@ export default function Notifications() {
       endpoint: `/notifications?lastHashId=${lastHashId}`,
     });
     if (response) {
-      if (response.notifications.length > 0) {
-        setNotifications((prev) => [
-          ...(prev ?? []),
-          ...response.notifications,
-        ]);
-      } else {
+      setNotifications((prev) => [...(prev ?? []), ...response.notifications]);
+      if (response.notifications.length === 0) {
         setSpinnerHidden(true);
       }
     }

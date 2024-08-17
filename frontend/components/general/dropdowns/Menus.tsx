@@ -94,10 +94,6 @@ function _Menus() {
         <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => push(`/user/${user.hashId}`)}>
-            <UserRound />
-            <span className="ml-3">My page</span>
-          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => push(`/apis`)}>
             <SquareCode />
             <span className="ml-3">Apis</span>

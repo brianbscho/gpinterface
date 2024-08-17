@@ -2,7 +2,6 @@
 
 import callApi from "@/utils/callApi";
 import { useCallback, useState } from "react";
-import { useRouter } from "next/navigation";
 import List from "@/components/List";
 import { ApiSessionsGetResponse } from "gpinterface-shared/type/api";
 import {
@@ -19,23 +18,18 @@ export default function Sessions({ apiHashId }: { apiHashId: string }) {
   const [lastHashId, setLastHashId] = useState("");
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 
-  const router = useRouter();
   const callChatsApi = useCallback(async () => {
     const response = await callApi<ApiSessionsGetResponse>({
       endpoint: `/api/${apiHashId}/sessions?lastHashId=${lastHashId}`,
       showError: true,
     });
     if (response) {
-      if (response.sessions.length > 0) {
-        setSessions((prev) => [...(prev ?? []), ...response.sessions]);
-      } else {
-        setSessions((prev) => prev ?? []);
+      setSessions((prev) => [...(prev ?? []), ...response.sessions]);
+      if (response.sessions.length === 0) {
         setSpinnerHidden(true);
       }
-    } else {
-      router.push("/");
     }
-  }, [apiHashId, lastHashId, router]);
+  }, [apiHashId, lastHashId]);
 
   const [messages, setMessages] = useState<
     ApiSessionsGetResponse["sessions"][0]["messages"]
