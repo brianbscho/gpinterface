@@ -19,7 +19,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: ChatCompletionSchema } },
     async (request, reply): Promise<ChatCompletionResponse> => {
       try {
-        const { user } = await getApiKey(fastify, request);
+        const { user } = await getApiKey(fastify, request, true);
         const { apiHashId, message } = request.body;
 
         const api = await fastify.prisma.api.findFirst({
@@ -75,7 +75,7 @@ export default async function (fastify: FastifyInstance) {
 
         await createEntity(fastify.prisma.history.create, {
           data: {
-            userHashId: user.hashId,
+            userHashId: user.hashId || null,
             apiHashId,
             provider: model.provider.name,
             model: model.name,

@@ -31,10 +31,10 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: SessionCreateSchema } },
     async (request, reply): Promise<SessionCreateResponse> => {
       try {
-        const { user } = await getApiKey(fastify, request);
+        const { user } = await getApiKey(fastify, request, true);
         const { apiHashId } = request.body;
         const api = await fastify.prisma.api.findFirst({
-          where: { hashId: apiHashId, userHashId: user.hashId },
+          where: { hashId: apiHashId, userHashId: user.hashId || null },
           select: {
             hashId: true,
             chat: {
@@ -62,14 +62,14 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: SessionCompletionSchema } },
     async (request, reply): Promise<SessionCompletionResponse> => {
       try {
-        const { user } = await getApiKey(fastify, request);
+        const { user } = await getApiKey(fastify, request, true);
         const { sessionHashId, message } = request.body;
 
         const session = await fastify.prisma.session.findFirst({
           where: {
             hashId: sessionHashId,
             api: {
-              userHashId: user.hashId,
+              userHashId: user.hashId || null,
               model: { isAvailable: true, isFree: true },
             },
           },
@@ -127,7 +127,7 @@ export default async function (fastify: FastifyInstance) {
 
         await createEntity(fastify.prisma.history.create, {
           data: {
-            userHashId: user.hashId,
+            userHashId: user.hashId || null,
             sessionHashId,
             provider: model.provider.name,
             model: model.name,
@@ -156,11 +156,14 @@ export default async function (fastify: FastifyInstance) {
     { schema: { params: SessionMessagesGetSchema } },
     async (request, reply): Promise<SessionMessagesGetResponse> => {
       try {
-        const { user } = await getApiKey(fastify, request);
+        const { user } = await getApiKey(fastify, request, true);
         const { sessionHashId } = request.params;
 
         const session = await fastify.prisma.session.findFirst({
-          where: { hashId: sessionHashId, api: { userHashId: user.hashId } },
+          where: {
+            hashId: sessionHashId,
+            api: { userHashId: user.hashId || null },
+          },
           select: {
             messages: {
               select: { role: true, content: true },
