@@ -323,8 +323,8 @@ model History {
   session       Session? @relation(fields: [sessionHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
   chatHashId    String?  @map("chat_hash_id")
   chat          Chat?    @relation(fields: [chatHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
-  userHashId    String   @map("user_hash_id")
-  user          User     @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+  userHashId    String?  @map("user_hash_id")
+  user          User?    @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
   @@map("histories")
 }
