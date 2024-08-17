@@ -69,26 +69,24 @@ export default async function (fastify: FastifyInstance) {
           (model.inputPricePerMillion * inputTokens) / MILLION +
           (model.outputPricePerMillion * outputTokens) / MILLION;
 
-        if (user.hashId.length > 0) {
-          await createEntity(fastify.prisma.history.create, {
-            data: {
-              userHashId: user.hashId,
-              chatHashId: body.chatHashId,
-              provider: model.provider.name,
-              model: model.name,
-              config: body.config,
-              messages: (systemMessage
-                ? [{ role: "system", content: systemMessage }]
-                : []
-              ).concat(messages),
-              content,
-              response,
-              price,
-              inputTokens,
-              outputTokens,
-            },
-          });
-        }
+        await createEntity(fastify.prisma.history.create, {
+          data: {
+            userHashId: user.hashId || null,
+            chatHashId: body.chatHashId,
+            provider: model.provider.name,
+            model: model.name,
+            config: body.config,
+            messages: (systemMessage
+              ? [{ role: "system", content: systemMessage }]
+              : []
+            ).concat(messages),
+            content,
+            response,
+            price,
+            inputTokens,
+            outputTokens,
+          },
+        });
         const _userContent = await createEntity(
           fastify.prisma.chatContent.create,
           {
@@ -226,26 +224,24 @@ export default async function (fastify: FastifyInstance) {
           (model.inputPricePerMillion * inputTokens) / MILLION +
           (model.outputPricePerMillion * outputTokens) / MILLION;
 
-        if (user.hashId.length > 0) {
-          await createEntity(fastify.prisma.history.create, {
-            data: {
-              userHashId: user.hashId,
-              chatHashId,
-              provider: model.provider.name,
-              model: model.name,
-              config,
-              messages: (systemMessage
-                ? [{ role: "system", content: systemMessage }]
-                : []
-              ).concat(messages),
-              content,
-              response,
-              price,
-              inputTokens,
-              outputTokens,
-            },
-          });
-        }
+        await createEntity(fastify.prisma.history.create, {
+          data: {
+            userHashId: user.hashId || null,
+            chatHashId,
+            provider: model.provider.name,
+            model: model.name,
+            config,
+            messages: (systemMessage
+              ? [{ role: "system", content: systemMessage }]
+              : []
+            ).concat(messages),
+            content,
+            response,
+            price,
+            inputTokens,
+            outputTokens,
+          },
+        });
         const newContent = await fastify.prisma.chatContent.update({
           where: { hashId },
           data: { content, config, modelHashId },
