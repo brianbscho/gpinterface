@@ -28,7 +28,7 @@ export default function LoginRequiredButton({
   return (
     <>
       <div onClick={onClickUserRequired}>{children}</div>
-      <Login open={loginOpen} onClickLogin={() => setLoginOpen(false)} />
+      <Login useOpen={[loginOpen, setLoginOpen]} />
     </>
   );
 }

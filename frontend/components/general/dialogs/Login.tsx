@@ -1,7 +1,7 @@
 "use client";
 
-import { usePathname, useSearchParams } from "next/navigation";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useMemo } from "react";
 import Link from "next/link";
 import {
   Button,
@@ -13,13 +13,12 @@ import {
 
 function _Login({
   title,
-  open,
-  onClickLogin,
+  useOpen,
 }: {
   title: string;
-  open: boolean;
-  onClickLogin?: () => void;
+  useOpen: [boolean, (open: boolean) => void];
 }) {
+  const [open, setOpen] = useOpen;
   const searchParams = useSearchParams();
   const chatHashId = useMemo(
     () => searchParams.get("chatHashId"),
@@ -31,15 +30,13 @@ function _Login({
   }, [chatHashId]);
 
   return (
-    <Dialog open={open}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
         <DialogTitle>{title}</DialogTitle>
         <div className="w-full flex justify-end">
           <DialogClose>
             <Button asChild>
-              <Link href={`/login${param}`} onClick={onClickLogin}>
-                Login
-              </Link>
+              <Link href={`/login${param}`}>Login</Link>
             </Button>
           </DialogClose>
         </div>
@@ -50,16 +47,14 @@ function _Login({
 
 export default function Login({
   title = "Please log in first :)",
-  open,
-  onClickLogin,
+  useOpen,
 }: {
   title?: string;
-  open: boolean;
-  onClickLogin?: () => void;
+  useOpen: [boolean, (open: boolean) => void];
 }) {
   return (
     <Suspense>
-      <_Login title={title} open={open} onClickLogin={onClickLogin} />
+      <_Login title={title} useOpen={useOpen} />
     </Suspense>
   );
 }
