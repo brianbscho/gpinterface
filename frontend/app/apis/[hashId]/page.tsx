@@ -6,11 +6,12 @@ import { Button, Tabs, TabsList, TabsTrigger, useToast } from "@/components/ui";
 import Chats from "./Chats";
 import Sessions from "./Sessions";
 import Document from "./Document";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import callApi from "@/utils/callApi";
 import { Static } from "@sinclair/typebox";
 import {
   ApiCreateResponse,
+  ApiGetResponse,
   ApiUpdateSchema,
 } from "gpinterface-shared/type/api";
 import useContentStore from "@/store/content";
@@ -19,6 +20,17 @@ import { cn } from "@/utils/css";
 
 export default function Page({ params }: { params: { hashId: string } }) {
   const { hashId } = params;
+  const [api, setApi] = useState<ApiGetResponse["api"]>();
+  useEffect(() => {
+    const callApiApi = async () => {
+      const response = await callApi<ApiGetResponse>({
+        endpoint: `/api/${hashId}`,
+        showError: true,
+      });
+      setApi(response?.api);
+    };
+    callApiApi();
+  }, [hashId]);
 
   const { toast } = useToast();
   const [config, model] = useContentStore((state) => [
@@ -71,7 +83,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
         </TabsList>
         <div className={cn("w-full flex-1 overflow-hidden", isHidden("api"))}>
           <div className="h-full grid grid-cols-[1fr_auto] overflow-hidden">
-            <Api hashId={hashId} />
+            <Api api={api} />
             <div className="flex flex-col w-full h-full overflow-hidden">
               <Button
                 className="w-full rounded-none"
@@ -102,7 +114,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
         <div
           className={cn("w-full flex-1 overflow-y-auto", isHidden("document"))}
         >
-          <Document apiHashId={hashId} />
+          <Document api={api} />
         </div>
       </Tabs>
     </div>

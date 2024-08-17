@@ -29,6 +29,7 @@ export default async function (fastify: FastifyInstance) {
           where: { hashId, userHashId: user.hashId || null },
           select: {
             hashId: true,
+            userHashId: true,
             description: true,
             chat: {
               select: {

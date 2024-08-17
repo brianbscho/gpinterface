@@ -18,24 +18,14 @@ import useContentStore from "@/store/content";
 
 type ApiType = ApiGetResponse["api"];
 type ContentsType = ApiType["chat"]["contents"];
-export default function Api({ hashId }: { hashId: string }) {
-  const [api, setApi] = useState<ApiType>();
+export default function Api({ api }: { api?: ApiType }) {
   const setContentStore = useContentStore((state) => state.setContentStore);
   useEffect(() => {
-    const callApiApi = async () => {
-      const response = await callApi<ApiGetResponse>({
-        endpoint: `/api/${hashId}`,
-        showError: true,
-      });
-      if (response) {
-        setApi(response.api);
-        const { config, modelHashId } = response.api;
-        setContentStore({ config, modelHashId });
-      }
-    };
-    callApiApi();
-  }, [hashId, setContentStore]);
-
+    if (api) {
+      const { config, modelHashId } = api;
+      setContentStore({ config, modelHashId });
+    }
+  }, [api, setContentStore]);
   const [contents, setContents] = useState<ContentsType>([]);
   useEffect(() => {
     if (!api) return;

@@ -3,6 +3,7 @@ import { Content } from ".";
 
 interface Api {
   hashId: string;
+  userHashId: string | null;
   description: string;
   chat: { hashId: string; systemMessage: string; contents: Content[] };
   config: object;

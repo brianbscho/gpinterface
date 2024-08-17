@@ -6,9 +6,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui";
+import { ApiGetResponse } from "gpinterface-shared/type/api";
 
-type Props = { apiHashId: string };
-export default function Document({ apiHashId }: Props) {
+const Authentication = ({ userHashId }: { userHashId: string | null }) => {
+  if (!userHashId) return null;
+  return (
+    <>
+      <Button disabled>Header</Button>
+      <div className="text-sm">{`Authorization: Bearer {YOUR_GPINTERFACE_API_KEY}`}</div>
+    </>
+  );
+};
+
+export default function Document({ api }: { api?: ApiGetResponse["api"] }) {
+  if (!api) return null;
+
   return (
     <div className="w-full h-full overflow-y-auto p-3">
       <Card className="w-full mb-3">
@@ -26,10 +38,9 @@ export default function Document({ apiHashId }: Props) {
             <div className="text-sm">
               {process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/chat/completion
             </div>
-            <Button disabled>Header</Button>
-            <div className="text-sm">{`Authorization: Bearer {GPINTERFACE_API_KEY}`}</div>
+            <Authentication userHashId={api.userHashId} />
             <Button disabled>Body</Button>
-            <div className="text-sm">{`{apiHashId: "${apiHashId}", message: string}`}</div>
+            <div className="text-sm">{`{apiHashId: "${api.hashId}", message: string}`}</div>
             <Button disabled>Response</Button>
             <div className="text-sm">{`{content: string}`}</div>
           </div>
@@ -49,10 +60,9 @@ export default function Document({ apiHashId }: Props) {
             <div className="text-sm">
               {process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/session
             </div>
-            <Button disabled>Header</Button>
-            <div className="text-sm">{`Authorization: Bearer {GPINTERFACE_API_KEY}`}</div>
+            <Authentication userHashId={api.userHashId} />
             <Button disabled>Body</Button>
-            <div className="text-sm">{`{apiHashId: "${apiHashId}"}`}</div>
+            <div className="text-sm">{`{apiHashId: "${api.hashId}"}`}</div>
             <Button disabled>Response</Button>
             <div className="text-sm">{`{hashId: "SESSION_ID"}`}</div>
           </div>
@@ -73,8 +83,7 @@ export default function Document({ apiHashId }: Props) {
             <div className="text-sm">
               {process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/session/completion
             </div>
-            <Button disabled>Header</Button>
-            <div className="text-sm">{`Authorization: Bearer {GPINTERFACE_API_KEY}`}</div>
+            <Authentication userHashId={api.userHashId} />
             <Button disabled>Body</Button>
             <div className="text-sm">{`{sessionHashId: "SESSION_ID", message: string}`}</div>
             <Button disabled>Response</Button>
@@ -95,8 +104,7 @@ export default function Document({ apiHashId }: Props) {
             <div className="text-sm">
               {`${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/session/{sessionHashId}/messages`}
             </div>
-            <Button disabled>Header</Button>
-            <div className="text-sm">{`Authorization: Bearer {GPINTERFACE_API_KEY}`}</div>
+            <Authentication userHashId={api.userHashId} />
             <Button disabled>Query Parameter</Button>
             <div className="text-sm">{`{sessionHashId: "SESSION_ID"}`}</div>
             <Button disabled>Response</Button>
