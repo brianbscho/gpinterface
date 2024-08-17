@@ -65,15 +65,25 @@ export default function Chat({ chat }: { chat: ChatsGetResponse["chats"][0] }) {
         setContents={setContents}
         callUpdateContent={callUpdateSystemMessage}
       />
-      {contents.map((c) => (
-        <Content
-          key={c.hashId}
-          content={c}
-          chatHashId={chat.hashId}
-          setContents={setContents}
-          callUpdateContent={callUpdateContent(c.hashId)}
-        />
-      ))}
+      {contents.map((c, i) => {
+        let hashIds: string[] = [];
+        if (c.role === "user") {
+          hashIds = contents.slice(i, i + 2).map((_c) => _c.hashId);
+        } else {
+          hashIds = contents.slice(i - 1, i + 1).map((_c) => _c.hashId);
+        }
+
+        return (
+          <Content
+            key={c.hashId}
+            content={c}
+            chatHashId={chat.hashId}
+            setContents={setContents}
+            callUpdateContent={callUpdateContent(c.hashId)}
+            hashIds={hashIds}
+          />
+        );
+      })}
       <ContentInput chatHashId={chat.hashId} setContents={setContents} />
     </Card>
   );

@@ -16,6 +16,13 @@ export type ContentUpdateResponse = {
   content: string;
 };
 
+export const ContentsDeleteSchema = Type.Object({
+  hashIds: Type.Array(Type.String()),
+});
+export type ContentsDeleteResponse = {
+  success: boolean;
+};
+
 export const ContentRefreshSchema = Type.Object({
   chatHashId: Type.String(),
   modelHashId: Type.String(),

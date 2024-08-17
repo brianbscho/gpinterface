@@ -3,6 +3,8 @@ import { Static } from "@sinclair/typebox";
 import { QueryParamSchema } from "gpinterface-shared/type";
 import { getIdByHashId } from "../util/prisma";
 import {
+  ContentsDeleteResponse,
+  ContentsDeleteSchema,
   ContentsGetResponse,
   ContentsGetSchema,
 } from "gpinterface-shared/type/content";
@@ -54,6 +56,34 @@ export default async function (fastify: FastifyInstance) {
         };
       } catch (ex) {
         console.error("path: /contents:chatHashId, method: get, error:", ex);
+        throw ex;
+      }
+    }
+  );
+  fastify.delete<{ Body: Static<typeof ContentsDeleteSchema> }>(
+    "/",
+    { schema: { body: ContentsDeleteSchema } },
+    async (request, reply): Promise<ContentsDeleteResponse> => {
+      try {
+        const { user } = await fastify.getUser(request, reply, true);
+        const userHashId = user.hashId || null;
+        const { hashIds } = request.body;
+
+        const oldContents = await fastify.prisma.chatContent.findMany({
+          where: { hashId: { in: hashIds }, chat: { userHashId } },
+          select: { hashId: true },
+        });
+        if (oldContents.length !== hashIds.length) {
+          throw fastify.httpErrors.badRequest("content is not available.");
+        }
+
+        await fastify.prisma.chatContent.deleteMany({
+          where: { hashId: { in: hashIds } },
+        });
+
+        return { success: true };
+      } catch (ex) {
+        console.error("path: /contents, method: delete, error:", ex);
         throw ex;
       }
     }
