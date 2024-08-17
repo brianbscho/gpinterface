@@ -1,61 +1,46 @@
 import { Prisma } from "@prisma/client";
-import { Static, Type } from "@sinclair/typebox";
-import { PostSchema } from "gpinterface-shared/type/post";
 import { getDataWithHashId } from "../util/prisma";
-import { ImageExample } from "gpinterface-shared/type";
-
-const PostSchemaObject = Type.Object(PostSchema);
-export function getPostCreateData<T>(
-  post: Static<typeof PostSchemaObject> & {
-    userHashId: string;
-    threadHashId: T;
-  }
-) {
-  return getDataWithHashId(
-    {
-      ...post,
-      textPrompts: {
-        create: post.textPrompts.map((p) =>
-          getDataWithHashId({
-            ...p,
-            examples: { create: p.examples.map((e) => getDataWithHashId(e)) },
-            messages: { create: p.messages.map((m) => getDataWithHashId(m)) },
-          })
-        ),
-      },
-      imagePrompts: {
-        create: post.imagePrompts.map((p) =>
-          getDataWithHashId({
-            ...p,
-            examples: {
-              create: p.examples.map(
-                (e) => getDataWithHashId(e) as ImageExample
-              ),
-            },
-          })
-        ),
-      },
-    },
-    12
-  );
-}
+import { getTypedContent } from "../util/content";
 
 export async function createPost(
-  postDelegate: Prisma.PostDelegate,
-  post: Static<typeof PostSchemaObject> & {
-    threadHashId: string;
+  chatDelegate: Prisma.ChatDelegate,
+  chat: {
     userHashId: string;
+    systemMessage: string;
+    contents: {
+      role: string;
+      content: string;
+      config: Prisma.JsonValue;
+      modelHashId: string;
+    }[];
+    posts: { title: string; post: string; userHashId: string };
   }
 ) {
   let retries = 0;
 
   while (retries < 5) {
     try {
-      const newPost = await postDelegate.create({
-        data: getPostCreateData(post),
-        select: { hashId: true },
+      const newPost = await chatDelegate.create({
+        data: {
+          ...getDataWithHashId({
+            ...chat,
+            contents: {
+              createMany: {
+                data: chat.contents.map((c) =>
+                  getDataWithHashId(getTypedContent(c))
+                ),
+              },
+            },
+            posts: { create: getDataWithHashId(chat.posts) },
+          }),
+        },
+        select: { posts: { select: { hashId: true } } },
       });
-      return newPost;
+
+      if (newPost.posts.length === 0) {
+        throw "Failed to create post";
+      }
+      return newPost.posts[0];
     } catch (error) {
       retries++;
       console.log("🚀 ~ error:", error);

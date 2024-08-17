@@ -6,10 +6,10 @@ import useUserStore from "@/store/user";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { UserGetMeResponse } from "gpinterface-shared/type/user";
 import {
-  Bookmark,
   LogOut,
   ReceiptText,
   Settings,
+  SquareCode,
   UserRound,
 } from "lucide-react";
 import {
@@ -22,16 +22,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuGroup,
 } from "@/components/ui";
-import Link from "../links/Link";
+import Link from "next/link";
 
 const loginRedirectPaths = ["login"];
-const logoutRedirectPaths = [
-  "settings",
-  "bookmarks",
-  "usages",
-  "create",
-  "edit",
-];
+const logoutRedirectPaths = ["apis", "histories", "settings"];
 
 function _Menus() {
   const { user, setUser } = useUserStore();
@@ -69,21 +63,21 @@ function _Menus() {
     location.reload();
   }, [setUser]);
 
-  const redirect = useMemo(() => {
-    if (pathname.includes("login")) return "";
-    if (pathname === "/") {
-      return "";
-    } else {
-      return `?redirect=${pathname}`;
-    }
-  }, [pathname]);
+  const chatHashId = useMemo(
+    () => searchParams.get("chatHashId"),
+    [searchParams]
+  );
+  const param = useMemo(() => {
+    if (chatHashId) return `?chatHashId=${chatHashId}`;
+    return "";
+  }, [chatHashId]);
 
   const [open, setOpen] = useState(false);
 
   if (!user) {
     return (
       <ShadcnButton asChild>
-        <Link href={`/login${redirect}`}>
+        <Link href={`/login${param}`}>
           <UserRound />
         </Link>
       </ShadcnButton>
@@ -100,21 +94,17 @@ function _Menus() {
         <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => push(`/user/${user.hashId}`)}>
-            <UserRound />
-            <span className="ml-3">My page</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => push(`/bookmarks`)}>
-            <Bookmark />
-            <span className="ml-3">Bookmarks</span>
+          <DropdownMenuItem onClick={() => push(`/apis`)}>
+            <SquareCode />
+            <span className="ml-3">Apis</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => push("/settings")}>
             <Settings />
             <span className="ml-3">Settings</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => push("/usages")}>
+          <DropdownMenuItem onClick={() => push("/histories")}>
             <ReceiptText />
-            <span className="ml-3">Usages</span>
+            <span className="ml-3">History</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={onClickLogout}>
             <LogOut />

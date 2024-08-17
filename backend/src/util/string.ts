@@ -8,12 +8,3 @@ export function getDateString(d: Date) {
 
   return `${year}.${month}.${date} ${h}:${m}`;
 }
-
-export function getInterpolatedString(originalString: string, body: any) {
-  let interpolatedString = originalString;
-  Object.keys(body).forEach((key) => {
-    interpolatedString = interpolatedString.replaceAll(`{{${key}}}`, body[key]);
-  });
-
-  return interpolatedString;
-}

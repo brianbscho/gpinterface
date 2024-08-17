@@ -1,45 +1,58 @@
 import { Type } from "@sinclair/typebox";
-import { Post } from ".";
-import { TextMessageSchema } from "./textMessage";
-import { TextExampleSchema } from "./textExample";
-import { ImageExampleSchema } from "./imageExample";
-import { ImagePrompt } from "./imagePrompt";
-import { TextPrompt } from "./textPrompt";
+import { Content, User } from ".";
 
-export const PostCopySchema = Type.Object({ hashId: Type.String() });
+export interface Post {
+  hashId: string;
+  title: string;
+  post: string;
+  createdAt: string;
 
-export const PostSchema = {
-  post: Type.String(),
-  textPrompts: Type.Array(
-    Type.Object({
-      ...TextPrompt,
-      examples: Type.Array(TextExampleSchema),
-      messages: Type.Array(TextMessageSchema),
-    })
-  ),
-  imagePrompts: Type.Array(
-    Type.Object({
-      ...ImagePrompt,
-      examples: Type.Array(ImageExampleSchema),
-    })
-  ),
-};
+  isBookmarked: boolean;
+  isLiked: boolean;
+  likes: number;
+
+  chat: { hashId: string; systemMessage: string; contents: Content[] };
+
+  user?: User | null | undefined;
+}
+
 export const PostCreateSchema = Type.Object({
-  threadHashId: Type.String(),
-  ...PostSchema,
+  title: Type.String(),
+  post: Type.String(),
+  chatHashId: Type.String(),
 });
 export type PostCreateResponse = { hashId: string };
 
-export const PostGetSchema = Type.Object({ hashId: Type.String() });
-export type PostGetResponse = {
-  thread: { hashId: string; title: string; isPublic: boolean };
-  post: Post;
+export type PostGetResponse = { post: Post };
+
+type PostResponse = {
+  hashId: string;
+  title: string;
+  post: string;
+
+  likes: number;
+  comments: number;
+
+  systemMessage: string;
+  messages: { hashId: string; role: string; content: string }[];
+  createdAt: string;
+
+  user?: User | null;
+};
+export type PostsGetResponse = { posts: PostResponse[] };
+export type PostsCommentGetResponse = {
+  posts: (PostResponse & { comment: string })[];
 };
 
-export const PostsGetSchema = Type.Object({ threadHashId: Type.String() });
-export type PostsGetResponse = { posts: Post[] };
-
 export const PostUpdateSchema = Type.Object({
-  hashId: Type.String(),
+  title: Type.String(),
   post: Type.String(),
+});
+
+export const SearchQueryParamSchema = Type.Object({
+  lastHashId: Type.String(),
+  keyword: Type.String(),
+});
+export const PostsUserParamSchema = Type.Object({
+  userHashId: Type.String(),
 });

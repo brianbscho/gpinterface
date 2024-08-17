@@ -2,7 +2,6 @@ import { FastifyInstance, FastifyReply } from "fastify";
 import * as bcrypt from "bcryptjs";
 import { validateEmail, validatePassword } from "gpinterface-shared/string";
 import { Static } from "@sinclair/typebox";
-import { UserMe } from "gpinterface-shared/type";
 import { sign } from "jsonwebtoken";
 import { Payload } from "../types/jwt";
 import { createEntity } from "../util/prisma";
@@ -31,7 +30,11 @@ function getAccessToken(
   const accessToken = sign(payload, secret, { expiresIn: "30d" });
   return accessToken;
 }
-function cookieReply(reply: FastifyReply, accessToken: string, user: UserMe) {
+function cookieReply(
+  reply: FastifyReply,
+  accessToken: string,
+  user: UserGetMeResponse["user"]
+) {
   const response: UserGetMeResponse = { user };
   return reply
     .setCookie("access_token", accessToken, {
@@ -157,7 +160,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: UserCreateSchema } },
     async (request, reply) => {
       try {
-        const { email, password, name } = request.body;
+        const { email, password, name, chatHashId } = request.body;
         if (!validateEmail(email)) {
           throw httpErrors.badRequest("Please check the email and try again");
         }
@@ -185,6 +188,12 @@ export default async function (fastify: FastifyInstance) {
           },
           12
         );
+        if (chatHashId) {
+          await fastify.prisma.chat.update({
+            where: { hashId: chatHashId, userHashId: null },
+            data: { userHashId: user.hashId },
+          });
+        }
 
         const accessToken = getAccessToken(httpErrors.internalServerError, {
           user: { hashId: user.hashId, name },

@@ -5,7 +5,6 @@ import {
   BookmarkUpdateResponse,
   BookmarkUpdateSchema,
 } from "gpinterface-shared/type/bookmark";
-import { isAccessible } from "../util/thread";
 
 export default async function (fastify: FastifyInstance) {
   const { httpErrors } = fastify;
@@ -20,12 +19,11 @@ export default async function (fastify: FastifyInstance) {
 
         const post = await fastify.prisma.post.findFirst({
           where: { hashId: postHashId },
-          select: { thread: { select: { isPublic: true, userHashId: true } } },
+          select: { hashId: true },
         });
         if (!post) {
           throw httpErrors.badRequest("The post is not available.");
         }
-        isAccessible(post.thread, user);
 
         const bookmarkEntry = await fastify.prisma.bookmark.findFirst({
           where: { userHashId: user.hashId, postHashId },

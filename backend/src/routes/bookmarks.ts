@@ -1,124 +1,64 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
-import { getDateString } from "../util/string";
-import { getIdByHashId } from "../util/prisma";
-import {
-  BookmarksGetResponse,
-  BookmarksQueryParamSchema,
-} from "gpinterface-shared/type/bookmark";
-import { getTypedTextPrompts } from "../util/textPrompt";
-import { getTypedImagePrompts } from "../util/imagePrompt";
+import { getUpdatedAtByHashId } from "../util/prisma";
+import { PostsGetResponse } from "gpinterface-shared/type/post";
+import { getTypedPostResponse } from "./posts";
+import { QueryParamSchema } from "gpinterface-shared/type";
 
 export default async function (fastify: FastifyInstance) {
-  fastify.get<{ Querystring: Static<typeof BookmarksQueryParamSchema> }>(
+  fastify.get<{ Querystring: Static<typeof QueryParamSchema> }>(
     "/",
-    {
-      schema: { querystring: BookmarksQueryParamSchema },
-    },
-    async (request, reply): Promise<BookmarksGetResponse> => {
+    { schema: { querystring: QueryParamSchema } },
+    async (request, reply): Promise<PostsGetResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
-        const { lastHashId, type } = request.query;
+        const { lastHashId } = request.query;
 
-        const id = await getIdByHashId(
+        const updatedAt = await getUpdatedAtByHashId(
           fastify.prisma.bookmark.findFirst,
           lastHashId
         );
 
         const bookmarks = await fastify.prisma.bookmark.findMany({
           where: {
-            ...(id > 0 && { id: { lt: id } }),
+            ...(updatedAt !== null && { updatedAt: { lt: updatedAt } }),
             userHashId: user.hashId,
             isBookmarked: true,
-            ...(type === "prompt" && {
-              post: {
-                OR: [
-                  { textPrompts: { some: {} } },
-                  { imagePrompts: { some: {} } },
-                ],
-              },
-            }),
           },
           select: {
             hashId: true,
             post: {
               select: {
                 hashId: true,
+                title: true,
                 post: true,
-                likes: {
-                  select: { isLiked: true },
-                  where: { userHashId: user.hashId },
+                _count: {
+                  select: {
+                    likes: { where: { isLiked: true } },
+                    comments: true,
+                  },
                 },
-                _count: { select: { likes: { where: { isLiked: true } } } },
+                chat: {
+                  select: {
+                    systemMessage: true,
+                    contents: {
+                      select: { hashId: true, role: true, content: true },
+                      orderBy: { id: "asc" },
+                      take: 2,
+                    },
+                  },
+                },
                 createdAt: true,
                 user: { select: { hashId: true, name: true } },
-                textPrompts: {
-                  select: {
-                    hashId: true,
-                    provider: true,
-                    model: true,
-                    systemMessage: true,
-                    config: true,
-                    examples: {
-                      select: {
-                        hashId: true,
-                        input: true,
-                        content: true,
-                        response: true,
-                        price: true,
-                      },
-                    },
-                    messages: {
-                      select: {
-                        hashId: true,
-                        role: true,
-                        content: true,
-                      },
-                    },
-                  },
-                },
-                imagePrompts: {
-                  select: {
-                    hashId: true,
-                    provider: true,
-                    model: true,
-                    prompt: true,
-                    config: true,
-                    examples: {
-                      select: {
-                        hashId: true,
-                        input: true,
-                        url: true,
-                        response: true,
-                        price: true,
-                      },
-                    },
-                  },
-                },
               },
             },
           },
-          orderBy: { id: "desc" },
+          orderBy: { updatedAt: "desc" },
           take: 20,
         });
 
         return {
-          bookmarks: bookmarks.map((b) => {
-            const { hashId, post } = b;
-            const { likes, _count, ...rest } = post;
-            return {
-              hashId,
-              post: {
-                ...rest,
-                createdAt: getDateString(post.createdAt),
-                isBookmarked: true,
-                isLiked: likes[0]?.isLiked || false,
-                likes: _count.likes,
-                textPrompts: getTypedTextPrompts(post.textPrompts),
-                imagePrompts: getTypedImagePrompts(post.imagePrompts),
-              },
-            };
-          }),
+          posts: bookmarks.map((b) => getTypedPostResponse(b.post)),
         };
       } catch (ex) {
         console.error("path: /bookmarks?lastHashId, method: get, error:", ex);

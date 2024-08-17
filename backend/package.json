@@ -7,7 +7,7 @@
     "prisma:generate": "prisma generate",
     "copy-shared": "cpy '../shared/dist/**/*' './dist/node_modules/gpinterface-shared/'",
     "build": "tsc -p tsconfig.json && npm run copy-shared",
-    "start:prompt": "node dist/prompt/app.js",
+    "start:chat": "node dist/chat/app.js",
     "start": "node dist/app.js",
     "dev": "nodemon"
   },

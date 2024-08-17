@@ -1,150 +1,51 @@
 import { Type } from "@sinclair/typebox";
 
-// * * * * * * * * * * * *
-// Thread
-//
-export interface Post {
+export interface Content {
   hashId: string;
-  post: string;
-  createdAt: string;
 
-  isBookmarked: boolean;
-  isLiked: boolean;
-  likes: number;
-
-  user?: User | null | undefined;
-  textPrompts: TextPrompt[];
-  imagePrompts: ImagePrompt[];
-}
-
-export interface Thread {
-  hashId: string;
-  title: string;
-  isPublic: boolean;
-  createdAt: string;
-  posts: number;
-  likes: number;
-
-  user?: User | null | undefined;
-}
-
-// * * * * * * * * * * * *
-// Image Prompt
-//
-
-export interface ImageExample {
-  hashId: string;
-  input: object;
-  url: string;
-  response: object;
-  price: number;
-}
-
-export interface ImagePrompt {
-  hashId: string;
-  provider: string;
-  model: string;
-  prompt: string;
-  config: object;
-
-  examples: ImageExample[];
-}
-
-export interface ImagePromptHistory {
-  hashId: string;
-  imagePromptHashId: string | null;
-  provider: string;
-  model: string;
-  prompt: string;
-  config: object;
-  input: object;
-  url: string;
-  response: object;
-  price: number;
-  createdAt: string;
-}
-
-// * * * * * * * * * * * *
-// Text Prompt
-//
-
-export interface TextExample {
-  hashId: string;
-  input: object;
-  content: string;
-  response: object;
-  price: number;
-}
-
-export interface TextMessage {
-  hashId: string;
+  model: { hashId: string; name: string };
   role: string;
   content: string;
-}
-
-export interface TextPrompt {
-  hashId: string;
-  provider: string;
-  model: string;
-  systemMessage: string;
-  config: object;
-
-  examples: TextExample[];
-  messages: TextMessage[];
-}
-
-export interface TextPromptHistory {
-  hashId: string;
-  textPromptHashId: string | null;
-  input: object;
-  content: string;
-  response: object;
-  inputTokens: number;
-  outputTokens: number;
-  provider: string;
-  model: string;
-  systemMessage: string;
-  config: object;
-  messages: object;
-  price: number;
-  createdAt: string;
+  config?: object | null;
 }
 
 // * * * * * * * * * * * *
-// User
+// Chat
 //
 
-export interface ApiKey {
+interface Config {
   hashId: string;
-  key: string;
+  name: string;
+  type: string;
+  description: string;
+  default?: string | null;
+  min?: number | null;
+  max?: number | null;
 }
 
-export interface Notification {
+interface ConfigOption {
   hashId: string;
-  message: string;
-  url: string;
-  createdAt: string;
+  value: string;
 }
+
+export type Model = {
+  hashId: string;
+  name: string;
+  inputPricePerMillion: number;
+  outputPricePerMillion: number;
+  isFree: boolean;
+  isLoginRequired: boolean;
+  isAvailable: boolean;
+} & { configs: (Config & { options: ConfigOption[] })[] };
 
 export interface User {
   hashId: string;
   name: string;
 }
 
-export interface UserInfo {
-  hashId: string;
-  name: string;
-  bio: string;
-}
-
-export interface UserMe {
-  hashId: string;
-  email: string;
-  name: string;
-  bio: string;
-  notification: boolean;
-}
-
 export const QueryParamSchema = Type.Object({
   lastHashId: Type.Optional(Type.String()),
+});
+export const ParamSchema = Type.Object({
+  hashId: Type.String(),
 });

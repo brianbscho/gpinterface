@@ -1,5 +1,9 @@
 import { Type } from "@sinclair/typebox";
-import { ApiKey } from ".";
+
+interface ApiKey {
+  hashId: string;
+  key: string;
+}
 
 export const ApiKeyDeleteSchema = Type.Object({ hashId: Type.String() });
 export type ApiKeyDeleteResponse = { hashId: string };

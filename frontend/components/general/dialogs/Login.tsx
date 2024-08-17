@@ -1,8 +1,8 @@
 "use client";
 
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import Link from "../links/Link";
+import { useSearchParams } from "next/navigation";
+import { Suspense, useMemo } from "react";
+import Link from "next/link";
 import {
   Button,
   Dialog,
@@ -11,40 +11,50 @@ import {
   DialogTitle,
 } from "@/components/ui";
 
-export default function Login({
-  title = "Please log in first :)",
-  open,
-  onClickLogin,
+function _Login({
+  title,
+  useOpen,
 }: {
-  title?: string;
-  open: boolean;
-  onClickLogin?: () => void;
+  title: string;
+  useOpen: [boolean, (open: boolean) => void];
 }) {
-  const pathname = usePathname();
-  const [redirect, setRedirect] = useState("");
-  useEffect(() => {
-    if (pathname.includes("login")) return;
-    if (pathname === "/") {
-      setRedirect("");
-    } else {
-      setRedirect(`?redirect=${pathname}`);
-    }
-  }, [pathname]);
+  const [open, setOpen] = useOpen;
+  const searchParams = useSearchParams();
+  const chatHashId = useMemo(
+    () => searchParams.get("chatHashId"),
+    [searchParams]
+  );
+  const param = useMemo(() => {
+    if (chatHashId) return `?chatHashId=${chatHashId}`;
+    return "";
+  }, [chatHashId]);
 
   return (
-    <Dialog open={open}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
         <DialogTitle>{title}</DialogTitle>
         <div className="w-full flex justify-end">
           <DialogClose>
             <Button asChild>
-              <Link href={`/login${redirect}`} onClick={onClickLogin}>
-                Login
-              </Link>
+              <Link href={`/login${param}`}>Login</Link>
             </Button>
           </DialogClose>
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+export default function Login({
+  title = "Please log in first :)",
+  useOpen,
+}: {
+  title?: string;
+  useOpen: [boolean, (open: boolean) => void];
+}) {
+  return (
+    <Suspense>
+      <_Login title={title} useOpen={useOpen} />
+    </Suspense>
   );
 }

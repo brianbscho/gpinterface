@@ -2,23 +2,22 @@
 
 import callApi from "@/utils/callApi";
 import { useCallback, useEffect, useState } from "react";
-import { Notification } from "gpinterface-shared/type";
 import useUserStore from "@/store/user";
 import Link from "next/link";
 import { NotificationsGetResponse } from "gpinterface-shared/type/notification";
 import List from "@/components/List";
-import { Bell, ChevronRight, X } from "lucide-react";
+import { Bell, ChevronRight } from "lucide-react";
 import {
   Button,
   Dialog,
-  DialogClose,
   DialogContent,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui";
 
+type NotificationsType = NotificationsGetResponse["notifications"];
 export default function Notifications() {
-  const [notifications, setNotifications] = useState<Notification[]>();
+  const [notifications, setNotifications] = useState<NotificationsType>();
   const [lastHashId, setLastHashId] = useState("");
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 
@@ -37,9 +36,9 @@ export default function Notifications() {
     });
     if (response) {
       setNotifications((prev) => [...(prev ?? []), ...response.notifications]);
-    }
-    if (response?.notifications.length === 0) {
-      setSpinnerHidden(true);
+      if (response.notifications.length === 0) {
+        setSpinnerHidden(true);
+      }
     }
   }, [lastHashId]);
 
@@ -49,7 +48,7 @@ export default function Notifications() {
     );
     if (!_confirm) return;
 
-    const response = await callApi<{ notifications: Notification[] }>({
+    const response = await callApi<{ notifications: NotificationsType }>({
       endpoint: "/notifications",
       method: "DELETE",
     });

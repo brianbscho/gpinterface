@@ -1,23 +1,19 @@
-import { Static, Type } from "@sinclair/typebox";
-import { TextPrompt } from "gpinterface-shared/type/textPrompt";
-import { TextMessageSchema } from "gpinterface-shared/type/textMessage";
-import {
-  getInputTextPriceByModel,
-  getOutputTextPriceByModel,
-  textModels,
-} from "gpinterface-shared/models/text/model";
 import { callOpenai } from "./openai";
 import { callClaude } from "./anthropic";
 import { callMistral } from "./mistral";
 import { callCommand } from "./cohere";
-import { callJamba } from "./ai21";
+import { callJamba } from "./ai21_labs";
 import { callBedrock } from "./bedrock";
-import { callGroq } from "./google";
 import { Prisma } from "@prisma/client";
+import { providers } from "../provider";
 
-const TextPromptSchema = Type.Object(TextPrompt);
-type TextPromptType = Static<typeof TextPromptSchema>;
-type TextMessageType = Static<typeof TextMessageSchema>;
+type TextPromptType = {
+  provider: string;
+  model: string;
+  systemMessage: string;
+  config: object;
+};
+type TextMessageType = { role: string; content: string };
 
 export async function getTextResponse(
   textPrompt: TextPromptType & { messages: TextMessageType[] }
@@ -29,18 +25,19 @@ export async function getTextResponse(
       : messages;
 
   switch (provider) {
-    case textModels[0].provider:
+    case providers.OpenAI:
       return callOpenai({ model, messages: systemMergedMessages, ...config });
-    case textModels[1].provider:
+    case providers.Anthropic:
       return callClaude({
         model,
         messages,
         ...(systemMessage.length > 0 && { system: systemMessage }),
+        max_tokens: 4096,
         ...config,
       });
-    case textModels[2].provider:
+    case providers.MistralAI:
       return callMistral({ model, messages: systemMergedMessages, ...config });
-    case textModels[3].provider:
+    case providers.Cohere:
       const message = messages[messages.length - 1].content;
       const chatHistory = messages.slice(0, -1).map((m) => ({
         role: m.role !== "user" ? "CHATBOT" : "USER",
@@ -53,9 +50,9 @@ export async function getTextResponse(
         ...(systemMessage.length > 0 && { preamble: systemMessage }),
         ...config,
       });
-    case textModels[4].provider:
+    case providers.AI21Labs:
       return callJamba({ model, messages: systemMergedMessages, ...config });
-    case textModels[5].provider:
+    case providers.Meta:
       return callBedrock({
         modelId: model,
         messages: messages.map(({ role, content }) => ({
@@ -65,27 +62,13 @@ export async function getTextResponse(
         ...(systemMessage.length > 0 && { system: [{ text: systemMessage }] }),
         inferenceConfig: config,
       });
-    case textModels[6].provider:
-      return callGroq({ model, messages: systemMergedMessages, ...config });
     default:
       return { content: "", response: null, inputTokens: 0, outputTokens: 0 };
   }
 }
 
-const MILLION = 1000000;
-export function getTextPriceByModel(
-  model: string,
-  input: number,
-  output: number
-) {
-  return (
-    getInputTextPriceByModel(input, model) / MILLION +
-    getOutputTextPriceByModel(output, model) / MILLION
-  );
-}
-
 export async function getTodayPriceSum(
-  history: Prisma.TextPromptHistoryDelegate,
+  history: Prisma.HistoryDelegate,
   userHashId: string
 ) {
   const todayStart = new Date();

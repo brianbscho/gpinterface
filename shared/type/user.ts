@@ -1,10 +1,24 @@
 import { Type } from "@sinclair/typebox";
-import { UserInfo, UserMe } from ".";
+
+interface UserInfo {
+  hashId: string;
+  name: string;
+  bio: string;
+}
+
+interface UserMe {
+  hashId: string;
+  email: string;
+  name: string;
+  bio: string;
+  notification: boolean;
+}
 
 export const UserCreateSchema = Type.Object({
   email: Type.String(),
   name: Type.String(),
   password: Type.String(),
+  chatHashId: Type.Union([Type.String(), Type.Null()]),
 });
 export const UserGetSchema = Type.Object({
   hashId: Type.String(),

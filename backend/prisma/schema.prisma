@@ -15,7 +15,7 @@ datasource db {
 }
 
 // * * * * * * * * * * * *
-// Thread
+// Post
 // 
 
 model Bookmark {
@@ -32,6 +32,22 @@ model Bookmark {
   user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
 
   @@map("bookmarks")
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  comment String
+
+  postHashId String  @map("post_hash_id")
+  post       Post    @relation(fields: [postHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
+  userHashId String? @map("user_hash_id")
+  user       User?   @relation(fields: [userHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+
+  @@map("comments")
 }
 
 model Like {
@@ -56,191 +72,46 @@ model Post {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
-  post String
+  title String
+  post  String
 
-  threadHashId String  @map("thread_hash_id")
-  thread       Thread  @relation(fields: [threadHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
-  userHashId   String? @map("user_hash_id")
-  user         User?   @relation(fields: [userHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+  chatHashId String @map("chat_hash_id")
+  chat       Chat   @relation(fields: [chatHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+  userHashId String @map("user_hash_id")
+  user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
-  bookmarks    Bookmark[]
-  likes        Like[]
-  imagePrompts ImagePrompt[]
-  textPrompts  TextPrompt[]
+  bookmarks Bookmark[]
+  likes     Like[]
+  comments  Comment[]
 
   @@map("posts")
 }
 
-model Thread {
-  id        Int      @id @default(autoincrement())
-  hashId    String   @unique @map("hash_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  title    String
-  isPublic Boolean @map("is_public")
-
-  userHashId String? @map("user_hash_id")
-  user       User?   @relation(fields: [userHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
-
-  posts Post[]
-
-  @@map("threads")
-}
-
 // * * * * * * * * * * * *
-// Image Prompt
-// 
-model ImageExample {
-  id        Int      @id @default(autoincrement())
-  hashId    String   @unique @map("hash_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  input    Json
-  url      String
-  response Json
-  price    Float
-
-  imagePromptHashId String      @map("image_prompt_hash_id")
-  imagePrompt       ImagePrompt @relation(fields: [imagePromptHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
-
-  @@map("image_examples")
-}
-
-model ImagePrompt {
-  id        Int      @id @default(autoincrement())
-  hashId    String   @unique @map("hash_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  provider String
-  model    String
-  prompt   String
-  config   Json
-
-  postHashId String @map("post_hash_id")
-  post       Post   @relation(fields: [postHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
-
-  examples  ImageExample[]
-  histories ImagePromptHistory[]
-
-  @@map("image_prompts")
-}
-
-model ImagePromptHistory {
-  id        Int      @id @default(autoincrement())
-  hashId    String   @unique @map("hash_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  provider String
-  model    String
-  prompt   String
-  config   Json
-  input    Json
-  url      String
-  response Json
-  price    Float
-
-  imagePromptHashId String?      @map("image_prompt_hash_id")
-  imagePrompt       ImagePrompt? @relation(fields: [imagePromptHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
-  apiKeyHashId      String?      @map("api_key_hash_id")
-  apiKey            ApiKey?      @relation(fields: [apiKeyHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
-  userHashId        String       @map("user_hash_id")
-  user              User         @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
-
-  @@map("image_prompt_histories")
-}
-
-// * * * * * * * * * * * *
-// Text Prompt
+// Api
 // 
 
-model TextExample {
+model Api {
   id        Int      @id @default(autoincrement())
   hashId    String   @unique @map("hash_id")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
-  input    Json
-  content  String
-  response Json
-  price    Float
+  config      Json
+  description String
 
-  textPromptHashId String     @map("text_prompt_hash_id")
-  textPrompt       TextPrompt @relation(fields: [textPromptHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
+  histories History[]
+  sessions  Session[]
 
-  @@map("text_examples")
+  chatHashId  String @map("chat_hash_id")
+  chat        Chat   @relation(fields: [chatHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+  modelHashId String @map("model_hash_id")
+  model       Model  @relation(fields: [modelHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+  userHashId  String @map("user_hash_id")
+  user        User   @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@map("apis")
 }
-
-model TextMessage {
-  id        Int      @id @default(autoincrement())
-  hashId    String   @unique @map("hash_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  role    String
-  content String
-
-  textPromptHashId String     @map("text_prompt_hash_id")
-  textPrompt       TextPrompt @relation(fields: [textPromptHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
-
-  @@map("text_messages")
-}
-
-model TextPrompt {
-  id        Int      @id @default(autoincrement())
-  hashId    String   @unique @map("hash_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  provider      String
-  model         String
-  systemMessage String @map("system_message")
-  config        Json
-
-  postHashId String @map("post_hash_id")
-  post       Post   @relation(fields: [postHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
-
-  examples  TextExample[]
-  messages  TextMessage[]
-  histories TextPromptHistory[]
-
-  @@map("text_prompts")
-}
-
-model TextPromptHistory {
-  id        Int      @id @default(autoincrement())
-  hashId    String   @unique @map("hash_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  provider      String
-  model         String
-  systemMessage String @map("system_message")
-  config        Json
-  input         Json
-  content       String
-  response      Json
-  inputTokens   Int    @map("input_tokens")
-  outputTokens  Int    @map("output_tokens")
-  messages      Json
-  price         Float
-
-  textPromptHashId String?     @map("text_prompt_hash_id")
-  textPrompt       TextPrompt? @relation(fields: [textPromptHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
-  apiKeyHashId     String?     @map("api_key_hash_id")
-  apiKey           ApiKey?     @relation(fields: [apiKeyHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
-  userHashId       String      @map("user_hash_id")
-  user             User        @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
-
-  @@map("text_prompt_histories")
-}
-
-// * * * * * * * * * * * *
-// User
-// 
 
 model ApiKey {
   id        Int      @id @default(autoincrement())
@@ -253,10 +124,209 @@ model ApiKey {
   userHashId String @map("user_hash_id")
   user       User   @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
-  imagePromptHistories ImagePromptHistory[]
-  textPromptHistories  TextPromptHistory[]
-
   @@map("api_keys")
+}
+
+model Session {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  apiHashId String
+  api       Api    @relation(fields: [apiHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  histories History[]
+  messages  SessionMessage[]
+
+  @@map("sessions")
+}
+
+model SessionMessage {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  role    String
+  content String
+
+  sessionHashId String
+  session       Session @relation(fields: [sessionHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@map("session_messages")
+}
+
+// * * * * * * * * * * * *
+// Chat
+// 
+
+model Chat {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  systemMessage String @default("") @map("system_message")
+
+  userHashId String? @map("user_hash_id")
+  user       User?   @relation(fields: [userHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+
+  contents  ChatContent[]
+  apis      Api[]
+  posts     Post[]
+  histories History[]
+
+  @@map("chats")
+}
+
+model Config {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  name        String
+  type        String
+  description String
+  default     String?
+  min         Float?
+  max         Float?
+
+  options         ConfigOption[]
+  configsOnModels ConfigOnModel[]
+
+  @@map("configs")
+}
+
+model ConfigOption {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  value String
+
+  configHashId String @map("config_hash_id")
+  config       Config @relation(fields: [configHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@map("config_options")
+}
+
+model ConfigOnModel {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  configHashId String @map("config_hash_id")
+  config       Config @relation(fields: [configHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+  modelHashId  String @map("model_hash_id")
+  model        Model  @relation(fields: [modelHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@map("configs_on_models")
+}
+
+model ChatContent {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  role    String
+  content String
+  config  Json?
+
+  chatHashId  String @map("chat_hash_id")
+  chat        Chat   @relation(fields: [chatHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
+  modelHashId String @map("model_hash_id")
+  model       Model  @relation(fields: [modelHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@map("chat_contents")
+}
+
+model Model {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  name                  String
+  inputPricePerMillion  Float   @map("input_price_per_million")
+  outputPricePerMillion Float   @map("output_price_per_million")
+  isFree                Boolean @map("is_free")
+  isLoginRequired       Boolean @map("is_login_required")
+  isAvailable           Boolean @map("is_available")
+
+  providerHashId String   @map("provider_hash_id")
+  provider       Provider @relation(fields: [providerHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  configsOnModels ConfigOnModel[]
+  chatContents    ChatContent[]
+  apis            Api[]
+
+  @@map("models")
+}
+
+model Provider {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  name String
+
+  typeHashId String       @map("provider_type_hash_id")
+  type       ProviderType @relation(fields: [typeHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  models Model[]
+
+  @@map("providers")
+}
+
+model ProviderType {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  type String
+
+  providers Provider[]
+
+  @@map("provider_types")
+}
+
+// * * * * * * * * * * * *
+// User
+// 
+
+model History {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  provider     String
+  model        String
+  config       Json
+  messages     Json
+  content      String
+  response     Json
+  price        Float
+  inputTokens  Int    @map("input_tokens")
+  outputTokens Int    @map("output_tokens")
+
+  apiHashId     String?  @map("api_hash_id")
+  api           Api?     @relation(fields: [apiHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+  sessionHashId String?  @map("session_hash_id")
+  session       Session? @relation(fields: [sessionHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+  chatHashId    String?  @map("chat_hash_id")
+  chat          Chat?    @relation(fields: [chatHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+  userHashId    String   @map("user_hash_id")
+  user          User     @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@map("histories")
 }
 
 model Notification {
@@ -286,14 +356,15 @@ model User {
   bio                   String   @default("")
   notificationCheckedAt DateTime @default(now()) @map("notification_checked_at")
 
-  apiKeys              ApiKey[]
-  bookmarks            Bookmark[]
-  likes                Like[]
-  notifications        Notification[]
-  posts                Post[]
-  threads              Thread[]
-  imagePromptHistories ImagePromptHistory[]
-  textPromptHistories  TextPromptHistory[]
+  apiKeys       ApiKey[]
+  bookmarks     Bookmark[]
+  likes         Like[]
+  notifications Notification[]
+  apis          Api[]
+  posts         Post[]
+  comments      Comment[]
+  chats         Chat[]
+  histories     History[]
 
   @@map("users")
 }
