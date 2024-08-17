@@ -20,6 +20,7 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<ContentsGetResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
+        const userHashId = user.hashId || null;
         const { content: userContent, ...body } = request.body;
 
         const model = await fastify.prisma.model.findFirst({
@@ -27,7 +28,7 @@ export default async function (fastify: FastifyInstance) {
             hashId: body.modelHashId,
             isAvailable: true,
             isFree: true,
-            ...(user.hashId === "" && { isLoginRequired: false }),
+            ...(!userHashId && { isLoginRequired: false }),
           },
           select: {
             name: true,
@@ -71,7 +72,7 @@ export default async function (fastify: FastifyInstance) {
 
         await createEntity(fastify.prisma.history.create, {
           data: {
-            userHashId: user.hashId || null,
+            userHashId,
             chatHashId: body.chatHashId,
             provider: model.provider.name,
             model: model.name,
@@ -170,6 +171,7 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<Content> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
+        const userHashId = user.hashId || null;
         const { hashId } = request.params;
         const { chatHashId, modelHashId, config } = request.body;
 
@@ -178,7 +180,7 @@ export default async function (fastify: FastifyInstance) {
             hashId: modelHashId,
             isAvailable: true,
             isFree: true,
-            ...(user.hashId === "" && { isLoginRequired: false }),
+            ...(!userHashId && { isLoginRequired: false }),
           },
           select: {
             name: true,
@@ -226,7 +228,7 @@ export default async function (fastify: FastifyInstance) {
 
         await createEntity(fastify.prisma.history.create, {
           data: {
-            userHashId: user.hashId || null,
+            userHashId,
             chatHashId,
             provider: model.provider.name,
             model: model.name,

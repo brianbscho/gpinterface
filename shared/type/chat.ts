@@ -13,10 +13,7 @@ interface Chat {
 }
 
 export type ChatsGetResponse = { chats: Chat[] };
-export const ChatCreateSchema = Type.Object({
-  modelHashId: Type.String(),
-  config: Type.Any(),
-});
+export const ChatCreateSchema = Type.Object({ modelHashId: Type.String() });
 
 export type ChatUpdateResponse = {
   systemMessage: string;

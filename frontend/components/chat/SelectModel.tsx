@@ -14,7 +14,6 @@ import {
 } from "../ui";
 import useUserStore from "@/store/user";
 import useContentStore from "@/store/content";
-import { Model } from "gpinterface-shared/type";
 
 export default function SelectModel() {
   const [providerTypes, setProviderTypes] =

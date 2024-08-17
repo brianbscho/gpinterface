@@ -14,7 +14,6 @@ import { Static } from "@sinclair/typebox";
 import useContentStore from "@/store/content";
 import { useRouter, useSearchParams } from "next/navigation";
 import useUserStore from "@/store/user";
-import { getApiConfig } from "@/utils/model";
 
 function _Chats() {
   const [chats, setChats] = useState<ChatsGetResponse["chats"]>();
@@ -22,10 +21,7 @@ function _Chats() {
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 
   const router = useRouter();
-  const [model, config] = useContentStore((state) => [
-    state.model,
-    state.config,
-  ]);
+  const modelHashId = useContentStore((state) => state.modelHashId);
 
   const isLoggedOut = useUserStore((state) => state.isLoggedOut);
   const searchParams = useSearchParams();
@@ -39,7 +35,7 @@ function _Chats() {
     if (!shouldCallChat) return;
 
     const callPostChatApi = async () => {
-      if (!model) return;
+      if (!modelHashId) return;
 
       const response = await callApi<
         ChatCreateResponse,
@@ -47,17 +43,14 @@ function _Chats() {
       >({
         endpoint: "/chat",
         method: "POST",
-        body: {
-          modelHashId: model.hashId,
-          config: getApiConfig(model, config),
-        },
+        body: { modelHashId },
       });
       if (response) {
         router.push(`/?chatHashId=${response.hashId}`);
       }
     };
     callPostChatApi();
-  }, [shouldCallChat, model, config, router]);
+  }, [shouldCallChat, modelHashId, router]);
   const callChatsApi = useCallback(async () => {
     const response = await callApi<ChatsGetResponse>({
       endpoint: `/chats?lastHashId=${lastHashId}`,

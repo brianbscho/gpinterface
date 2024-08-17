@@ -77,7 +77,7 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<ChatCreateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
-        const { modelHashId, config } = request.body;
+        const { modelHashId } = request.body;
 
         const model = await fastify.prisma.model.findFirst({
           where: {

@@ -63,14 +63,19 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<SessionCompletionResponse> => {
       try {
         const { user } = await getApiKey(fastify, request, true);
+        const userHashId = user.hashId || null;
         const { sessionHashId, message } = request.body;
 
         const session = await fastify.prisma.session.findFirst({
           where: {
             hashId: sessionHashId,
             api: {
-              userHashId: user.hashId || null,
-              model: { isAvailable: true, isFree: true },
+              userHashId,
+              model: {
+                isAvailable: true,
+                isFree: true,
+                ...(!userHashId && { isLoginRequired: false }),
+              },
             },
           },
           select: {
@@ -127,7 +132,7 @@ export default async function (fastify: FastifyInstance) {
 
         await createEntity(fastify.prisma.history.create, {
           data: {
-            userHashId: user.hashId || null,
+            userHashId,
             sessionHashId,
             provider: model.provider.name,
             model: model.name,

@@ -211,15 +211,11 @@ export default async function (fastify: FastifyInstance) {
           throw httpErrors.badRequest("chat is not available.");
         }
 
+        const userHashId = user.hashId || null;
         const newApi = await createApi(fastify.prisma.chat, {
-          userHashId: user.hashId || null,
+          userHashId,
           ...chat,
-          apis: {
-            description,
-            userHashId: user.hashId || null,
-            modelHashId,
-            config,
-          },
+          apis: { description, userHashId, modelHashId, config },
         });
 
         return { hashId: newApi.hashId };
