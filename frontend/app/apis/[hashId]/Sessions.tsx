@@ -18,7 +18,7 @@ export default function Sessions({ apiHashId }: { apiHashId: string }) {
   const [lastHashId, setLastHashId] = useState("");
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 
-  const callChatsApi = useCallback(async () => {
+  const callSessionsApi = useCallback(async () => {
     const response = await callApi<ApiSessionsGetResponse>({
       endpoint: `/api/${apiHashId}/sessions?lastHashId=${lastHashId}`,
       showError: true,
@@ -38,7 +38,7 @@ export default function Sessions({ apiHashId }: { apiHashId: string }) {
   return (
     <div className="w-full h-full overflow-y-auto">
       <List
-        callApi={callChatsApi}
+        callApi={callSessionsApi}
         emptyMessage="No Sessions yet"
         elements={sessions}
         spinnerHidden={spinnerHidden}
