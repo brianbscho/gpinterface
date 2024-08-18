@@ -12,10 +12,18 @@ import {
   ApiGetResponse,
   ApiUpdateSchema,
 } from "gpinterface-shared/type/api";
-import { useCallback, useEffect, useState } from "react";
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
-type ApiType = ApiGetResponse;
-export default function EditApi({ api }: { api: ApiType | undefined }) {
+type ApiType = ApiGetResponse | undefined;
+type Props = { useApi: [api: ApiType, Dispatch<SetStateAction<ApiType>>] };
+export default function EditApi({ useApi }: Props) {
+  const [api, setApi] = useApi;
   const [isPublic, setIsPublic] = useState<boolean>();
   useEffect(() => {
     setIsPublic(api?.isPublic);
@@ -60,8 +68,11 @@ export default function EditApi({ api }: { api: ApiType | undefined }) {
     });
     if (response) {
       toast({ title: "Saved!", duration: 1000 });
+      setApi((prev) =>
+        !prev ? prev : { ...prev, modelHashId: model.hashId, config }
+      );
     }
-  }, [api?.hashId, model, config, toast]);
+  }, [api?.hashId, model, config, toast, setApi]);
 
   return (
     <>

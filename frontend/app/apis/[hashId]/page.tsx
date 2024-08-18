@@ -64,7 +64,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
           <div className="h-full grid grid-cols-[1fr_auto] overflow-hidden">
             <Api api={api} editable={editable} />
             <div className="flex flex-col w-full h-full overflow-hidden">
-              {editable && <EditApi api={api} />}
+              {editable && <EditApi useApi={[api, setApi]} />}
               <div className="flex-1 overflow-hidden">
                 <Provider />
               </div>
