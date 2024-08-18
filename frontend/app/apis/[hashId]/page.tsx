@@ -54,7 +54,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
     }
   }, [hashId, model, config, toast]);
 
-  const [tab, setTab] = useState("api");
+  const [tab, setTab] = useState("document");
   const isHidden = useCallback(
     (_tab: string) => (tab === _tab ? "" : "hidden"),
     [tab]
@@ -68,6 +68,9 @@ export default function Page({ params }: { params: { hashId: string } }) {
         onValueChange={setTab}
       >
         <TabsList className="w-full rounded-none">
+          <TabsTrigger value="document" className="flex-1">
+            Document
+          </TabsTrigger>
           <TabsTrigger value="api" className="flex-1">
             API
           </TabsTrigger>
@@ -76,9 +79,6 @@ export default function Page({ params }: { params: { hashId: string } }) {
           </TabsTrigger>
           <TabsTrigger value="sessions" className="flex-1">
             Sessions
-          </TabsTrigger>
-          <TabsTrigger value="document" className="flex-1">
-            Document
           </TabsTrigger>
         </TabsList>
         <div className={cn("w-full flex-1 overflow-hidden", isHidden("api"))}>
