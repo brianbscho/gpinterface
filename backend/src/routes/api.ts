@@ -26,7 +26,10 @@ export default async function (fastify: FastifyInstance) {
         const { hashId } = request.params;
 
         const api = await fastify.prisma.api.findFirst({
-          where: { hashId, userHashId: user.hashId || null },
+          where: {
+            hashId,
+            OR: [{ userHashId: user.hashId || null }, { isPublic: true }],
+          },
           select: {
             hashId: true,
             userHashId: true,
@@ -92,7 +95,10 @@ export default async function (fastify: FastifyInstance) {
           where: {
             ...(id > 0 && { id: { lt: id } }),
             apiHashId: hashId,
-            userHashId: user.hashId || null,
+            OR: [
+              { userHashId: user.hashId || null },
+              { api: { isPublic: true } },
+            ],
           },
           select: {
             hashId: true,
@@ -157,7 +163,10 @@ export default async function (fastify: FastifyInstance) {
         const sessions = await fastify.prisma.session.findMany({
           where: {
             ...(id > 0 && { id: { lt: id } }),
-            api: { hashId, userHashId: user.hashId || null },
+            api: {
+              hashId,
+              OR: [{ userHashId: user.hashId || null }, { isPublic: true }],
+            },
           },
           select: {
             hashId: true,
@@ -186,14 +195,18 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<ApiCreateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
-        const { description, chatHashId, modelHashId, config } = request.body;
+        const { description, chatHashId, ...body } = request.body;
 
         if (description.trim() === "") {
           throw httpErrors.badRequest("description is empty.");
         }
 
+        const userHashId = user.hashId || null;
         const chat = await fastify.prisma.chat.findFirst({
-          where: { hashId: chatHashId },
+          where: {
+            hashId: chatHashId,
+            OR: [{ userHashId }, { apis: { every: { isPublic: true } } }],
+          },
           select: {
             systemMessage: true,
             contents: {
@@ -211,11 +224,10 @@ export default async function (fastify: FastifyInstance) {
           throw httpErrors.badRequest("chat is not available.");
         }
 
-        const userHashId = user.hashId || null;
         const newApi = await createApi(fastify.prisma.chat, {
           userHashId,
           ...chat,
-          apis: { description, userHashId, modelHashId, config },
+          apis: { description, userHashId, ...body },
         });
 
         return { hashId: newApi.hashId };
@@ -235,7 +247,7 @@ export default async function (fastify: FastifyInstance) {
       try {
         const { user } = await fastify.getUser(request, reply, true);
         const { hashId } = request.params;
-        const { description, config, modelHashId } = request.body;
+        const { description, config, modelHashId, isPublic } = request.body;
 
         const oldApi = await fastify.prisma.api.findFirst({
           where: { hashId, userHashId: user.hashId || null },
@@ -245,13 +257,15 @@ export default async function (fastify: FastifyInstance) {
           throw fastify.httpErrors.unauthorized("Api not found.");
         }
 
-        if (description || config || modelHashId) {
+        const isIsPublicBoolean = typeof isPublic === "boolean";
+        if (description || config || modelHashId || isIsPublicBoolean) {
           await fastify.prisma.api.update({
             where: { hashId },
             data: {
               ...(!!description && { description }),
               ...(!!config && { config }),
               ...(!!modelHashId && { modelHashId }),
+              ...(isIsPublicBoolean && { isPublic }),
             },
           });
         }

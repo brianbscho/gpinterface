@@ -15,6 +15,7 @@ export const ApiCreateSchema = Type.Object({
   chatHashId: Type.String(),
   modelHashId: Type.String(),
   config: Type.Any(),
+  isPublic: Type.Boolean(),
 });
 export type ApiCreateResponse = { hashId: string };
 
@@ -52,4 +53,5 @@ export const ApiUpdateSchema = Type.Object({
   description: Type.Optional(Type.String()),
   config: Type.Optional(Type.Any()),
   modelHashId: Type.Optional(Type.Any()),
+  isPublic: Type.Optional(Type.Boolean()),
 });

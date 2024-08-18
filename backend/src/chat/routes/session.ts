@@ -34,7 +34,10 @@ export default async function (fastify: FastifyInstance) {
         const { user } = await getApiKey(fastify, request, true);
         const { apiHashId } = request.body;
         const api = await fastify.prisma.api.findFirst({
-          where: { hashId: apiHashId, userHashId: user.hashId || null },
+          where: {
+            hashId: apiHashId,
+            OR: [{ userHashId: user.hashId || null }, { isPublic: true }],
+          },
           select: {
             hashId: true,
             chat: {
@@ -70,7 +73,7 @@ export default async function (fastify: FastifyInstance) {
           where: {
             hashId: sessionHashId,
             api: {
-              userHashId,
+              OR: [{ userHashId }, { isPublic: true }],
               model: {
                 isAvailable: true,
                 isFree: true,
@@ -167,7 +170,9 @@ export default async function (fastify: FastifyInstance) {
         const session = await fastify.prisma.session.findFirst({
           where: {
             hashId: sessionHashId,
-            api: { userHashId: user.hashId || null },
+            api: {
+              OR: [{ userHashId: user.hashId || null }, { isPublic: true }],
+            },
           },
           select: {
             messages: {
