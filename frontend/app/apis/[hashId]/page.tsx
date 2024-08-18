@@ -20,14 +20,14 @@ import { cn } from "@/utils/css";
 
 export default function Page({ params }: { params: { hashId: string } }) {
   const { hashId } = params;
-  const [api, setApi] = useState<ApiGetResponse["api"]>();
+  const [api, setApi] = useState<ApiGetResponse>();
   useEffect(() => {
     const callApiApi = async () => {
       const response = await callApi<ApiGetResponse>({
         endpoint: `/api/${hashId}`,
         showError: true,
       });
-      setApi(response?.api);
+      setApi(response);
     };
     callApiApi();
   }, [hashId]);

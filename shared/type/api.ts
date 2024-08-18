@@ -1,15 +1,6 @@
 import { Type } from "@sinclair/typebox";
 import { Content } from ".";
 
-interface Api {
-  hashId: string;
-  userHashId: string | null;
-  description: string;
-  chat: { hashId: string; systemMessage: string; contents: Content[] };
-  config: object;
-  modelHashId: string;
-}
-
 export const ApiCreateSchema = Type.Object({
   description: Type.String(),
   chatHashId: Type.String(),
@@ -20,7 +11,12 @@ export const ApiCreateSchema = Type.Object({
 export type ApiCreateResponse = { hashId: string };
 
 export type ApiGetResponse = {
-  api: Api;
+  hashId: string;
+  userHashId: string | null;
+  description: string;
+  chat: { hashId: string; systemMessage: string; contents: Content[] };
+  config: object;
+  modelHashId: string;
 };
 
 type ApiResponse = {

@@ -59,13 +59,11 @@ export default async function (fastify: FastifyInstance) {
 
         const { chat, config, ...rest } = api;
         return {
-          api: {
-            ...rest,
-            config: config as any,
-            chat: {
-              ...chat,
-              contents: chat.contents.map((c) => getTypedContent(c)),
-            },
+          ...rest,
+          config: config as any,
+          chat: {
+            ...chat,
+            contents: chat.contents.map((c) => getTypedContent(c)),
           },
         };
       } catch (ex) {

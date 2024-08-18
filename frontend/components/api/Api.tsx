@@ -16,7 +16,7 @@ import ContentInput from "../chat/ContentInput";
 import { ApiGetResponse } from "gpinterface-shared/type/api";
 import useContentStore from "@/store/content";
 
-type ApiType = ApiGetResponse["api"];
+type ApiType = ApiGetResponse;
 type ContentsType = ApiType["chat"]["contents"];
 export default function Api({ api }: { api?: ApiType }) {
   const setContentStore = useContentStore((state) => state.setContentStore);

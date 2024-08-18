@@ -18,7 +18,7 @@ const Authentication = ({ userHashId }: { userHashId: string | null }) => {
   );
 };
 
-export default function Document({ api }: { api?: ApiGetResponse["api"] }) {
+export default function Document({ api }: { api?: ApiGetResponse }) {
   if (!api) return null;
 
   return (
