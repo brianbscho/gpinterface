@@ -17,6 +17,7 @@ export type ApiGetResponse = {
   chat: { hashId: string; systemMessage: string; contents: Content[] };
   config: object;
   modelHashId: string;
+  isPublic: boolean;
 };
 
 type ApiResponse = {

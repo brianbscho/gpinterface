@@ -51,6 +51,7 @@ export default async function (fastify: FastifyInstance) {
             },
             config: true,
             modelHashId: true,
+            isPublic: true,
           },
         });
         if (!api) {
