@@ -15,17 +15,38 @@ import Content from "../chat/Content";
 import ContentInput from "../chat/ContentInput";
 import { ApiGetResponse } from "gpinterface-shared/type/api";
 import useContentStore from "@/store/content";
+import useUserStore from "@/store/user";
 
 type ApiType = ApiGetResponse;
 type ContentsType = ApiType["chat"]["contents"];
-export default function Api({ api }: { api?: ApiType }) {
-  const setContentStore = useContentStore((state) => state.setContentStore);
+type Props = { api: ApiType | undefined; editable: boolean };
+export default function Api({ api, editable }: Props) {
+  const [models, setContentStore] = useContentStore((state) => [
+    state.models,
+    state.setContentStore,
+  ]);
+  const isLoggedOut = useUserStore((state) => state.isLoggedOut);
   useEffect(() => {
-    if (api) {
-      const { config, modelHashId } = api;
-      setContentStore({ config, modelHashId });
-    }
+    if (!api) return;
+
+    const { config } = api;
+    setContentStore({ config });
   }, [api, setContentStore]);
+  useEffect(() => {
+    if (!api) return;
+
+    const { modelHashId } = api;
+    const index = models.findIndex(
+      (m) =>
+        m.isAvailable &&
+        m.isFree &&
+        (!isLoggedOut || !m.isLoginRequired) &&
+        m.hashId === modelHashId
+    );
+    if (index < 0) return;
+
+    setContentStore({ modelHashId: models[index].hashId });
+  }, [api, setContentStore, models, isLoggedOut]);
   const [contents, setContents] = useState<ContentsType>([]);
   useEffect(() => {
     if (!api) return;
@@ -78,6 +99,7 @@ export default function Api({ api }: { api?: ApiType }) {
           chatHashId={api.chat.hashId}
           setContents={setContents}
           callUpdateContent={callUpdateSystemMessage}
+          editable={editable}
         />
         {contents.map((c, i) => {
           let hashIds: string[] = [];
@@ -95,6 +117,7 @@ export default function Api({ api }: { api?: ApiType }) {
               setContents={setContents}
               callUpdateContent={callUpdateContent(c.hashId)}
               hashIds={hashIds}
+              editable={editable}
             />
           );
         })}
