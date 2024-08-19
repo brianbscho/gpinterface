@@ -5,11 +5,30 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  useToast,
 } from "@/components/ui";
 import useContentStore from "@/store/content";
 import { getApiConfig } from "@/utils/model";
 import { stringify } from "@/utils/string";
 import { ApiGetResponse } from "gpinterface-shared/type/api";
+import { Copy } from "lucide-react";
+
+const CopyUrl = ({ url }: { url: string }) => {
+  const { toast } = useToast();
+
+  return (
+    <div
+      className="flex items-center text-sm underline gap-1 cursor-pointer"
+      onClick={() => {
+        navigator.clipboard.writeText(`${url}`);
+        toast({ title: "Copied!", duration: 1000 });
+      }}
+    >
+      {`${url}`}
+      <Copy />
+    </div>
+  );
+};
 
 const Authentication = ({ userHashId }: { userHashId: string | null }) => {
   if (!userHashId) return null;
@@ -31,11 +50,25 @@ export default function Document({ api }: { api?: ApiGetResponse }) {
       {!!model && (
         <Card className="w-full mb-3">
           <CardHeader>
-            <CardTitle>Model</CardTitle>
+            <CardTitle>Info</CardTitle>
             <CardDescription>{model.name}</CardDescription>
           </CardHeader>
           <CardContent className="whitespace-pre-wrap">
-            {stringify(getApiConfig(model, api.config))}
+            <div className="grid grid-cols-[auto_1fr] gap-3 items-center">
+              <div className="col-span-2">
+                {stringify(getApiConfig(model, api.config))}
+              </div>
+              <Button disabled>{api.isPublic ? "Public" : "Private"}</Button>
+              <div className="text-sm">
+                {api.isPublic
+                  ? "Accessible by anyone for testing and calling. Only the owner has editing privileges."
+                  : "Only the owner can access, test, edit, and call this API."}
+              </div>
+              <Button disabled>Share</Button>
+              <CopyUrl
+                url={`${process.env.NEXT_PUBLIC_HOSTNAME}/apis/${api.hashId}`}
+              />
+            </div>
           </CardContent>
         </Card>
       )}
