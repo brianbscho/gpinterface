@@ -32,7 +32,7 @@ function _Chats() {
 
   const [shouldCallChat, setShouldCallChat] = useState(false);
   useEffect(() => {
-    if (!shouldCallChat) return;
+    if (!shouldCallChat || chatHashId) return;
 
     const callPostChatApi = async () => {
       if (!modelHashId) return;
@@ -50,7 +50,7 @@ function _Chats() {
       }
     };
     callPostChatApi();
-  }, [shouldCallChat, modelHashId, router]);
+  }, [shouldCallChat, chatHashId, modelHashId, router]);
   const callChatsApi = useCallback(async () => {
     const response = await callApi<ChatsGetResponse>({
       endpoint: `/chats?lastHashId=${lastHashId}`,
