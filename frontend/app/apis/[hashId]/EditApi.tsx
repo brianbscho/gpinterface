@@ -24,10 +24,6 @@ type ApiType = ApiGetResponse | undefined;
 type Props = { useApi: [api: ApiType, Dispatch<SetStateAction<ApiType>>] };
 export default function EditApi({ useApi }: Props) {
   const [api, setApi] = useApi;
-  const [isPublic, setIsPublic] = useState<boolean>();
-  useEffect(() => {
-    setIsPublic(api?.isPublic);
-  }, [api?.isPublic]);
 
   const { toast } = useToast();
   const [config, model] = useContentStore((state) => [
@@ -49,10 +45,10 @@ export default function EditApi({ useApi }: Props) {
       });
       if (response) {
         toast({ title: "Saved!", duration: 1000 });
-        setIsPublic(c);
+        setApi((prev) => (!prev ? prev : { ...prev, isPublic: c }));
       }
     },
-    [api?.hashId, toast]
+    [api?.hashId, toast, setApi]
   );
   const onClickDefault = useCallback(async () => {
     if (!model || !api?.hashId) return;
@@ -79,7 +75,7 @@ export default function EditApi({ useApi }: Props) {
       <div className="py-2 pl-3 flex items-center gap-3">
         <Checkbox
           id="is_public"
-          checked={isPublic}
+          checked={api?.isPublic}
           onCheckedChange={onCheckedChange}
         />
         <label htmlFor="is_public" className="text-sm">
