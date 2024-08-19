@@ -27,7 +27,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
     callApiApi();
   }, [hashId]);
 
-  const [tab, setTab] = useState("document");
+  const [tab, setTab] = useState("api");
   const isHidden = useCallback(
     (_tab: string) => (tab === _tab ? "" : "hidden"),
     [tab]
@@ -47,11 +47,11 @@ export default function Page({ params }: { params: { hashId: string } }) {
         onValueChange={setTab}
       >
         <TabsList className="w-full rounded-none">
-          <TabsTrigger value="document" className="flex-1">
-            Document
-          </TabsTrigger>
           <TabsTrigger value="api" className="flex-1">
             API
+          </TabsTrigger>
+          <TabsTrigger value="document" className="flex-1">
+            Document
           </TabsTrigger>
           <TabsTrigger value="chat_completions" className="flex-1">
             Chat completions
