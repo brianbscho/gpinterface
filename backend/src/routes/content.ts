@@ -12,6 +12,7 @@ import { getTextResponse } from "../util/text";
 import { getTypedContent } from "../util/content";
 import { Content, ParamSchema } from "gpinterface-shared/type";
 import { MILLION } from "../util/model";
+import { nanoid } from "nanoid";
 
 export default async function (fastify: FastifyInstance) {
   fastify.post<{ Body: Static<typeof ContentCreateSchema> }>(
@@ -49,6 +50,7 @@ export default async function (fastify: FastifyInstance) {
               select: { role: true, content: true },
               orderBy: { id: "asc" },
             },
+            userHashId: true,
           },
         });
         if (!chat) {
@@ -88,38 +90,44 @@ export default async function (fastify: FastifyInstance) {
             outputTokens,
           },
         });
-        const _userContent = await createEntity(
-          fastify.prisma.chatContent.create,
-          {
-            data: { ...body, role: "user", content: userContent },
-            select: {
-              hashId: true,
-              model: { select: { hashId: true, name: true } },
-              role: true,
-              content: true,
-              config: true,
-            },
-          }
-        );
-        const _assistantContent = await createEntity(
-          fastify.prisma.chatContent.create,
-          {
-            data: { ...body, role: "assistant", content },
-            select: {
-              hashId: true,
-              model: { select: { hashId: true, name: true } },
-              role: true,
-              content: true,
-              config: true,
-            },
-          }
-        );
 
-        return {
-          contents: [_userContent, _assistantContent].map((c) =>
-            getTypedContent(c)
-          ),
-        };
+        const newContents = [
+          {
+            hashId: nanoid(),
+            model: { hashId: body.modelHashId, name: model.name },
+            role: "user",
+            content: userContent,
+            config: body.config,
+          },
+          {
+            hashId: nanoid(),
+            model: { hashId: body.modelHashId, name: model.name },
+            role: "assistant",
+            content,
+            config: body.config,
+          },
+        ];
+
+        if (!chat.userHashId || chat.userHashId === userHashId) {
+          const _userContent = await createEntity(
+            fastify.prisma.chatContent.create,
+            {
+              data: { ...body, role: "user", content: userContent },
+              select: { hashId: true },
+            }
+          );
+          newContents[0].hashId = _userContent.hashId;
+          const _assistantContent = await createEntity(
+            fastify.prisma.chatContent.create,
+            {
+              data: { ...body, role: "assistant", content },
+              select: { hashId: true },
+            }
+          );
+          newContents[1].hashId = _assistantContent.hashId;
+        }
+
+        return { contents: newContents };
       } catch (ex) {
         console.error("path: /content, method: post, error:", ex);
         throw ex;
