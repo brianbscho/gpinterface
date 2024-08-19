@@ -3,6 +3,7 @@ import { Content } from ".";
 
 interface Chat {
   hashId: string;
+  userHashId: string | null;
 
   isApi: boolean;
   isPost: boolean;
@@ -22,14 +23,5 @@ export const ChatUpdateSchema = Type.Object({
   systemMessage: Type.String(),
 });
 
-export type ChatCreateResponse = {
-  hashId: string;
-
-  isApi: boolean;
-  isPost: boolean;
-
-  systemMessage: string;
-  contents: Content[];
-  createdAt: string;
-};
+export type ChatCreateResponse = Chat;
 export type ChatDuplicateResponse = { hashId: string };

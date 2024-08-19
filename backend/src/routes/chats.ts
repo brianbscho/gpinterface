@@ -24,6 +24,7 @@ export default async function (fastify: FastifyInstance) {
           where: { ...(id > 0 && { id: { lt: id } }), userHashId: user.hashId },
           select: {
             hashId: true,
+            userHashId: true,
             _count: { select: { apis: true, posts: true } },
             posts: {
               select: {
