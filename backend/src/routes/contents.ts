@@ -74,7 +74,7 @@ export default async function (fastify: FastifyInstance) {
           select: { hashId: true },
         });
         if (oldContents.length !== hashIds.length) {
-          throw fastify.httpErrors.badRequest("content is not available.");
+          throw fastify.httpErrors.badRequest("Deletion is not possible.");
         }
 
         await fastify.prisma.chatContent.deleteMany({
