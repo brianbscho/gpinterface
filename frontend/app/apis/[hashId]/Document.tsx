@@ -6,6 +6,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui";
+import useContentStore from "@/store/content";
+import { getApiConfig } from "@/utils/model";
+import { stringify } from "@/utils/string";
 import { ApiGetResponse } from "gpinterface-shared/type/api";
 
 const Authentication = ({ userHashId }: { userHashId: string | null }) => {
@@ -19,10 +22,23 @@ const Authentication = ({ userHashId }: { userHashId: string | null }) => {
 };
 
 export default function Document({ api }: { api?: ApiGetResponse }) {
+  const models = useContentStore((state) => state.models);
+  const model = models.find((m) => m.hashId === api?.modelHashId);
   if (!api) return null;
 
   return (
     <div className="w-full h-full overflow-y-auto p-3">
+      {!!model && (
+        <Card className="w-full mb-3">
+          <CardHeader>
+            <CardTitle>Model</CardTitle>
+            <CardDescription>{model.name}</CardDescription>
+          </CardHeader>
+          <CardContent className="whitespace-pre-wrap">
+            {stringify(getApiConfig(model, api.config))}
+          </CardContent>
+        </Card>
+      )}
       <Card className="w-full mb-3">
         <CardHeader>
           <CardTitle>Chat Completion</CardTitle>
