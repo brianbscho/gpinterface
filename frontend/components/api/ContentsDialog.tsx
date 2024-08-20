@@ -1,7 +1,12 @@
 "use client";
 
-import { Badge } from "lucide-react";
-import { CardContent, CardDescription, Dialog, DialogContent } from "../ui";
+import {
+  Badge,
+  CardContent,
+  CardDescription,
+  Dialog,
+  DialogContent,
+} from "../ui";
 import { ContentsGetResponse } from "gpinterface-shared/type/content";
 
 type ContentType = ContentsGetResponse["contents"][0];

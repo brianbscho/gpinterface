@@ -55,7 +55,10 @@ export default function Document({ api }: { api?: ApiGetResponse }) {
           </CardHeader>
           <CardContent className="whitespace-pre-wrap">
             <div className="grid grid-cols-[auto_1fr] gap-3 items-center">
-              <div className="col-span-2">
+              <Button disabled className="self-start">
+                Model config
+              </Button>
+              <div className="text-sm">
                 {stringify(getApiConfig(model, api.config))}
               </div>
               <Button disabled>{api.isPublic ? "Public" : "Private"}</Button>
@@ -68,6 +71,13 @@ export default function Document({ api }: { api?: ApiGetResponse }) {
               <CopyUrl
                 url={`${process.env.NEXT_PUBLIC_HOSTNAME}/apis/${api.hashId}`}
               />
+              <Button disabled variant="destructive">
+                Warning
+              </Button>
+              <div className="text-sm text-red-700">
+                If this is a public API, your API calls and records of chats or
+                sessions will be visible to others who access this page.
+              </div>
             </div>
           </CardContent>
         </Card>

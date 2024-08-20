@@ -1,1 +1,0 @@
-# gpinterface frontend, NextJS
