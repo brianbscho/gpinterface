@@ -89,7 +89,7 @@ export default function Api({ api, editable }: Props) {
     []
   );
 
-  if (!api) return null;
+  if (!api) return <div></div>;
   return (
     <div className="h-full overflow-y-auto">
       <div className="p-3 whitespace-pre-wrap">{api.description}</div>
