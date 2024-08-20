@@ -59,7 +59,9 @@ export default function Document({ api }: { api?: ApiGetResponse }) {
                 Model config
               </Button>
               <div className="text-sm">
-                {stringify(getApiConfig(model, api.config))}
+                {Object.keys(api.config).length === 0
+                  ? "Default"
+                  : stringify(getApiConfig(model, api.config))}
               </div>
               <Button disabled>{api.isPublic ? "Public" : "Private"}</Button>
               <div className="text-sm">
