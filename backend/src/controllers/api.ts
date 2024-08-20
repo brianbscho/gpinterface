@@ -5,7 +5,7 @@ import { getTypedContent } from "../util/content";
 export async function createApi(
   chatDelegate: Prisma.ChatDelegate,
   chat: {
-    userHashId: string;
+    userHashId: string | null;
     systemMessage: string;
     contents: {
       role: string;
@@ -15,7 +15,7 @@ export async function createApi(
     }[];
     apis: {
       description: string;
-      userHashId: string;
+      userHashId: string | null;
       config: object;
       modelHashId: string;
     };

@@ -16,6 +16,7 @@ import {
 } from "gpinterface-shared/type/chat";
 import ContentInput from "./ContentInput";
 import Deploy from "../api/Deploy";
+import useUserStore from "@/store/user";
 
 export default function Chat({ chat }: { chat: ChatsGetResponse["chats"][0] }) {
   const [contents, setContents] = useState(chat.contents);
@@ -54,6 +55,12 @@ export default function Chat({ chat }: { chat: ChatsGetResponse["chats"][0] }) {
     []
   );
 
+  const userHashId = useUserStore((state) => state.user?.hashId);
+  const editable = useMemo(
+    () => !chat?.userHashId || chat?.userHashId === userHashId,
+    [chat?.userHashId, userHashId]
+  );
+
   return (
     <Card className="w-full mb-12 flex flex-col gap-3">
       <div className="sticky top-[3.25rem] mt-3 ml-3 z-20 w-20">
@@ -64,17 +71,33 @@ export default function Chat({ chat }: { chat: ChatsGetResponse["chats"][0] }) {
         chatHashId={chat.hashId}
         setContents={setContents}
         callUpdateContent={callUpdateSystemMessage}
+        editable={editable}
       />
-      {contents.map((c) => (
-        <Content
-          key={c.hashId}
-          content={c}
-          chatHashId={chat.hashId}
-          setContents={setContents}
-          callUpdateContent={callUpdateContent(c.hashId)}
-        />
-      ))}
-      <ContentInput chatHashId={chat.hashId} setContents={setContents} />
+      {contents.map((c, i) => {
+        let hashIds: string[] = [];
+        if (c.role === "user") {
+          hashIds = contents.slice(i, i + 2).map((_c) => _c.hashId);
+        } else {
+          hashIds = contents.slice(i - 1, i + 1).map((_c) => _c.hashId);
+        }
+
+        return (
+          <Content
+            key={c.hashId}
+            content={c}
+            chatHashId={chat.hashId}
+            setContents={setContents}
+            callUpdateContent={callUpdateContent(c.hashId)}
+            hashIds={hashIds}
+            editable={editable}
+          />
+        );
+      })}
+      <ContentInput
+        chatHashId={chat.hashId}
+        setContents={setContents}
+        editable={editable}
+      />
     </Card>
   );
 }

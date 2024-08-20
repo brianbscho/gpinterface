@@ -5,23 +5,10 @@ import * as React from "react";
 import { cn } from "@/utils/css";
 
 export interface TextareaProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
-  resizing?: boolean;
-}
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
 
 const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ resizing, className, ...props }, ref) => {
-    const onKeyUp = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if (props.onKeyUp) props.onKeyUp(e);
-
-      if (!resizing) return;
-      e.currentTarget.setAttribute("style", "height: auto;");
-      e.currentTarget.setAttribute(
-        "style",
-        `height: ${e.currentTarget.scrollHeight}px;`
-      );
-    };
-
+  ({ className, ...props }, ref) => {
     return (
       <textarea
         className={cn(
@@ -30,7 +17,6 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         )}
         ref={ref}
         {...props}
-        onKeyUp={onKeyUp}
       />
     );
   }

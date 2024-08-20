@@ -5,12 +5,73 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  useToast,
 } from "@/components/ui";
+import useContentStore from "@/store/content";
+import { getApiConfig } from "@/utils/model";
+import { stringify } from "@/utils/string";
+import { ApiGetResponse } from "gpinterface-shared/type/api";
+import { Copy } from "lucide-react";
 
-type Props = { apiHashId: string };
-export default function Document({ apiHashId }: Props) {
+const CopyUrl = ({ url }: { url: string }) => {
+  const { toast } = useToast();
+
+  return (
+    <div
+      className="flex items-center text-sm underline gap-1 cursor-pointer"
+      onClick={() => {
+        navigator.clipboard.writeText(`${url}`);
+        toast({ title: "Copied!", duration: 1000 });
+      }}
+    >
+      {`${url}`}
+      <Copy />
+    </div>
+  );
+};
+
+const Authentication = ({ userHashId }: { userHashId: string | null }) => {
+  if (!userHashId) return null;
+  return (
+    <>
+      <Button disabled>Header</Button>
+      <div className="text-sm">{`Authorization: Bearer {YOUR_GPINTERFACE_API_KEY}`}</div>
+    </>
+  );
+};
+
+export default function Document({ api }: { api?: ApiGetResponse }) {
+  const models = useContentStore((state) => state.models);
+  const model = models.find((m) => m.hashId === api?.modelHashId);
+  if (!api) return null;
+
   return (
     <div className="w-full h-full overflow-y-auto p-3">
+      {!!model && (
+        <Card className="w-full mb-3">
+          <CardHeader>
+            <CardTitle>Info</CardTitle>
+            <CardDescription>{model.name}</CardDescription>
+          </CardHeader>
+          <CardContent className="whitespace-pre-wrap">
+            <div className="grid grid-cols-[auto_1fr] gap-3 items-center">
+              <div className="col-span-2">
+                {stringify(getApiConfig(model, api.config))}
+              </div>
+              <Button disabled>{api.isPublic ? "Public" : "Private"}</Button>
+              <div className="text-sm">
+                {api.isPublic
+                  ? "Accessible by anyone for testing and calling. Only the owner has editing privileges."
+                  : "Only the owner can access, test, edit, and call this API."}
+              </div>
+              <Button disabled>Share</Button>
+              <CopyUrl
+                url={`${process.env.NEXT_PUBLIC_HOSTNAME}/apis/${api.hashId}`}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      )}
       <Card className="w-full mb-3">
         <CardHeader>
           <CardTitle>Chat Completion</CardTitle>
@@ -26,10 +87,9 @@ export default function Document({ apiHashId }: Props) {
             <div className="text-sm">
               {process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/chat/completion
             </div>
-            <Button disabled>Header</Button>
-            <div className="text-sm">{`Authorization: Bearer {GPINTERFACE_API_KEY}`}</div>
+            <Authentication userHashId={api.userHashId} />
             <Button disabled>Body</Button>
-            <div className="text-sm">{`{apiHashId: "${apiHashId}", message: string}`}</div>
+            <div className="text-sm">{`{apiHashId: "${api.hashId}", message: string}`}</div>
             <Button disabled>Response</Button>
             <div className="text-sm">{`{content: string}`}</div>
           </div>
@@ -49,10 +109,9 @@ export default function Document({ apiHashId }: Props) {
             <div className="text-sm">
               {process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/session
             </div>
-            <Button disabled>Header</Button>
-            <div className="text-sm">{`Authorization: Bearer {GPINTERFACE_API_KEY}`}</div>
+            <Authentication userHashId={api.userHashId} />
             <Button disabled>Body</Button>
-            <div className="text-sm">{`{apiHashId: "${apiHashId}"}`}</div>
+            <div className="text-sm">{`{apiHashId: "${api.hashId}"}`}</div>
             <Button disabled>Response</Button>
             <div className="text-sm">{`{hashId: "SESSION_ID"}`}</div>
           </div>
@@ -73,8 +132,7 @@ export default function Document({ apiHashId }: Props) {
             <div className="text-sm">
               {process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/session/completion
             </div>
-            <Button disabled>Header</Button>
-            <div className="text-sm">{`Authorization: Bearer {GPINTERFACE_API_KEY}`}</div>
+            <Authentication userHashId={api.userHashId} />
             <Button disabled>Body</Button>
             <div className="text-sm">{`{sessionHashId: "SESSION_ID", message: string}`}</div>
             <Button disabled>Response</Button>
@@ -95,8 +153,7 @@ export default function Document({ apiHashId }: Props) {
             <div className="text-sm">
               {`${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/session/{sessionHashId}/messages`}
             </div>
-            <Button disabled>Header</Button>
-            <div className="text-sm">{`Authorization: Bearer {GPINTERFACE_API_KEY}`}</div>
+            <Authentication userHashId={api.userHashId} />
             <Button disabled>Query Parameter</Button>
             <div className="text-sm">{`{sessionHashId: "SESSION_ID"}`}</div>
             <Button disabled>Response</Button>

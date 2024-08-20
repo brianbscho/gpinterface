@@ -9,11 +9,15 @@ import {
   useMemo,
   useState,
 } from "react";
-import { Loader } from "lucide-react";
+import { CircleX, Loader } from "lucide-react";
 import { cn } from "@/utils/css";
 import useContentStore from "@/store/content";
 import { Content as ContentType } from "gpinterface-shared/type";
-import { ContentRefreshSchema } from "gpinterface-shared/type/content";
+import {
+  ContentRefreshSchema,
+  ContentsDeleteResponse,
+  ContentsDeleteSchema,
+} from "gpinterface-shared/type/content";
 import { Static } from "@sinclair/typebox";
 import callApi from "@/utils/callApi";
 import { getApiConfig } from "@/utils/model";
@@ -24,6 +28,8 @@ type Props = {
     Partial<Omit<ContentType, "role" | "content" | "confing">>;
   setContents: Dispatch<SetStateAction<ContentType[]>>;
   callUpdateContent: (content: string) => Promise<string | undefined>;
+  hashIds?: string[];
+  editable?: boolean;
 };
 
 export default function Content({
@@ -31,6 +37,8 @@ export default function Content({
   content,
   setContents,
   callUpdateContent,
+  hashIds,
+  editable,
 }: Props) {
   const [newContent, setNewContent] = useState(content.content);
   const [oldContent, setOldContent] = useState(content.content);
@@ -120,6 +128,37 @@ export default function Content({
     setContentStore({ refreshingHashId: undefined });
   }, [chatHashId, content, contentStore, setContentStore, setContents]);
 
+  const isDeleteVisible = useMemo(
+    () => hashIds?.length === 2 && editable,
+    [hashIds, editable]
+  );
+  const isRefreshVisible = useMemo(
+    () => content.role === "assistant" && editable,
+    [, content.role, editable]
+  );
+  const onClickDelete = useCallback(async () => {
+    if (!hashIds || !editable) return;
+
+    let message = `This action will also delete the ${
+      content.role === "user" ? "next assistant" : "previous user"
+    } message. Do you want to proceed?`;
+    const yes = confirm(message);
+    if (!yes) return;
+
+    const response = await callApi<
+      ContentsDeleteResponse,
+      Static<typeof ContentsDeleteSchema>
+    >({
+      endpoint: "/contents",
+      method: "DELETE",
+      body: { hashIds },
+      showError: true,
+    });
+    if (response?.success) {
+      setContents((prev) => prev.filter((p) => !hashIds.includes(p.hashId)));
+    }
+  }, [hashIds, editable, content.role, setContents]);
+
   return (
     <CardContent className="p-3">
       <div className="flex items-center mb-3">
@@ -133,7 +172,7 @@ export default function Content({
             <div className="ml-1 text-xs">saving...</div>
           </>
         )}
-        {content.role === "assistant" && (
+        {isRefreshVisible && (
           <Button
             className="ml-3 w-32 text-xs h-auto py-0.5"
             variant="default"
@@ -142,6 +181,12 @@ export default function Content({
             loading={loading}
           >
             Refresh answer
+          </Button>
+        )}
+        <div className="flex-1"></div>
+        {isDeleteVisible && (
+          <Button className="p-1 h-6 w-6" onClick={onClickDelete}>
+            <CircleX />
           </Button>
         )}
       </div>
@@ -161,7 +206,7 @@ export default function Content({
             onChange={(e) => setNewContent(e.currentTarget.value)}
             placeholder={`${content.role} message`}
             onFocus={onFocus}
-            disabled={disabled}
+            disabled={disabled || !editable}
           />
           {loading && (
             <div className="absolute inset-0 border z-20 flex items-center justify-center bg-muted rounded-md">

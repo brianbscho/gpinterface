@@ -27,6 +27,7 @@ export default async function (fastify: FastifyInstance) {
           where: { hashId, userHashId: user.hashId || null },
           select: {
             hashId: true,
+            userHashId: true,
             _count: { select: { apis: true, posts: true } },
             posts: {
               select: {
@@ -77,7 +78,7 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<ChatCreateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
-        const { modelHashId, config } = request.body;
+        const { modelHashId } = request.body;
 
         const model = await fastify.prisma.model.findFirst({
           where: {
@@ -104,6 +105,7 @@ export default async function (fastify: FastifyInstance) {
 
         return {
           hashId: chat.hashId,
+          userHashId: user.hashId,
           isApi: false,
           isPost: false,
           systemMessage: "",

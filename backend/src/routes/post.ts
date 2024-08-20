@@ -19,7 +19,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { params: ParamSchema } },
     async (request, reply): Promise<PostGetResponse> => {
       try {
-        const { user } = await fastify.getUser(request, reply);
+        const { user } = await fastify.getUser(request, reply, true);
         const { hashId } = request.params;
 
         const post = await fastify.prisma.post.findFirst({

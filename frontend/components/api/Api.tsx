@@ -15,27 +15,38 @@ import Content from "../chat/Content";
 import ContentInput from "../chat/ContentInput";
 import { ApiGetResponse } from "gpinterface-shared/type/api";
 import useContentStore from "@/store/content";
+import useUserStore from "@/store/user";
 
-type ApiType = ApiGetResponse["api"];
+type ApiType = ApiGetResponse;
 type ContentsType = ApiType["chat"]["contents"];
-export default function Api({ hashId }: { hashId: string }) {
-  const [api, setApi] = useState<ApiType>();
-  const setContentStore = useContentStore((state) => state.setContentStore);
+type Props = { api: ApiType | undefined; editable: boolean };
+export default function Api({ api, editable }: Props) {
+  const [models, setContentStore] = useContentStore((state) => [
+    state.models,
+    state.setContentStore,
+  ]);
+  const isLoggedOut = useUserStore((state) => state.isLoggedOut);
   useEffect(() => {
-    const callApiApi = async () => {
-      const response = await callApi<ApiGetResponse>({
-        endpoint: `/api/${hashId}`,
-        showError: true,
-      });
-      if (response) {
-        setApi(response.api);
-        const { config, modelHashId } = response.api;
-        setContentStore({ config, modelHashId });
-      }
-    };
-    callApiApi();
-  }, [hashId, setContentStore]);
+    if (!api) return;
 
+    const { config } = api;
+    setContentStore({ config });
+  }, [api, setContentStore]);
+  useEffect(() => {
+    if (!api) return;
+
+    const { modelHashId } = api;
+    const index = models.findIndex(
+      (m) =>
+        m.isAvailable &&
+        m.isFree &&
+        (!isLoggedOut || !m.isLoginRequired) &&
+        m.hashId === modelHashId
+    );
+    if (index < 0) return;
+
+    setContentStore({ modelHashId: models[index].hashId });
+  }, [api, setContentStore, models, isLoggedOut]);
   const [contents, setContents] = useState<ContentsType>([]);
   useEffect(() => {
     if (!api) return;
@@ -88,17 +99,33 @@ export default function Api({ hashId }: { hashId: string }) {
           chatHashId={api.chat.hashId}
           setContents={setContents}
           callUpdateContent={callUpdateSystemMessage}
+          editable={editable}
         />
-        {contents.map((c) => (
-          <Content
-            key={c.hashId}
-            content={c}
-            chatHashId={api.chat.hashId}
-            setContents={setContents}
-            callUpdateContent={callUpdateContent(c.hashId)}
-          />
-        ))}
-        <ContentInput chatHashId={api.chat.hashId} setContents={setContents} />
+        {contents.map((c, i) => {
+          let hashIds: string[] = [];
+          if (c.role === "user") {
+            hashIds = contents.slice(i, i + 2).map((_c) => _c.hashId);
+          } else {
+            hashIds = contents.slice(i - 1, i + 1).map((_c) => _c.hashId);
+          }
+
+          return (
+            <Content
+              key={c.hashId}
+              content={c}
+              chatHashId={api.chat.hashId}
+              setContents={setContents}
+              callUpdateContent={callUpdateContent(c.hashId)}
+              hashIds={hashIds}
+              editable={editable}
+            />
+          );
+        })}
+        <ContentInput
+          chatHashId={api.chat.hashId}
+          setContents={setContents}
+          editable={editable}
+        />
       </div>
     </div>
   );
