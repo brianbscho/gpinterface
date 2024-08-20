@@ -71,13 +71,6 @@ export default function Document({ api }: { api?: ApiGetResponse }) {
               <CopyUrl
                 url={`${process.env.NEXT_PUBLIC_HOSTNAME}/apis/${api.hashId}`}
               />
-              <Button disabled variant="destructive">
-                Warning
-              </Button>
-              <div className="text-sm text-red-700">
-                If this is a public API, your API calls and records of chats or
-                sessions will be visible to others who access this page.
-              </div>
             </div>
           </CardContent>
         </Card>
