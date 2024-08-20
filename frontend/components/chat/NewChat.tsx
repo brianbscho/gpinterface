@@ -11,11 +11,8 @@ import {
 import callApi from "@/utils/callApi";
 import {
   ChatCreateResponse,
-  ChatCreateSchema,
   ChatsGetResponse,
 } from "gpinterface-shared/type/chat";
-import { Static } from "@sinclair/typebox";
-import useContentStore from "@/store/content";
 import useUserStore from "@/store/user";
 import Login from "../general/dialogs/Login";
 
@@ -24,7 +21,6 @@ export default function NewChat({
 }: {
   setChats: Dispatch<SetStateAction<ChatsGetResponse["chats"] | undefined>>;
 }) {
-  const modelHashId = useContentStore((state) => state.modelHashId);
   const [loading, setLoading] = useState(false);
   const isLoggedOut = useUserStore((state) => state.isLoggedOut);
   const [open, setOpen] = useState(false);
@@ -32,19 +28,15 @@ export default function NewChat({
     async (e: FormEvent) => {
       e.preventDefault();
 
-      if (!modelHashId) return;
       if (isLoggedOut) {
         setOpen(true);
         return;
       }
       setLoading(true);
-      const response = await callApi<
-        ChatCreateResponse,
-        Static<typeof ChatCreateSchema>
-      >({
+      const response = await callApi<ChatCreateResponse>({
         endpoint: "/chat",
         method: "POST",
-        body: { modelHashId },
+        body: {},
         showError: true,
       });
       if (response) {
@@ -52,7 +44,7 @@ export default function NewChat({
       }
       setLoading(false);
     },
-    [modelHashId, setChats, isLoggedOut]
+    [setChats, isLoggedOut]
   );
 
   return (

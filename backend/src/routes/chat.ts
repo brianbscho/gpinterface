@@ -1,7 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { createEntity } from "../util/prisma";
 import {
-  ChatCreateSchema,
   ChatCreateResponse,
   ChatDuplicateResponse,
   ChatUpdateSchema,
@@ -72,52 +71,30 @@ export default async function (fastify: FastifyInstance) {
       }
     }
   );
-  fastify.post<{ Body: Static<typeof ChatCreateSchema> }>(
-    "/",
-    { schema: { body: ChatCreateSchema } },
-    async (request, reply): Promise<ChatCreateResponse> => {
-      try {
-        const { user } = await fastify.getUser(request, reply, true);
-        const { modelHashId } = request.body;
+  fastify.post("/", async (request, reply): Promise<ChatCreateResponse> => {
+    try {
+      const { user } = await fastify.getUser(request, reply, true);
+      const userHashId = user.hashId || null;
 
-        const model = await fastify.prisma.model.findFirst({
-          where: {
-            hashId: modelHashId,
-            isAvailable: true,
-            isFree: true,
-            ...(user.hashId === "" && { isLoginRequired: false }),
-          },
-          select: {
-            name: true,
-            inputPricePerMillion: true,
-            outputPricePerMillion: true,
-            provider: { select: { name: true } },
-          },
-        });
-        if (!model) {
-          throw fastify.httpErrors.badRequest("model is not available.");
-        }
+      const chat = await createEntity(fastify.prisma.chat.create, {
+        data: { userHashId },
+        select: { hashId: true, createdAt: true },
+      });
 
-        const chat = await createEntity(fastify.prisma.chat.create, {
-          data: { ...(user.hashId.length > 0 && { userHashId: user.hashId }) },
-          select: { hashId: true, createdAt: true },
-        });
-
-        return {
-          hashId: chat.hashId,
-          userHashId: user.hashId,
-          isApi: false,
-          isPost: false,
-          systemMessage: "",
-          contents: [],
-          createdAt: getDateString(chat.createdAt),
-        };
-      } catch (ex) {
-        console.error("path: /chat, method: post, error:", ex);
-        throw ex;
-      }
+      return {
+        hashId: chat.hashId,
+        userHashId: user.hashId,
+        isApi: false,
+        isPost: false,
+        systemMessage: "",
+        contents: [],
+        createdAt: getDateString(chat.createdAt),
+      };
+    } catch (ex) {
+      console.error("path: /chat, method: post, error:", ex);
+      throw ex;
     }
-  );
+  });
   fastify.put<{
     Params: Static<typeof ParamSchema>;
     Body: Static<typeof ChatUpdateSchema>;
