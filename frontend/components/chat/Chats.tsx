@@ -5,13 +5,10 @@ import callApi from "@/utils/callApi";
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import {
   ChatCreateResponse,
-  ChatCreateSchema,
   ChatsGetResponse,
 } from "gpinterface-shared/type/chat";
 import List from "../List";
 import NewChat from "./NewChat";
-import { Static } from "@sinclair/typebox";
-import useContentStore from "@/store/content";
 import { useRouter, useSearchParams } from "next/navigation";
 import useUserStore from "@/store/user";
 
@@ -21,7 +18,6 @@ function _Chats() {
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 
   const router = useRouter();
-  const modelHashId = useContentStore((state) => state.modelHashId);
 
   const isLoggedOut = useUserStore((state) => state.isLoggedOut);
   const searchParams = useSearchParams();
@@ -30,38 +26,28 @@ function _Chats() {
     [searchParams]
   );
 
-  const [shouldCallChat, setShouldCallChat] = useState(false);
-  useEffect(() => {
-    if (!shouldCallChat || chatHashId) return;
-
-    const callPostChatApi = async () => {
-      if (!modelHashId) return;
-
-      const response = await callApi<
-        ChatCreateResponse,
-        Static<typeof ChatCreateSchema>
-      >({
-        endpoint: "/chat",
-        method: "POST",
-        body: { modelHashId },
-      });
-      if (response) {
-        router.push(`/?chatHashId=${response.hashId}`);
-      }
-    };
-    callPostChatApi();
-  }, [shouldCallChat, chatHashId, modelHashId, router]);
   const callChatsApi = useCallback(async () => {
-    const response = await callApi<ChatsGetResponse>({
+    if (chatHashId) return;
+
+    const chatsResponse = await callApi<ChatsGetResponse>({
       endpoint: `/chats?lastHashId=${lastHashId}`,
     });
-    if (response) {
-      setChats((prev) => [...(prev ?? []), ...response.chats]);
-      if (response.chats.length == 0) {
+    if (chatsResponse) {
+      setChats((prev) => [...(prev ?? []), ...chatsResponse.chats]);
+      if (chatsResponse.chats.length == 0) {
         setSpinnerHidden(true);
       }
     } else {
-      setShouldCallChat(true);
+      const chatResponse = await callApi<ChatCreateResponse>({
+        endpoint: "/chat",
+        method: "POST",
+        body: {},
+      });
+      if (chatResponse) {
+        setChats([chatResponse]);
+        setSpinnerHidden(true);
+        router.push(`/?chatHashId=${chatResponse.hashId}`);
+      }
     }
   }, [lastHashId]);
 
