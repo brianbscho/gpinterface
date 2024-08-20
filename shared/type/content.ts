@@ -3,6 +3,7 @@ import { Content } from ".";
 
 export const ContentCreateSchema = Type.Object({
   chatHashId: Type.String(),
+  apiHashId: Type.Optional(Type.String()),
   modelHashId: Type.String(),
   content: Type.String(),
   config: Type.Any(),

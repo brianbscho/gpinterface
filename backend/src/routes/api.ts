@@ -82,6 +82,7 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<ApiChatsGetResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
+        if (!user.hashId) return { chats: [] };
         const { hashId } = request.params;
         const { lastHashId } = request.query;
 
@@ -94,10 +95,7 @@ export default async function (fastify: FastifyInstance) {
           where: {
             ...(id > 0 && { id: { lt: id } }),
             apiHashId: hashId,
-            OR: [
-              { userHashId: user.hashId || null },
-              { api: { isPublic: true } },
-            ],
+            userHashId: user.hashId,
           },
           select: {
             hashId: true,
@@ -151,6 +149,8 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<ApiSessionsGetResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
+        if (!user.hashId) return { sessions: [] };
+
         const { hashId } = request.params;
         const { lastHashId } = request.query;
 
@@ -162,10 +162,8 @@ export default async function (fastify: FastifyInstance) {
         const sessions = await fastify.prisma.session.findMany({
           where: {
             ...(id > 0 && { id: { lt: id } }),
-            api: {
-              hashId,
-              OR: [{ userHashId: user.hashId || null }, { isPublic: true }],
-            },
+            api: { hashId, userHashId: user.hashId },
+            histories: { every: { userHashId: user.hashId } },
           },
           select: {
             hashId: true,

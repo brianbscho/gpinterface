@@ -123,6 +123,7 @@ export default function Api({ api, editable }: Props) {
         })}
         <ContentInput
           chatHashId={api.chat.hashId}
+          apiHashId={api.hashId}
           setContents={setContents}
           editable={editable}
         />
