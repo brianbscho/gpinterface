@@ -61,7 +61,12 @@ const start = async () => {
   try {
     const { CLIENT_URL, PORT } = process.env;
 
-    await fastify.register(cors, { origin: CLIENT_URL, credentials: true });
+    await fastify.register(cors, {
+      origin: CLIENT_URL,
+      credentials: true,
+      preflightContinue: true,
+      maxAge: 86400,
+    });
 
     const port = parseInt(PORT || "3000", 10);
     await fastify.listen({ port, host: "0.0.0.0" });
