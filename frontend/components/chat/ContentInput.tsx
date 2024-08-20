@@ -23,12 +23,14 @@ import ContentsDialog from "../api/ContentsDialog";
 
 type Props = {
   chatHashId: string;
+  apiHashId?: string;
   setContents: Dispatch<SetStateAction<Content[]>>;
   editable: boolean;
 };
 
 export default function ContentInput({
   chatHashId,
+  apiHashId,
   setContents,
   editable,
 }: Props) {
@@ -56,6 +58,7 @@ export default function ContentInput({
         method: "POST",
         body: {
           chatHashId,
+          apiHashId,
           modelHashId: model.hashId,
           content,
           config: getApiConfig(model, config),
@@ -73,7 +76,16 @@ export default function ContentInput({
         }
       }
     },
-    [chatHashId, model, content, config, setContents, setContentStore, editable]
+    [
+      chatHashId,
+      apiHashId,
+      model,
+      content,
+      config,
+      setContents,
+      setContentStore,
+      editable,
+    ]
   );
   const onKeyDown = useCallback(
     (e: KeyboardEvent) => {
