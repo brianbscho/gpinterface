@@ -178,7 +178,6 @@ export default function Page() {
                         <td className="text-sm">{k.key}</td>
                         <td>
                           <Button
-                            variant="outline"
                             onClick={() => onClickApiKeyTrash(k.hashId)}
                             className="p-0 h-7 w-7"
                           >
@@ -200,7 +199,7 @@ export default function Page() {
               <div className="h-10 flex items-center">Customer support</div>
             </td>
             <td>
-              <div className="text-sm flex items-center gap-1">
+              <div className="text-sm flex items-center gap-1 underline">
                 <a href="mailto:brian.b.cho@bookquilt.com">Send email</a>
                 <span>
                   <Mail />
