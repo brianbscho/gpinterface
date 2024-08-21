@@ -9,7 +9,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { CircleX, Loader } from "lucide-react";
+import { CircleX, Loader, RefreshCcw } from "lucide-react";
 import { cn } from "@/utils/css";
 import useContentStore from "@/store/content";
 import { Content as ContentType } from "gpinterface-shared/type";
@@ -21,6 +21,7 @@ import {
 import { Static } from "@sinclair/typebox";
 import callApi from "@/utils/callApi";
 import { getApiConfig } from "@/utils/model";
+import SmallHoverButton from "../general/buttons/SmallHoverButton";
 
 type Props = {
   chatHashId: string;
@@ -55,7 +56,10 @@ export default function Content({
   });
 
   useEffect(() => {
-    if (oldContent === newContent) return;
+    if (oldContent === newContent) {
+      setIsSaving(false);
+      return;
+    }
 
     setIsSaving(true);
     const timer = setTimeout(async () => {
@@ -160,34 +164,44 @@ export default function Content({
   }, [hashIds, editable, content.role, setContents]);
 
   return (
-    <CardContent className="p-3">
-      <div className="flex items-center mb-3">
-        <Badge>{content.role}</Badge>
-        {!!content.model && content.role === "assistant" && (
-          <div className="ml-1 text-xs">{content.model.name}</div>
+    <CardContent className="p-0 px-3">
+      <div className="flex items-center gap-1 mb-3">
+        {content.role !== "assistant" && (
+          <Badge className="h-6" variant="tag">
+            {content.role}
+          </Badge>
+        )}
+        {content.role === "assistant" && (
+          <Badge className="h-6" variant="tag">
+            {!content.model ? "assistant" : content.model.name}
+          </Badge>
         )}
         {isSaving && (
           <>
             <Loader className="ml-3 animate-spin" />
-            <div className="ml-1 text-xs">saving...</div>
+            <div className="text-xs">saving...</div>
           </>
         )}
-        {isRefreshVisible && (
-          <Button
-            className="ml-3 w-32 text-xs h-auto py-0.5"
-            variant="default"
-            onClick={onClickRefresh}
-            disabled={disabled}
-            loading={loading}
-          >
-            Refresh answer
-          </Button>
-        )}
         <div className="flex-1"></div>
+        {isRefreshVisible && (
+          <SmallHoverButton message="Regenerate">
+            <Button
+              className="p-1 h-6 w-6"
+              variant="default"
+              onClick={onClickRefresh}
+              disabled={disabled}
+              loading={loading}
+            >
+              <RefreshCcw />
+            </Button>
+          </SmallHoverButton>
+        )}
         {isDeleteVisible && (
-          <Button className="p-1 h-6 w-6" onClick={onClickDelete}>
-            <CircleX />
-          </Button>
+          <SmallHoverButton message="Delete">
+            <Button className="p-1 h-6 w-6" onClick={onClickDelete}>
+              <CircleX />
+            </Button>
+          </SmallHoverButton>
         )}
       </div>
       <CardDescription>
@@ -197,7 +211,7 @@ export default function Content({
           </div>
           <Textarea
             className={cn(
-              "absolute max-h-none inset-0 z-10 overflow-hidden resize-none text-slate-300",
+              "absolute max-h-none inset-0 z-10 overflow-hidden resize-none",
               content.hashId && contentStore.hashId === content.hashId
                 ? "ring-1 ring-ring"
                 : ""
