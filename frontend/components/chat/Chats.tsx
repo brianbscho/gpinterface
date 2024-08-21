@@ -68,7 +68,7 @@ function _Chats() {
 
   return (
     <div className="w-full h-full overflow-hidden relative">
-      <div className="absolute top-3 left-3 pb-3 z-30 w-28">
+      <div className="absolute top-3 left-3 pb-3">
         <NewChat setChats={setChats} />
       </div>
       <div className="h-full overflow-y-auto">
