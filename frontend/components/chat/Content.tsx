@@ -163,7 +163,7 @@ export default function Content({
   }, [hashIds, editable, content.role, setContents]);
 
   return (
-    <CardContent className="p-0 px-3">
+    <CardContent className="p-0">
       <div className="flex items-center gap-1 mb-3">
         {content.role !== "assistant" && (
           <Badge className="h-6" variant="tag">
