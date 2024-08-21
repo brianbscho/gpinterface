@@ -2,6 +2,7 @@
 
 import { CornerDownLeft } from "lucide-react";
 import {
+  Badge,
   Button,
   Dialog,
   DialogContent,
@@ -71,23 +72,29 @@ export default function Deploy({ chatHashId }: { chatHashId: string }) {
             Deploy
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-full w-11/12">
-          <DialogHeader>Deploy API</DialogHeader>
-          <div className="mt-3 flex items-center gap-3">
+        <DialogContent className="max-w-full w-11/12 gap-3">
+          <div className="flex items-center gap-3">
+            <Badge variant="tag" className="h-6">
+              Deploy API
+            </Badge>
+            <div className="flex-1"></div>
             <Checkbox
               id="is_public"
               checked={isPublic}
               onCheckedChange={(c) =>
                 setIsPublic(typeof c === "boolean" ? c : false)
               }
+              className="h-6 w-6"
             />
             <label htmlFor="is_public" className="text-sm">
               Is this public API?
             </label>
           </div>
+
           <form onSubmit={onSubmit}>
-            <div className="w-full mb-12 flex gap-3">
+            <div className="w-full flex gap-3">
               <Input
+                autoFocus
                 className="flex-1"
                 placeholder="API description"
                 value={description}
