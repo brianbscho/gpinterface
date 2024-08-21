@@ -5,7 +5,7 @@ export default function SmallHoverButton({ children, message }: Props) {
   return (
     <HoverCard openDelay={0} closeDelay={100}>
       <HoverCardTrigger asChild>
-        <span className="h-6">{children}</span>
+        <div className="h-6">{children}</div>
       </HoverCardTrigger>
       <HoverCardContent className="text-sm w-auto px-3 py-1 border">
         {message}

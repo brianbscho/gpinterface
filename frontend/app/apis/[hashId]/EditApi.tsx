@@ -87,7 +87,7 @@ export default function EditApi({ useApi }: Props) {
         variant="outline"
         onClick={onClickDefault}
       >
-        Set as default model
+        Save model
       </Button>
     </>
   );
