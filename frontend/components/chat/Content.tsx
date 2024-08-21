@@ -10,7 +10,6 @@ import {
   useState,
 } from "react";
 import { CircleX, Loader, RefreshCcw } from "lucide-react";
-import { cn } from "@/utils/css";
 import useContentStore from "@/store/content";
 import { Content as ContentType } from "gpinterface-shared/type";
 import {
@@ -210,12 +209,7 @@ export default function Content({
             {newContent + "."}
           </div>
           <Textarea
-            className={cn(
-              "absolute max-h-none inset-0 z-10 overflow-hidden resize-none",
-              content.hashId && contentStore.hashId === content.hashId
-                ? "ring-1 ring-ring"
-                : ""
-            )}
+            className="absolute max-h-none inset-0 z-10 overflow-hidden resize-none"
             value={newContent}
             onChange={(e) => setNewContent(e.currentTarget.value)}
             placeholder={`${content.role} message`}
