@@ -63,7 +63,7 @@ export default function Chat({ chat }: { chat: ChatsGetResponse["chats"][0] }) {
 
   return (
     <div className="w-full mb-12 border-none px-0">
-      <div className="sticky top-3 pl-12 w-full h-0 z-20 bg-background bg-background">
+      <div className="sticky top-3 pl-12 w-full h-0">
         <div className="h-6 w-6">
           <SmallHoverButton message="Deploy">
             <Deploy chatHashId={chat.hashId} />
