@@ -88,7 +88,7 @@ export default function Deploy({ chatHashId }: { chatHashId: string }) {
           <form onSubmit={onSubmit}>
             <div className="w-full mb-12 flex gap-3">
               <Input
-                className="flex-1 bg-secondary"
+                className="flex-1"
                 placeholder="API description"
                 value={description}
                 onChange={(e) => setDescription(e.currentTarget.value)}

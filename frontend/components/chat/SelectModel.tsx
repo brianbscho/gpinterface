@@ -64,7 +64,7 @@ export default function SelectModel() {
   if (!providerTypes) return null;
 
   return (
-    <div className="sticky top-0 py-3 bg-muted z-10 w-full">
+    <div className="sticky top-0 py-3 z-10 w-full">
       <Select value={modelHashId} onValueChange={onValueChange}>
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Please select model"></SelectValue>
@@ -72,12 +72,12 @@ export default function SelectModel() {
         <SelectContent>
           {providerTypes.map((type) => (
             <SelectGroup key={type.hashId}>
-              <SelectLabel className="bg-muted text-muted-foreground">
+              <SelectLabel className="text-muted-foreground">
                 {type.type}
               </SelectLabel>
               {type.providers.map((provider) => (
                 <Fragment key={provider.hashId}>
-                  <SelectLabel className="bg-muted text-muted-foreground font-normal">
+                  <SelectLabel className="text-muted-foreground font-normal">
                     {provider.name}
                   </SelectLabel>
                   {provider.models.map((m) => {

@@ -209,7 +209,7 @@ export default function Content({
             disabled={disabled || !editable}
           />
           {loading && (
-            <div className="absolute inset-0 border z-20 flex items-center justify-center bg-muted rounded-md">
+            <div className="absolute inset-0 border z-20 flex items-center justify-center rounded-md">
               Refreshing answer...
             </div>
           )}
