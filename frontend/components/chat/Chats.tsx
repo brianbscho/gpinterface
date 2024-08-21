@@ -80,7 +80,12 @@ function _Chats() {
           useLastHashId={[lastHashId, setLastHashId]}
         >
           {chats?.map((t) => (
-            <Chat key={t.hashId} chat={t} />
+            <div
+              key={t.hashId}
+              className="w-full border-b border-yellow-300 pb-6 mb-12"
+            >
+              <Chat chat={t} />
+            </div>
           ))}
         </List>
       </div>

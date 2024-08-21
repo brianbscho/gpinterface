@@ -62,7 +62,7 @@ export default function Chat({ chat }: { chat: ChatsGetResponse["chats"][0] }) {
   );
 
   return (
-    <div className="w-full mb-12 border-none px-0">
+    <div className="w-full px-0 pt-3">
       <div className="sticky top-3 pl-12 w-full h-0">
         <div className="h-6 w-6">
           <SmallHoverButton message="Deploy">
@@ -70,7 +70,7 @@ export default function Chat({ chat }: { chat: ChatsGetResponse["chats"][0] }) {
           </SmallHoverButton>
         </div>
       </div>
-      <div className="pt-3 px-3 pl-[5.25rem] flex flex-col gap-3">
+      <div className="px-3 pl-[5.25rem] flex flex-col gap-3">
         <Content
           content={systemContent}
           chatHashId={chat.hashId}
