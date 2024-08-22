@@ -70,14 +70,14 @@ export default function ContentInput({
       });
       if (response) {
         setContent("");
-        setContentStore({ refreshingHashId: undefined });
-        setLoading(false);
         if (editable) {
           setContents((prev) => [...prev, ...response.contents]);
         } else {
           setResponseContents(response.contents);
         }
       }
+      setContentStore({ refreshingHashId: undefined });
+      setLoading(false);
     },
     [
       chatHashId,
