@@ -185,6 +185,7 @@ export default function Content({
                   config: content.config!,
                 })
               }
+              loading={loading}
             >
               <Cpu />
             </Button>
@@ -214,7 +215,11 @@ export default function Content({
         )}
         {isDeleteVisible && (
           <SmallHoverButton message="Delete">
-            <Button className="p-1 h-6 w-6" onClick={onClickDelete}>
+            <Button
+              className="p-1 h-6 w-6"
+              onClick={onClickDelete}
+              loading={loading}
+            >
               <CircleX />
             </Button>
           </SmallHoverButton>

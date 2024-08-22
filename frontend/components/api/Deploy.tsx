@@ -82,6 +82,7 @@ export default function Deploy({ chatHashId }: { chatHashId: string }) {
               Icon={!isPublic ? Circle : CheckCircle2}
               text="Public"
               onClick={() => setIsPublic((prev) => !prev)}
+              loading={loading}
             />
           </div>
 
