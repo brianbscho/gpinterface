@@ -133,11 +133,11 @@ export default function ContentInput({
         <form onSubmit={onSubmit}>
           <div className="flex gap-3">
             <div className="relative flex-1 items-start">
-              <div className="whitespace-pre-wrap px-3 py-2 text-sm invisible border">
+              <div className="whitespace-pre-wrap px-3 py-2 text-base invisible border">
                 {content + "."}
               </div>
               <Textarea
-                className="absolute max-h-none inset-0 z-10 overflow-hidden resize-none"
+                className="absolute max-h-none inset-0 z-10 text-base overflow-hidden resize-none"
                 value={content}
                 onChange={(e) => setContent(e.currentTarget.value)}
                 placeholder="user message"

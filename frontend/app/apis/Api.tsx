@@ -19,7 +19,7 @@ export default function Api({ api }: { api: ApisGetResponse["apis"][0] }) {
       <div className="w-full p-3 border-b">
         <div className="w-full flex gap-3 items-end mb-3">
           <div className="truncate">{api.description}</div>
-          <div className="text-neutral-500 text-xs mb-1">{api.createdAt}</div>
+          <div className="text-neutral-400 text-xs mb-1">{api.createdAt}</div>
         </div>
         <div className="grid grid-cols-[auto_1fr] gap-3">
           {messages.map((message) => (

@@ -35,7 +35,7 @@ export default function ContentsDialog({ useContents }: Props) {
             </div>
             <CardDescription>
               <div className="relative">
-                <div className="whitespace-pre-wrap px-3 py-2 text-sm border rounded-md overflow-y-auto">
+                <div className="whitespace-pre-wrap px-3 py-2 text-base border rounded-md">
                   {content.content}
                 </div>
               </div>

@@ -222,11 +222,11 @@ export default function Content({
       </div>
       <CardDescription>
         <div className="relative">
-          <div className="whitespace-pre-wrap px-3 py-2 text-sm invisible border">
+          <div className="whitespace-pre-wrap px-3 py-2 text-base invisible border">
             {newContent + "."}
           </div>
           <Textarea
-            className="absolute max-h-none inset-0 z-10 overflow-hidden resize-none"
+            className="absolute max-h-none inset-0 z-10 text-base overflow-hidden resize-none"
             value={newContent}
             onChange={(e) => setNewContent(e.currentTarget.value)}
             placeholder={`${content.role} message`}

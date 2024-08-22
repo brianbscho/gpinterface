@@ -50,12 +50,12 @@ export default function Model() {
         />
       </div>
       <div className="flex flex-col gap-7 pl-[7.5rem] py-3 whitespace-pre-wrap text-sm">
-        <div className="font-bold text-theme-foreground bg-theme px-2 py-1 rounded-md">
+        <div className="text-base font-bold text-theme-foreground bg-theme px-2 py-1 rounded-md">
           {model.name}
         </div>
         <div>
           <div className="font-bold">Price</div>
-          <div className="text-neutral-500">
+          <div className="text-neutral-400">
             {`$${model.inputPricePerMillion} / 1M input tokens, $${model.outputPricePerMillion} / 1M output tokens`}
           </div>
         </div>
@@ -96,7 +96,7 @@ export default function Model() {
                 useOption={[config[c.name] ?? c.default, onChange(c.name)]}
               />
             )}
-            <div className="text-neutral-500 text-sm">{c.description}</div>
+            <div className="text-neutral-400">{c.description}</div>
           </div>
         ))}
       </div>
