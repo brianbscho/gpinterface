@@ -9,7 +9,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { CircleX, Loader, RefreshCcw } from "lucide-react";
+import { CircleX, Loader, ReceiptText, RefreshCcw } from "lucide-react";
 import useContentStore from "@/store/content";
 import {
   Content as ContentType,
@@ -21,6 +21,7 @@ import { Static } from "@sinclair/typebox";
 import callApi from "@/utils/callApi";
 import { getApiConfig } from "@/utils/model";
 import SmallHoverButton from "../general/buttons/SmallHoverButton";
+import History from "../general/dialogs/History";
 
 type Props = {
   chatHashId: string;
@@ -182,6 +183,15 @@ export default function Content({
           </>
         )}
         <div className="flex-1"></div>
+        {!!content.history && (
+          <SmallHoverButton message="Detail">
+            <History history={content.history}>
+              <Button className="p-1 h-6 w-6" variant="default">
+                <ReceiptText />
+              </Button>
+            </History>
+          </SmallHoverButton>
+        )}
         {isRefreshVisible && (
           <SmallHoverButton message="Regenerate">
             <Button
