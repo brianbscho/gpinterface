@@ -9,8 +9,9 @@ import MenuButton from "../general/buttons/MenuButton";
 import useModelStore, { ConfigType } from "@/store/model";
 
 export default function Model() {
-  const [{ model, config }, setModelStore] = useModelStore((state) => [
-    { model: state.model, config: state.config },
+  const [model, config, setModelStore] = useModelStore((state) => [
+    state.model,
+    state.config,
     state.setModelStore,
   ]);
   const onChange = useCallback(
