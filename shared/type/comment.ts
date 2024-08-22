@@ -1,5 +1,5 @@
 import { Type } from "@sinclair/typebox";
-import { User } from ".";
+import { User } from "./user";
 
 interface Comment {
   hashId: string;

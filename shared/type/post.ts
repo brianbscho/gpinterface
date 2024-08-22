@@ -1,5 +1,6 @@
 import { Type } from "@sinclair/typebox";
-import { Content, User } from ".";
+import { Content } from "./content";
+import { User } from "./user";
 
 export interface Post {
   hashId: string;

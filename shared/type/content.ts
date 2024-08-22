@@ -1,5 +1,13 @@
 import { Type } from "@sinclair/typebox";
-import { Content } from ".";
+
+export interface Content {
+  hashId: string;
+
+  model: { hashId: string | undefined; name: string } | null;
+  role: string;
+  content: string;
+  config?: object | null;
+}
 
 export const ContentCreateSchema = Type.Object({
   chatHashId: Type.String(),

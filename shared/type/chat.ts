@@ -1,5 +1,5 @@
 import { Type } from "@sinclair/typebox";
-import { Content } from ".";
+import { Content } from "./content";
 
 interface Chat {
   hashId: string;

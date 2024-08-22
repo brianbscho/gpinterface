@@ -11,9 +11,9 @@ import {
   useState,
 } from "react";
 import callApi from "@/utils/callApi";
-import { Content } from "gpinterface-shared/type";
 import { Static } from "@sinclair/typebox";
 import {
+  Content,
   ContentCreateSchema,
   ContentsCreateResponse,
   ContentsCreateSchema,

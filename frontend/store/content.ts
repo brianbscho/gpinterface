@@ -1,4 +1,4 @@
-import { Model } from "gpinterface-shared/type";
+import { Model } from "gpinterface-shared/type/providerType";
 import { create } from "zustand";
 
 export type ConfigType<T extends object = { [key: string]: any }> = T;

@@ -11,8 +11,8 @@ import {
 } from "react";
 import { CircleX, Loader, RefreshCcw } from "lucide-react";
 import useContentStore from "@/store/content";
-import { Content as ContentType } from "gpinterface-shared/type";
 import {
+  Content as ContentType,
   ContentRefreshSchema,
   ContentsDeleteResponse,
   ContentsDeleteSchema,
