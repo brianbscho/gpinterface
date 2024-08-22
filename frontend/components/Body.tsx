@@ -13,7 +13,7 @@ export default function Body({
 }>) {
   return (
     <body className={inter.className}>
-      <ThemeProvider attribute="class">
+      <ThemeProvider attribute="class" forcedTheme="dark">
         <main className="h-screen flex flex-col items-center min-h-0 overflow-hidden">
           <div className="sticky top-0 left-0 w-full z-20 shrink-0 bg-background">
             <div className="w-full border-b h-16">
