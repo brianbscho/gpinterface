@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { nanoid } from "nanoid";
+import { getDateString } from "./string";
 
 export function getDataWithHashId<T>(data: T, nanoidSize?: number) {
   return { ...data, hashId: nanoid(nanoidSize) };
@@ -105,4 +106,23 @@ export async function getUpdatedAtByHashId(
 
 export function getTypedContent<T>(content: T & { config: Prisma.JsonValue }) {
   return { ...content, config: content.config as any };
+}
+
+export function getTypedHistory<T>(
+  history:
+    | T & {
+        response: Prisma.JsonValue;
+        config: Prisma.JsonValue;
+        messages: Prisma.JsonValue;
+        createdAt: Date;
+      }
+) {
+  if (!history) return history;
+  return {
+    ...history,
+    createdAt: getDateString(history.createdAt),
+    response: history.response as any,
+    config: history.config as any,
+    messages: history.messages as any,
+  };
 }
