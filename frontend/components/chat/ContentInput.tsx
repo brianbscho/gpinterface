@@ -1,6 +1,6 @@
 "use client";
 
-import { CornerDownLeft } from "lucide-react";
+import { CornerDownLeft, PenSquare } from "lucide-react";
 import { Badge, Button, CardContent, CardDescription, Textarea } from "../ui";
 import {
   Dispatch,
@@ -15,11 +15,14 @@ import { Content } from "gpinterface-shared/type";
 import { Static } from "@sinclair/typebox";
 import {
   ContentCreateSchema,
+  ContentsCreateResponse,
+  ContentsCreateSchema,
   ContentsGetResponse,
 } from "gpinterface-shared/type/content";
 import useContentStore from "@/store/content";
 import { getApiConfig } from "@/utils/model";
 import ContentsDialog from "../api/ContentsDialog";
+import SmallHoverButton from "../general/buttons/SmallHoverButton";
 
 type Props = {
   chatHashId: string;
@@ -97,10 +100,35 @@ export default function ContentInput({
     [onSubmit]
   );
 
+  const onClickAnswerYourself = useCallback(async () => {
+    const response = await callApi<
+      ContentsCreateResponse,
+      Static<typeof ContentsCreateSchema>
+    >({
+      method: "POST",
+      endpoint: "/contents",
+      body: { chatHashId },
+    });
+    if (response) {
+      setContents((prev) => prev.concat(response.contents));
+    }
+  }, [chatHashId, setContents]);
+
   return (
     <CardContent className="p-0">
       <div className="flex items-center mb-3">
         <Badge variant="tag">user</Badge>
+        <div className="flex-1"></div>
+        <SmallHoverButton message="Answer yourself">
+          <Button
+            className="p-1 h-6 w-6"
+            variant="default"
+            loading={loading}
+            onClick={onClickAnswerYourself}
+          >
+            <PenSquare />
+          </Button>
+        </SmallHoverButton>
       </div>
       <CardDescription>
         <form onSubmit={onSubmit}>
