@@ -7,6 +7,18 @@ export interface Content {
   role: string;
   content: string;
   config?: object | null;
+  history?: {
+    provider: string;
+    model: string;
+    config: object;
+    messages: object;
+    content: string;
+    response: object;
+    price: number;
+    inputTokens: number;
+    outputTokens: number;
+    createdAt: string;
+  } | null;
 }
 
 export const ContentCreateSchema = Type.Object({

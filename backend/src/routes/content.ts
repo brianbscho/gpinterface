@@ -1,6 +1,12 @@
 import { FastifyInstance } from "fastify";
-import { getTypedContent, createEntity, getIdByHashId } from "../util/prisma";
 import {
+  getTypedContent,
+  createEntity,
+  getIdByHashId,
+  getTypedHistory,
+} from "../util/prisma";
+import {
+  Content,
   ContentCreateSchema,
   ContentRefreshSchema,
   ContentsGetResponse,
@@ -9,7 +15,7 @@ import {
 } from "gpinterface-shared/type/content";
 import { Static } from "@sinclair/typebox";
 import { getTextResponse } from "../util/text";
-import { Content, ParamSchema } from "gpinterface-shared/type";
+import { ParamSchema } from "gpinterface-shared/type";
 import { MILLION } from "../util/model";
 import { nanoid } from "nanoid";
 
@@ -76,7 +82,7 @@ export default async function (fastify: FastifyInstance) {
           (model.inputPricePerMillion * inputTokens) / MILLION +
           (model.outputPricePerMillion * outputTokens) / MILLION;
 
-        await createEntity(fastify.prisma.history.create, {
+        const history = await createEntity(fastify.prisma.history.create, {
           data: {
             userHashId,
             chatHashId: body.chatHashId,
@@ -94,6 +100,18 @@ export default async function (fastify: FastifyInstance) {
             inputTokens,
             outputTokens,
           },
+          select: {
+            provider: true,
+            model: true,
+            config: true,
+            messages: true,
+            content: true,
+            response: true,
+            price: true,
+            inputTokens: true,
+            outputTokens: true,
+            createdAt: true,
+          },
         });
 
         const newContents = [
@@ -110,6 +128,7 @@ export default async function (fastify: FastifyInstance) {
             role: "assistant",
             content,
             config: body.config,
+            history: getTypedHistory(history),
           },
         ];
 

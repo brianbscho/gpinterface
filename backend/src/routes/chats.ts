@@ -2,7 +2,11 @@ import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
 import { getDateString } from "../util/string";
 import { QueryParamSchema } from "gpinterface-shared/type";
-import { getTypedContent, getIdByHashId } from "../util/prisma";
+import {
+  getTypedContent,
+  getIdByHashId,
+  getTypedHistory,
+} from "../util/prisma";
 import { ChatsGetResponse } from "gpinterface-shared/type/chat";
 
 export default async function (fastify: FastifyInstance) {
@@ -42,6 +46,20 @@ export default async function (fastify: FastifyInstance) {
                 role: true,
                 content: true,
                 config: true,
+                histories: {
+                  select: {
+                    provider: true,
+                    model: true,
+                    config: true,
+                    messages: true,
+                    content: true,
+                    response: true,
+                    price: true,
+                    inputTokens: true,
+                    outputTokens: true,
+                    createdAt: true,
+                  },
+                },
               },
               orderBy: { id: "asc" },
             },
@@ -58,7 +76,13 @@ export default async function (fastify: FastifyInstance) {
               const { _count, posts, createdAt, contents, ...chat } = c;
               return {
                 ...chat,
-                contents: contents.map((c) => getTypedContent(c)),
+                contents: contents.map((c) => {
+                  const { histories, ...rest } = c;
+                  const content = getTypedContent(rest);
+                  if (histories.length === 0) return content;
+
+                  return { history: getTypedHistory(histories[0]), ...content };
+                }),
                 isApi: _count.apis > 0,
                 isPost: _count.posts > 0,
                 createdAt: getDateString(createdAt),

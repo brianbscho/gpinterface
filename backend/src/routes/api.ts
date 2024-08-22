@@ -48,6 +48,20 @@ export default async function (fastify: FastifyInstance) {
                     content: true,
                     config: true,
                     model: { select: { hashId: true, name: true } },
+                    histories: {
+                      select: {
+                        provider: true,
+                        model: true,
+                        config: true,
+                        messages: true,
+                        content: true,
+                        response: true,
+                        price: true,
+                        inputTokens: true,
+                        outputTokens: true,
+                        createdAt: true,
+                      },
+                    },
                   },
                 },
               },
@@ -67,7 +81,13 @@ export default async function (fastify: FastifyInstance) {
           config: config as any,
           chat: {
             ...chat,
-            contents: chat.contents.map((c) => getTypedContent(c)),
+            contents: chat.contents.map((c) => {
+              const { histories, ...rest } = c;
+              const content = getTypedContent(rest);
+              if (histories.length === 0) return content;
+
+              return { history: getTypedHistory(histories[0]), ...content };
+            }),
           },
         };
       } catch (ex) {

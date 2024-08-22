@@ -5,6 +5,7 @@ import {
   getTypedContent,
   createManyEntities,
   getIdByHashId,
+  getTypedHistory,
 } from "../util/prisma";
 import {
   ContentsCreateResponse,
@@ -46,6 +47,20 @@ export default async function (fastify: FastifyInstance) {
             role: true,
             content: true,
             config: true,
+            histories: {
+              select: {
+                provider: true,
+                model: true,
+                config: true,
+                messages: true,
+                content: true,
+                response: true,
+                price: true,
+                inputTokens: true,
+                outputTokens: true,
+                createdAt: true,
+              },
+            },
           },
           orderBy: { id: "desc" },
           take: 20,
@@ -54,8 +69,11 @@ export default async function (fastify: FastifyInstance) {
         return {
           contents: contents
             .map((c) => {
-              const { model, ...content } = c;
-              return { ...getTypedContent(content), model };
+              const { histories, ...rest } = c;
+              const content = getTypedContent(rest);
+              if (histories.length === 0) return content;
+
+              return { history: getTypedHistory(histories[0]), ...content };
             })
             .reverse(),
         };
@@ -122,12 +140,32 @@ export default async function (fastify: FastifyInstance) {
               role: true,
               content: true,
               config: true,
+              histories: {
+                select: {
+                  provider: true,
+                  model: true,
+                  config: true,
+                  messages: true,
+                  content: true,
+                  response: true,
+                  price: true,
+                  inputTokens: true,
+                  outputTokens: true,
+                  createdAt: true,
+                },
+              },
             },
           }
         );
 
         return {
-          contents: contents.map((c) => getTypedContent(c)),
+          contents: contents.map((c) => {
+            const { histories, ...rest } = c;
+            const content = getTypedContent(rest);
+            if (histories.length === 0) return content;
+
+            return { history: getTypedHistory(histories[0]), ...content };
+          }),
         };
       } catch (ex) {
         console.error("path: /chats, method: post, error:", ex);
