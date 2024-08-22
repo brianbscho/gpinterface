@@ -238,10 +238,10 @@ model ChatContent {
   content String
   config  Json?
 
-  chatHashId  String @map("chat_hash_id")
-  chat        Chat   @relation(fields: [chatHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
-  modelHashId String @map("model_hash_id")
-  model       Model  @relation(fields: [modelHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+  chatHashId  String  @map("chat_hash_id")
+  chat        Chat    @relation(fields: [chatHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
+  modelHashId String? @map("model_hash_id")
+  model       Model?  @relation(fields: [modelHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
   @@map("chat_contents")
 }
