@@ -28,16 +28,7 @@ export default async function (fastify: FastifyInstance) {
           select: {
             hashId: true,
             userHashId: true,
-            _count: { select: { apis: true, posts: true } },
-            posts: {
-              select: {
-                _count: {
-                  select: {
-                    likes: { where: { isLiked: true } },
-                  },
-                },
-              },
-            },
+            _count: { select: { apis: true } },
             systemMessage: true,
             contents: {
               select: {
@@ -71,9 +62,9 @@ export default async function (fastify: FastifyInstance) {
 
         return {
           chats: chats
-            .filter((c) => c._count.apis === 0 && c._count.posts === 0)
+            .filter((c) => c._count.apis === 0)
             .map((c) => {
-              const { _count, posts, createdAt, contents, ...chat } = c;
+              const { _count, createdAt, contents, ...chat } = c;
               return {
                 ...chat,
                 contents: contents.map((c) => {
@@ -84,7 +75,6 @@ export default async function (fastify: FastifyInstance) {
                   return { history: getTypedHistory(histories[0]), ...content };
                 }),
                 isApi: _count.apis > 0,
-                isPost: _count.posts > 0,
                 createdAt: getDateString(createdAt),
               };
             }),

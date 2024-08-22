@@ -6,7 +6,6 @@ interface Chat {
   userHashId: string | null;
 
   isApi: boolean;
-  isPost: boolean;
 
   systemMessage: string;
   contents: Content[];

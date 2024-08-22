@@ -26,16 +26,7 @@ export default async function (fastify: FastifyInstance) {
           select: {
             hashId: true,
             userHashId: true,
-            _count: { select: { apis: true, posts: true } },
-            posts: {
-              select: {
-                _count: {
-                  select: {
-                    likes: { where: { isLiked: true } },
-                  },
-                },
-              },
-            },
+            _count: { select: { apis: true } },
             systemMessage: true,
             contents: {
               select: {
@@ -70,7 +61,7 @@ export default async function (fastify: FastifyInstance) {
           throw fastify.httpErrors.badRequest("chat is not available.");
         }
 
-        const { _count, posts, createdAt, contents, ...rest } = chat;
+        const { _count, createdAt, contents, ...rest } = chat;
         return {
           ...rest,
           contents: contents.map((c) => {
@@ -81,7 +72,6 @@ export default async function (fastify: FastifyInstance) {
             return { history: getTypedHistory(histories[0]), ...content };
           }),
           isApi: _count.apis > 0,
-          isPost: _count.posts > 0,
           createdAt: getDateString(createdAt),
         };
       } catch (ex) {
@@ -104,7 +94,6 @@ export default async function (fastify: FastifyInstance) {
         hashId: chat.hashId,
         userHashId: user.hashId,
         isApi: false,
-        isPost: false,
         systemMessage: "",
         contents: [],
         createdAt: getDateString(chat.createdAt),

@@ -109,7 +109,6 @@ export default async function (fastify: FastifyInstance) {
         throw httpErrors.badRequest("You already deleted your account.");
       }
 
-      await fastify.prisma.post.deleteMany({ where: { userHashId: hashId } });
       await fastify.prisma.apiKey.deleteMany({ where: { userHashId: hashId } });
       await fastify.prisma.user.delete({ where: { hashId } });
       return reply.clearCookie("access_token").send({});
