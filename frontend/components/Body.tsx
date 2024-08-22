@@ -19,15 +19,17 @@ export default function Body({
             <div className="w-full border-b h-16">
               <div className="w-full h-full px-3 flex gap-3 items-center">
                 <Link href="/" className="font-bold text-lg">
-                  <picture>
-                    <img
-                      src="/logo.png"
-                      alt="logo"
-                      height="27"
-                      width="117"
-                      className="block h-7 w-auto"
-                    />
-                  </picture>
+                  <div className="p-1 rounded-sm bg-foreground dark:bg-background">
+                    <picture>
+                      <img
+                        src="/logo.png"
+                        alt="logo"
+                        height="27"
+                        width="117"
+                        className="block h-7 w-auto"
+                      />
+                    </picture>
+                  </div>
                 </Link>
                 <div className="flex-1"></div>
                 <Menus />
