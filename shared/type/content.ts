@@ -36,3 +36,10 @@ export const ContentsGetSchema = Type.Object({
 export type ContentsGetResponse = {
   contents: Content[];
 };
+
+export const ContentsCreateSchema = Type.Object({
+  chatHashId: Type.String(),
+});
+export type ContentsCreateResponse = {
+  contents: Content[];
+};
