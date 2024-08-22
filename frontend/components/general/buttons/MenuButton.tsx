@@ -27,13 +27,15 @@ export default function MenuButton({
     variant === "icon"
       ? "bg-primary text-primary-foreground"
       : "bg-destructive text-destructive-foreground";
+  const border = variant === "icon" ? "border-primary" : "border-destructive";
   return (
     <Button
       onClick={onClick}
       className={cn(
-        "bg-background p-0 h-6",
+        "border-box bg-background p-0 h-6 border box-border",
+        border,
         className,
-        selected ? cn("bg-primary", css) : ""
+        selected ? css : ""
       )}
       variant={variant}
     >

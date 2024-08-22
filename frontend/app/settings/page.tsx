@@ -199,13 +199,13 @@ export default function Page() {
             onClick={onClickGetApiKey}
             Icon={KeyRound}
             text="Create API Key"
-            className="w-32"
+            className="w-36"
           />
         </div>
         <div className="font-bold">Customer support</div>
         <div className="text-muted-foreground text-sm flex items-center gap-1 underline col-span-2">
           <a href="mailto:brian.b.cho@bookquilt.com">
-            <MenuButton Icon={Mail} text="Send email" className="w-28" />
+            <MenuButton Icon={Mail} text="Send email" className="w-36" />
           </a>
         </div>
         <div className="font-bold">Password</div>
