@@ -23,6 +23,7 @@ import useContentStore from "@/store/content";
 import { getApiConfig } from "@/utils/model";
 import ContentsDialog from "../api/ContentsDialog";
 import SmallHoverButton from "../general/buttons/SmallHoverButton";
+import useModelStore from "@/store/model";
 
 type Props = {
   chatHashId: string;
@@ -39,10 +40,8 @@ export default function ContentInput({
 }: Props) {
   const [content, setContent] = useState("");
 
-  const [{ config, model }, setContentStore] = useContentStore((state) => [
-    { config: state.config, model: state.model },
-    state.setContentStore,
-  ]);
+  const [config, model] = useModelStore((state) => [state.config, state.model]);
+  const setContentStore = useContentStore((state) => state.setContentStore);
 
   const [responseContents, setResponseContents] = useState<Content[]>([]);
   const [loading, setLoading] = useState(false);
@@ -141,7 +140,6 @@ export default function ContentInput({
                 className="absolute max-h-none inset-0 z-10 overflow-hidden resize-none"
                 value={content}
                 onChange={(e) => setContent(e.currentTarget.value)}
-                onFocus={() => setContentStore({ hashId: "" })}
                 placeholder="user message"
                 disabled={loading}
                 onKeyDown={onKeyDown}

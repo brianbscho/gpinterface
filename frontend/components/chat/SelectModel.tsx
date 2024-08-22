@@ -12,9 +12,9 @@ import {
   SelectLabel,
 } from "../ui";
 import useUserStore from "@/store/user";
-import useContentStore from "@/store/content";
 import { ChevronDown } from "lucide-react";
 import MenuButton from "../general/buttons/MenuButton";
+import useModelStore from "@/store/model";
 
 export default function SelectModel() {
   const [providerTypes, setProviderTypes] =
@@ -31,9 +31,9 @@ export default function SelectModel() {
   }, [setProviderTypes]);
 
   const isLoggedOut = useUserStore((state) => state.isLoggedOut);
-  const [modelHashId, setContentStore] = useContentStore((state) => [
+  const [modelHashId, setModelStore] = useModelStore((state) => [
     state.modelHashId,
-    state.setContentStore,
+    state.setModelStore,
   ]);
 
   const models = useMemo(() => {
@@ -44,22 +44,22 @@ export default function SelectModel() {
       .flatMap((provider) => provider.models);
   }, [providerTypes]);
   useEffect(() => {
-    setContentStore({ models });
-  }, [setContentStore, models]);
+    setModelStore({ models });
+  }, [setModelStore, models]);
   useEffect(() => {
     if (modelHashId) return;
 
     const index = models.findIndex(
       (m) => m.isAvailable && m.isFree && (!isLoggedOut || !m.isLoginRequired)
     );
-    setContentStore({ modelHashId: models[index]?.hashId });
-  }, [isLoggedOut, models, modelHashId, setContentStore]);
+    setModelStore({ modelHashId: models[index]?.hashId });
+  }, [isLoggedOut, models, modelHashId, setModelStore]);
   const onValueChange = useCallback(
     (modelHashId: string) => {
       const _model = models.find((m) => m.hashId === modelHashId);
-      setContentStore({ modelHashId: _model?.hashId });
+      setModelStore({ modelHashId: _model?.hashId });
     },
-    [models, setContentStore]
+    [models, setModelStore]
   );
 
   const [open, setOpen] = useState(false);

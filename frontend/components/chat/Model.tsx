@@ -1,25 +1,25 @@
 "use client";
 
 import { useCallback } from "react";
-import useContentStore, { ConfigType } from "@/store/content";
 import Select from "../general/selects/Select";
 import { Input } from "../ui";
 import { Slider } from "../ui/slider";
 import { RotateCcw } from "lucide-react";
 import MenuButton from "../general/buttons/MenuButton";
+import useModelStore, { ConfigType } from "@/store/model";
 
 export default function Model() {
-  const [{ model, config }, setContentStore] = useContentStore((state) => [
+  const [{ model, config }, setModelStore] = useModelStore((state) => [
     { model: state.model, config: state.config },
-    state.setContentStore,
+    state.setModelStore,
   ]);
   const onChange = useCallback(
     (name: string) => (value: string) => {
       const newConfig = { ...config };
       newConfig[name] = value;
-      setContentStore({ config: newConfig });
+      setModelStore({ config: newConfig });
     },
-    [config, setContentStore]
+    [config, setModelStore]
   );
   const onClickReset = useCallback(() => {
     if (!model) return;
@@ -33,8 +33,8 @@ export default function Model() {
       }
     });
 
-    setContentStore({ config: newConfig });
-  }, [model, setContentStore]);
+    setModelStore({ config: newConfig });
+  }, [model, setModelStore]);
 
   if (!model) return null;
 

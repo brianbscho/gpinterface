@@ -12,7 +12,6 @@ import {
 import { FormEvent, useCallback, useState } from "react";
 import callApi from "@/utils/callApi";
 import { Static } from "@sinclair/typebox";
-import useContentStore from "@/store/content";
 import {
   ApiCreateResponse,
   ApiCreateSchema,
@@ -21,16 +20,14 @@ import { useRouter } from "next/navigation";
 import { getApiConfig } from "@/utils/model";
 import { Checkbox } from "../ui/checkbox";
 import MenuButton from "../general/buttons/MenuButton";
+import useModelStore from "@/store/model";
 
 export default function Deploy({ chatHashId }: { chatHashId: string }) {
   const [open, setOpen] = useState(false);
 
   const [isPublic, setIsPublic] = useState(false);
   const [description, setDescription] = useState("");
-  const [model, config] = useContentStore((state) => [
-    state.model,
-    state.config,
-  ]);
+  const [model, config] = useModelStore((state) => [state.model, state.config]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const onSubmit = useCallback(

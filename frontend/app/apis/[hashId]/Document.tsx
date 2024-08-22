@@ -1,5 +1,5 @@
 import { Badge, useToast } from "@/components/ui";
-import useContentStore from "@/store/content";
+import useModelStore from "@/store/model";
 import { getApiConfig } from "@/utils/model";
 import { stringify } from "@/utils/string";
 import { ApiGetResponse } from "gpinterface-shared/type/api";
@@ -43,7 +43,7 @@ const Authentication = ({ userHashId }: { userHashId: string | null }) => {
 };
 
 export default function Document({ api }: { api?: ApiGetResponse }) {
-  const models = useContentStore((state) => state.models);
+  const models = useModelStore((state) => state.models);
   const model = models.find((m) => m.hashId === api?.modelHashId);
   if (!api) return null;
 

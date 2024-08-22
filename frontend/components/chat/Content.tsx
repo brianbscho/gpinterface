@@ -22,6 +22,7 @@ import callApi from "@/utils/callApi";
 import { getApiConfig } from "@/utils/model";
 import SmallHoverButton from "../general/buttons/SmallHoverButton";
 import History from "../general/dialogs/History";
+import useModelStore from "@/store/model";
 
 type Props = {
   chatHashId: string;
@@ -50,10 +51,11 @@ export default function Content({
 
   const [isSaving, setIsSaving] = useState(false);
 
-  const [contentStore, setContentStore] = useContentStore((state) => {
-    const { setContentStore, ...contentStore } = state;
-    return [contentStore, setContentStore];
-  });
+  const [refreshingHashId, setContentStore] = useContentStore((state) => [
+    state.refreshingHashId,
+    state.setContentStore,
+  ]);
+  const [model, config] = useModelStore((state) => [state.model, state.config]);
 
   useEffect(() => {
     if (oldContent === newContent) {
@@ -77,32 +79,18 @@ export default function Content({
   }, [newContent, oldContent, callUpdateContent]);
 
   const disabled = useMemo(
-    () => typeof contentStore.refreshingHashId === "string",
-    [contentStore.refreshingHashId]
+    () => typeof refreshingHashId === "string",
+    [refreshingHashId]
   );
   const loading = useMemo(
     () =>
-      typeof contentStore.refreshingHashId === "string" &&
-      contentStore.refreshingHashId === content.hashId,
-    [contentStore.refreshingHashId, content.hashId]
+      typeof refreshingHashId === "string" &&
+      refreshingHashId === content.hashId,
+    [refreshingHashId, content.hashId]
   );
 
-  const onFocus = useCallback(() => {
-    if (content.hashId === contentStore.hashId) return;
-
-    setContentStore({ hashId: content.hashId });
-    if (content.config) {
-      setContentStore({ config: content.config });
-    }
-    if (content.model && content.model.hashId !== contentStore.modelHashId) {
-      setContentStore({
-        modelHashId: content.model.hashId,
-      });
-    }
-  }, [content, contentStore, setContentStore]);
-
   const onClickRefresh = useCallback(async () => {
-    if (!contentStore.model) return;
+    if (!model) return;
 
     setContentStore({ refreshingHashId: content.hashId });
     const response = await callApi<
@@ -112,8 +100,8 @@ export default function Content({
       endpoint: `/content/refresh/${content.hashId}`,
       method: "PUT",
       body: {
-        config: getApiConfig(contentStore.model, contentStore.config),
-        modelHashId: contentStore.model.hashId,
+        config: getApiConfig(model, config),
+        modelHashId: model.hashId,
         chatHashId,
       },
       showError: true,
@@ -130,7 +118,7 @@ export default function Content({
       );
     }
     setContentStore({ refreshingHashId: undefined });
-  }, [chatHashId, content, contentStore, setContentStore, setContents]);
+  }, [chatHashId, content, model, config, setContentStore, setContents]);
 
   const isDeleteVisible = useMemo(
     () => hashIds?.length === 2 && editable,
@@ -223,7 +211,6 @@ export default function Content({
             value={newContent}
             onChange={(e) => setNewContent(e.currentTarget.value)}
             placeholder={`${content.role} message`}
-            onFocus={onFocus}
             disabled={disabled || !editable}
           />
           {loading && (
