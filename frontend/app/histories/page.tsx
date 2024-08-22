@@ -5,8 +5,10 @@ import callApi from "@/utils/callApi";
 import { HistoriesGetResponse } from "gpinterface-shared/type/history";
 import { Fragment, useCallback, useMemo, useState } from "react";
 import History from "./History";
-import { Badge } from "@/components/ui";
 import Link from "next/link";
+import MenuButton from "@/components/general/buttons/MenuButton";
+import { MessageSquareCode, SquareCode } from "lucide-react";
+import { Badge } from "@/components/ui";
 
 type HistoriesType = HistoriesGetResponse["histories"];
 export default function Page() {
@@ -55,39 +57,49 @@ export default function Page() {
       spinnerHidden={spinnerHidden}
       useLastHashId={[lastHashId, setLastHashId]}
     >
-      <div className="w-full grid grid-cols-[auto_1fr_auto] gap-3 items-center py-3 overflow-y-auto">
+      <div className="w-full flex-1 grid grid-cols-[auto_auto_1fr] gap-3 items-center py-3 overflow-y-auto">
         {groupedTextHistories?.map(([date, history], index) => (
           <Fragment key={date}>
             {history.histories.map((h) => (
               <Fragment key={h.hashId}>
-                <div className="w-28 pl-3">
-                  <History history={h} />
+                <div className="pl-3">
+                  <div className="h-6">
+                    <History history={h} />
+                  </div>
+                  <div className="h-6 mt-3">
+                    <Link
+                      href={
+                        h.apiHashId
+                          ? `/apis/${h.apiHashId}`
+                          : h.chatHashId
+                          ? `/chats/${h.chatHashId}`
+                          : "/#"
+                      }
+                    >
+                      <MenuButton
+                        Icon={h.apiHashId ? SquareCode : MessageSquareCode}
+                        text={`Go to ${h.apiHashId ? "api" : "chat"}`}
+                        className="w-28"
+                      />
+                    </Link>
+                  </div>
                 </div>
-                <Link
-                  href={
-                    h.apiHashId
-                      ? `/apis/${h.apiHashId}`
-                      : h.chatHashId
-                      ? `/chats/${h.chatHashId}`
-                      : "/#"
-                  }
-                >
-                  <Badge>{h.isApi ? "API" : "Chat"}</Badge>
-                </Link>
-                <div className="truncate pr-3">{h.content}</div>
+                <Badge variant="tag" className="self-start">
+                  assistant
+                </Badge>
+                <div className="w-full truncate pr-3 self-start text-sm">
+                  {h.content}
+                </div>
+                <div className="mx-3 col-span-3 border-b border-yellow-300 border-dashed"></div>
               </Fragment>
             ))}
             {(spinnerHidden || index < groupedTextHistories.length) && (
               <Fragment>
-                <div className="w-28 text-muted-foreground pl-3">Date</div>
-                <div className="col-span-2 text-muted-foreground pr-3">
-                  Price
-                </div>
                 <div className="font-bold text-lg w-28 pl-3">{date}</div>
                 <div className="col-span-2 leading-7 pr-3">
                   ${history.priceSum.toFixed(5)}
                 </div>
-                <div className="col-span-3 border-b"></div>
+                <div className="col-span-3 border-b border-yellow-300"></div>
               </Fragment>
             )}
           </Fragment>

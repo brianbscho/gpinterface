@@ -1,6 +1,5 @@
 import { stringify } from "@/utils/string";
 import {
-  Button,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -9,17 +8,23 @@ import {
   DialogTrigger,
 } from "@/components/ui";
 import { HistoriesGetResponse } from "gpinterface-shared/type/history";
+import MenuButton from "@/components/general/buttons/MenuButton";
+import { ReceiptText } from "lucide-react";
 
 type Props = { history: HistoriesGetResponse["histories"][0] };
 export default function History({ history }: Props) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Detail</Button>
+        <MenuButton
+          className="w-28 h-6"
+          Icon={ReceiptText}
+          text="Show detail"
+        />
       </DialogTrigger>
       <DialogContent close className="w-11/12 max-w-4xl">
         <DialogHeader>
-          <DialogTitle>Text Prompt Usage Detail</DialogTitle>
+          <DialogTitle>Detail</DialogTitle>
         </DialogHeader>
         <div className="h-[70vh] w-full overflow-y-auto mt-7 mb-3">
           <DialogTitle className="mt-7">Model</DialogTitle>
