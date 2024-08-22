@@ -4,17 +4,17 @@ import callApi from "@/utils/callApi";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { ProviderTypesGetResponse } from "gpinterface-shared/type/providerType";
 import {
-  Button,
   Select,
   SelectContent,
+  SelectEmptyTrigger,
   SelectGroup,
   SelectItem,
   SelectLabel,
-  SelectTrigger,
 } from "../ui";
 import useUserStore from "@/store/user";
 import useContentStore from "@/store/content";
 import { ChevronDown } from "lucide-react";
+import MenuButton from "../general/buttons/MenuButton";
 
 export default function SelectModel() {
   const [providerTypes, setProviderTypes] =
@@ -62,49 +62,58 @@ export default function SelectModel() {
     [models, setContentStore]
   );
 
+  const [open, setOpen] = useState(false);
+
   if (!providerTypes) return null;
 
   return (
-    <div className="sticky top-0 z-10 w-full">
-      <Select value={modelHashId} onValueChange={onValueChange}>
-        <SelectTrigger className="h-6 w-6 p-0 bg-primary">
-          <Button className="h-6 w-6 p-1">
-            <ChevronDown />
-          </Button>
-        </SelectTrigger>
-        <SelectContent className="w-[23rem]">
-          {providerTypes.map((type) => (
-            <SelectGroup key={type.hashId}>
-              {type.providers.map((provider) => (
-                <Fragment key={provider.hashId}>
-                  <SelectLabel>{provider.name}</SelectLabel>
-                  {provider.models.map((m) => {
-                    const { isLoginRequired, isAvailable, isFree } = m;
-                    const loginRequired = isLoggedOut && isLoginRequired;
-                    const disableMessage = loginRequired
-                      ? " (login required)"
-                      : !isFree
-                      ? " (payment required)"
-                      : !isAvailable
-                      ? " (not available)"
-                      : "";
+    <Select
+      value={modelHashId}
+      onValueChange={onValueChange}
+      open={open}
+      onOpenChange={setOpen}
+    >
+      <SelectEmptyTrigger className="h-6">
+        <MenuButton
+          className="w-24"
+          Icon={ChevronDown}
+          text="Models"
+          onClick={() => setOpen(true)}
+          selected={open}
+        />
+      </SelectEmptyTrigger>
+      <SelectContent className="w-[23rem]">
+        {providerTypes.map((type) => (
+          <SelectGroup key={type.hashId}>
+            {type.providers.map((provider) => (
+              <Fragment key={provider.hashId}>
+                <SelectLabel>{provider.name}</SelectLabel>
+                {provider.models.map((m) => {
+                  const { isLoginRequired, isAvailable, isFree } = m;
+                  const loginRequired = isLoggedOut && isLoginRequired;
+                  const disableMessage = loginRequired
+                    ? " (login required)"
+                    : !isFree
+                    ? " (payment required)"
+                    : !isAvailable
+                    ? " (not available)"
+                    : "";
 
-                    return (
-                      <SelectItem
-                        key={m.hashId}
-                        value={m.hashId}
-                        disabled={loginRequired || !isAvailable || !isFree}
-                      >
-                        {`${m.name}${disableMessage}`}
-                      </SelectItem>
-                    );
-                  })}
-                </Fragment>
-              ))}
-            </SelectGroup>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+                  return (
+                    <SelectItem
+                      key={m.hashId}
+                      value={m.hashId}
+                      disabled={loginRequired || !isAvailable || !isFree}
+                    >
+                      {`${m.name}${disableMessage}`}
+                    </SelectItem>
+                  );
+                })}
+              </Fragment>
+            ))}
+          </SelectGroup>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }

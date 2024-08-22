@@ -1,13 +1,13 @@
 import SelectModel from "./SelectModel";
 import Model from "./Model";
 
-export default function Config() {
+export default function Provider() {
   return (
-    <div className="h-full overflow-hidden w-[28rem] relative">
+    <div className="h-full overflow-hidden w-[32rem]">
       <div className="absolute top-3 left-3">
         <SelectModel />
       </div>
-      <div className="h-full overflow-y-auto pl-12 pr-3">
+      <div className="h-full overflow-y-auto pr-3">
         <Model />
       </div>
     </div>

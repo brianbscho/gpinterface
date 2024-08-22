@@ -3,10 +3,10 @@
 import { useCallback } from "react";
 import useContentStore, { ConfigType } from "@/store/content";
 import Select from "../general/selects/Select";
-import { Button, Input } from "../ui";
+import { Input } from "../ui";
 import { Slider } from "../ui/slider";
 import { RotateCcw } from "lucide-react";
-import SmallHoverButton from "../general/buttons/SmallHoverButton";
+import MenuButton from "../general/buttons/MenuButton";
 
 export default function Model() {
   const [{ model, config }, setContentStore] = useContentStore((state) => [
@@ -40,18 +40,15 @@ export default function Model() {
 
   return (
     <div>
-      <div className="sticky top-3 w-full h-0 z-20 bg-background bg-background">
-        <SmallHoverButton message="Revert to default">
-          <Button
-            variant="default"
-            className="h-6 w-6 p-1"
-            onClick={onClickReset}
-          >
-            <RotateCcw />
-          </Button>
-        </SmallHoverButton>
+      <div className="sticky top-12 ml-3 w-full h-0 z-20 bg-background bg-background">
+        <MenuButton
+          className="w-24"
+          Icon={RotateCcw}
+          text="Reset"
+          onClick={onClickReset}
+        />
       </div>
-      <div className="flex flex-col gap-7 pl-9 py-3 whitespace-pre-wrap text-sm">
+      <div className="flex flex-col gap-7 pl-[7.5rem] py-3 whitespace-pre-wrap text-sm">
         <div className="font-bold text-yellow-300">{model.name}</div>
         <div>
           <div className="font-bold">Price</div>
