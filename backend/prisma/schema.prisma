@@ -243,6 +243,8 @@ model ChatContent {
   modelHashId String? @map("model_hash_id")
   model       Model?  @relation(fields: [modelHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
+  histories History[]
+
   @@map("chat_contents")
 }
 
@@ -318,14 +320,16 @@ model History {
   inputTokens  Int    @map("input_tokens")
   outputTokens Int    @map("output_tokens")
 
-  apiHashId     String?  @map("api_hash_id")
-  api           Api?     @relation(fields: [apiHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
-  sessionHashId String?  @map("session_hash_id")
-  session       Session? @relation(fields: [sessionHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
-  chatHashId    String?  @map("chat_hash_id")
-  chat          Chat?    @relation(fields: [chatHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
-  userHashId    String?  @map("user_hash_id")
-  user          User?    @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+  apiHashId         String?      @map("api_hash_id")
+  api               Api?         @relation(fields: [apiHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+  sessionHashId     String?      @map("session_hash_id")
+  session           Session?     @relation(fields: [sessionHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+  chatHashId        String?      @map("chat_hash_id")
+  chat              Chat?        @relation(fields: [chatHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+  chatContentHashId String?      @map("chat_content_hash_id")
+  chatContent       ChatContent? @relation(fields: [chatContentHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+  userHashId        String?      @map("user_hash_id")
+  user              User?        @relation(fields: [userHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
   @@map("histories")
 }
