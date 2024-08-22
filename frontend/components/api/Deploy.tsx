@@ -1,11 +1,11 @@
 "use client";
 
-import { CornerDownLeft } from "lucide-react";
+import { CornerDownLeft, StepForward } from "lucide-react";
 import {
+  Badge,
   Button,
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTrigger,
   Input,
 } from "../ui";
@@ -20,6 +20,7 @@ import {
 import { useRouter } from "next/navigation";
 import { getApiConfig } from "@/utils/model";
 import { Checkbox } from "../ui/checkbox";
+import MenuButton from "../general/buttons/MenuButton";
 
 export default function Deploy({ chatHashId }: { chatHashId: string }) {
   const [open, setOpen] = useState(false);
@@ -67,28 +68,32 @@ export default function Deploy({ chatHashId }: { chatHashId: string }) {
     <div>
       <Dialog open={open} onOpenChange={loading ? undefined : setOpen}>
         <DialogTrigger asChild>
-          <Button variant="default" className="w-full">
-            Deploy
-          </Button>
+          <MenuButton Icon={StepForward} text="Deploy" className="w-24" />
         </DialogTrigger>
-        <DialogContent className="max-w-full w-11/12">
-          <DialogHeader>Deploy API</DialogHeader>
-          <div className="mt-3 flex items-center gap-3">
+        <DialogContent className="max-w-3xl w-11/12 gap-3">
+          <div className="flex items-center gap-3">
+            <Badge variant="tag" className="h-6">
+              Deploy API
+            </Badge>
+            <div className="flex-1"></div>
             <Checkbox
               id="is_public"
               checked={isPublic}
               onCheckedChange={(c) =>
                 setIsPublic(typeof c === "boolean" ? c : false)
               }
+              className="h-6 w-6"
             />
             <label htmlFor="is_public" className="text-sm">
               Is this public API?
             </label>
           </div>
+
           <form onSubmit={onSubmit}>
-            <div className="w-full mb-12 flex gap-3">
+            <div className="w-full flex gap-3">
               <Input
-                className="flex-1 bg-secondary"
+                autoFocus
+                className="flex-1"
                 placeholder="API description"
                 value={description}
                 onChange={(e) => setDescription(e.currentTarget.value)}

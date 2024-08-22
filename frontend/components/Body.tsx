@@ -21,18 +21,11 @@ export default function Body({
                 <Link href="/" className="font-bold text-lg">
                   <picture>
                     <img
-                      src="/logo_black.png"
+                      src="/logo.png"
                       alt="logo"
                       height="27"
                       width="117"
-                      className="block dark:hidden h-7 w-auto"
-                    />
-                  </picture>
-                  <picture>
-                    <img
-                      src="/logo_white.png"
-                      alt="logo"
-                      className="hidden dark:block h-7 w-auto"
+                      className="block h-7 w-auto"
                     />
                   </picture>
                 </Link>

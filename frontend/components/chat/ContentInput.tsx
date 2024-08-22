@@ -98,9 +98,9 @@ export default function ContentInput({
   );
 
   return (
-    <CardContent className="p-3">
+    <CardContent className="p-0">
       <div className="flex items-center mb-3">
-        <Badge>user</Badge>
+        <Badge variant="tag">user</Badge>
       </div>
       <CardDescription>
         <form onSubmit={onSubmit}>
@@ -110,7 +110,7 @@ export default function ContentInput({
                 {content + "."}
               </div>
               <Textarea
-                className="absolute max-h-none inset-0 z-10 overflow-hidden resize-none text-slate-300"
+                className="absolute max-h-none inset-0 z-10 overflow-hidden resize-none"
                 value={content}
                 onChange={(e) => setContent(e.currentTarget.value)}
                 onFocus={() => setContentStore({ hashId: "" })}

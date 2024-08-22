@@ -7,6 +7,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { UserGetMeResponse } from "gpinterface-shared/type/user";
 import {
   LogOut,
+  MessageSquareCode,
   ReceiptText,
   Settings,
   SquareCode,
@@ -94,9 +95,13 @@ function _Menus() {
         <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
+          <DropdownMenuItem onClick={() => push(`/`)}>
+            <MessageSquareCode />
+            <span className="ml-3">Chat</span>
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => push(`/apis`)}>
             <SquareCode />
-            <span className="ml-3">Apis</span>
+            <span className="ml-3">Api</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => push("/settings")}>
             <Settings />

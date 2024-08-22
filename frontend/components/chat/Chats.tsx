@@ -67,11 +67,11 @@ function _Chats() {
   }, [isLoggedOut, chatHashId]);
 
   return (
-    <div className="px-3 pr-0 w-full h-full overflow-hidden bg-muted">
-      <div className="h-full overflow-y-auto pt-3 pr-3">
-        <div className="sticky top-0 ml-3 pb-3 z-30 w-28">
-          <NewChat setChats={setChats} />
-        </div>
+    <div className="w-full h-full overflow-hidden relative">
+      <div className="absolute top-3 left-3 z-10">
+        <NewChat setChats={setChats} />
+      </div>
+      <div className="h-full overflow-y-auto">
         <List
           callApi={callChatsApi}
           emptyMessage="Start your chat!"
@@ -80,7 +80,12 @@ function _Chats() {
           useLastHashId={[lastHashId, setLastHashId]}
         >
           {chats?.map((t) => (
-            <Chat key={t.hashId} chat={t} />
+            <div
+              key={t.hashId}
+              className="w-full border-b border-yellow-300 pb-6 mb-12"
+            >
+              <Chat chat={t} />
+            </div>
           ))}
         </List>
       </div>

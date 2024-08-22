@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
-import { Card } from "../ui";
 import Content from "./Content";
 import callApi from "@/utils/callApi";
 import {
@@ -62,42 +61,44 @@ export default function Chat({ chat }: { chat: ChatsGetResponse["chats"][0] }) {
   );
 
   return (
-    <Card className="w-full mb-12 flex flex-col gap-3">
-      <div className="sticky top-[3.25rem] mt-3 ml-3 z-20 w-20">
+    <div className="w-full px-0 pt-3">
+      <div className="sticky top-12 pl-3 w-full h-0">
         <Deploy chatHashId={chat.hashId} />
       </div>
-      <Content
-        content={systemContent}
-        chatHashId={chat.hashId}
-        setContents={setContents}
-        callUpdateContent={callUpdateSystemMessage}
-        editable={editable}
-      />
-      {contents.map((c, i) => {
-        let hashIds: string[] = [];
-        if (c.role === "user") {
-          hashIds = contents.slice(i, i + 2).map((_c) => _c.hashId);
-        } else {
-          hashIds = contents.slice(i - 1, i + 1).map((_c) => _c.hashId);
-        }
+      <div className="px-3 pl-[7.5rem] flex flex-col gap-3">
+        <Content
+          content={systemContent}
+          chatHashId={chat.hashId}
+          setContents={setContents}
+          callUpdateContent={callUpdateSystemMessage}
+          editable={editable}
+        />
+        {contents.map((c, i) => {
+          let hashIds: string[] = [];
+          if (c.role === "user") {
+            hashIds = contents.slice(i, i + 2).map((_c) => _c.hashId);
+          } else {
+            hashIds = contents.slice(i - 1, i + 1).map((_c) => _c.hashId);
+          }
 
-        return (
-          <Content
-            key={c.hashId}
-            content={c}
-            chatHashId={chat.hashId}
-            setContents={setContents}
-            callUpdateContent={callUpdateContent(c.hashId)}
-            hashIds={hashIds}
-            editable={editable}
-          />
-        );
-      })}
-      <ContentInput
-        chatHashId={chat.hashId}
-        setContents={setContents}
-        editable={editable}
-      />
-    </Card>
+          return (
+            <Content
+              key={c.hashId}
+              content={c}
+              chatHashId={chat.hashId}
+              setContents={setContents}
+              callUpdateContent={callUpdateContent(c.hashId)}
+              hashIds={hashIds}
+              editable={editable}
+            />
+          );
+        })}
+        <ContentInput
+          chatHashId={chat.hashId}
+          setContents={setContents}
+          editable={editable}
+        />
+      </div>
+    </div>
   );
 }

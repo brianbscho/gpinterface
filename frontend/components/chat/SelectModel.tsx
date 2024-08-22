@@ -6,14 +6,15 @@ import { ProviderTypesGetResponse } from "gpinterface-shared/type/providerType";
 import {
   Select,
   SelectContent,
+  SelectEmptyTrigger,
   SelectGroup,
   SelectItem,
   SelectLabel,
-  SelectTrigger,
-  SelectValue,
 } from "../ui";
 import useUserStore from "@/store/user";
 import useContentStore from "@/store/content";
+import { ChevronDown } from "lucide-react";
+import MenuButton from "../general/buttons/MenuButton";
 
 export default function SelectModel() {
   const [providerTypes, setProviderTypes] =
@@ -61,52 +62,58 @@ export default function SelectModel() {
     [models, setContentStore]
   );
 
+  const [open, setOpen] = useState(false);
+
   if (!providerTypes) return null;
 
   return (
-    <div className="sticky top-0 py-3 bg-muted z-10 w-full">
-      <Select value={modelHashId} onValueChange={onValueChange}>
-        <SelectTrigger className="w-full">
-          <SelectValue placeholder="Please select model"></SelectValue>
-        </SelectTrigger>
-        <SelectContent>
-          {providerTypes.map((type) => (
-            <SelectGroup key={type.hashId}>
-              <SelectLabel className="bg-muted text-muted-foreground">
-                {type.type}
-              </SelectLabel>
-              {type.providers.map((provider) => (
-                <Fragment key={provider.hashId}>
-                  <SelectLabel className="bg-muted text-muted-foreground font-normal">
-                    {provider.name}
-                  </SelectLabel>
-                  {provider.models.map((m) => {
-                    const { isLoginRequired, isAvailable, isFree } = m;
-                    const loginRequired = isLoggedOut && isLoginRequired;
-                    const disableMessage = loginRequired
-                      ? " (login required)"
-                      : !isFree
-                      ? " (payment required)"
-                      : !isAvailable
-                      ? " (not available)"
-                      : "";
+    <Select
+      value={modelHashId}
+      onValueChange={onValueChange}
+      open={open}
+      onOpenChange={setOpen}
+    >
+      <SelectEmptyTrigger className="h-6">
+        <MenuButton
+          className="w-24"
+          Icon={ChevronDown}
+          text="Models"
+          onClick={() => setOpen(true)}
+          selected={open}
+        />
+      </SelectEmptyTrigger>
+      <SelectContent className="w-[23rem]">
+        {providerTypes.map((type) => (
+          <SelectGroup key={type.hashId}>
+            {type.providers.map((provider) => (
+              <Fragment key={provider.hashId}>
+                <SelectLabel>{provider.name}</SelectLabel>
+                {provider.models.map((m) => {
+                  const { isLoginRequired, isAvailable, isFree } = m;
+                  const loginRequired = isLoggedOut && isLoginRequired;
+                  const disableMessage = loginRequired
+                    ? " (login required)"
+                    : !isFree
+                    ? " (payment required)"
+                    : !isAvailable
+                    ? " (not available)"
+                    : "";
 
-                    return (
-                      <SelectItem
-                        key={m.hashId}
-                        value={m.hashId}
-                        disabled={loginRequired || !isAvailable || !isFree}
-                      >
-                        {`${m.name}${disableMessage}`}
-                      </SelectItem>
-                    );
-                  })}
-                </Fragment>
-              ))}
-            </SelectGroup>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
+                  return (
+                    <SelectItem
+                      key={m.hashId}
+                      value={m.hashId}
+                      disabled={loginRequired || !isAvailable || !isFree}
+                    >
+                      {`${m.name}${disableMessage}`}
+                    </SelectItem>
+                  );
+                })}
+              </Fragment>
+            ))}
+          </SelectGroup>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }

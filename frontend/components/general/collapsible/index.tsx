@@ -66,7 +66,7 @@ const Collapsible: React.FC<CollapsibleProps> = ({
       <div
         ref={contentRef}
         style={{ transition: "height 0.1s", height: 0 }}
-        className="overflow-hidden p-px"
+        className="overflow-hidden"
       >
         {children}
       </div>

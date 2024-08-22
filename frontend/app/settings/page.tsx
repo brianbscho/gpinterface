@@ -3,7 +3,7 @@
 import useUserStore from "@/store/user";
 import callApi from "@/utils/callApi";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import UpdatePassword from "@/components/general/dialogs/UpdatePassword";
 import {
   UserGetMeResponse,
@@ -16,7 +16,16 @@ import {
   ApiKeysGetResponse,
 } from "gpinterface-shared/type/apiKey";
 import { Static } from "@sinclair/typebox";
-import { Copy, Mail, Trash2, UserRound } from "lucide-react";
+import {
+  Check,
+  CircleX,
+  Copy,
+  KeyRound,
+  Mail,
+  Save,
+  Trash2,
+  UserRound,
+} from "lucide-react";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -27,6 +36,7 @@ import {
   Card,
   Input,
 } from "@/components/ui";
+import MenuButton from "@/components/general/buttons/MenuButton";
 
 export default function Page() {
   const { user, setUser } = useUserStore();
@@ -137,93 +147,79 @@ export default function Page() {
 
   if (!user) return null;
   return (
-    <div className="w-full max-w-7xl flex flex-col gap-3 px-3">
-      <table className="mt-3">
-        <tbody className="align-middle">
-          <tr className="h-10">
-            <td className="text-muted-foreground text-sm">Email</td>
-            <td className="text-sm">{user.email}</td>
-          </tr>
-          <tr>
-            <td className="text-muted-foreground text-sm">Username</td>
-            <td>
-              <Input
-                type="text"
-                placeholder="Please type your username (no space)"
-                value={name}
-                onChange={(e) => setName(e.currentTarget.value)}
-                Icon={UserRound}
-              ></Input>
-              {name.length > 0 && !nameValid && (
-                <div className="text-xs min-h-4 mt-1 mb-3 text-rose-500">
-                  You can use only alphanumeric characters and -_,~!@#$^&*()+=
-                  special characters.
-                </div>
-              )}
-            </td>
-          </tr>
-          <tr className="align-top">
-            <td className="text-muted-foreground text-sm">
-              <div className="h-10 flex items-center">API Keys</div>
-            </td>
-            <td>
-              <div>
-                <div>
-                  <table>
-                    {apiKeys.map((k) => (
-                      <tr
-                        key={k.hashId}
-                        className="h-[3.25rem] first:h-10 align-middle"
-                      >
-                        <td className="text-sm">{k.key}</td>
-                        <td>
-                          <Button
-                            variant="outline"
-                            onClick={() => onClickApiKeyTrash(k.hashId)}
-                            className="p-0 h-7 w-7"
-                          >
-                            <Trash2 />
-                          </Button>
-                        </td>
-                      </tr>
-                    ))}
-                  </table>
-                  <Button onClick={onClickGetApiKey} className="mt-3">
-                    Get API Key
-                  </Button>
-                </div>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td className="text-muted-foreground text-sm">
-              <div className="h-10 flex items-center">Customer support</div>
-            </td>
-            <td>
-              <div className="text-sm flex items-center gap-1">
-                <a href="mailto:brian.b.cho@bookquilt.com">Send email</a>
-                <span>
-                  <Mail />
-                </span>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td className="text-muted-foreground text-sm">
-              <div className="h-10 flex items-center">Password</div>
-            </td>
-            <td>
-              <UpdatePassword />
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      <div className="w-full flex flex-col items-end gap-3">
-        <Button onClick={onClickSave}>{saveButtonText}</Button>
-        <Button onClick={onClickDelete} variant="destructive">
-          Delete account
-        </Button>
+    <div className="flex flex-col gap-3 px-3">
+      <div className="mt-3 grid grid-cols-[auto_auto_1fr] gap-3 items-center text-sm">
+        <div className="font-bold">Email</div>
+        <div className="text-muted-foreground col-span-2">{user.email}</div>
+        <div className="font-bold">Username</div>
+        <div>
+          <Input
+            type="text"
+            placeholder="Please type your username (no space)"
+            value={name}
+            onChange={(e) => setName(e.currentTarget.value)}
+            Icon={UserRound}
+          ></Input>
+        </div>
+        <div>
+          <MenuButton
+            onClick={onClickSave}
+            disabled={name.length > 0 && !nameValid}
+            Icon={Save}
+            text={saveButtonText}
+            className="w-20"
+          />
+        </div>
+        <div></div>
+        <div className="col-span-2">
+          {name.length > 0 && !nameValid && (
+            <div className="text-xs min-h-4 mt-1 mb-3 text-rose-500">
+              You can use only alphanumeric characters and -_,~!@#$^&*()+=
+              special characters.
+            </div>
+          )}
+        </div>
+        <div className="font-bold">API Keys</div>
+        {apiKeys.map((k) => (
+          <Fragment key={k.hashId}>
+            <div className="text-muted-foreground text-sm">{k.key}</div>
+            <div className="h-6">
+              <MenuButton
+                onClick={() => onClickApiKeyTrash(k.hashId)}
+                Icon={Trash2}
+                text="Delete"
+                className="w-20"
+              />
+            </div>
+            <div></div>
+          </Fragment>
+        ))}
+        <div className="col-span-2">
+          <MenuButton
+            onClick={onClickGetApiKey}
+            Icon={KeyRound}
+            text="Create API Key"
+            className="w-32"
+          />
+        </div>
+        <div className="font-bold">Customer support</div>
+        <div className="text-muted-foreground text-sm flex items-center gap-1 underline col-span-2">
+          <a href="mailto:brian.b.cho@bookquilt.com">
+            <MenuButton Icon={Mail} text="Send email" className="w-28" />
+          </a>
+        </div>
+        <div className="font-bold">Password</div>
+        <div className="col-span-2">
+          <UpdatePassword />
+        </div>
       </div>
+      <MenuButton
+        Icon={CircleX}
+        text="Delete account"
+        onClick={onClickDelete}
+        className="w-36"
+        variant="icon_destructive"
+      />
       <AlertDialog open={newKey.length > 0}>
         <AlertDialogContent className="max-w-fit">
           <AlertDialogTitle>API Key</AlertDialogTitle>
@@ -232,19 +228,21 @@ export default function Page() {
               <div>
                 <span className="text-rose-500">Important: </span>
                 <span>
-                  Your API key is displayed below. Please copy it now and store
-                  it securely, as you will not be able to see it again.
+                  Your API key is displayed below. Please copy it{" "}
+                  <span className="text-rose-500">now</span> and store it
+                  <span className="text-rose-500"> securely</span>, as you will
+                  not be able to see it again.
                 </span>
               </div>
-              <Card className="mt-3">
-                <div className="flex items-center">
-                  <div className="text-xs px-3">{newKey}</div>
-                  <Button
-                    variant="secondary"
+              <Card className="mt-3 p-3">
+                <div className="flex items-center gap-3">
+                  <div className="text-xs">{newKey}</div>
+                  <MenuButton
+                    Icon={Copy}
+                    text="Copy"
                     onClick={() => navigator.clipboard.writeText(newKey)}
-                  >
-                    <Copy />
-                  </Button>
+                    className="w-24"
+                  />
                 </div>
               </Card>
             </div>
@@ -252,7 +250,12 @@ export default function Page() {
           <AlertDialogFooter>
             <div className="w-full flex justify-end mt-3">
               <div>
-                <Button onClick={() => setNewKey("")}>Confirm</Button>
+                <MenuButton
+                  Icon={Check}
+                  text="Confirm"
+                  onClick={() => setNewKey("")}
+                  className="w-24"
+                />
               </div>
             </div>
           </AlertDialogFooter>

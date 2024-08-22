@@ -32,6 +32,23 @@ const SelectTrigger = React.forwardRef<
 ));
 SelectTrigger.displayName = SelectPrimitive.Trigger.displayName;
 
+const SelectEmptyTrigger = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger>
+>(({ className, children, ...props }, ref) => (
+  <SelectPrimitive.Trigger
+    ref={ref}
+    className={cn(
+      "focus:outline-none focus:ring-0 focus:ring-ring focus:ring-offset-0",
+      className
+    )}
+    {...props}
+  >
+    {children}
+  </SelectPrimitive.Trigger>
+));
+SelectEmptyTrigger.displayName = "SelectEmptyTrigger";
+
 const SelectScrollUpButton = React.forwardRef<
   React.ElementRef<typeof SelectPrimitive.ScrollUpButton>,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.ScrollUpButton>
@@ -105,7 +122,10 @@ const SelectLabel = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Label
     ref={ref}
-    className={cn("py-1.5 pl-8 pr-2 text-sm font-semibold", className)}
+    className={cn(
+      "py-1.5 pl-8 pr-2 text-sm font-bold bg-neutral-700 rounded-sm",
+      className
+    )}
     {...props}
   />
 ));
@@ -151,6 +171,7 @@ export {
   SelectGroup,
   SelectValue,
   SelectTrigger,
+  SelectEmptyTrigger,
   SelectContent,
   SelectLabel,
   SelectItem,

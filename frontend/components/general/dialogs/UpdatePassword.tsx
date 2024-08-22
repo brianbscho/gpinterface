@@ -18,6 +18,8 @@ import {
   Separator,
 } from "@/components/ui";
 import { validatePassword } from "gpinterface-shared/string";
+import MenuButton from "../buttons/MenuButton";
+import { CircleX, Key } from "lucide-react";
 
 export default function UpdatePassword() {
   const isLoggedOut = useUserStore((state) => state.isLoggedOut);
@@ -76,63 +78,60 @@ export default function UpdatePassword() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
-        <Button>Password update</Button>
+        <MenuButton Icon={Key} text="Password update" className="w-36" />
       </DialogTrigger>
       <DialogContent>
         <form onSubmit={onSubmit}>
-          <table>
-            <tr>
-              <td>Current password</td>
-              <td>
-                <Input
-                  type="password"
-                  value={oldPassword}
-                  onChange={(e) => setOldPassword(e.currentTarget.value)}
-                ></Input>
-              </td>
-            </tr>
-            <Separator orientation="horizontal" className="my-3" />
-            <tr>
-              <td>New password</td>
-              <td>
-                <Input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.currentTarget.value)}
-                ></Input>
-              </td>
-            </tr>
-            <tr>
-              <td>New password Repeat</td>
-              <td>
-                <Input
-                  type="password"
-                  value={newPasswordRepeat}
-                  onChange={(e) => setNewPasswordRepeat(e.currentTarget.value)}
-                ></Input>
-              </td>
-            </tr>
-          </table>
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div>Current password</div>
+            <div>
+              <Input
+                type="password"
+                value={oldPassword}
+                onChange={(e) => setOldPassword(e.currentTarget.value)}
+              ></Input>
+            </div>
+            <Separator
+              orientation="horizontal"
+              className="my-3 col-span-2 bg-yellow-300"
+            />
+            <div>New password</div>
+            <Input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.currentTarget.value)}
+            ></Input>
+            <div>New password Repeat</div>
+            <Input
+              type="password"
+              value={newPasswordRepeat}
+              onChange={(e) => setNewPasswordRepeat(e.currentTarget.value)}
+            ></Input>
+          </div>
           <div className="mt-1 text-xs h-4 text-rose-500">{passwordMsg}</div>
           <div className="text-xs mt-1">
             at least 8 characters long, at least one uppercase letter, at least
             one lowercase letter, and at least one digit
           </div>
-          <div className="w-full flex justify-end gap-3 mt-7">
+          <div className="w-full flex justify-end gap-3 mt-7 h-6">
             <DialogClose>
-              <Button loading={loading} variant="outline" type="button">
-                Cancel
-              </Button>
+              <MenuButton
+                Icon={CircleX}
+                text="Cancel"
+                type="button"
+                className="w-24"
+              />
             </DialogClose>
-            <Button
-              loading={loading}
+            <MenuButton
+              Icon={Key}
+              text="Update"
               type="submit"
               disabled={[oldPassword, newPassword, newPasswordRepeat].some(
                 (p) => p === ""
               )}
-            >
-              Update
-            </Button>
+              loading={loading}
+              className="w-24"
+            />
           </div>
         </form>
       </DialogContent>
