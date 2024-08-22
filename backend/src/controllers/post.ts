@@ -1,6 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { getDataWithHashId } from "../util/prisma";
-import { getTypedContent } from "../util/content";
+import { getTypedContent, getDataWithHashId } from "../util/prisma";
 
 export async function createPost(
   chatDelegate: Prisma.ChatDelegate,

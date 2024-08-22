@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { createEntity } from "../util/prisma";
+import { getTypedContent, createEntity } from "../util/prisma";
 import {
   ChatCreateResponse,
   ChatDuplicateResponse,
@@ -11,7 +11,6 @@ import { Static } from "@sinclair/typebox";
 import { ParamSchema } from "gpinterface-shared/type";
 import { createChat } from "../controllers/chat";
 import { getDateString } from "../util/string";
-import { getTypedContent } from "../util/content";
 
 export default async function (fastify: FastifyInstance) {
   fastify.get<{ Params: Static<typeof ParamSchema> }>(

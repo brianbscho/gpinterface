@@ -2,9 +2,8 @@ import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
 import { getDateString } from "../util/string";
 import { QueryParamSchema } from "gpinterface-shared/type";
-import { getIdByHashId } from "../util/prisma";
+import { getTypedContent, getIdByHashId } from "../util/prisma";
 import { ChatsGetResponse } from "gpinterface-shared/type/chat";
-import { getTypedContent } from "../util/content";
 
 export default async function (fastify: FastifyInstance) {
   fastify.get<{ Querystring: Static<typeof QueryParamSchema> }>(

@@ -1,7 +1,11 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
 import { QueryParamSchema } from "gpinterface-shared/type";
-import { createManyEntities, getIdByHashId } from "../util/prisma";
+import {
+  getTypedContent,
+  createManyEntities,
+  getIdByHashId,
+} from "../util/prisma";
 import {
   ContentsCreateResponse,
   ContentsCreateSchema,
@@ -10,7 +14,6 @@ import {
   ContentsGetResponse,
   ContentsGetSchema,
 } from "gpinterface-shared/type/content";
-import { getTypedContent } from "../util/content";
 
 export default async function (fastify: FastifyInstance) {
   fastify.get<{

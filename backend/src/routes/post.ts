@@ -8,7 +8,7 @@ import {
 } from "gpinterface-shared/type/post";
 import { getDateString } from "../util/string";
 import { ParamSchema } from "gpinterface-shared/type";
-import { getTypedContent } from "../util/content";
+import { getTypedContent } from "../util/prisma";
 import { createPost } from "../controllers/post";
 
 export default async function (fastify: FastifyInstance) {

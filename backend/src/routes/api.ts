@@ -9,9 +9,12 @@ import {
   ApiUpdateSchema,
 } from "gpinterface-shared/type/api";
 import { ParamSchema, QueryParamSchema } from "gpinterface-shared/type";
-import { getTypedContent } from "../util/content";
 import { createApi } from "../controllers/api";
-import { getIdByHashId } from "../util/prisma";
+import {
+  getTypedContent,
+  getIdByHashId,
+  getTypedHistory,
+} from "../util/prisma";
 import { getDateString } from "../util/string";
 
 export default async function (fastify: FastifyInstance) {

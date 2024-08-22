@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { createEntity, getIdByHashId } from "../util/prisma";
+import { getTypedContent, createEntity, getIdByHashId } from "../util/prisma";
 import {
   ContentCreateSchema,
   ContentRefreshSchema,
@@ -9,7 +9,6 @@ import {
 } from "gpinterface-shared/type/content";
 import { Static } from "@sinclair/typebox";
 import { getTextResponse } from "../util/text";
-import { getTypedContent } from "../util/content";
 import { Content, ParamSchema } from "gpinterface-shared/type";
 import { MILLION } from "../util/model";
 import { nanoid } from "nanoid";

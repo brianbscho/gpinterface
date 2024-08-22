@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { nanoid } from "nanoid";
 
 export function getDataWithHashId<T>(data: T, nanoidSize?: number) {
@@ -100,4 +101,8 @@ export async function getUpdatedAtByHashId(
     return null;
   }
   return prompt.updatedAt;
+}
+
+export function getTypedContent<T>(content: T & { config: Prisma.JsonValue }) {
+  return { ...content, config: content.config as any };
 }
