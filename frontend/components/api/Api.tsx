@@ -91,43 +91,40 @@ export default function Api({ api, editable }: Props) {
 
   if (!api) return <div></div>;
   return (
-    <div className="h-full overflow-y-auto">
-      <div className="p-3 whitespace-pre-wrap">{api.description}</div>
-      <div className="w-full flex flex-col gap-3">
-        <Content
-          content={systemContent}
-          chatHashId={api.chat.hashId}
-          setContents={setContents}
-          callUpdateContent={callUpdateSystemMessage}
-          editable={editable}
-        />
-        {contents.map((c, i) => {
-          let hashIds: string[] = [];
-          if (c.role === "user") {
-            hashIds = contents.slice(i, i + 2).map((_c) => _c.hashId);
-          } else {
-            hashIds = contents.slice(i - 1, i + 1).map((_c) => _c.hashId);
-          }
+    <div className="w-full h-full overflow-y-auto flex flex-col gap-3 pl-[8.5rem] p-3">
+      <Content
+        content={systemContent}
+        chatHashId={api.chat.hashId}
+        setContents={setContents}
+        callUpdateContent={callUpdateSystemMessage}
+        editable={editable}
+      />
+      {contents.map((c, i) => {
+        let hashIds: string[] = [];
+        if (c.role === "user") {
+          hashIds = contents.slice(i, i + 2).map((_c) => _c.hashId);
+        } else {
+          hashIds = contents.slice(i - 1, i + 1).map((_c) => _c.hashId);
+        }
 
-          return (
-            <Content
-              key={c.hashId}
-              content={c}
-              chatHashId={api.chat.hashId}
-              setContents={setContents}
-              callUpdateContent={callUpdateContent(c.hashId)}
-              hashIds={hashIds}
-              editable={editable}
-            />
-          );
-        })}
-        <ContentInput
-          chatHashId={api.chat.hashId}
-          apiHashId={api.hashId}
-          setContents={setContents}
-          editable={editable}
-        />
-      </div>
+        return (
+          <Content
+            key={c.hashId}
+            content={c}
+            chatHashId={api.chat.hashId}
+            setContents={setContents}
+            callUpdateContent={callUpdateContent(c.hashId)}
+            hashIds={hashIds}
+            editable={editable}
+          />
+        );
+      })}
+      <ContentInput
+        chatHashId={api.chat.hashId}
+        apiHashId={api.hashId}
+        setContents={setContents}
+        editable={editable}
+      />
     </div>
   );
 }

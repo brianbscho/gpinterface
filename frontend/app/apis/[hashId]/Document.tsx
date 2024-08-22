@@ -1,17 +1,20 @@
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  useToast,
-} from "@/components/ui";
+import { Badge, useToast } from "@/components/ui";
 import useContentStore from "@/store/content";
 import { getApiConfig } from "@/utils/model";
 import { stringify } from "@/utils/string";
 import { ApiGetResponse } from "gpinterface-shared/type/api";
 import { Copy } from "lucide-react";
+import { ReactNode } from "react";
+
+type ElementProp = { title: string; children: ReactNode };
+function Element({ title, children }: ElementProp) {
+  return (
+    <div>
+      <div className="font-bold">{title}</div>
+      <div className="text-neutral-500">{children}</div>
+    </div>
+  );
+}
 
 const CopyUrl = ({ url }: { url: string }) => {
   const { toast } = useToast();
@@ -33,10 +36,9 @@ const CopyUrl = ({ url }: { url: string }) => {
 const Authentication = ({ userHashId }: { userHashId: string | null }) => {
   if (!userHashId) return null;
   return (
-    <>
-      <Button disabled>Header</Button>
-      <div className="text-sm">{`Authorization: Bearer {YOUR_GPINTERFACE_API_KEY}`}</div>
-    </>
+    <Element title="Header">
+      {`Authorization: Bearer {YOUR_GPINTERFACE_API_KEY}`}
+    </Element>
   );
 };
 
@@ -46,126 +48,89 @@ export default function Document({ api }: { api?: ApiGetResponse }) {
   if (!api) return null;
 
   return (
-    <div className="w-full h-full overflow-y-auto p-3">
+    <div className="w-full h-full overflow-y-auto pl-[8.5rem] p-3 flex flex-col gap-7 text-sm">
       {!!model && (
-        <Card className="w-full mb-3">
-          <CardHeader>
-            <CardTitle>Info</CardTitle>
-            <CardDescription>{model.name}</CardDescription>
-          </CardHeader>
-          <CardContent className="whitespace-pre-wrap">
-            <div className="grid grid-cols-[auto_1fr] gap-3 items-center">
-              <Button disabled className="self-start">
-                Model config
-              </Button>
-              <div className="text-sm">
-                {Object.keys(api.config).length === 0
-                  ? "Default"
-                  : stringify(getApiConfig(model, api.config))}
-              </div>
-              <Button disabled>{api.isPublic ? "Public" : "Private"}</Button>
-              <div className="text-sm">
-                {api.isPublic
-                  ? "Accessible by anyone for testing and calling. Only the owner has editing privileges."
-                  : "Only the owner can access, test, edit, and call this API."}
-              </div>
-              <Button disabled>Share</Button>
-              <CopyUrl
-                url={`${process.env.NEXT_PUBLIC_HOSTNAME}/apis/${api.hashId}`}
-              />
-            </div>
-          </CardContent>
-        </Card>
+        <>
+          <div>
+            <Badge variant="tag">Info</Badge>
+            <div className="font-bold">{model.name}</div>
+          </div>
+          <Element title="Model config">
+            {Object.keys(api.config).length === 0
+              ? "Default"
+              : stringify(getApiConfig(model, api.config))}
+          </Element>
+          <Element title={api.isPublic ? "Public" : "Private"}>
+            {api.isPublic
+              ? "Accessible by anyone for testing and calling. Only the owner has editing privileges."
+              : "Only the owner can access, test, edit, and call this API."}
+          </Element>
+          <Element title="Share">
+            <CopyUrl
+              url={`${process.env.NEXT_PUBLIC_HOSTNAME}/apis/${api.hashId}`}
+            />
+          </Element>
+        </>
       )}
-      <Card className="w-full mb-3">
-        <CardHeader>
-          <CardTitle>Chat Completion</CardTitle>
-          <CardDescription>
-            Send a message that will be added to the end of a predefined
-            messages and receive an response for one-time chat interactions.
-            Ideal for isolated queries without session persistence.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-[auto_1fr] gap-3 items-center">
-            <Button disabled>POST</Button>
-            <div className="text-sm">
-              {process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/chat/completion
-            </div>
-            <Authentication userHashId={api.userHashId} />
-            <Button disabled>Body</Button>
-            <div className="text-sm">{`{apiHashId: "${api.hashId}", message: string}`}</div>
-            <Button disabled>Response</Button>
-            <div className="text-sm">{`{content: string}`}</div>
-          </div>
-        </CardContent>
-      </Card>
-      <Card className="w-full mb-3">
-        <CardHeader>
-          <CardTitle>Create Session</CardTitle>
-          <CardDescription>
-            Initialize a new session and receive a hashed session ID, enabling
-            users to maintain a continuous conversation.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-[auto_1fr] gap-3 items-center">
-            <Button disabled>POST</Button>
-            <div className="text-sm">
-              {process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/session
-            </div>
-            <Authentication userHashId={api.userHashId} />
-            <Button disabled>Body</Button>
-            <div className="text-sm">{`{apiHashId: "${api.hashId}"}`}</div>
-            <Button disabled>Response</Button>
-            <div className="text-sm">{`{hashId: "SESSION_ID"}`}</div>
-          </div>
-        </CardContent>
-      </Card>
-      <Card className="w-full mb-3">
-        <CardHeader>
-          <CardTitle>Session Completion</CardTitle>
-          <CardDescription>
-            Submit query within an active session, where it will be appended to
-            the end of existing messages, to receive response that will be
-            stored within the session, allowing ongoing dialogue.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-[auto_1fr] gap-3 items-center">
-            <Button disabled>POST</Button>
-            <div className="text-sm">
-              {process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/session/completion
-            </div>
-            <Authentication userHashId={api.userHashId} />
-            <Button disabled>Body</Button>
-            <div className="text-sm">{`{sessionHashId: "SESSION_ID", message: string}`}</div>
-            <Button disabled>Response</Button>
-            <div className="text-sm">{`{content: string}`}</div>
-          </div>
-        </CardContent>
-      </Card>
-      <Card className="w-full mb-3">
-        <CardHeader>
-          <CardTitle>Retrieve Session Messages</CardTitle>
-          <CardDescription>
-            Retrieve the entire message history from a specific session.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-[auto_1fr] gap-3 items-center">
-            <Button disabled>GET</Button>
-            <div className="text-sm">
-              {`${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/session/{sessionHashId}/messages`}
-            </div>
-            <Authentication userHashId={api.userHashId} />
-            <Button disabled>Query Parameter</Button>
-            <div className="text-sm">{`{sessionHashId: "SESSION_ID"}`}</div>
-            <Button disabled>Response</Button>
-            <div className="text-sm">{`{ messages: {role: string; content: string;}[] }`}</div>
-          </div>
-        </CardContent>
-      </Card>
+      <div>
+        <Badge variant="tag">Chat Completion</Badge>
+        <div className="text-neutral-500">
+          Send a message that will be added to the end of a predefined messages
+          and receive an response for one-time chat interactions. Ideal for
+          isolated queries without session persistence.
+        </div>
+      </div>
+      <Element title="POST">
+        {process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/chat/completion
+      </Element>
+      <Authentication userHashId={api.userHashId} />
+      <Element title="Body">{`{apiHashId: "${api.hashId}", message: string}`}</Element>
+      <Element title="Response">{`{content: string}`}</Element>
+      <div>
+        <Badge variant="tag">Create Session</Badge>
+        <div className="text-neutral-500">
+          Initialize a new session and receive a hashed session ID, enabling
+          users to maintain a continuous conversation.
+        </div>
+      </div>
+      <Element title="POST">
+        {process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/session
+      </Element>
+      <Authentication userHashId={api.userHashId} />
+      <Element title="Body">
+        <div className="text-sm">{`{apiHashId: "${api.hashId}"}`}</div>
+      </Element>
+      <Element title="Response">{`{hashId: "SESSION_ID"}`}</Element>
+      <div>
+        <Badge variant="tag">Session Completion</Badge>
+        <div className="text-neutral-500">
+          Submit query within an active session, where it will be appended to
+          the end of existing messages, to receive response that will be stored
+          within the session, allowing ongoing dialogue.
+        </div>
+      </div>
+      <Element title="POST">
+        {process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/session/completion
+      </Element>
+      <Authentication userHashId={api.userHashId} />
+      <Element title="Body">
+        <div className="text-sm">{`{sessionHashId: "SESSION_ID", message: string}`}</div>
+      </Element>
+      <Element title="Response">{`{content: string}`}</Element>
+      <div>
+        <Badge variant="tag">Retrieve Session Messages</Badge>
+        <div className="text-neutral-500">
+          Retrieve the entire message history from a specific session.
+        </div>
+      </div>
+      <Element title="GET">
+        {`${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/session/{sessionHashId}/messages`}
+      </Element>
+      <Authentication userHashId={api.userHashId} />
+      <Element title="Query Parameter">
+        <div className="text-sm">{`{sessionHashId: "SESSION_ID"}`}</div>
+      </Element>
+      <Element title="Response">{`{ messages: {role: string; content: string;}[] }`}</Element>
     </div>
   );
 }

@@ -1,24 +1,18 @@
 "use client";
 
-import { Button, useToast } from "@/components/ui";
-import { Checkbox } from "@/components/ui/checkbox";
+import MenuButton from "@/components/general/buttons/MenuButton";
+import { useToast } from "@/components/ui";
 import useContentStore from "@/store/content";
 import callApi from "@/utils/callApi";
 import { getApiConfig } from "@/utils/model";
-import { CheckedState } from "@radix-ui/react-checkbox";
 import { Static } from "@sinclair/typebox";
 import {
   ApiCreateResponse,
   ApiGetResponse,
   ApiUpdateSchema,
 } from "gpinterface-shared/type/api";
-import {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { CheckCircle2, Circle, Save } from "lucide-react";
+import { Dispatch, SetStateAction, useCallback } from "react";
 
 type ApiType = ApiGetResponse | undefined;
 type Props = { useApi: [api: ApiType, Dispatch<SetStateAction<ApiType>>] };
@@ -31,8 +25,8 @@ export default function EditApi({ useApi }: Props) {
     state.model,
   ]);
   const onCheckedChange = useCallback(
-    async (c: CheckedState) => {
-      if (!api?.hashId || typeof c !== "boolean") return;
+    async (c: boolean) => {
+      if (!api?.hashId) return;
 
       const response = await callApi<
         ApiCreateResponse,
@@ -72,23 +66,22 @@ export default function EditApi({ useApi }: Props) {
 
   return (
     <>
-      <div className="py-2 pl-3 flex items-center gap-3">
-        <Checkbox
-          id="is_public"
-          checked={api?.isPublic}
-          onCheckedChange={onCheckedChange}
+      <div className="h-6">
+        <MenuButton
+          className="w-24"
+          Icon={!api?.isPublic ? Circle : CheckCircle2}
+          text="Public"
+          onClick={() => onCheckedChange(!api?.isPublic)}
         />
-        <label htmlFor="is_public" className="text-sm">
-          Is this public API?
-        </label>
       </div>
-      <Button
-        className="w-full rounded-none"
-        variant="outline"
-        onClick={onClickDefault}
-      >
-        Save model
-      </Button>
+      <div>
+        <MenuButton
+          className="w-24 mt-3"
+          Icon={Save}
+          text="Save"
+          onClick={onClickDefault}
+        />
+      </div>
     </>
   );
 }

@@ -2,9 +2,6 @@
 
 import Api from "@/components/api/Api";
 import Provider from "@/components/chat/Provider";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui";
-import Chats from "./Chats";
-import Sessions from "./Sessions";
 import Document from "./Document";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import callApi from "@/utils/callApi";
@@ -12,6 +9,8 @@ import { ApiGetResponse } from "gpinterface-shared/type/api";
 import { cn } from "@/utils/css";
 import useUserStore from "@/store/user";
 import EditApi from "./EditApi";
+import { MessageSquareCode, SquareCode } from "lucide-react";
+import MenuButton from "@/components/general/buttons/MenuButton";
 
 export default function Page({ params }: { params: { hashId: string } }) {
   const { hashId } = params;
@@ -27,7 +26,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
     callApiApi();
   }, [hashId]);
 
-  const [tab, setTab] = useState("api");
+  const [tab, setTab] = useState("chat");
   const isHidden = useCallback(
     (_tab: string) => (tab === _tab ? "" : "hidden"),
     [tab]
@@ -40,56 +39,46 @@ export default function Page({ params }: { params: { hashId: string } }) {
   );
 
   return (
-    <div className="w-full flex-1 overflow-hidden">
-      <Tabs
-        className="w-full h-full flex flex-col overflow-hidden"
-        value={tab}
-        onValueChange={setTab}
-      >
-        <TabsList className="w-full rounded-none">
-          <TabsTrigger value="api" className="flex-1">
-            API
-          </TabsTrigger>
-          <TabsTrigger value="document" className="flex-1">
-            Document
-          </TabsTrigger>
-          <TabsTrigger value="chat_completions" className="flex-1">
-            Chat completions
-          </TabsTrigger>
-          <TabsTrigger value="sessions" className="flex-1">
-            Sessions
-          </TabsTrigger>
-        </TabsList>
-        <div className={cn("w-full flex-1 overflow-hidden", isHidden("api"))}>
-          <div className="h-full grid grid-cols-[1fr_auto] overflow-hidden">
-            <Api api={api} editable={editable} />
-            <div className="flex flex-col w-full h-full overflow-hidden">
-              {editable && <EditApi useApi={[api, setApi]} />}
-              <div className="flex-1 overflow-hidden">
-                <Provider />
-              </div>
-            </div>
-          </div>
+    <div className="w-full flex-1 flex flex-col overflow-hidden">
+      <div className="p-3 whitespace-pre-wrap">{api?.description ?? ""}</div>
+      <div className="flex-1 grid grid-cols-[1fr_auto] overflow-hidden relative">
+        <div className="absolute top-3 left-3">
+          <MenuButton
+            onClick={() => setTab("chat")}
+            className="w-28"
+            Icon={MessageSquareCode}
+            text="Chat"
+            selected={tab === "chat"}
+          />
+        </div>
+        <div className="absolute top-12 left-3">
+          <MenuButton
+            onClick={() => setTab("document")}
+            className="w-28"
+            Icon={SquareCode}
+            text="Document"
+            selected={tab === "document"}
+          />
+        </div>
+        <div className={cn("w-full h-full overflow-hidden", isHidden("chat"))}>
+          <Api api={api} editable={editable} />
         </div>
         <div
-          className={cn(
-            "w-full flex-1 overflow-y-auto",
-            isHidden("chat_completions")
-          )}
-        >
-          <Chats apiHashId={hashId} />
-        </div>
-        <div
-          className={cn("w-full flex-1 overflow-y-auto", isHidden("sessions"))}
-        >
-          <Sessions apiHashId={hashId} />
-        </div>
-        <div
-          className={cn("w-full flex-1 overflow-y-auto", isHidden("document"))}
+          className={cn("w-full flex-1 overflow-hidden", isHidden("document"))}
         >
           <Document api={api} />
         </div>
-      </Tabs>
+        <div className="flex flex-col w-full h-full relative overflow-hidden">
+          {editable && (
+            <div className="absolute top-[5.25rem] left-3 h-0">
+              <EditApi useApi={[api, setApi]} />
+            </div>
+          )}
+          <div className="flex-1 overflow-hidden">
+            <Provider />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
