@@ -4,11 +4,11 @@ import List from "@/components/List";
 import callApi from "@/utils/callApi";
 import { HistoriesGetResponse } from "gpinterface-shared/type/history";
 import { Fragment, useCallback, useMemo, useState } from "react";
-import History from "./History";
 import Link from "next/link";
 import MenuButton from "@/components/general/buttons/MenuButton";
-import { MessageSquareCode, SquareCode } from "lucide-react";
+import { MessageSquareCode, ReceiptText, SquareCode } from "lucide-react";
 import { Badge } from "@/components/ui";
+import History from "@/components/general/dialogs/History";
 
 type HistoriesType = HistoriesGetResponse["histories"];
 export default function Page() {
@@ -64,7 +64,13 @@ export default function Page() {
               <Fragment key={h.hashId}>
                 <div className="pl-3">
                   <div className="h-6">
-                    <History history={h} />
+                    <History history={h}>
+                      <MenuButton
+                        className="w-28 h-6"
+                        Icon={ReceiptText}
+                        text="Show detail"
+                      />
+                    </History>
                   </div>
                   <div className="h-6 mt-3">
                     <Link
