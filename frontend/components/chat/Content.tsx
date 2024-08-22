@@ -9,7 +9,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { CircleX, Loader, ReceiptText, RefreshCcw } from "lucide-react";
+import { CircleX, Cpu, Loader, ReceiptText, RefreshCcw } from "lucide-react";
 import {
   Content as ContentType,
   ContentRefreshSchema,
@@ -26,8 +26,8 @@ import useModelStore from "@/store/model";
 type RefreshingHashId = string | undefined;
 type Props = {
   chatHashId: string;
-  content: Omit<ContentType, "hashId" | "model"> &
-    Partial<Omit<ContentType, "role" | "content" | "confing">>;
+  content: Omit<ContentType, "hashId"> &
+    Partial<Omit<ContentType, "role" | "content" | "config" | "model">>;
   setContents: Dispatch<SetStateAction<ContentType[]>>;
   useRefreshingHashId: [RefreshingHashId, (hashId: RefreshingHashId) => void];
   callUpdateContent: (content: string) => Promise<string | undefined>;
@@ -54,7 +54,11 @@ export default function Content({
   const [isSaving, setIsSaving] = useState(false);
 
   const [refreshingHashId, setRefreshingHashId] = useRefreshingHashId;
-  const [model, config] = useModelStore((state) => [state.model, state.config]);
+  const [model, config, setModelStore] = useModelStore((state) => [
+    state.model,
+    state.config,
+    state.setModelStore,
+  ]);
 
   useEffect(() => {
     if (oldContent === newContent) {
@@ -170,6 +174,22 @@ export default function Content({
           </>
         )}
         <div className="flex-1"></div>
+        {!!content.model?.hashId && !!content.config && (
+          <SmallHoverButton message="Set this to model">
+            <Button
+              className="p-1 h-6 w-6"
+              variant="default"
+              onClick={() =>
+                setModelStore({
+                  modelHashId: content.model!.hashId,
+                  config: content.config!,
+                })
+              }
+            >
+              <Cpu />
+            </Button>
+          </SmallHoverButton>
+        )}
         {!!content.history && (
           <SmallHoverButton message="Detail">
             <History history={content.history}>
