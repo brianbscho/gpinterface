@@ -1,6 +1,6 @@
 "use client";
 
-import { CornerDownLeft } from "lucide-react";
+import { CornerDownLeft, PenSquare } from "lucide-react";
 import { Badge, Button, CardContent, CardDescription, Textarea } from "../ui";
 import {
   Dispatch,
@@ -11,20 +11,24 @@ import {
   useState,
 } from "react";
 import callApi from "@/utils/callApi";
-import { Content } from "gpinterface-shared/type";
 import { Static } from "@sinclair/typebox";
 import {
+  Content,
   ContentCreateSchema,
+  ContentsCreateResponse,
+  ContentsCreateSchema,
   ContentsGetResponse,
 } from "gpinterface-shared/type/content";
-import useContentStore from "@/store/content";
 import { getApiConfig } from "@/utils/model";
 import ContentsDialog from "../api/ContentsDialog";
+import SmallHoverButton from "../general/buttons/SmallHoverButton";
+import useModelStore from "@/store/model";
 
 type Props = {
   chatHashId: string;
   apiHashId?: string;
   setContents: Dispatch<SetStateAction<Content[]>>;
+  setRefreshingHashId: (hashId: string | undefined) => void;
   editable: boolean;
 };
 
@@ -32,14 +36,12 @@ export default function ContentInput({
   chatHashId,
   apiHashId,
   setContents,
+  setRefreshingHashId,
   editable,
 }: Props) {
   const [content, setContent] = useState("");
 
-  const [{ config, model }, setContentStore] = useContentStore((state) => [
-    { config: state.config, model: state.model },
-    state.setContentStore,
-  ]);
+  const [config, model] = useModelStore((state) => [state.config, state.model]);
 
   const [responseContents, setResponseContents] = useState<Content[]>([]);
   const [loading, setLoading] = useState(false);
@@ -48,7 +50,7 @@ export default function ContentInput({
       e.preventDefault();
       if (!model) return;
 
-      setContentStore({ refreshingHashId: "" });
+      setRefreshingHashId("");
       setLoading(true);
       const response = await callApi<
         ContentsGetResponse,
@@ -67,14 +69,14 @@ export default function ContentInput({
       });
       if (response) {
         setContent("");
-        setContentStore({ refreshingHashId: undefined });
-        setLoading(false);
         if (editable) {
           setContents((prev) => [...prev, ...response.contents]);
         } else {
           setResponseContents(response.contents);
         }
       }
+      setRefreshingHashId(undefined);
+      setLoading(false);
     },
     [
       chatHashId,
@@ -83,7 +85,7 @@ export default function ContentInput({
       content,
       config,
       setContents,
-      setContentStore,
+      setRefreshingHashId,
       editable,
     ]
   );
@@ -97,23 +99,47 @@ export default function ContentInput({
     [onSubmit]
   );
 
+  const onClickAnswerYourself = useCallback(async () => {
+    const response = await callApi<
+      ContentsCreateResponse,
+      Static<typeof ContentsCreateSchema>
+    >({
+      method: "POST",
+      endpoint: "/contents",
+      body: { chatHashId },
+    });
+    if (response) {
+      setContents((prev) => prev.concat(response.contents));
+    }
+  }, [chatHashId, setContents]);
+
   return (
     <CardContent className="p-0">
       <div className="flex items-center mb-3">
         <Badge variant="tag">user</Badge>
+        <div className="flex-1"></div>
+        <SmallHoverButton message="Answer yourself">
+          <Button
+            className="p-1 h-6 w-6"
+            variant="default"
+            loading={loading}
+            onClick={onClickAnswerYourself}
+          >
+            <PenSquare />
+          </Button>
+        </SmallHoverButton>
       </div>
       <CardDescription>
         <form onSubmit={onSubmit}>
           <div className="flex gap-3">
             <div className="relative flex-1 items-start">
-              <div className="whitespace-pre-wrap px-3 py-2 text-sm invisible border">
+              <div className="whitespace-pre-wrap px-3 py-2 text-base invisible border">
                 {content + "."}
               </div>
               <Textarea
-                className="absolute max-h-none inset-0 z-10 overflow-hidden resize-none"
+                className="absolute max-h-none inset-0 z-10 text-base overflow-hidden resize-none"
                 value={content}
                 onChange={(e) => setContent(e.currentTarget.value)}
-                onFocus={() => setContentStore({ hashId: "" })}
                 placeholder="user message"
                 disabled={loading}
                 onKeyDown={onKeyDown}

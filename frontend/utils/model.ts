@@ -1,5 +1,5 @@
-import { ConfigType } from "@/store/content";
-import { Model } from "gpinterface-shared/type";
+import { ConfigType } from "@/store/model";
+import { Model } from "gpinterface-shared/type/providerType";
 
 export const getApiConfig = (model: Model, config: ConfigType) => {
   const newConfig: {

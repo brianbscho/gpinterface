@@ -32,7 +32,6 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogTitle,
-  Button,
   Card,
   Input,
 } from "@/components/ui";
@@ -150,7 +149,7 @@ export default function Page() {
     <div className="flex flex-col gap-3 px-3">
       <div className="mt-3 grid grid-cols-[auto_auto_1fr] gap-3 items-center text-sm">
         <div className="font-bold">Email</div>
-        <div className="text-muted-foreground col-span-2">{user.email}</div>
+        <div className="text-neutral-400 col-span-2">{user.email}</div>
         <div className="font-bold">Username</div>
         <div>
           <Input
@@ -167,7 +166,7 @@ export default function Page() {
             disabled={name.length > 0 && !nameValid}
             Icon={Save}
             text={saveButtonText}
-            className="w-20"
+            className="w-44"
           />
         </div>
         <div></div>
@@ -182,15 +181,13 @@ export default function Page() {
         <div className="font-bold">API Keys</div>
         {apiKeys.map((k) => (
           <Fragment key={k.hashId}>
-            <div className="text-muted-foreground text-sm">{k.key}</div>
-            <div className="h-6">
-              <MenuButton
-                onClick={() => onClickApiKeyTrash(k.hashId)}
-                Icon={Trash2}
-                text="Delete"
-                className="w-20"
-              />
-            </div>
+            <div className="text-neutral-400">{k.key}</div>
+            <MenuButton
+              onClick={() => onClickApiKeyTrash(k.hashId)}
+              Icon={Trash2}
+              text="Delete"
+              className="w-44"
+            />
             <div></div>
           </Fragment>
         ))}
@@ -199,27 +196,28 @@ export default function Page() {
             onClick={onClickGetApiKey}
             Icon={KeyRound}
             text="Create API Key"
-            className="w-32"
+            className="w-44"
           />
         </div>
         <div className="font-bold">Customer support</div>
-        <div className="text-muted-foreground text-sm flex items-center gap-1 underline col-span-2">
+        <div className="text-neutral-400 flex items-center gap-1 underline col-span-2">
           <a href="mailto:brian.b.cho@bookquilt.com">
-            <MenuButton Icon={Mail} text="Send email" className="w-28" />
+            <MenuButton Icon={Mail} text="Send email" className="w-44" />
           </a>
         </div>
         <div className="font-bold">Password</div>
         <div className="col-span-2">
           <UpdatePassword />
         </div>
+        <div className="col-span-2"></div>
+        <MenuButton
+          Icon={CircleX}
+          text="Delete account"
+          onClick={onClickDelete}
+          className="w-44"
+          variant="icon_destructive"
+        />
       </div>
-      <MenuButton
-        Icon={CircleX}
-        text="Delete account"
-        onClick={onClickDelete}
-        className="w-36"
-        variant="icon_destructive"
-      />
       <AlertDialog open={newKey.length > 0}>
         <AlertDialogContent className="max-w-fit">
           <AlertDialogTitle>API Key</AlertDialogTitle>
@@ -236,7 +234,7 @@ export default function Page() {
               </div>
               <Card className="mt-3 p-3">
                 <div className="flex items-center gap-3">
-                  <div className="text-xs">{newKey}</div>
+                  <div className="text-sm">{newKey}</div>
                   <MenuButton
                     Icon={Copy}
                     text="Copy"
@@ -254,7 +252,7 @@ export default function Page() {
                   Icon={Check}
                   text="Confirm"
                   onClick={() => setNewKey("")}
-                  className="w-24"
+                  className="w-28"
                 />
               </div>
             </div>

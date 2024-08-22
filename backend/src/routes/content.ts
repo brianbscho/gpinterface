@@ -1,6 +1,12 @@
 import { FastifyInstance } from "fastify";
-import { createEntity, getIdByHashId } from "../util/prisma";
 import {
+  getTypedContent,
+  createEntity,
+  getIdByHashId,
+  getTypedHistory,
+} from "../util/prisma";
+import {
+  Content,
   ContentCreateSchema,
   ContentRefreshSchema,
   ContentsGetResponse,
@@ -9,8 +15,7 @@ import {
 } from "gpinterface-shared/type/content";
 import { Static } from "@sinclair/typebox";
 import { getTextResponse } from "../util/text";
-import { getTypedContent } from "../util/content";
-import { Content, ParamSchema } from "gpinterface-shared/type";
+import { ParamSchema } from "gpinterface-shared/type";
 import { MILLION } from "../util/model";
 import { nanoid } from "nanoid";
 
@@ -56,6 +61,11 @@ export default async function (fastify: FastifyInstance) {
         if (!chat) {
           throw fastify.httpErrors.badRequest("chat is not available.");
         }
+        if (chat.contents.some((c) => c.content === "")) {
+          throw fastify.httpErrors.badRequest(
+            "There is empty content in chat."
+          );
+        }
 
         const { systemMessage, contents } = chat;
         const messages = [...contents];
@@ -72,7 +82,7 @@ export default async function (fastify: FastifyInstance) {
           (model.inputPricePerMillion * inputTokens) / MILLION +
           (model.outputPricePerMillion * outputTokens) / MILLION;
 
-        await createEntity(fastify.prisma.history.create, {
+        const history = await createEntity(fastify.prisma.history.create, {
           data: {
             userHashId,
             chatHashId: body.chatHashId,
@@ -90,22 +100,29 @@ export default async function (fastify: FastifyInstance) {
             inputTokens,
             outputTokens,
           },
+          select: {
+            provider: true,
+            model: true,
+            config: true,
+            messages: true,
+            content: true,
+            response: true,
+            price: true,
+            inputTokens: true,
+            outputTokens: true,
+            createdAt: true,
+          },
         });
 
         const newContents = [
-          {
-            hashId: nanoid(),
-            model: { hashId: body.modelHashId, name: model.name },
-            role: "user",
-            content: userContent,
-            config: body.config,
-          },
+          { hashId: nanoid(), role: "user", content: userContent },
           {
             hashId: nanoid(),
             model: { hashId: body.modelHashId, name: model.name },
             role: "assistant",
             content,
             config: body.config,
+            history: getTypedHistory(history),
           },
         ];
 
@@ -113,7 +130,11 @@ export default async function (fastify: FastifyInstance) {
           const _userContent = await createEntity(
             fastify.prisma.chatContent.create,
             {
-              data: { ...body, role: "user", content: userContent },
+              data: {
+                chatHashId: body.chatHashId,
+                role: "user",
+                content: userContent,
+              },
               select: { hashId: true },
             }
           );
@@ -221,6 +242,11 @@ export default async function (fastify: FastifyInstance) {
           select: { role: true, content: true },
           orderBy: { id: "asc" },
         });
+        if (messages.some((m) => m.content === "")) {
+          throw fastify.httpErrors.badRequest(
+            "There is empty content in chat."
+          );
+        }
 
         const { systemMessage } = chat;
         let { content, response, inputTokens, outputTokens } =

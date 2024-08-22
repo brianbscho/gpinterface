@@ -4,11 +4,11 @@ import List from "@/components/List";
 import callApi from "@/utils/callApi";
 import { HistoriesGetResponse } from "gpinterface-shared/type/history";
 import { Fragment, useCallback, useMemo, useState } from "react";
-import History from "./History";
 import Link from "next/link";
 import MenuButton from "@/components/general/buttons/MenuButton";
-import { MessageSquareCode, SquareCode } from "lucide-react";
+import { MessageSquareCode, ReceiptText, SquareCode } from "lucide-react";
 import { Badge } from "@/components/ui";
+import History from "@/components/general/dialogs/History";
 
 type HistoriesType = HistoriesGetResponse["histories"];
 export default function Page() {
@@ -63,10 +63,16 @@ export default function Page() {
             {history.histories.map((h) => (
               <Fragment key={h.hashId}>
                 <div className="pl-3">
-                  <div className="h-6">
-                    <History history={h} />
+                  <div className="h-8">
+                    <History history={h}>
+                      <MenuButton
+                        className="w-36"
+                        Icon={ReceiptText}
+                        text="Show detail"
+                      />
+                    </History>
                   </div>
-                  <div className="h-6 mt-3">
+                  <div className="h-8 mt-3">
                     <Link
                       href={
                         h.apiHashId
@@ -79,7 +85,7 @@ export default function Page() {
                       <MenuButton
                         Icon={h.apiHashId ? SquareCode : MessageSquareCode}
                         text={`Go to ${h.apiHashId ? "api" : "chat"}`}
-                        className="w-28"
+                        className="w-36"
                       />
                     </Link>
                   </div>
@@ -90,7 +96,8 @@ export default function Page() {
                 <div className="w-full truncate pr-3 self-start text-sm">
                   {h.content}
                 </div>
-                <div className="mx-3 col-span-3 border-b border-yellow-300 border-dashed"></div>
+                <div className="mx-3 col-span-2 border-b border-theme border-dashed"></div>
+                <div></div>
               </Fragment>
             ))}
             {(spinnerHidden || index < groupedTextHistories.length) && (
@@ -99,7 +106,7 @@ export default function Page() {
                 <div className="col-span-2 leading-7 pr-3">
                   ${history.priceSum.toFixed(5)}
                 </div>
-                <div className="col-span-3 border-b border-yellow-300"></div>
+                <div className="col-span-3 border-b border-theme"></div>
               </Fragment>
             )}
           </Fragment>

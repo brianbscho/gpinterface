@@ -1,5 +1,5 @@
 import { Type } from "@sinclair/typebox";
-import { Content } from ".";
+import { Content } from "./content";
 
 export const ApiCreateSchema = Type.Object({
   description: Type.String(),

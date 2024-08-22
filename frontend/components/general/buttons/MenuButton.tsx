@@ -27,21 +27,23 @@ export default function MenuButton({
     variant === "icon"
       ? "bg-primary text-primary-foreground"
       : "bg-destructive text-destructive-foreground";
+  const border = variant === "icon" ? "border-primary" : "border-destructive";
   return (
     <Button
       onClick={onClick}
       className={cn(
-        "bg-transparent p-0 h-6",
+        "border-box bg-background p-0 h-8 border box-border",
+        border,
         className,
-        selected ? cn("bg-primary", css) : ""
+        selected ? css : ""
       )}
       variant={variant}
     >
       <div className="flex items-center gap-3">
-        <div className={cn("h-6 w-6 p-1 rounded-md", css)}>
+        <div className={cn("h-8 w-8 p-2 rounded-md", css)}>
           {loading === true ? <Loader2 className="animate-spin" /> : <Icon />}
         </div>
-        <div className="text-xs">{text}</div>
+        <div className="text-sm">{text}</div>
       </div>
     </Button>
   );

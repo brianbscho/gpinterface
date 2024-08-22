@@ -2,7 +2,7 @@
 
 import MenuButton from "@/components/general/buttons/MenuButton";
 import { useToast } from "@/components/ui";
-import useContentStore from "@/store/content";
+import useModelStore from "@/store/model";
 import callApi from "@/utils/callApi";
 import { getApiConfig } from "@/utils/model";
 import { Static } from "@sinclair/typebox";
@@ -20,10 +20,7 @@ export default function EditApi({ useApi }: Props) {
   const [api, setApi] = useApi;
 
   const { toast } = useToast();
-  const [config, model] = useContentStore((state) => [
-    state.config,
-    state.model,
-  ]);
+  const [config, model] = useModelStore((state) => [state.config, state.model]);
   const onCheckedChange = useCallback(
     async (c: boolean) => {
       if (!api?.hashId) return;
@@ -66,9 +63,9 @@ export default function EditApi({ useApi }: Props) {
 
   return (
     <>
-      <div className="h-6">
+      <div className="h-8">
         <MenuButton
-          className="w-24"
+          className="w-28"
           Icon={!api?.isPublic ? Circle : CheckCircle2}
           text="Public"
           onClick={() => onCheckedChange(!api?.isPublic)}
@@ -76,7 +73,7 @@ export default function EditApi({ useApi }: Props) {
       </div>
       <div>
         <MenuButton
-          className="w-24 mt-3"
+          className="w-28 mt-3"
           Icon={Save}
           text="Save"
           onClick={onClickDefault}

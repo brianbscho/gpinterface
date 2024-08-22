@@ -49,7 +49,7 @@ function _Chats() {
         router.push(`/?chatHashId=${chatResponse.hashId}`);
       }
     }
-  }, [lastHashId]);
+  }, [lastHashId, router, chatHashId]);
 
   useEffect(() => {
     if (!isLoggedOut || !chatHashId) return;
@@ -82,7 +82,7 @@ function _Chats() {
           {chats?.map((t) => (
             <div
               key={t.hashId}
-              className="w-full border-b border-yellow-300 pb-6 mb-12"
+              className="w-full border-b border-theme pb-6 mb-12 last:mb-0"
             >
               <Chat chat={t} />
             </div>

@@ -1,25 +1,26 @@
 "use client";
 
 import { useCallback } from "react";
-import useContentStore, { ConfigType } from "@/store/content";
 import Select from "../general/selects/Select";
 import { Input } from "../ui";
 import { Slider } from "../ui/slider";
 import { RotateCcw } from "lucide-react";
 import MenuButton from "../general/buttons/MenuButton";
+import useModelStore, { ConfigType } from "@/store/model";
 
 export default function Model() {
-  const [{ model, config }, setContentStore] = useContentStore((state) => [
-    { model: state.model, config: state.config },
-    state.setContentStore,
+  const [model, config, setModelStore] = useModelStore((state) => [
+    state.model,
+    state.config,
+    state.setModelStore,
   ]);
   const onChange = useCallback(
     (name: string) => (value: string) => {
       const newConfig = { ...config };
       newConfig[name] = value;
-      setContentStore({ config: newConfig });
+      setModelStore({ config: newConfig });
     },
-    [config, setContentStore]
+    [config, setModelStore]
   );
   const onClickReset = useCallback(() => {
     if (!model) return;
@@ -33,26 +34,28 @@ export default function Model() {
       }
     });
 
-    setContentStore({ config: newConfig });
-  }, [model, setContentStore]);
+    setModelStore({ config: newConfig });
+  }, [model, setModelStore]);
 
   if (!model) return null;
 
   return (
     <div>
-      <div className="sticky top-12 ml-3 w-full h-0 z-20 bg-background bg-background">
+      <div className="sticky top-14 ml-3 w-full h-0 z-20 bg-background bg-background">
         <MenuButton
-          className="w-24"
+          className="w-28"
           Icon={RotateCcw}
           text="Reset"
           onClick={onClickReset}
         />
       </div>
-      <div className="flex flex-col gap-7 pl-[7.5rem] py-3 whitespace-pre-wrap text-sm">
-        <div className="font-bold text-yellow-300">{model.name}</div>
+      <div className="flex flex-col gap-7 pl-[8.5rem] py-3 whitespace-pre-wrap text-sm">
+        <div className="text-base font-bold text-theme-foreground bg-theme px-2 py-1 rounded-md">
+          {model.name}
+        </div>
         <div>
           <div className="font-bold">Price</div>
-          <div className="text-neutral-500">
+          <div className="text-neutral-400">
             {`$${model.inputPricePerMillion} / 1M input tokens, $${model.outputPricePerMillion} / 1M output tokens`}
           </div>
         </div>
@@ -93,7 +96,7 @@ export default function Model() {
                 useOption={[config[c.name] ?? c.default, onChange(c.name)]}
               />
             )}
-            <div className="text-neutral-500 text-sm">{c.description}</div>
+            <div className="text-neutral-400">{c.description}</div>
           </div>
         ))}
       </div>

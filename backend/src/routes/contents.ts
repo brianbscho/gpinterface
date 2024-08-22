@@ -1,14 +1,20 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
 import { QueryParamSchema } from "gpinterface-shared/type";
-import { getIdByHashId } from "../util/prisma";
 import {
+  getTypedContent,
+  createManyEntities,
+  getIdByHashId,
+  getTypedHistory,
+} from "../util/prisma";
+import {
+  ContentsCreateResponse,
+  ContentsCreateSchema,
   ContentsDeleteResponse,
   ContentsDeleteSchema,
   ContentsGetResponse,
   ContentsGetSchema,
 } from "gpinterface-shared/type/content";
-import { getTypedContent } from "../util/content";
 
 export default async function (fastify: FastifyInstance) {
   fastify.get<{
@@ -41,6 +47,20 @@ export default async function (fastify: FastifyInstance) {
             role: true,
             content: true,
             config: true,
+            histories: {
+              select: {
+                provider: true,
+                model: true,
+                config: true,
+                messages: true,
+                content: true,
+                response: true,
+                price: true,
+                inputTokens: true,
+                outputTokens: true,
+                createdAt: true,
+              },
+            },
           },
           orderBy: { id: "desc" },
           take: 20,
@@ -49,8 +69,11 @@ export default async function (fastify: FastifyInstance) {
         return {
           contents: contents
             .map((c) => {
-              const { model, ...content } = c;
-              return { ...getTypedContent(content), model };
+              const { histories, ...rest } = c;
+              const content = getTypedContent(rest);
+              if (histories.length === 0) return content;
+
+              return { history: getTypedHistory(histories[0]), ...content };
             })
             .reverse(),
         };
@@ -84,6 +107,68 @@ export default async function (fastify: FastifyInstance) {
         return { success: true };
       } catch (ex) {
         console.error("path: /contents, method: delete, error:", ex);
+        throw ex;
+      }
+    }
+  );
+  fastify.post<{ Body: Static<typeof ContentsCreateSchema> }>(
+    "/",
+    { schema: { body: ContentsCreateSchema } },
+    async (request, reply): Promise<ContentsCreateResponse> => {
+      try {
+        const { user } = await fastify.getUser(request, reply);
+        const { chatHashId } = request.body;
+
+        const chat = await fastify.prisma.chat.findFirst({
+          where: { userHashId: user.hashId, hashId: chatHashId },
+          select: { hashId: true },
+        });
+        if (!chat) {
+          throw fastify.httpErrors.badRequest("chat not found");
+        }
+
+        const contents = await createManyEntities(
+          fastify.prisma.chatContent.createManyAndReturn,
+          {
+            data: [
+              { chatHashId, role: "user", content: "" },
+              { chatHashId, role: "assistant", content: "" },
+            ],
+            select: {
+              hashId: true,
+              model: { select: { hashId: true, name: true } },
+              role: true,
+              content: true,
+              config: true,
+              histories: {
+                select: {
+                  provider: true,
+                  model: true,
+                  config: true,
+                  messages: true,
+                  content: true,
+                  response: true,
+                  price: true,
+                  inputTokens: true,
+                  outputTokens: true,
+                  createdAt: true,
+                },
+              },
+            },
+          }
+        );
+
+        return {
+          contents: contents.map((c) => {
+            const { histories, ...rest } = c;
+            const content = getTypedContent(rest);
+            if (histories.length === 0) return content;
+
+            return { history: getTypedHistory(histories[0]), ...content };
+          }),
+        };
+      } catch (ex) {
+        console.error("path: /chats, method: post, error:", ex);
         throw ex;
       }
     }

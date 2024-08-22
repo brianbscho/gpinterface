@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { createEntity } from "../util/prisma";
+import { getTypedContent, createEntity, getTypedHistory } from "../util/prisma";
 import {
   ChatCreateResponse,
   ChatDuplicateResponse,
@@ -11,7 +11,6 @@ import { Static } from "@sinclair/typebox";
 import { ParamSchema } from "gpinterface-shared/type";
 import { createChat } from "../controllers/chat";
 import { getDateString } from "../util/string";
-import { getTypedContent } from "../util/content";
 
 export default async function (fastify: FastifyInstance) {
   fastify.get<{ Params: Static<typeof ParamSchema> }>(
@@ -27,16 +26,7 @@ export default async function (fastify: FastifyInstance) {
           select: {
             hashId: true,
             userHashId: true,
-            _count: { select: { apis: true, posts: true } },
-            posts: {
-              select: {
-                _count: {
-                  select: {
-                    likes: { where: { isLiked: true } },
-                  },
-                },
-              },
-            },
+            _count: { select: { apis: true } },
             systemMessage: true,
             contents: {
               select: {
@@ -45,6 +35,20 @@ export default async function (fastify: FastifyInstance) {
                 role: true,
                 content: true,
                 config: true,
+                histories: {
+                  select: {
+                    provider: true,
+                    model: true,
+                    config: true,
+                    messages: true,
+                    content: true,
+                    response: true,
+                    price: true,
+                    inputTokens: true,
+                    outputTokens: true,
+                    createdAt: true,
+                  },
+                },
               },
               orderBy: { id: "asc" },
             },
@@ -57,12 +61,17 @@ export default async function (fastify: FastifyInstance) {
           throw fastify.httpErrors.badRequest("chat is not available.");
         }
 
-        const { _count, posts, createdAt, contents, ...rest } = chat;
+        const { _count, createdAt, contents, ...rest } = chat;
         return {
           ...rest,
-          contents: contents.map((c) => getTypedContent(c)),
+          contents: contents.map((c) => {
+            const { histories, ...rest } = c;
+            const content = getTypedContent(rest);
+            if (histories.length === 0) return content;
+
+            return { history: getTypedHistory(histories[0]), ...content };
+          }),
           isApi: _count.apis > 0,
-          isPost: _count.posts > 0,
           createdAt: getDateString(createdAt),
         };
       } catch (ex) {
@@ -85,7 +94,6 @@ export default async function (fastify: FastifyInstance) {
         hashId: chat.hashId,
         userHashId: user.hashId,
         isApi: false,
-        isPost: false,
         systemMessage: "",
         contents: [],
         createdAt: getDateString(chat.createdAt),

@@ -55,7 +55,7 @@ export default function NewChat({
         text="New chat"
         loading={loading}
         onClick={onClick}
-        className="w-24"
+        className="w-32"
       />
       <Login
         title="Please login to create new chat :)"

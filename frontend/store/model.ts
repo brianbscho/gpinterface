@@ -1,29 +1,25 @@
-import { Model } from "gpinterface-shared/type";
+import { Model } from "gpinterface-shared/type/providerType";
 import { create } from "zustand";
 
 export type ConfigType<T extends object = { [key: string]: any }> = T;
-type ContentState = {
-  hashId?: string;
-  refreshingHashId?: string;
+type ModelState = {
   config: ConfigType;
   modelHashId?: string;
   models: Model[];
 };
-type SetContentState = {
-  setContentStore: (content: Partial<ContentState>) => void;
+type SetModelState = {
+  setModelStore: (content: Partial<ModelState>) => void;
 };
 
-const useContentStore = create<
-  ContentState & SetContentState & { model: Model | undefined }
+const useModelStore = create<
+  ModelState & SetModelState & { model: Model | undefined }
 >((set) => {
   return {
-    hashId: undefined,
-    refreshingHashId: undefined,
     config: {},
     modelHashId: undefined,
     models: [],
     model: undefined,
-    setContentStore: (content: Partial<ContentState>) => {
+    setModelStore: (content: Partial<ModelState>) => {
       set((state) => ({
         ...state,
         ...content,
@@ -35,4 +31,4 @@ const useContentStore = create<
   };
 });
 
-export default useContentStore;
+export default useModelStore;

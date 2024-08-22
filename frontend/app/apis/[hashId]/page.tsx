@@ -45,16 +45,16 @@ export default function Page({ params }: { params: { hashId: string } }) {
         <div className="absolute top-3 left-3">
           <MenuButton
             onClick={() => setTab("chat")}
-            className="w-28"
+            className="w-32"
             Icon={MessageSquareCode}
             text="Chat"
             selected={tab === "chat"}
           />
         </div>
-        <div className="absolute top-12 left-3">
+        <div className="absolute top-14 left-3">
           <MenuButton
             onClick={() => setTab("document")}
-            className="w-28"
+            className="w-32"
             Icon={SquareCode}
             text="Document"
             selected={tab === "document"}
@@ -70,7 +70,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
         </div>
         <div className="flex flex-col w-full h-full relative overflow-hidden">
           {editable && (
-            <div className="absolute top-[5.25rem] left-3 h-0">
+            <div className="absolute top-[6.25rem] left-3 h-0">
               <EditApi useApi={[api, setApi]} />
             </div>
           )}

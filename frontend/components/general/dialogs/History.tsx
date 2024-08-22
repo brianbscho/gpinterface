@@ -8,20 +8,19 @@ import {
   DialogTrigger,
 } from "@/components/ui";
 import { HistoriesGetResponse } from "gpinterface-shared/type/history";
-import MenuButton from "@/components/general/buttons/MenuButton";
-import { ReceiptText } from "lucide-react";
+import { Content } from "gpinterface-shared/type/content";
+import { ReactNode } from "react";
 
-type Props = { history: HistoriesGetResponse["histories"][0] };
-export default function History({ history }: Props) {
+type Props = {
+  history:
+    | HistoriesGetResponse["histories"][0]
+    | Exclude<Content["history"], undefined | null>;
+  children: ReactNode;
+};
+export default function History({ history, children }: Props) {
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <MenuButton
-          className="w-28 h-6"
-          Icon={ReceiptText}
-          text="Show detail"
-        />
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent close className="w-11/12 max-w-4xl">
         <DialogHeader>
           <DialogTitle>Detail</DialogTitle>

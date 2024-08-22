@@ -9,10 +9,9 @@ import {
   useMemo,
   useState,
 } from "react";
-import { CircleX, Loader, RefreshCcw } from "lucide-react";
-import useContentStore from "@/store/content";
-import { Content as ContentType } from "gpinterface-shared/type";
+import { CircleX, Cpu, Loader, ReceiptText, RefreshCcw } from "lucide-react";
 import {
+  Content as ContentType,
   ContentRefreshSchema,
   ContentsDeleteResponse,
   ContentsDeleteSchema,
@@ -21,12 +20,16 @@ import { Static } from "@sinclair/typebox";
 import callApi from "@/utils/callApi";
 import { getApiConfig } from "@/utils/model";
 import SmallHoverButton from "../general/buttons/SmallHoverButton";
+import History from "../general/dialogs/History";
+import useModelStore from "@/store/model";
 
+type RefreshingHashId = string | undefined;
 type Props = {
   chatHashId: string;
-  content: Omit<ContentType, "hashId" | "model"> &
-    Partial<Omit<ContentType, "role" | "content" | "confing">>;
+  content: Omit<ContentType, "hashId"> &
+    Partial<Omit<ContentType, "role" | "content" | "config" | "model">>;
   setContents: Dispatch<SetStateAction<ContentType[]>>;
+  useRefreshingHashId: [RefreshingHashId, (hashId: RefreshingHashId) => void];
   callUpdateContent: (content: string) => Promise<string | undefined>;
   hashIds?: string[];
   editable?: boolean;
@@ -36,6 +39,7 @@ export default function Content({
   chatHashId,
   content,
   setContents,
+  useRefreshingHashId,
   callUpdateContent,
   hashIds,
   editable,
@@ -49,10 +53,12 @@ export default function Content({
 
   const [isSaving, setIsSaving] = useState(false);
 
-  const [contentStore, setContentStore] = useContentStore((state) => {
-    const { setContentStore, ...contentStore } = state;
-    return [contentStore, setContentStore];
-  });
+  const [refreshingHashId, setRefreshingHashId] = useRefreshingHashId;
+  const [model, config, setModelStore] = useModelStore((state) => [
+    state.model,
+    state.config,
+    state.setModelStore,
+  ]);
 
   useEffect(() => {
     if (oldContent === newContent) {
@@ -76,34 +82,20 @@ export default function Content({
   }, [newContent, oldContent, callUpdateContent]);
 
   const disabled = useMemo(
-    () => typeof contentStore.refreshingHashId === "string",
-    [contentStore.refreshingHashId]
+    () => typeof refreshingHashId === "string",
+    [refreshingHashId]
   );
   const loading = useMemo(
     () =>
-      typeof contentStore.refreshingHashId === "string" &&
-      contentStore.refreshingHashId === content.hashId,
-    [contentStore.refreshingHashId, content.hashId]
+      typeof refreshingHashId === "string" &&
+      refreshingHashId === content.hashId,
+    [refreshingHashId, content.hashId]
   );
 
-  const onFocus = useCallback(() => {
-    if (content.hashId === contentStore.hashId) return;
-
-    setContentStore({ hashId: content.hashId });
-    if (content.config) {
-      setContentStore({ config: content.config });
-    }
-    if (content.model && content.model.hashId !== contentStore.modelHashId) {
-      setContentStore({
-        modelHashId: content.model.hashId,
-      });
-    }
-  }, [content, contentStore, setContentStore]);
-
   const onClickRefresh = useCallback(async () => {
-    if (!contentStore.model) return;
+    if (!model) return;
 
-    setContentStore({ refreshingHashId: content.hashId });
+    setRefreshingHashId(content.hashId);
     const response = await callApi<
       ContentType,
       Static<typeof ContentRefreshSchema>
@@ -111,8 +103,8 @@ export default function Content({
       endpoint: `/content/refresh/${content.hashId}`,
       method: "PUT",
       body: {
-        config: getApiConfig(contentStore.model, contentStore.config),
-        modelHashId: contentStore.model.hashId,
+        config: getApiConfig(model, config),
+        modelHashId: model.hashId,
         chatHashId,
       },
       showError: true,
@@ -128,8 +120,8 @@ export default function Content({
         })
       );
     }
-    setContentStore({ refreshingHashId: undefined });
-  }, [chatHashId, content, contentStore, setContentStore, setContents]);
+    setRefreshingHashId(undefined);
+  }, [chatHashId, content, model, config, setRefreshingHashId, setContents]);
 
   const isDeleteVisible = useMemo(
     () => hashIds?.length === 2 && editable,
@@ -182,6 +174,32 @@ export default function Content({
           </>
         )}
         <div className="flex-1"></div>
+        {!!content.model?.hashId && !!content.config && (
+          <SmallHoverButton message="Set this to model">
+            <Button
+              className="p-1 h-6 w-6"
+              variant="default"
+              onClick={() =>
+                setModelStore({
+                  modelHashId: content.model!.hashId,
+                  config: content.config!,
+                })
+              }
+              loading={loading}
+            >
+              <Cpu />
+            </Button>
+          </SmallHoverButton>
+        )}
+        {!!content.history && (
+          <SmallHoverButton message="Detail">
+            <History history={content.history}>
+              <Button className="p-1 h-6 w-6" variant="default">
+                <ReceiptText />
+              </Button>
+            </History>
+          </SmallHoverButton>
+        )}
         {isRefreshVisible && (
           <SmallHoverButton message="Regenerate">
             <Button
@@ -197,7 +215,11 @@ export default function Content({
         )}
         {isDeleteVisible && (
           <SmallHoverButton message="Delete">
-            <Button className="p-1 h-6 w-6" onClick={onClickDelete}>
+            <Button
+              className="p-1 h-6 w-6"
+              onClick={onClickDelete}
+              loading={loading}
+            >
               <CircleX />
             </Button>
           </SmallHoverButton>
@@ -205,15 +227,14 @@ export default function Content({
       </div>
       <CardDescription>
         <div className="relative">
-          <div className="whitespace-pre-wrap px-3 py-2 text-sm invisible border">
+          <div className="whitespace-pre-wrap px-3 py-2 text-base invisible border">
             {newContent + "."}
           </div>
           <Textarea
-            className="absolute max-h-none inset-0 z-10 overflow-hidden resize-none"
+            className="absolute max-h-none inset-0 z-10 text-base overflow-hidden resize-none"
             value={newContent}
             onChange={(e) => setNewContent(e.currentTarget.value)}
             placeholder={`${content.role} message`}
-            onFocus={onFocus}
             disabled={disabled || !editable}
           />
           {loading && (

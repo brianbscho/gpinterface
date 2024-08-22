@@ -1,6 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { getDataWithHashId } from "../util/prisma";
-import { getTypedContent } from "../util/content";
+import { getTypedContent, getDataWithHashId } from "../util/prisma";
 
 export async function createChat(
   chatDelegate: Prisma.ChatDelegate,
@@ -11,7 +10,7 @@ export async function createChat(
       role: string;
       content: string;
       config: Prisma.JsonValue;
-      modelHashId: string;
+      modelHashId: string | null;
     }[];
   }
 ) {

@@ -14,24 +14,24 @@ import {
 import Content from "../chat/Content";
 import ContentInput from "../chat/ContentInput";
 import { ApiGetResponse } from "gpinterface-shared/type/api";
-import useContentStore from "@/store/content";
 import useUserStore from "@/store/user";
+import useModelStore from "@/store/model";
 
 type ApiType = ApiGetResponse;
 type ContentsType = ApiType["chat"]["contents"];
 type Props = { api: ApiType | undefined; editable: boolean };
 export default function Api({ api, editable }: Props) {
-  const [models, setContentStore] = useContentStore((state) => [
+  const [models, setModelStore] = useModelStore((state) => [
     state.models,
-    state.setContentStore,
+    state.setModelStore,
   ]);
   const isLoggedOut = useUserStore((state) => state.isLoggedOut);
   useEffect(() => {
     if (!api) return;
 
     const { config } = api;
-    setContentStore({ config });
-  }, [api, setContentStore]);
+    setModelStore({ config });
+  }, [api, setModelStore]);
   useEffect(() => {
     if (!api) return;
 
@@ -45,8 +45,8 @@ export default function Api({ api, editable }: Props) {
     );
     if (index < 0) return;
 
-    setContentStore({ modelHashId: models[index].hashId });
-  }, [api, setContentStore, models, isLoggedOut]);
+    setModelStore({ modelHashId: models[index].hashId });
+  }, [api, setModelStore, models, isLoggedOut]);
   const [contents, setContents] = useState<ContentsType>([]);
   useEffect(() => {
     if (!api) return;
@@ -88,14 +88,16 @@ export default function Api({ api, editable }: Props) {
     },
     []
   );
+  const [refreshingHashId, setRefreshingHashId] = useState<string>();
 
   if (!api) return <div></div>;
   return (
-    <div className="w-full h-full overflow-y-auto flex flex-col gap-3 pl-[8.5rem] p-3">
+    <div className="w-full h-full overflow-y-auto flex flex-col gap-3 pl-[9.5rem] p-3">
       <Content
         content={systemContent}
         chatHashId={api.chat.hashId}
         setContents={setContents}
+        useRefreshingHashId={[refreshingHashId, setRefreshingHashId]}
         callUpdateContent={callUpdateSystemMessage}
         editable={editable}
       />
@@ -113,6 +115,7 @@ export default function Api({ api, editable }: Props) {
             content={c}
             chatHashId={api.chat.hashId}
             setContents={setContents}
+            useRefreshingHashId={[refreshingHashId, setRefreshingHashId]}
             callUpdateContent={callUpdateContent(c.hashId)}
             hashIds={hashIds}
             editable={editable}
@@ -123,6 +126,7 @@ export default function Api({ api, editable }: Props) {
         chatHashId={api.chat.hashId}
         apiHashId={api.hashId}
         setContents={setContents}
+        setRefreshingHashId={setRefreshingHashId}
         editable={editable}
       />
     </div>

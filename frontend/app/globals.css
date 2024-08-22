@@ -4,6 +4,8 @@
 
 @layer base {
   :root {
+    --theme: 46 96.7% 64.5%;
+    --theme-foreground: 240 10% 3.9%;
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
@@ -32,6 +34,8 @@
   }
 
   .dark {
+    --theme: 46 96.7% 64.5%;
+    --theme-foreground: 240 10% 3.9%;
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;

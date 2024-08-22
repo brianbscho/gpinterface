@@ -1,6 +1,11 @@
 "use client";
 
-import { CornerDownLeft, StepForward } from "lucide-react";
+import {
+  CheckCircle2,
+  Circle,
+  CornerDownLeft,
+  StepForward,
+} from "lucide-react";
 import {
   Badge,
   Button,
@@ -12,25 +17,21 @@ import {
 import { FormEvent, useCallback, useState } from "react";
 import callApi from "@/utils/callApi";
 import { Static } from "@sinclair/typebox";
-import useContentStore from "@/store/content";
 import {
   ApiCreateResponse,
   ApiCreateSchema,
 } from "gpinterface-shared/type/api";
 import { useRouter } from "next/navigation";
 import { getApiConfig } from "@/utils/model";
-import { Checkbox } from "../ui/checkbox";
 import MenuButton from "../general/buttons/MenuButton";
+import useModelStore from "@/store/model";
 
 export default function Deploy({ chatHashId }: { chatHashId: string }) {
   const [open, setOpen] = useState(false);
 
   const [isPublic, setIsPublic] = useState(false);
   const [description, setDescription] = useState("");
-  const [model, config] = useContentStore((state) => [
-    state.model,
-    state.config,
-  ]);
+  const [model, config] = useModelStore((state) => [state.model, state.config]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const onSubmit = useCallback(
@@ -68,7 +69,7 @@ export default function Deploy({ chatHashId }: { chatHashId: string }) {
     <div>
       <Dialog open={open} onOpenChange={loading ? undefined : setOpen}>
         <DialogTrigger asChild>
-          <MenuButton Icon={StepForward} text="Deploy" className="w-24" />
+          <MenuButton Icon={StepForward} text="Deploy" className="w-32" />
         </DialogTrigger>
         <DialogContent className="max-w-3xl w-11/12 gap-3">
           <div className="flex items-center gap-3">
@@ -76,17 +77,13 @@ export default function Deploy({ chatHashId }: { chatHashId: string }) {
               Deploy API
             </Badge>
             <div className="flex-1"></div>
-            <Checkbox
-              id="is_public"
-              checked={isPublic}
-              onCheckedChange={(c) =>
-                setIsPublic(typeof c === "boolean" ? c : false)
-              }
-              className="h-6 w-6"
+            <MenuButton
+              className="w-24"
+              Icon={!isPublic ? Circle : CheckCircle2}
+              text="Public"
+              onClick={() => setIsPublic((prev) => !prev)}
+              loading={loading}
             />
-            <label htmlFor="is_public" className="text-sm">
-              Is this public API?
-            </label>
           </div>
 
           <form onSubmit={onSubmit}>

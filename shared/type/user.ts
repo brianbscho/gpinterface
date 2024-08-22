@@ -14,6 +14,11 @@ interface UserMe {
   notification: boolean;
 }
 
+export interface User {
+  hashId: string;
+  name: string;
+}
+
 export const UserCreateSchema = Type.Object({
   email: Type.String(),
   name: Type.String(),

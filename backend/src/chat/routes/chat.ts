@@ -58,6 +58,11 @@ export default async function (fastify: FastifyInstance) {
         if (!api) {
           throw fastify.httpErrors.badRequest("api is not available.");
         }
+        if (api.chat.contents.some((c) => c.content === "")) {
+          throw fastify.httpErrors.badRequest(
+            "There is empty content in chat."
+          );
+        }
 
         const { chat, config, model } = api;
         const { provider, name, inputPricePerMillion, outputPricePerMillion } =

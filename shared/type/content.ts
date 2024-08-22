@@ -1,5 +1,25 @@
 import { Type } from "@sinclair/typebox";
-import { Content } from ".";
+
+export interface Content {
+  hashId: string;
+
+  model?: { hashId: string | undefined; name: string } | null;
+  role: string;
+  content: string;
+  config?: object | null;
+  history?: {
+    provider: string;
+    model: string;
+    config: object;
+    messages: object;
+    content: string;
+    response: object;
+    price: number;
+    inputTokens: number;
+    outputTokens: number;
+    createdAt: string;
+  } | null;
+}
 
 export const ContentCreateSchema = Type.Object({
   chatHashId: Type.String(),
@@ -34,5 +54,12 @@ export const ContentsGetSchema = Type.Object({
   chatHashId: Type.String(),
 });
 export type ContentsGetResponse = {
+  contents: Content[];
+};
+
+export const ContentsCreateSchema = Type.Object({
+  chatHashId: Type.String(),
+});
+export type ContentsCreateResponse = {
   contents: Content[];
 };
