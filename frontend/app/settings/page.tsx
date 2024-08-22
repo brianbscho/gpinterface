@@ -212,14 +212,15 @@ export default function Page() {
         <div className="col-span-2">
           <UpdatePassword />
         </div>
+        <div className="col-span-2"></div>
+        <MenuButton
+          Icon={CircleX}
+          text="Delete account"
+          onClick={onClickDelete}
+          className="w-36"
+          variant="icon_destructive"
+        />
       </div>
-      <MenuButton
-        Icon={CircleX}
-        text="Delete account"
-        onClick={onClickDelete}
-        className="w-36"
-        variant="icon_destructive"
-      />
       <AlertDialog open={newKey.length > 0}>
         <AlertDialogContent className="max-w-fit">
           <AlertDialogTitle>API Key</AlertDialogTitle>

@@ -96,7 +96,8 @@ export default function Page() {
                 <div className="w-full truncate pr-3 self-start text-sm">
                   {h.content}
                 </div>
-                <div className="mx-3 col-span-3 border-b border-theme border-dashed"></div>
+                <div className="mx-3 col-span-2 border-b border-theme border-dashed"></div>
+                <div></div>
               </Fragment>
             ))}
             {(spinnerHidden || index < groupedTextHistories.length) && (
