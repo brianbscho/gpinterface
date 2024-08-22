@@ -1,6 +1,11 @@
 "use client";
 
-import { CornerDownLeft, StepForward } from "lucide-react";
+import {
+  CheckCircle2,
+  Circle,
+  CornerDownLeft,
+  StepForward,
+} from "lucide-react";
 import {
   Badge,
   Button,
@@ -18,7 +23,6 @@ import {
 } from "gpinterface-shared/type/api";
 import { useRouter } from "next/navigation";
 import { getApiConfig } from "@/utils/model";
-import { Checkbox } from "../ui/checkbox";
 import MenuButton from "../general/buttons/MenuButton";
 import useModelStore from "@/store/model";
 
@@ -73,17 +77,12 @@ export default function Deploy({ chatHashId }: { chatHashId: string }) {
               Deploy API
             </Badge>
             <div className="flex-1"></div>
-            <Checkbox
-              id="is_public"
-              checked={isPublic}
-              onCheckedChange={(c) =>
-                setIsPublic(typeof c === "boolean" ? c : false)
-              }
-              className="h-6 w-6"
+            <MenuButton
+              className="w-24"
+              Icon={!isPublic ? Circle : CheckCircle2}
+              text="Public"
+              onClick={() => setIsPublic((prev) => !prev)}
             />
-            <label htmlFor="is_public" className="text-sm">
-              Is this public API?
-            </label>
           </div>
 
           <form onSubmit={onSubmit}>
