@@ -28,9 +28,15 @@ export default function ContentsDialog({ useContents }: Props) {
         {contents.map((content) => (
           <CardContent key={content.hashId} className="p-3">
             <div className="flex items-center mb-3">
-              <Badge>{content.role}</Badge>
-              {!!content.model && content.role === "assistant" && (
-                <div className="ml-1 text-xs">{content.model.name}</div>
+              {content.role !== "assistant" && (
+                <Badge className="h-6" variant="tag">
+                  {content.role}
+                </Badge>
+              )}
+              {content.role === "assistant" && (
+                <Badge className="h-6" variant="tag">
+                  {!content.model ? "assistant" : content.model.name}
+                </Badge>
               )}
             </div>
             <CardDescription>
