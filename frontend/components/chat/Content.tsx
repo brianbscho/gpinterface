@@ -10,7 +10,6 @@ import {
   useState,
 } from "react";
 import { CircleX, Loader, ReceiptText, RefreshCcw } from "lucide-react";
-import useContentStore from "@/store/content";
 import {
   Content as ContentType,
   ContentRefreshSchema,
@@ -24,11 +23,13 @@ import SmallHoverButton from "../general/buttons/SmallHoverButton";
 import History from "../general/dialogs/History";
 import useModelStore from "@/store/model";
 
+type RefreshingHashId = string | undefined;
 type Props = {
   chatHashId: string;
   content: Omit<ContentType, "hashId" | "model"> &
     Partial<Omit<ContentType, "role" | "content" | "confing">>;
   setContents: Dispatch<SetStateAction<ContentType[]>>;
+  useRefreshingHashId: [RefreshingHashId, (hashId: RefreshingHashId) => void];
   callUpdateContent: (content: string) => Promise<string | undefined>;
   hashIds?: string[];
   editable?: boolean;
@@ -38,6 +39,7 @@ export default function Content({
   chatHashId,
   content,
   setContents,
+  useRefreshingHashId,
   callUpdateContent,
   hashIds,
   editable,
@@ -51,10 +53,7 @@ export default function Content({
 
   const [isSaving, setIsSaving] = useState(false);
 
-  const [refreshingHashId, setContentStore] = useContentStore((state) => [
-    state.refreshingHashId,
-    state.setContentStore,
-  ]);
+  const [refreshingHashId, setRefreshingHashId] = useRefreshingHashId;
   const [model, config] = useModelStore((state) => [state.model, state.config]);
 
   useEffect(() => {
@@ -92,7 +91,7 @@ export default function Content({
   const onClickRefresh = useCallback(async () => {
     if (!model) return;
 
-    setContentStore({ refreshingHashId: content.hashId });
+    setRefreshingHashId(content.hashId);
     const response = await callApi<
       ContentType,
       Static<typeof ContentRefreshSchema>
@@ -117,8 +116,8 @@ export default function Content({
         })
       );
     }
-    setContentStore({ refreshingHashId: undefined });
-  }, [chatHashId, content, model, config, setContentStore, setContents]);
+    setRefreshingHashId(undefined);
+  }, [chatHashId, content, model, config, setRefreshingHashId, setContents]);
 
   const isDeleteVisible = useMemo(
     () => hashIds?.length === 2 && editable,

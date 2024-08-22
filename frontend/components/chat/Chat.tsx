@@ -59,6 +59,7 @@ export default function Chat({ chat }: { chat: ChatsGetResponse["chats"][0] }) {
     () => !chat?.userHashId || chat?.userHashId === userHashId,
     [chat?.userHashId, userHashId]
   );
+  const [refreshingHashId, setRefreshingHashId] = useState<string>();
 
   return (
     <div className="w-full px-0 pt-3">
@@ -70,6 +71,7 @@ export default function Chat({ chat }: { chat: ChatsGetResponse["chats"][0] }) {
           content={systemContent}
           chatHashId={chat.hashId}
           setContents={setContents}
+          useRefreshingHashId={[refreshingHashId, setRefreshingHashId]}
           callUpdateContent={callUpdateSystemMessage}
           editable={editable}
         />
@@ -87,6 +89,7 @@ export default function Chat({ chat }: { chat: ChatsGetResponse["chats"][0] }) {
               content={c}
               chatHashId={chat.hashId}
               setContents={setContents}
+              useRefreshingHashId={[refreshingHashId, setRefreshingHashId]}
               callUpdateContent={callUpdateContent(c.hashId)}
               hashIds={hashIds}
               editable={editable}
@@ -96,6 +99,7 @@ export default function Chat({ chat }: { chat: ChatsGetResponse["chats"][0] }) {
         <ContentInput
           chatHashId={chat.hashId}
           setContents={setContents}
+          setRefreshingHashId={setRefreshingHashId}
           editable={editable}
         />
       </div>

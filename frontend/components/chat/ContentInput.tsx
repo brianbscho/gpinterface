@@ -19,7 +19,6 @@ import {
   ContentsCreateSchema,
   ContentsGetResponse,
 } from "gpinterface-shared/type/content";
-import useContentStore from "@/store/content";
 import { getApiConfig } from "@/utils/model";
 import ContentsDialog from "../api/ContentsDialog";
 import SmallHoverButton from "../general/buttons/SmallHoverButton";
@@ -29,6 +28,7 @@ type Props = {
   chatHashId: string;
   apiHashId?: string;
   setContents: Dispatch<SetStateAction<Content[]>>;
+  setRefreshingHashId: (hashId: string | undefined) => void;
   editable: boolean;
 };
 
@@ -36,12 +36,12 @@ export default function ContentInput({
   chatHashId,
   apiHashId,
   setContents,
+  setRefreshingHashId,
   editable,
 }: Props) {
   const [content, setContent] = useState("");
 
   const [config, model] = useModelStore((state) => [state.config, state.model]);
-  const setContentStore = useContentStore((state) => state.setContentStore);
 
   const [responseContents, setResponseContents] = useState<Content[]>([]);
   const [loading, setLoading] = useState(false);
@@ -50,7 +50,7 @@ export default function ContentInput({
       e.preventDefault();
       if (!model) return;
 
-      setContentStore({ refreshingHashId: "" });
+      setRefreshingHashId("");
       setLoading(true);
       const response = await callApi<
         ContentsGetResponse,
@@ -75,7 +75,7 @@ export default function ContentInput({
           setResponseContents(response.contents);
         }
       }
-      setContentStore({ refreshingHashId: undefined });
+      setRefreshingHashId(undefined);
       setLoading(false);
     },
     [
@@ -85,7 +85,7 @@ export default function ContentInput({
       content,
       config,
       setContents,
-      setContentStore,
+      setRefreshingHashId,
       editable,
     ]
   );

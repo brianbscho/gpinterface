@@ -88,6 +88,7 @@ export default function Api({ api, editable }: Props) {
     },
     []
   );
+  const [refreshingHashId, setRefreshingHashId] = useState<string>();
 
   if (!api) return <div></div>;
   return (
@@ -96,6 +97,7 @@ export default function Api({ api, editable }: Props) {
         content={systemContent}
         chatHashId={api.chat.hashId}
         setContents={setContents}
+        useRefreshingHashId={[refreshingHashId, setRefreshingHashId]}
         callUpdateContent={callUpdateSystemMessage}
         editable={editable}
       />
@@ -113,6 +115,7 @@ export default function Api({ api, editable }: Props) {
             content={c}
             chatHashId={api.chat.hashId}
             setContents={setContents}
+            useRefreshingHashId={[refreshingHashId, setRefreshingHashId]}
             callUpdateContent={callUpdateContent(c.hashId)}
             hashIds={hashIds}
             editable={editable}
@@ -123,6 +126,7 @@ export default function Api({ api, editable }: Props) {
         chatHashId={api.chat.hashId}
         apiHashId={api.hashId}
         setContents={setContents}
+        setRefreshingHashId={setRefreshingHashId}
         editable={editable}
       />
     </div>
