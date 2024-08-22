@@ -31,7 +31,7 @@ export default function MenuButton({
     <Button
       onClick={onClick}
       className={cn(
-        "bg-transparent p-0 h-6",
+        "bg-background p-0 h-6",
         className,
         selected ? cn("bg-primary", css) : ""
       )}
