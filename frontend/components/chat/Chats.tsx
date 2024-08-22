@@ -49,7 +49,7 @@ function _Chats() {
         router.push(`/?chatHashId=${chatResponse.hashId}`);
       }
     }
-  }, [lastHashId]);
+  }, [lastHashId, router, chatHashId]);
 
   useEffect(() => {
     if (!isLoggedOut || !chatHashId) return;
