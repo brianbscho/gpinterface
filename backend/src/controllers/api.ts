@@ -11,7 +11,7 @@ export async function createApi(
       role: string;
       content: string;
       config: Prisma.JsonValue;
-      modelHashId: string;
+      modelHashId: string | null;
     }[];
     apis: {
       description: string;

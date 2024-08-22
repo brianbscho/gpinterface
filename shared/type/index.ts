@@ -3,7 +3,7 @@ import { Type } from "@sinclair/typebox";
 export interface Content {
   hashId: string;
 
-  model: { hashId: string; name: string };
+  model: { hashId: string | undefined; name: string } | null;
   role: string;
   content: string;
   config?: object | null;

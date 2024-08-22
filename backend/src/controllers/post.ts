@@ -11,7 +11,7 @@ export async function createPost(
       role: string;
       content: string;
       config: Prisma.JsonValue;
-      modelHashId: string;
+      modelHashId: string | null;
     }[];
     posts: { title: string; post: string; userHashId: string };
   }
