@@ -10,6 +10,7 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   >;
   text: string;
   selected?: boolean;
+  variant?: "icon" | "icon_destructive";
 };
 
 export default function MenuButton({
@@ -18,19 +19,24 @@ export default function MenuButton({
   Icon,
   text,
   selected,
+  variant = "icon",
 }: ButtonProps) {
+  const css =
+    variant === "icon"
+      ? "bg-primary text-primary-foreground"
+      : "bg-destructive text-destructive-foreground";
   return (
     <Button
       onClick={onClick}
       className={cn(
         "bg-transparent p-0 h-6",
         className,
-        selected ? "bg-primary text-primary-foreground" : ""
+        selected ? cn("bg-primary", css) : ""
       )}
-      variant="icon"
+      variant={variant}
     >
       <div className="flex items-center gap-3">
-        <div className="h-6 w-6 p-1 bg-primary text-primary-foreground rounded-md">
+        <div className={cn("h-6 w-6 p-1 rounded-md", css)}>
           <Icon />
         </div>
         <div className="text-xs">{text}</div>
