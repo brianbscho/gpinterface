@@ -16,7 +16,6 @@ import {
 import ContentInput from "./ContentInput";
 import Deploy from "../api/Deploy";
 import useUserStore from "@/store/user";
-import SmallHoverButton from "../general/buttons/SmallHoverButton";
 
 export default function Chat({ chat }: { chat: ChatsGetResponse["chats"][0] }) {
   const [contents, setContents] = useState(chat.contents);
@@ -63,14 +62,10 @@ export default function Chat({ chat }: { chat: ChatsGetResponse["chats"][0] }) {
 
   return (
     <div className="w-full px-0 pt-3">
-      <div className="sticky top-3 pl-12 w-full h-0">
-        <div className="h-6 w-6">
-          <SmallHoverButton message="Deploy">
-            <Deploy chatHashId={chat.hashId} />
-          </SmallHoverButton>
-        </div>
+      <div className="sticky top-12 pl-3 w-full h-0">
+        <Deploy chatHashId={chat.hashId} />
       </div>
-      <div className="px-3 pl-[5.25rem] flex flex-col gap-3">
+      <div className="px-3 pl-[7.5rem] flex flex-col gap-3">
         <Content
           content={systemContent}
           chatHashId={chat.hashId}

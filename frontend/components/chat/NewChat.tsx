@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "../ui";
 import {
   Dispatch,
   FormEvent,
@@ -15,8 +14,8 @@ import {
 } from "gpinterface-shared/type/chat";
 import useUserStore from "@/store/user";
 import Login from "../general/dialogs/Login";
-import SmallHoverButton from "../general/buttons/SmallHoverButton";
 import { PlusCircle } from "lucide-react";
+import MenuButton from "../general/buttons/MenuButton";
 
 export default function NewChat({
   setChats,
@@ -51,16 +50,13 @@ export default function NewChat({
 
   return (
     <>
-      <SmallHoverButton message="Create new chat">
-        <Button
-          className="p-1 h-6 w-6"
-          variant="default"
-          loading={loading}
-          onClick={onClick}
-        >
-          <PlusCircle />
-        </Button>
-      </SmallHoverButton>
+      <MenuButton
+        Icon={PlusCircle}
+        text="New chat"
+        loading={loading}
+        onClick={onClick}
+        className="w-24"
+      />
       <Login
         title="Please login to create new chat :)"
         useOpen={[open, setOpen]}

@@ -6,7 +6,6 @@ import {
   Button,
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTrigger,
   Input,
 } from "../ui";
@@ -21,6 +20,7 @@ import {
 import { useRouter } from "next/navigation";
 import { getApiConfig } from "@/utils/model";
 import { Checkbox } from "../ui/checkbox";
+import MenuButton from "../general/buttons/MenuButton";
 
 export default function Deploy({ chatHashId }: { chatHashId: string }) {
   const [open, setOpen] = useState(false);
@@ -68,9 +68,7 @@ export default function Deploy({ chatHashId }: { chatHashId: string }) {
     <div>
       <Dialog open={open} onOpenChange={loading ? undefined : setOpen}>
         <DialogTrigger asChild>
-          <Button variant="default" className="p-1 h-6 w-6">
-            <StepForward />
-          </Button>
+          <MenuButton Icon={StepForward} text="Deploy" className="w-24" />
         </DialogTrigger>
         <DialogContent className="max-w-3xl w-11/12 gap-3">
           <div className="flex items-center gap-3">
