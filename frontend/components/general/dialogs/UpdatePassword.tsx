@@ -126,11 +126,10 @@ export default function UpdatePassword() {
               Icon={Key}
               text="Update"
               type="submit"
-              disabled={
-                [oldPassword, newPassword, newPasswordRepeat].some(
-                  (p) => p === ""
-                ) || loading
-              }
+              disabled={[oldPassword, newPassword, newPasswordRepeat].some(
+                (p) => p === ""
+              )}
+              loading={loading}
               className="w-24"
             />
           </div>

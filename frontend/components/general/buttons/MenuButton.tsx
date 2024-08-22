@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui";
 import { cn } from "@/utils/css";
-import { LucideProps } from "lucide-react";
+import { Loader2, LucideProps } from "lucide-react";
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   Icon: React.ForwardRefExoticComponent<
@@ -10,6 +10,7 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   >;
   text: string;
   selected?: boolean;
+  loading?: boolean;
   variant?: "icon" | "icon_destructive";
 };
 
@@ -19,6 +20,7 @@ export default function MenuButton({
   Icon,
   text,
   selected,
+  loading,
   variant = "icon",
 }: ButtonProps) {
   const css =
@@ -37,7 +39,7 @@ export default function MenuButton({
     >
       <div className="flex items-center gap-3">
         <div className={cn("h-6 w-6 p-1 rounded-md", css)}>
-          <Icon />
+          {loading === true ? <Loader2 className="animate-spin" /> : <Icon />}
         </div>
         <div className="text-xs">{text}</div>
       </div>
