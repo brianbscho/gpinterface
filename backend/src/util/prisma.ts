@@ -33,6 +33,37 @@ export async function createEntity<
   throw "Too many collision and failed to create entity";
 }
 
+export async function createManyEntities<
+  CreateArgs extends { data: any[]; select?: any },
+  Result
+>(
+  create: (
+    args: CreateArgs & {
+      data: (CreateArgs["data"][number] & { hashId: string })[];
+    }
+  ) => Promise<Result>,
+  args: CreateArgs,
+  nanoidSize?: number
+) {
+  let retries = 0;
+
+  while (retries < 5) {
+    try {
+      const dataWithHashId = {
+        ...args,
+        data: args.data.map((d) => getDataWithHashId(d, nanoidSize)),
+      };
+      const result = await create(dataWithHashId);
+      return result;
+    } catch (error) {
+      retries++;
+      console.log("🚀 ~ error:", error);
+    }
+  }
+
+  throw "Too many collision and failed to create entity";
+}
+
 export async function getIdByHashId(
   findFirst: (args: {
     where: { hashId: string };
