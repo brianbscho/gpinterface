@@ -93,7 +93,7 @@ export default function UpdatePassword() {
             </div>
             <Separator
               orientation="horizontal"
-              className="my-3 col-span-2 bg-yellow-300"
+              className="my-3 col-span-2 bg-theme"
             />
             <div>New password</div>
             <Input

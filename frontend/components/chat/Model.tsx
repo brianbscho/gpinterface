@@ -49,7 +49,9 @@ export default function Model() {
         />
       </div>
       <div className="flex flex-col gap-7 pl-[7.5rem] py-3 whitespace-pre-wrap text-sm">
-        <div className="font-bold text-yellow-300">{model.name}</div>
+        <div className="font-bold text-theme-foreground bg-theme px-2 py-1 rounded-md">
+          {model.name}
+        </div>
         <div>
           <div className="font-bold">Price</div>
           <div className="text-neutral-500">

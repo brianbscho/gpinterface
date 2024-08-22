@@ -90,7 +90,7 @@ export default function Page() {
                 <div className="w-full truncate pr-3 self-start text-sm">
                   {h.content}
                 </div>
-                <div className="mx-3 col-span-3 border-b border-yellow-300 border-dashed"></div>
+                <div className="mx-3 col-span-3 border-b border-theme border-dashed"></div>
               </Fragment>
             ))}
             {(spinnerHidden || index < groupedTextHistories.length) && (
@@ -99,7 +99,7 @@ export default function Page() {
                 <div className="col-span-2 leading-7 pr-3">
                   ${history.priceSum.toFixed(5)}
                 </div>
-                <div className="col-span-3 border-b border-yellow-300"></div>
+                <div className="col-span-3 border-b border-theme"></div>
               </Fragment>
             )}
           </Fragment>
