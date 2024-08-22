@@ -115,13 +115,7 @@ export default async function (fastify: FastifyInstance) {
         });
 
         const newContents = [
-          {
-            hashId: nanoid(),
-            model: { hashId: body.modelHashId, name: model.name },
-            role: "user",
-            content: userContent,
-            config: body.config,
-          },
+          { hashId: nanoid(), role: "user", content: userContent },
           {
             hashId: nanoid(),
             model: { hashId: body.modelHashId, name: model.name },
@@ -136,7 +130,11 @@ export default async function (fastify: FastifyInstance) {
           const _userContent = await createEntity(
             fastify.prisma.chatContent.create,
             {
-              data: { ...body, role: "user", content: userContent },
+              data: {
+                chatHashId: body.chatHashId,
+                role: "user",
+                content: userContent,
+              },
               select: { hashId: true },
             }
           );
