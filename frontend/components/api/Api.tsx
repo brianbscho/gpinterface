@@ -92,7 +92,7 @@ export default function Api({ api, editable }: Props) {
 
   if (!api) return <div></div>;
   return (
-    <div className="w-full h-full overflow-y-auto flex flex-col gap-3 pl-[8.5rem] p-3">
+    <div className="w-full h-full overflow-y-auto flex flex-col gap-3 pl-[9.5rem] p-3">
       <Content
         content={systemContent}
         chatHashId={api.chat.hashId}

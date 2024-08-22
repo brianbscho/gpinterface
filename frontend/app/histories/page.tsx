@@ -63,16 +63,16 @@ export default function Page() {
             {history.histories.map((h) => (
               <Fragment key={h.hashId}>
                 <div className="pl-3">
-                  <div className="h-6">
+                  <div className="h-8">
                     <History history={h}>
                       <MenuButton
-                        className="w-28 h-6"
+                        className="w-36"
                         Icon={ReceiptText}
                         text="Show detail"
                       />
                     </History>
                   </div>
-                  <div className="h-6 mt-3">
+                  <div className="h-8 mt-3">
                     <Link
                       href={
                         h.apiHashId
@@ -85,7 +85,7 @@ export default function Page() {
                       <MenuButton
                         Icon={h.apiHashId ? SquareCode : MessageSquareCode}
                         text={`Go to ${h.apiHashId ? "api" : "chat"}`}
-                        className="w-28"
+                        className="w-36"
                       />
                     </Link>
                   </div>

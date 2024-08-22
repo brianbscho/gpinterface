@@ -78,7 +78,7 @@ export default function UpdatePassword() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
-        <MenuButton Icon={Key} text="Password update" className="w-36" />
+        <MenuButton Icon={Key} text="Password update" className="w-44" />
       </DialogTrigger>
       <DialogContent>
         <form onSubmit={onSubmit}>
@@ -119,7 +119,7 @@ export default function UpdatePassword() {
                 Icon={CircleX}
                 text="Cancel"
                 type="button"
-                className="w-24"
+                className="w-28"
               />
             </DialogClose>
             <MenuButton
@@ -130,7 +130,7 @@ export default function UpdatePassword() {
                 (p) => p === ""
               )}
               loading={loading}
-              className="w-24"
+              className="w-28"
             />
           </div>
         </form>

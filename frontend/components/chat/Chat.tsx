@@ -63,10 +63,10 @@ export default function Chat({ chat }: { chat: ChatsGetResponse["chats"][0] }) {
 
   return (
     <div className="w-full px-0 pt-3">
-      <div className="sticky top-12 pl-3 w-full h-0">
+      <div className="sticky top-14 pl-3 w-full h-0">
         <Deploy chatHashId={chat.hashId} />
       </div>
-      <div className="px-3 pl-[7.5rem] flex flex-col gap-3">
+      <div className="px-3 pl-[9.5rem] flex flex-col gap-3">
         <Content
           content={systemContent}
           chatHashId={chat.hashId}

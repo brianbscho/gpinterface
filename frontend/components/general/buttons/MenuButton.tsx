@@ -32,7 +32,7 @@ export default function MenuButton({
     <Button
       onClick={onClick}
       className={cn(
-        "border-box bg-background p-0 h-6 border box-border",
+        "border-box bg-background p-0 h-8 border box-border",
         border,
         className,
         selected ? css : ""
@@ -40,10 +40,10 @@ export default function MenuButton({
       variant={variant}
     >
       <div className="flex items-center gap-3">
-        <div className={cn("h-6 w-6 p-1 rounded-md", css)}>
+        <div className={cn("h-8 w-8 p-2 rounded-md", css)}>
           {loading === true ? <Loader2 className="animate-spin" /> : <Icon />}
         </div>
-        <div className="text-xs">{text}</div>
+        <div className="text-sm">{text}</div>
       </div>
     </Button>
   );

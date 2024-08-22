@@ -63,9 +63,9 @@ export default function EditApi({ useApi }: Props) {
 
   return (
     <>
-      <div className="h-6">
+      <div className="h-8">
         <MenuButton
-          className="w-24"
+          className="w-28"
           Icon={!api?.isPublic ? Circle : CheckCircle2}
           text="Public"
           onClick={() => onCheckedChange(!api?.isPublic)}
@@ -73,7 +73,7 @@ export default function EditApi({ useApi }: Props) {
       </div>
       <div>
         <MenuButton
-          className="w-24 mt-3"
+          className="w-28 mt-3"
           Icon={Save}
           text="Save"
           onClick={onClickDefault}

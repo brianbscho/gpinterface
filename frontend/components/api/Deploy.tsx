@@ -69,7 +69,7 @@ export default function Deploy({ chatHashId }: { chatHashId: string }) {
     <div>
       <Dialog open={open} onOpenChange={loading ? undefined : setOpen}>
         <DialogTrigger asChild>
-          <MenuButton Icon={StepForward} text="Deploy" className="w-24" />
+          <MenuButton Icon={StepForward} text="Deploy" className="w-32" />
         </DialogTrigger>
         <DialogContent className="max-w-3xl w-11/12 gap-3">
           <div className="flex items-center gap-3">

@@ -41,15 +41,15 @@ export default function Model() {
 
   return (
     <div>
-      <div className="sticky top-12 ml-3 w-full h-0 z-20 bg-background bg-background">
+      <div className="sticky top-14 ml-3 w-full h-0 z-20 bg-background bg-background">
         <MenuButton
-          className="w-24"
+          className="w-28"
           Icon={RotateCcw}
           text="Reset"
           onClick={onClickReset}
         />
       </div>
-      <div className="flex flex-col gap-7 pl-[7.5rem] py-3 whitespace-pre-wrap text-sm">
+      <div className="flex flex-col gap-7 pl-[8.5rem] py-3 whitespace-pre-wrap text-sm">
         <div className="text-base font-bold text-theme-foreground bg-theme px-2 py-1 rounded-md">
           {model.name}
         </div>

@@ -32,7 +32,6 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogTitle,
-  Button,
   Card,
   Input,
 } from "@/components/ui";
@@ -167,7 +166,7 @@ export default function Page() {
             disabled={name.length > 0 && !nameValid}
             Icon={Save}
             text={saveButtonText}
-            className="w-20"
+            className="w-44"
           />
         </div>
         <div></div>
@@ -183,14 +182,12 @@ export default function Page() {
         {apiKeys.map((k) => (
           <Fragment key={k.hashId}>
             <div className="text-neutral-400">{k.key}</div>
-            <div className="h-6">
-              <MenuButton
-                onClick={() => onClickApiKeyTrash(k.hashId)}
-                Icon={Trash2}
-                text="Delete"
-                className="w-20"
-              />
-            </div>
+            <MenuButton
+              onClick={() => onClickApiKeyTrash(k.hashId)}
+              Icon={Trash2}
+              text="Delete"
+              className="w-44"
+            />
             <div></div>
           </Fragment>
         ))}
@@ -199,13 +196,13 @@ export default function Page() {
             onClick={onClickGetApiKey}
             Icon={KeyRound}
             text="Create API Key"
-            className="w-36"
+            className="w-44"
           />
         </div>
         <div className="font-bold">Customer support</div>
         <div className="text-neutral-400 flex items-center gap-1 underline col-span-2">
           <a href="mailto:brian.b.cho@bookquilt.com">
-            <MenuButton Icon={Mail} text="Send email" className="w-36" />
+            <MenuButton Icon={Mail} text="Send email" className="w-44" />
           </a>
         </div>
         <div className="font-bold">Password</div>
@@ -217,7 +214,7 @@ export default function Page() {
           Icon={CircleX}
           text="Delete account"
           onClick={onClickDelete}
-          className="w-36"
+          className="w-44"
           variant="icon_destructive"
         />
       </div>
@@ -255,7 +252,7 @@ export default function Page() {
                   Icon={Check}
                   text="Confirm"
                   onClick={() => setNewKey("")}
-                  className="w-24"
+                  className="w-28"
                 />
               </div>
             </div>
