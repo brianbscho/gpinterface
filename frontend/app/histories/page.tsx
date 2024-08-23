@@ -93,7 +93,7 @@ export default function Page() {
                 <Badge variant="tag" className="self-start">
                   assistant
                 </Badge>
-                <div className="w-full truncate pr-3 self-start text-sm">
+                <div className="whitespace-pre-wrap line-clamp-3 pr-3 self-start text-sm">
                   {h.content}
                 </div>
                 <div className="mx-3 col-span-2 border-b border-theme border-dashed"></div>
