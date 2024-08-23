@@ -18,16 +18,22 @@ import {
 } from "gpinterface-shared/type/user";
 import { Static } from "@sinclair/typebox";
 import {
-  Button,
   Input,
   Tabs,
   TabsList,
   TabsContent,
   TabsTrigger,
 } from "@/components/ui";
-import { Lock, Mail, UserRound } from "lucide-react";
+import {
+  Lock,
+  Mail,
+  UserRound,
+  UserRoundCheck,
+  UserRoundPlus,
+} from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useSearchParams } from "next/navigation";
+import MenuButton from "@/components/general/buttons/MenuButton";
 
 function Login() {
   const searchParams = useSearchParams();
@@ -151,14 +157,15 @@ function Login() {
           </div>
           <div>
             <TabsContent value="login" className="mt-12">
-              <Button
+              <MenuButton
                 className="w-full"
                 disabled={loginDisabled}
                 type="submit"
                 loading={loading}
-              >
-                Login
-              </Button>
+                text="Login"
+                Icon={UserRoundCheck}
+                size="large"
+              />
             </TabsContent>
             <TabsContent value="signup">
               <div className="text-xs mt-1">
@@ -200,14 +207,15 @@ function Login() {
                 </label>
               </div>
               <div className="mt-3"></div>
-              <Button
+              <MenuButton
                 className="w-full"
                 disabled={signupDisabled}
                 type="submit"
                 loading={loading}
-              >
-                Sign up
-              </Button>
+                text="Sign up"
+                Icon={UserRoundPlus}
+                size="large"
+              />
             </TabsContent>
           </div>
         </form>
