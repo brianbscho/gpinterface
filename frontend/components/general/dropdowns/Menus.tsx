@@ -95,7 +95,7 @@ function _Menus() {
         <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => push(`/`)}>
+          <DropdownMenuItem onClick={() => push(`/chats`)}>
             <MessageSquareCode />
             <span className="ml-3">Chat</span>
           </DropdownMenuItem>
