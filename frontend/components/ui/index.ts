@@ -5,7 +5,6 @@ export * from "./card";
 export * from "./checkbox";
 export * from "./dialog";
 export * from "./dropdown-menu";
-export * from "./hover-card";
 export * from "./input";
 export * from "./select";
 export * from "./separator";
