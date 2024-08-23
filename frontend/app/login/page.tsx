@@ -31,7 +31,7 @@ import {
   UserRoundCheck,
   UserRoundPlus,
 } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "@/components/ui";
 import { useSearchParams } from "next/navigation";
 import MenuButton from "@/components/general/buttons/MenuButton";
 
