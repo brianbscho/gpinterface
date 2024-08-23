@@ -28,7 +28,9 @@ export default function Page({ params }: { params: { hashId: string } }) {
       <div className="h-full overflow-y-auto pb-3">
         {!!chat && <Chat chat={chat} />}
       </div>
-      <Provider />
+      <div className="w-full h-full relative overflow-hidden">
+        <Provider />
+      </div>
     </div>
   );
 }

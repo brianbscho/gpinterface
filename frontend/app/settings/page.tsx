@@ -162,11 +162,12 @@ export default function Page() {
         </div>
         <div>
           <MenuButton
+            responsive
             onClick={onClickSave}
             disabled={name.length > 0 && !nameValid}
             Icon={Save}
             text={saveButtonText}
-            className="w-44"
+            className="w-32 md:w-44"
           />
         </div>
         <div></div>
@@ -183,26 +184,33 @@ export default function Page() {
           <Fragment key={k.hashId}>
             <div className="text-neutral-400">{k.key}</div>
             <MenuButton
+              responsive
               onClick={() => onClickApiKeyTrash(k.hashId)}
               Icon={Trash2}
               text="Delete"
-              className="w-44"
+              className="w-32 md:w-44"
             />
             <div></div>
           </Fragment>
         ))}
         <div className="col-span-2">
           <MenuButton
+            responsive
             onClick={onClickGetApiKey}
             Icon={KeyRound}
             text="Create API Key"
-            className="w-44"
+            className="w-32 md:w-44"
           />
         </div>
         <div className="font-bold">Customer support</div>
         <div className="text-neutral-400 flex items-center gap-1 underline col-span-2">
           <a href="mailto:brian.b.cho@bookquilt.com">
-            <MenuButton Icon={Mail} text="Send email" className="w-44" />
+            <MenuButton
+              responsive
+              Icon={Mail}
+              text="Send email"
+              className="w-32 md:w-44"
+            />
           </a>
         </div>
         <div className="font-bold">Password</div>
@@ -211,10 +219,11 @@ export default function Page() {
         </div>
         <div className="col-span-2"></div>
         <MenuButton
+          responsive
           Icon={CircleX}
           text="Delete account"
           onClick={onClickDelete}
-          className="w-44"
+          className="w-32 md:w-44"
           variant="icon_destructive"
         />
       </div>
@@ -236,6 +245,7 @@ export default function Page() {
                 <div className="flex items-center gap-3">
                   <div className="text-sm">{newKey}</div>
                   <MenuButton
+                    responsive
                     Icon={Copy}
                     text="Copy"
                     onClick={() => navigator.clipboard.writeText(newKey)}
@@ -249,10 +259,11 @@ export default function Page() {
             <div className="w-full flex justify-end mt-3">
               <div>
                 <MenuButton
+                  responsive
                   Icon={Check}
                   text="Confirm"
                   onClick={() => setNewKey("")}
-                  className="w-28"
+                  className="w-24 md:w-28"
                 />
               </div>
             </div>

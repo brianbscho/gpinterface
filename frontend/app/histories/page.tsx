@@ -62,33 +62,31 @@ export default function Page() {
           <Fragment key={date}>
             {history.histories.map((h) => (
               <Fragment key={h.hashId}>
-                <div className="pl-3">
-                  <div className="h-8">
-                    <History history={h}>
-                      <MenuButton
-                        className="w-36"
-                        Icon={ReceiptText}
-                        text="Show detail"
-                      />
-                    </History>
-                  </div>
-                  <div className="h-8 mt-3">
-                    <Link
-                      href={
-                        h.apiHashId
-                          ? `/apis/${h.apiHashId}`
-                          : h.chatHashId
-                          ? `/chats/${h.chatHashId}`
-                          : "/#"
-                      }
-                    >
-                      <MenuButton
-                        Icon={h.apiHashId ? SquareCode : MessageSquareCode}
-                        text={`Go to ${h.apiHashId ? "api" : "chat"}`}
-                        className="w-36"
-                      />
-                    </Link>
-                  </div>
+                <div className="pl-3 flex flex-wrap flex-col gap-3">
+                  <History history={h}>
+                    <MenuButton
+                      className="w-28 md:w-36"
+                      Icon={ReceiptText}
+                      text="Show detail"
+                      responsive
+                    />
+                  </History>
+                  <Link
+                    href={
+                      h.apiHashId
+                        ? `/apis/${h.apiHashId}`
+                        : h.chatHashId
+                        ? `/chats/${h.chatHashId}`
+                        : "/#"
+                    }
+                  >
+                    <MenuButton
+                      Icon={h.apiHashId ? SquareCode : MessageSquareCode}
+                      text={`Go to ${h.apiHashId ? "api" : "chat"}`}
+                      className="w-28 md:w-36"
+                      responsive
+                    />
+                  </Link>
                 </div>
                 <Badge variant="tag" className="self-start">
                   assistant
