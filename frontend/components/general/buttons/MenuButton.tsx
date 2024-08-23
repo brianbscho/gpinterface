@@ -31,6 +31,15 @@ const large = {
   iconWidth: "w-6",
   fontSize: "text-base",
 };
+const responsiveClass = {
+  height: "h-6 md:h-8",
+  width: "w-6 md:w-8",
+  paddingLeft: "pl-6 md:pl-8",
+  padding: "p-1 md:p-1.5",
+  iconHeight: "h-4 md:h-5",
+  iconWidth: "w-4 md:w-5",
+  fontSize: "text-xs md:text-sm",
+};
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   Icon: React.ForwardRefExoticComponent<
@@ -41,6 +50,7 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   loading?: boolean;
   size?: "small" | "medium" | "large";
   variant?: "icon" | "icon_destructive";
+  responsive?: boolean;
 };
 
 export default function MenuButton({
@@ -51,6 +61,7 @@ export default function MenuButton({
   loading,
   variant = "icon",
   size = "medium",
+  responsive = false,
   ...props
 }: ButtonProps) {
   const css =
@@ -59,7 +70,9 @@ export default function MenuButton({
       : "bg-destructive text-destructive-foreground";
   const border = variant === "icon" ? "border-primary" : "border-destructive";
 
-  const sizeClass = { small, medium, large }[size];
+  const sizeClass = responsive
+    ? responsiveClass
+    : { small, medium, large }[size];
 
   return (
     <Button
