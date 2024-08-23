@@ -94,7 +94,7 @@ export default function SelectModel() {
                   const disableMessage = loginRequired
                     ? " (login required)"
                     : !isFree
-                    ? " (payment required)"
+                    ? " (api key required)"
                     : !isAvailable
                     ? " (not available)"
                     : "";
