@@ -82,7 +82,7 @@ function _Chats() {
           {chats?.map((t) => (
             <div
               key={t.hashId}
-              className="w-full border-b border-theme pb-8 mb-12 last:mb-0"
+              className="w-full border-b border-theme pb-8 mb-12 last:border-none last:mb-0"
             >
               <Chat chat={t} />
             </div>

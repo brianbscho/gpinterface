@@ -219,7 +219,7 @@ export default function Page() {
         />
       </div>
       <AlertDialog open={newKey.length > 0}>
-        <AlertDialogContent className="max-w-fit">
+        <AlertDialogContent className="max-w-4xl w-11/12 rounded-md">
           <AlertDialogTitle>API Key</AlertDialogTitle>
           <AlertDialogDescription>
             <div>

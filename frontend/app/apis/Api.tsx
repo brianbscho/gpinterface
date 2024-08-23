@@ -21,7 +21,7 @@ export default function Api({ api }: { api: ApisGetResponse["apis"][0] }) {
           <div className="truncate">{api.description}</div>
           <div className="text-neutral-400 text-xs mb-1">{api.createdAt}</div>
         </div>
-        <div className="grid grid-cols-[auto_1fr] gap-3">
+        <div className="grid grid-cols-[auto_1fr] items-center gap-3">
           {messages.map((message) => (
             <Fragment key={message.hashId}>
               <div className="text-right">
