@@ -69,9 +69,14 @@ export default function Deploy({ chatHashId }: { chatHashId: string }) {
     <div>
       <Dialog open={open} onOpenChange={loading ? undefined : setOpen}>
         <DialogTrigger asChild>
-          <MenuButton Icon={StepForward} text="Deploy" className="w-32" />
+          <MenuButton
+            Icon={StepForward}
+            text="Deploy"
+            className="w-24 md:w-32"
+            responsive
+          />
         </DialogTrigger>
-        <DialogContent className="max-w-3xl w-11/12 gap-3">
+        <DialogContent className="max-w-3xl w-11/12 gap-3 rounded-md">
           <div className="flex items-center gap-3">
             <Badge variant="tag" className="h-6">
               Deploy API
@@ -83,6 +88,7 @@ export default function Deploy({ chatHashId }: { chatHashId: string }) {
               text="Public"
               onClick={() => setIsPublic((prev) => !prev)}
               loading={loading}
+              responsive
             />
           </div>
 

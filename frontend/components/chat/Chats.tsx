@@ -11,6 +11,10 @@ import List from "../List";
 import NewChat from "./NewChat";
 import { useRouter, useSearchParams } from "next/navigation";
 import useUserStore from "@/store/user";
+import MenuButton from "../general/buttons/MenuButton";
+import { ChevronLeft } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "../ui";
+import Provider from "./Provider";
 
 function _Chats() {
   const [chats, setChats] = useState<ChatsGetResponse["chats"]>();
@@ -68,8 +72,23 @@ function _Chats() {
 
   return (
     <div className="w-full h-full overflow-hidden relative">
-      <div className="absolute top-3 left-3 z-10">
+      <div className="absolute top-3 left-3 z-40">
         <NewChat setChats={setChats} />
+      </div>
+      <div className="md:hidden absolute top-3 right-3 z-40 md:hidden">
+        <Sheet>
+          <SheetTrigger>
+            <MenuButton
+              Icon={ChevronLeft}
+              text="Models"
+              size="small"
+              className="w-24"
+            />
+          </SheetTrigger>
+          <SheetContent className="p-3">
+            <Provider />
+          </SheetContent>
+        </Sheet>
       </div>
       <div className="h-full overflow-y-auto">
         <List
@@ -82,7 +101,7 @@ function _Chats() {
           {chats?.map((t) => (
             <div
               key={t.hashId}
-              className="w-full border-b border-theme pb-8 mb-12 last:border-none last:mb-0"
+              className="w-full border-b border-theme pb-0 md:pb-8 mb-12 last:border-none last:mb-0"
             >
               <Chat chat={t} />
             </div>

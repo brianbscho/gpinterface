@@ -73,13 +73,14 @@ export default function SelectModel() {
       open={open}
       onOpenChange={setOpen}
     >
-      <SelectEmptyTrigger className="h-8">
+      <SelectEmptyTrigger className="h-6 sm:h-8">
         <MenuButton
-          className="w-28"
+          className="w-24 md:w-28"
           Icon={ChevronDown}
           text="Models"
           onClick={() => setOpen(true)}
           selected={open}
+          responsive
         />
       </SelectEmptyTrigger>
       <SelectContent className="w-[23rem]">

@@ -5,7 +5,7 @@ export default function Page() {
   return (
     <div className="w-full flex-1 grid grid-cols-[1fr_auto] overflow-hidden">
       <Chats />
-      <div className="w-full h-full relative overflow-hidden">
+      <div className="hidden md:block w-full h-full relative overflow-hidden">
         <Provider />
       </div>
     </div>

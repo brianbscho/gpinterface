@@ -131,7 +131,7 @@ export default function ContentInput({
       </div>
       <CardDescription>
         <form onSubmit={onSubmit}>
-          <div className="flex gap-3">
+          <div className="flex items-center gap-3">
             <div className="relative flex-1 items-start">
               <div className="whitespace-pre-wrap px-3 py-2 text-base invisible border">
                 {content + "."}
