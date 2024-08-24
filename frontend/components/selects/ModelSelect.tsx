@@ -16,7 +16,7 @@ import { ChevronDown } from "lucide-react";
 import IconTextButton from "../buttons/IconTextButton";
 import useModelStore from "@/store/model";
 
-export default function SelectModel() {
+export default function ModelSelect() {
   const [providerTypes, setProviderTypes] =
     useState<ProviderTypesGetResponse["providerTypes"]>();
   useEffect(() => {
