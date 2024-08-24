@@ -13,7 +13,7 @@ import {
 } from "../ui";
 import useUserStore from "@/store/user";
 import { ChevronDown } from "lucide-react";
-import MenuButton from "../general/buttons/MenuButton";
+import MenuButton from "../buttons/MenuButton";
 import useModelStore from "@/store/model";
 
 export default function SelectModel() {

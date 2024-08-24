@@ -1,6 +1,6 @@
 "use client";
 
-import MenuButton from "@/components/general/buttons/MenuButton";
+import MenuButton from "@/components/buttons/MenuButton";
 import { useToast } from "@/components/ui";
 import useModelStore from "@/store/model";
 import callApi from "@/utils/callApi";

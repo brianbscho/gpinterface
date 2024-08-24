@@ -19,7 +19,7 @@ import {
 import { Static } from "@sinclair/typebox";
 import callApi from "@/utils/callApi";
 import { getApiConfig } from "@/utils/model";
-import SmallHoverButton from "../general/buttons/SmallHoverButton";
+import SmallHoverButton from "../buttons/SmallHoverButton";
 import History from "../general/dialogs/History";
 import useModelStore from "@/store/model";
 

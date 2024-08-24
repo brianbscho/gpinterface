@@ -21,7 +21,7 @@ import {
 } from "gpinterface-shared/type/content";
 import { getApiConfig } from "@/utils/model";
 import ContentsDialog from "../dialogs/ContentsDialog";
-import SmallHoverButton from "../general/buttons/SmallHoverButton";
+import SmallHoverButton from "../buttons/SmallHoverButton";
 import useModelStore from "@/store/model";
 
 type Props = {

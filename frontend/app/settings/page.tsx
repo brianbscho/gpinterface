@@ -35,7 +35,7 @@ import {
   Card,
   Input,
 } from "@/components/ui";
-import MenuButton from "@/components/general/buttons/MenuButton";
+import MenuButton from "@/components/buttons/MenuButton";
 
 export default function Page() {
   const { user, setUser } = useUserStore();

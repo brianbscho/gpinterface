@@ -15,7 +15,7 @@ import {
 import useUserStore from "@/store/user";
 import Login from "../general/dialogs/Login";
 import { PlusCircle } from "lucide-react";
-import MenuButton from "../general/buttons/MenuButton";
+import MenuButton from "./MenuButton";
 
 export default function NewChat({
   setChats,

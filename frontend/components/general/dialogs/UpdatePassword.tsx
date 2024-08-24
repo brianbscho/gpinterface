@@ -18,7 +18,7 @@ import {
   Separator,
 } from "@/components/ui";
 import { validatePassword } from "gpinterface-shared/string";
-import MenuButton from "../buttons/MenuButton";
+import MenuButton from "../../buttons/MenuButton";
 import { CircleX, Key } from "lucide-react";
 
 export default function UpdatePassword() {

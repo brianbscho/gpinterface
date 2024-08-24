@@ -11,7 +11,7 @@ import List from "../List";
 import NewChatButton from "../buttons/NewChatButton";
 import { useRouter, useSearchParams } from "next/navigation";
 import useUserStore from "@/store/user";
-import MenuButton from "../general/buttons/MenuButton";
+import MenuButton from "../buttons/MenuButton";
 import { ChevronLeft } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "../ui";
 import Provider from "./Provider";

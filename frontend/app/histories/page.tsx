@@ -5,7 +5,7 @@ import callApi from "@/utils/callApi";
 import { HistoriesGetResponse } from "gpinterface-shared/type/history";
 import { Fragment, useCallback, useMemo, useState } from "react";
 import Link from "next/link";
-import MenuButton from "@/components/general/buttons/MenuButton";
+import MenuButton from "@/components/buttons/MenuButton";
 import { MessageSquareCode, ReceiptText, SquareCode } from "lucide-react";
 import { Badge } from "@/components/ui";
 import History from "@/components/general/dialogs/History";

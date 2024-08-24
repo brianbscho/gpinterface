@@ -33,7 +33,7 @@ import {
 } from "lucide-react";
 import { Checkbox } from "@/components/ui";
 import { useSearchParams } from "next/navigation";
-import MenuButton from "@/components/general/buttons/MenuButton";
+import MenuButton from "@/components/buttons/MenuButton";
 
 function Login() {
   const searchParams = useSearchParams();

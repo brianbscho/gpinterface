@@ -10,7 +10,7 @@ import { cn } from "@/utils/css";
 import useUserStore from "@/store/user";
 import EditApi from "./EditApi";
 import { MessageSquareCode, SquareCode } from "lucide-react";
-import MenuButton from "@/components/general/buttons/MenuButton";
+import MenuButton from "@/components/buttons/MenuButton";
 
 export default function Page({ params }: { params: { hashId: string } }) {
   const { hashId } = params;

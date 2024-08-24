@@ -23,7 +23,7 @@ import {
 } from "gpinterface-shared/type/api";
 import { useRouter } from "next/navigation";
 import { getApiConfig } from "@/utils/model";
-import MenuButton from "../general/buttons/MenuButton";
+import MenuButton from "./MenuButton";
 import useModelStore from "@/store/model";
 
 export default function Deploy({ chatHashId }: { chatHashId: string }) {

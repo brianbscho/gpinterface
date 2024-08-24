@@ -1,7 +1,7 @@
 "use client";
 
 import { RotateCcw } from "lucide-react";
-import MenuButton from "../general/buttons/MenuButton";
+import MenuButton from "./MenuButton";
 import useModelStore, { ConfigType } from "@/store/model";
 import { useCallback } from "react";
 
