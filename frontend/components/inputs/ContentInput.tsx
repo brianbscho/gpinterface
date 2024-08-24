@@ -20,8 +20,8 @@ import {
   ContentsGetResponse,
 } from "gpinterface-shared/type/content";
 import { getApiConfig } from "@/utils/model";
-import ContentsDialog from "../api/ContentsDialog";
-import SmallHoverButton from "../general/buttons/SmallHoverButton";
+import ContentsDialog from "../dialogs/ContentsDialog";
+import SmallHoverButton from "../buttons/SmallHoverButton";
 import useModelStore from "@/store/model";
 
 type Props = {
@@ -131,7 +131,7 @@ export default function ContentInput({
       </div>
       <CardDescription>
         <form onSubmit={onSubmit}>
-          <div className="flex gap-3">
+          <div className="flex items-center gap-3">
             <div className="relative flex-1 items-start">
               <div className="whitespace-pre-wrap px-3 py-2 text-base invisible border">
                 {content + "."}

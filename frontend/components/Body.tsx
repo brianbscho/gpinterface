@@ -1,6 +1,6 @@
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "next-themes";
-import Menus from "./general/dropdowns/Menus";
+import MenusDropdown from "./dropdowns/MenusDropdown";
 import Link from "next/link";
 import { Toaster } from "@/components/ui/toaster";
 
@@ -32,7 +32,7 @@ export default function Body({
                   </div>
                 </Link>
                 <div className="flex-1"></div>
-                <Menus />
+                <MenusDropdown />
               </div>
             </div>
           </div>

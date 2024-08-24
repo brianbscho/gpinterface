@@ -5,10 +5,10 @@ import callApi from "@/utils/callApi";
 import { HistoriesGetResponse } from "gpinterface-shared/type/history";
 import { Fragment, useCallback, useMemo, useState } from "react";
 import Link from "next/link";
-import MenuButton from "@/components/general/buttons/MenuButton";
+import IconTextButton from "@/components/buttons/IconTextButton";
 import { MessageSquareCode, ReceiptText, SquareCode } from "lucide-react";
 import { Badge } from "@/components/ui";
-import History from "@/components/general/dialogs/History";
+import HistoryDialog from "@/components/dialogs/HistoryDialog";
 
 type HistoriesType = HistoriesGetResponse["histories"];
 export default function Page() {
@@ -62,38 +62,36 @@ export default function Page() {
           <Fragment key={date}>
             {history.histories.map((h) => (
               <Fragment key={h.hashId}>
-                <div className="pl-3">
-                  <div className="h-8">
-                    <History history={h}>
-                      <MenuButton
-                        className="w-36"
-                        Icon={ReceiptText}
-                        text="Show detail"
-                      />
-                    </History>
-                  </div>
-                  <div className="h-8 mt-3">
-                    <Link
-                      href={
-                        h.apiHashId
-                          ? `/apis/${h.apiHashId}`
-                          : h.chatHashId
-                          ? `/chats/${h.chatHashId}`
-                          : "/#"
-                      }
-                    >
-                      <MenuButton
-                        Icon={h.apiHashId ? SquareCode : MessageSquareCode}
-                        text={`Go to ${h.apiHashId ? "api" : "chat"}`}
-                        className="w-36"
-                      />
-                    </Link>
-                  </div>
+                <div className="pl-3 flex flex-wrap flex-col gap-3">
+                  <HistoryDialog history={h}>
+                    <IconTextButton
+                      className="w-28 md:w-36"
+                      Icon={ReceiptText}
+                      text="Show detail"
+                      responsive
+                    />
+                  </HistoryDialog>
+                  <Link
+                    href={
+                      h.apiHashId
+                        ? `/apis/${h.apiHashId}`
+                        : h.chatHashId
+                        ? `/chats/${h.chatHashId}`
+                        : "/#"
+                    }
+                  >
+                    <IconTextButton
+                      Icon={h.apiHashId ? SquareCode : MessageSquareCode}
+                      text={`Go to ${h.apiHashId ? "api" : "chat"}`}
+                      className="w-28 md:w-36"
+                      responsive
+                    />
+                  </Link>
                 </div>
                 <Badge variant="tag" className="self-start">
                   assistant
                 </Badge>
-                <div className="w-full truncate pr-3 self-start text-sm">
+                <div className="whitespace-pre-wrap line-clamp-3 pr-3 self-start text-sm">
                   {h.content}
                 </div>
                 <div className="mx-3 col-span-2 border-b border-theme border-dashed"></div>

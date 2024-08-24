@@ -1,6 +1,6 @@
 "use client";
 
-import MenuButton from "@/components/general/buttons/MenuButton";
+import IconTextButton from "@/components/buttons/IconTextButton";
 import { useToast } from "@/components/ui";
 import useModelStore from "@/store/model";
 import callApi from "@/utils/callApi";
@@ -63,20 +63,22 @@ export default function EditApi({ useApi }: Props) {
 
   return (
     <>
-      <div className="h-8">
-        <MenuButton
-          className="w-28"
+      <div>
+        <IconTextButton
+          className="w-full md:w-28"
           Icon={!api?.isPublic ? Circle : CheckCircle2}
           text="Public"
           onClick={() => onCheckedChange(!api?.isPublic)}
+          responsive
         />
       </div>
       <div>
-        <MenuButton
-          className="w-28 mt-3"
+        <IconTextButton
+          className="w-full md:w-28"
           Icon={Save}
           text="Save"
           onClick={onClickDefault}
+          responsive
         />
       </div>
     </>

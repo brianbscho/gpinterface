@@ -1,27 +1,24 @@
 import { Badge } from "@/components/ui";
-import { ApisGetResponse } from "gpinterface-shared/type/api";
+import { ChatsGetResponse } from "gpinterface-shared/type/chat";
 import Link from "next/link";
 import { Fragment } from "react";
 
-export default function Api({ api }: { api: ApisGetResponse["apis"][0] }) {
+export default function Chat({ chat }: { chat: ChatsGetResponse["chats"][0] }) {
   const messages = [
     {
       hashId: Math.random().toString(),
       role: "system",
-      content: api.systemMessage,
+      content: chat.systemMessage,
     },
-    ...api.messages,
+    ...chat.contents,
   ]
     .filter((m) => m.content.length > 0)
     .slice(0, 2);
   return (
-    <Link key={api.hashId} href={`/apis/${api.hashId}`}>
+    <Link key={chat.hashId} href={`/chats/${chat.hashId}`}>
       <div className="w-full p-3 border-b">
-        <div className="w-full flex gap-3 items-end mb-3">
-          <div className="truncate">{api.description}</div>
-          <div className="text-neutral-400 text-xs mb-1">{api.createdAt}</div>
-        </div>
         <div className="grid grid-cols-[auto_1fr] items-center gap-3">
+          <div className="font-bold mb-1 col-span-2">{chat.createdAt}</div>
           {messages.map((message) => (
             <Fragment key={message.hashId}>
               <div className="text-right">

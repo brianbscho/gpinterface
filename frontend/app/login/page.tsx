@@ -10,7 +10,7 @@ import {
 } from "react";
 import { validateEmail, validatePassword } from "gpinterface-shared/string";
 import callApi from "@/utils/callApi";
-import TermsAndConditions from "@/components/general/dialogs/TermsAndConditions";
+import TermsAndConditionsDialog from "@/components/dialogs/TermsAndConditionsDialog";
 import useUserStore from "@/store/user";
 import {
   UserCreateSchema,
@@ -18,16 +18,22 @@ import {
 } from "gpinterface-shared/type/user";
 import { Static } from "@sinclair/typebox";
 import {
-  Button,
   Input,
   Tabs,
   TabsList,
   TabsContent,
   TabsTrigger,
 } from "@/components/ui";
-import { Lock, Mail, UserRound } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Lock,
+  Mail,
+  UserRound,
+  UserRoundCheck,
+  UserRoundPlus,
+} from "lucide-react";
+import { Checkbox } from "@/components/ui";
 import { useSearchParams } from "next/navigation";
+import IconTextButton from "@/components/buttons/IconTextButton";
 
 function Login() {
   const searchParams = useSearchParams();
@@ -151,14 +157,15 @@ function Login() {
           </div>
           <div>
             <TabsContent value="login" className="mt-12">
-              <Button
+              <IconTextButton
                 className="w-full"
                 disabled={loginDisabled}
                 type="submit"
                 loading={loading}
-              >
-                Login
-              </Button>
+                text="Login"
+                Icon={UserRoundCheck}
+                size="large"
+              />
             </TabsContent>
             <TabsContent value="signup">
               <div className="text-xs mt-1">
@@ -200,19 +207,20 @@ function Login() {
                 </label>
               </div>
               <div className="mt-3"></div>
-              <Button
+              <IconTextButton
                 className="w-full"
                 disabled={signupDisabled}
                 type="submit"
                 loading={loading}
-              >
-                Sign up
-              </Button>
+                text="Sign up"
+                Icon={UserRoundPlus}
+                size="large"
+              />
             </TabsContent>
           </div>
         </form>
       </Tabs>
-      <TermsAndConditions useOpen={[termsOpen, setTermsOpen]} />
+      <TermsAndConditionsDialog useOpen={[termsOpen, setTermsOpen]} />
     </div>
   );
 }

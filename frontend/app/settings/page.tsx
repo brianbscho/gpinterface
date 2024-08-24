@@ -4,7 +4,7 @@ import useUserStore from "@/store/user";
 import callApi from "@/utils/callApi";
 import { useRouter } from "next/navigation";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
-import UpdatePassword from "@/components/general/dialogs/UpdatePassword";
+import UpdatePasswordDialog from "@/components/dialogs/UpdatePasswordDialog";
 import {
   UserGetMeResponse,
   UserUpdateSchema,
@@ -35,7 +35,7 @@ import {
   Card,
   Input,
 } from "@/components/ui";
-import MenuButton from "@/components/general/buttons/MenuButton";
+import IconTextButton from "@/components/buttons/IconTextButton";
 
 export default function Page() {
   const { user, setUser } = useUserStore();
@@ -161,12 +161,13 @@ export default function Page() {
           ></Input>
         </div>
         <div>
-          <MenuButton
+          <IconTextButton
+            responsive
             onClick={onClickSave}
             disabled={name.length > 0 && !nameValid}
             Icon={Save}
             text={saveButtonText}
-            className="w-44"
+            className="w-32 md:w-44"
           />
         </div>
         <div></div>
@@ -182,44 +183,52 @@ export default function Page() {
         {apiKeys.map((k) => (
           <Fragment key={k.hashId}>
             <div className="text-neutral-400">{k.key}</div>
-            <MenuButton
+            <IconTextButton
+              responsive
               onClick={() => onClickApiKeyTrash(k.hashId)}
               Icon={Trash2}
               text="Delete"
-              className="w-44"
+              className="w-32 md:w-44"
             />
             <div></div>
           </Fragment>
         ))}
         <div className="col-span-2">
-          <MenuButton
+          <IconTextButton
+            responsive
             onClick={onClickGetApiKey}
             Icon={KeyRound}
             text="Create API Key"
-            className="w-44"
+            className="w-32 md:w-44"
           />
         </div>
         <div className="font-bold">Customer support</div>
         <div className="text-neutral-400 flex items-center gap-1 underline col-span-2">
           <a href="mailto:brian.b.cho@bookquilt.com">
-            <MenuButton Icon={Mail} text="Send email" className="w-44" />
+            <IconTextButton
+              responsive
+              Icon={Mail}
+              text="Send email"
+              className="w-32 md:w-44"
+            />
           </a>
         </div>
         <div className="font-bold">Password</div>
         <div className="col-span-2">
-          <UpdatePassword />
+          <UpdatePasswordDialog />
         </div>
         <div className="col-span-2"></div>
-        <MenuButton
+        <IconTextButton
+          responsive
           Icon={CircleX}
           text="Delete account"
           onClick={onClickDelete}
-          className="w-44"
+          className="w-32 md:w-44"
           variant="icon_destructive"
         />
       </div>
       <AlertDialog open={newKey.length > 0}>
-        <AlertDialogContent className="max-w-fit">
+        <AlertDialogContent className="max-w-4xl w-11/12 rounded-md">
           <AlertDialogTitle>API Key</AlertDialogTitle>
           <AlertDialogDescription>
             <div>
@@ -235,7 +244,8 @@ export default function Page() {
               <Card className="mt-3 p-3">
                 <div className="flex items-center gap-3">
                   <div className="text-sm">{newKey}</div>
-                  <MenuButton
+                  <IconTextButton
+                    responsive
                     Icon={Copy}
                     text="Copy"
                     onClick={() => navigator.clipboard.writeText(newKey)}
@@ -248,11 +258,12 @@ export default function Page() {
           <AlertDialogFooter>
             <div className="w-full flex justify-end mt-3">
               <div>
-                <MenuButton
+                <IconTextButton
+                  responsive
                   Icon={Check}
                   text="Confirm"
                   onClick={() => setNewKey("")}
-                  className="w-28"
+                  className="w-24 md:w-28"
                 />
               </div>
             </div>

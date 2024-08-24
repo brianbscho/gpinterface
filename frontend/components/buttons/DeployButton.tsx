@@ -23,10 +23,10 @@ import {
 } from "gpinterface-shared/type/api";
 import { useRouter } from "next/navigation";
 import { getApiConfig } from "@/utils/model";
-import MenuButton from "../general/buttons/MenuButton";
+import IconTextButton from "./IconTextButton";
 import useModelStore from "@/store/model";
 
-export default function Deploy({ chatHashId }: { chatHashId: string }) {
+export default function DeployButton({ chatHashId }: { chatHashId: string }) {
   const [open, setOpen] = useState(false);
 
   const [isPublic, setIsPublic] = useState(false);
@@ -69,20 +69,26 @@ export default function Deploy({ chatHashId }: { chatHashId: string }) {
     <div>
       <Dialog open={open} onOpenChange={loading ? undefined : setOpen}>
         <DialogTrigger asChild>
-          <MenuButton Icon={StepForward} text="Deploy" className="w-32" />
+          <IconTextButton
+            Icon={StepForward}
+            text="Deploy"
+            className="w-24 md:w-32"
+            responsive
+          />
         </DialogTrigger>
-        <DialogContent className="max-w-3xl w-11/12 gap-3">
+        <DialogContent className="max-w-3xl w-11/12 gap-3 rounded-md">
           <div className="flex items-center gap-3">
             <Badge variant="tag" className="h-6">
               Deploy API
             </Badge>
             <div className="flex-1"></div>
-            <MenuButton
+            <IconTextButton
               className="w-24"
               Icon={!isPublic ? Circle : CheckCircle2}
               text="Public"
               onClick={() => setIsPublic((prev) => !prev)}
               loading={loading}
+              responsive
             />
           </div>
 

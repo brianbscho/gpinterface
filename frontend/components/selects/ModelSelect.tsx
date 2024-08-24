@@ -13,10 +13,10 @@ import {
 } from "../ui";
 import useUserStore from "@/store/user";
 import { ChevronDown } from "lucide-react";
-import MenuButton from "../general/buttons/MenuButton";
+import IconTextButton from "../buttons/IconTextButton";
 import useModelStore from "@/store/model";
 
-export default function SelectModel() {
+export default function ModelSelect() {
   const [providerTypes, setProviderTypes] =
     useState<ProviderTypesGetResponse["providerTypes"]>();
   useEffect(() => {
@@ -73,13 +73,14 @@ export default function SelectModel() {
       open={open}
       onOpenChange={setOpen}
     >
-      <SelectEmptyTrigger className="h-8">
-        <MenuButton
-          className="w-28"
+      <SelectEmptyTrigger className="w-full md:w-auto h-6 sm:h-8">
+        <IconTextButton
+          className="w-full md:w-28"
           Icon={ChevronDown}
           text="Models"
           onClick={() => setOpen(true)}
           selected={open}
+          responsive
         />
       </SelectEmptyTrigger>
       <SelectContent className="w-[23rem]">
@@ -94,7 +95,7 @@ export default function SelectModel() {
                   const disableMessage = loginRequired
                     ? " (login required)"
                     : !isFree
-                    ? " (payment required)"
+                    ? " (api key required)"
                     : !isAvailable
                     ? " (not available)"
                     : "";

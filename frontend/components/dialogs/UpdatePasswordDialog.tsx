@@ -18,7 +18,7 @@ import {
   Separator,
 } from "@/components/ui";
 import { validatePassword } from "gpinterface-shared/string";
-import MenuButton from "../buttons/MenuButton";
+import IconTextButton from "../buttons/IconTextButton";
 import { CircleX, Key } from "lucide-react";
 
 export default function UpdatePassword() {
@@ -78,7 +78,12 @@ export default function UpdatePassword() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
-        <MenuButton Icon={Key} text="Password update" className="w-44" />
+        <IconTextButton
+          responsive
+          Icon={Key}
+          text="Password update"
+          className="w-32 md:w-44"
+        />
       </DialogTrigger>
       <DialogContent>
         <form onSubmit={onSubmit}>
@@ -115,14 +120,16 @@ export default function UpdatePassword() {
           </div>
           <div className="w-full flex justify-end gap-3 mt-7 h-6">
             <DialogClose>
-              <MenuButton
+              <IconTextButton
+                responsive
                 Icon={CircleX}
                 text="Cancel"
                 type="button"
                 className="w-28"
               />
             </DialogClose>
-            <MenuButton
+            <IconTextButton
+              responsive
               Icon={Key}
               text="Update"
               type="submit"

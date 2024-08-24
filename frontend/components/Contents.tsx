@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge, Button, CardContent, CardDescription, Textarea } from "../ui";
+import { Badge, Button, CardContent, CardDescription, Textarea } from "./ui";
 import {
   Dispatch,
   SetStateAction,
@@ -15,16 +15,25 @@ import {
   ContentRefreshSchema,
   ContentsDeleteResponse,
   ContentsDeleteSchema,
+  ContentUpdateResponse,
+  ContentUpdateSchema,
 } from "gpinterface-shared/type/content";
 import { Static } from "@sinclair/typebox";
 import callApi from "@/utils/callApi";
 import { getApiConfig } from "@/utils/model";
-import SmallHoverButton from "../general/buttons/SmallHoverButton";
-import History from "../general/dialogs/History";
+import SmallHoverButton from "./buttons/SmallHoverButton";
+import HistoryDialog from "./dialogs/HistoryDialog";
 import useModelStore from "@/store/model";
+import {
+  ChatUpdateResponse,
+  ChatUpdateSchema,
+} from "gpinterface-shared/type/chat";
+import ContentInput from "./inputs/ContentInput";
+import { cn } from "@/utils/css";
+import useUserStore from "@/store/user";
 
 type RefreshingHashId = string | undefined;
-type Props = {
+type ContentProps = {
   chatHashId: string;
   content: Omit<ContentType, "hashId"> &
     Partial<Omit<ContentType, "role" | "content" | "config" | "model">>;
@@ -35,7 +44,7 @@ type Props = {
   editable?: boolean;
 };
 
-export default function Content({
+function Content({
   chatHashId,
   content,
   setContents,
@@ -43,7 +52,7 @@ export default function Content({
   callUpdateContent,
   hashIds,
   editable,
-}: Props) {
+}: ContentProps) {
   const [newContent, setNewContent] = useState(content.content);
   const [oldContent, setOldContent] = useState(content.content);
   useEffect(() => {
@@ -193,11 +202,11 @@ export default function Content({
         )}
         {!!content.history && (
           <SmallHoverButton message="Detail">
-            <History history={content.history}>
+            <HistoryDialog history={content.history}>
               <Button className="p-1 h-6 w-6" variant="default">
                 <ReceiptText />
               </Button>
-            </History>
+            </HistoryDialog>
           </SmallHoverButton>
         )}
         {isRefreshVisible && (
@@ -245,5 +254,107 @@ export default function Content({
         </div>
       </CardDescription>
     </CardContent>
+  );
+}
+
+type ChatType = {
+  hashId: string;
+  systemMessage: string;
+  contents: ContentType[];
+};
+type ContentsProps = {
+  chat: ChatType;
+  apiHashId?: string;
+  ownerUserHashId: string | null | undefined;
+  className?: string;
+};
+export default function Contents({
+  chat,
+  apiHashId,
+  ownerUserHashId,
+  className,
+}: ContentsProps) {
+  const [contents, setContents] = useState(chat.contents);
+
+  const systemContent = useMemo(
+    () => ({ role: "system", content: chat.systemMessage }),
+    [chat.systemMessage]
+  );
+
+  const callUpdateSystemMessage = useCallback(
+    async (systemMessage: string) => {
+      const response = await callApi<
+        ChatUpdateResponse,
+        Static<typeof ChatUpdateSchema>
+      >({
+        endpoint: `/chat/${chat.hashId}`,
+        method: "PUT",
+        body: { systemMessage },
+      });
+      return response?.systemMessage;
+    },
+    [chat.hashId]
+  );
+  const callUpdateContent = useCallback(
+    (hashId: string) => async (content: string) => {
+      const response = await callApi<
+        ContentUpdateResponse,
+        Static<typeof ContentUpdateSchema>
+      >({
+        endpoint: `/content/${hashId}`,
+        method: "PUT",
+        body: { content },
+      });
+      return response?.content;
+    },
+    []
+  );
+
+  const userHashId = useUserStore((state) => state.user?.hashId);
+  const editable = useMemo(
+    () => !ownerUserHashId || ownerUserHashId === userHashId,
+    [ownerUserHashId, userHashId]
+  );
+  const [refreshingHashId, setRefreshingHashId] = useState<string>();
+
+  return (
+    <div className={cn("flex flex-col gap-3", className)}>
+      <Content
+        content={systemContent}
+        chatHashId={chat.hashId}
+        setContents={setContents}
+        useRefreshingHashId={[refreshingHashId, setRefreshingHashId]}
+        callUpdateContent={callUpdateSystemMessage}
+        editable={editable}
+      />
+      {contents.map((c, i) => {
+        let hashIds: string[] = [];
+        if (c.role === "user") {
+          hashIds = contents.slice(i, i + 2).map((_c) => _c.hashId);
+        } else {
+          hashIds = contents.slice(i - 1, i + 1).map((_c) => _c.hashId);
+        }
+
+        return (
+          <Content
+            key={c.hashId}
+            content={c}
+            chatHashId={chat.hashId}
+            setContents={setContents}
+            useRefreshingHashId={[refreshingHashId, setRefreshingHashId]}
+            callUpdateContent={callUpdateContent(c.hashId)}
+            hashIds={hashIds}
+            editable={editable}
+          />
+        );
+      })}
+      <ContentInput
+        chatHashId={chat.hashId}
+        apiHashId={apiHashId}
+        setContents={setContents}
+        setRefreshingHashId={setRefreshingHashId}
+        editable={editable}
+      />
+    </div>
   );
 }
