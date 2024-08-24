@@ -8,7 +8,7 @@ import {
   ChatsGetResponse,
 } from "gpinterface-shared/type/chat";
 import List from "../List";
-import NewChat from "./NewChat";
+import NewChatButton from "../buttons/NewChatButton";
 import { useRouter, useSearchParams } from "next/navigation";
 import useUserStore from "@/store/user";
 import MenuButton from "../general/buttons/MenuButton";
@@ -73,7 +73,7 @@ function _Chats() {
   return (
     <div className="w-full h-full overflow-hidden relative">
       <div className="absolute top-3 left-3 z-40">
-        <NewChat setChats={setChats} />
+        <NewChatButton setChats={setChats} />
       </div>
       <div className="md:hidden absolute top-3 right-3 z-40 md:hidden">
         <Sheet>
