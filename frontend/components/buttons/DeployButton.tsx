@@ -26,7 +26,7 @@ import { getApiConfig } from "@/utils/model";
 import IconTextButton from "./IconTextButton";
 import useModelStore from "@/store/model";
 
-export default function Deploy({ chatHashId }: { chatHashId: string }) {
+export default function DeployButton({ chatHashId }: { chatHashId: string }) {
   const [open, setOpen] = useState(false);
 
   const [isPublic, setIsPublic] = useState(false);
