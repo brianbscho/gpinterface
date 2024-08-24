@@ -13,7 +13,7 @@ import {
   ChatUpdateResponse,
   ChatUpdateSchema,
 } from "gpinterface-shared/type/chat";
-import ContentInput from "./ContentInput";
+import ContentInput from "../inputs/ContentInput";
 import DeployButton from "../buttons/DeployButton";
 import useUserStore from "@/store/user";
 

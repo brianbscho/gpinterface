@@ -12,7 +12,7 @@ import {
   ChatUpdateSchema,
 } from "gpinterface-shared/type/chat";
 import Content from "../chat/Content";
-import ContentInput from "../chat/ContentInput";
+import ContentInput from "../inputs/ContentInput";
 import { ApiGetResponse } from "gpinterface-shared/type/api";
 import useUserStore from "@/store/user";
 import useModelStore from "@/store/model";
