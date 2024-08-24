@@ -14,7 +14,7 @@ import {
   ChatUpdateSchema,
 } from "gpinterface-shared/type/chat";
 import ContentInput from "./ContentInput";
-import Deploy from "../api/Deploy";
+import DeployButton from "../buttons/DeployButton";
 import useUserStore from "@/store/user";
 
 export default function Chat({ chat }: { chat: ChatsGetResponse["chats"][0] }) {
@@ -64,7 +64,7 @@ export default function Chat({ chat }: { chat: ChatsGetResponse["chats"][0] }) {
   return (
     <div className="w-full px-0 pt-0 md:pt-3 pb-3 md:pb-0">
       <div className="sticky top-0 md:top-14 pl-[7.5rem] md:pl-3 w-full md:h-0 py-3 md:py-0 bg-background z-30">
-        <Deploy chatHashId={chat.hashId} />
+        <DeployButton chatHashId={chat.hashId} />
       </div>
       <div className="px-3 pl-3 md:pl-[9.5rem] flex flex-col gap-3">
         <Content
