@@ -23,7 +23,7 @@ import {
 } from "gpinterface-shared/type/api";
 import { useRouter } from "next/navigation";
 import { getApiConfig } from "@/utils/model";
-import MenuButton from "./MenuButton";
+import IconTextButton from "./IconTextButton";
 import useModelStore from "@/store/model";
 
 export default function Deploy({ chatHashId }: { chatHashId: string }) {
@@ -69,7 +69,7 @@ export default function Deploy({ chatHashId }: { chatHashId: string }) {
     <div>
       <Dialog open={open} onOpenChange={loading ? undefined : setOpen}>
         <DialogTrigger asChild>
-          <MenuButton
+          <IconTextButton
             Icon={StepForward}
             text="Deploy"
             className="w-24 md:w-32"
@@ -82,7 +82,7 @@ export default function Deploy({ chatHashId }: { chatHashId: string }) {
               Deploy API
             </Badge>
             <div className="flex-1"></div>
-            <MenuButton
+            <IconTextButton
               className="w-24"
               Icon={!isPublic ? Circle : CheckCircle2}
               text="Public"

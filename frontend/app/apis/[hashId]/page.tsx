@@ -10,7 +10,7 @@ import { cn } from "@/utils/css";
 import useUserStore from "@/store/user";
 import EditApi from "./EditApi";
 import { MessageSquareCode, SquareCode } from "lucide-react";
-import MenuButton from "@/components/buttons/MenuButton";
+import IconTextButton from "@/components/buttons/IconTextButton";
 
 export default function Page({ params }: { params: { hashId: string } }) {
   const { hashId } = params;
@@ -43,7 +43,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
       <div className="p-3 whitespace-pre-wrap">{api?.description ?? ""}</div>
       <div className="flex-1 grid grid-cols-[1fr_auto] overflow-hidden relative">
         <div className="absolute top-3 left-3">
-          <MenuButton
+          <IconTextButton
             onClick={() => setTab("chat")}
             className="w-32"
             Icon={MessageSquareCode}
@@ -52,7 +52,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
           />
         </div>
         <div className="absolute top-14 left-3">
-          <MenuButton
+          <IconTextButton
             onClick={() => setTab("document")}
             className="w-32"
             Icon={SquareCode}

@@ -35,7 +35,7 @@ import {
   Card,
   Input,
 } from "@/components/ui";
-import MenuButton from "@/components/buttons/MenuButton";
+import IconTextButton from "@/components/buttons/IconTextButton";
 
 export default function Page() {
   const { user, setUser } = useUserStore();
@@ -161,7 +161,7 @@ export default function Page() {
           ></Input>
         </div>
         <div>
-          <MenuButton
+          <IconTextButton
             responsive
             onClick={onClickSave}
             disabled={name.length > 0 && !nameValid}
@@ -183,7 +183,7 @@ export default function Page() {
         {apiKeys.map((k) => (
           <Fragment key={k.hashId}>
             <div className="text-neutral-400">{k.key}</div>
-            <MenuButton
+            <IconTextButton
               responsive
               onClick={() => onClickApiKeyTrash(k.hashId)}
               Icon={Trash2}
@@ -194,7 +194,7 @@ export default function Page() {
           </Fragment>
         ))}
         <div className="col-span-2">
-          <MenuButton
+          <IconTextButton
             responsive
             onClick={onClickGetApiKey}
             Icon={KeyRound}
@@ -205,7 +205,7 @@ export default function Page() {
         <div className="font-bold">Customer support</div>
         <div className="text-neutral-400 flex items-center gap-1 underline col-span-2">
           <a href="mailto:brian.b.cho@bookquilt.com">
-            <MenuButton
+            <IconTextButton
               responsive
               Icon={Mail}
               text="Send email"
@@ -218,7 +218,7 @@ export default function Page() {
           <UpdatePasswordDialog />
         </div>
         <div className="col-span-2"></div>
-        <MenuButton
+        <IconTextButton
           responsive
           Icon={CircleX}
           text="Delete account"
@@ -244,7 +244,7 @@ export default function Page() {
               <Card className="mt-3 p-3">
                 <div className="flex items-center gap-3">
                   <div className="text-sm">{newKey}</div>
-                  <MenuButton
+                  <IconTextButton
                     responsive
                     Icon={Copy}
                     text="Copy"
@@ -258,7 +258,7 @@ export default function Page() {
           <AlertDialogFooter>
             <div className="w-full flex justify-end mt-3">
               <div>
-                <MenuButton
+                <IconTextButton
                   responsive
                   Icon={Check}
                   text="Confirm"

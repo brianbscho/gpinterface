@@ -13,7 +13,7 @@ import {
 } from "../ui";
 import useUserStore from "@/store/user";
 import { ChevronDown } from "lucide-react";
-import MenuButton from "../buttons/MenuButton";
+import IconTextButton from "../buttons/IconTextButton";
 import useModelStore from "@/store/model";
 
 export default function SelectModel() {
@@ -74,7 +74,7 @@ export default function SelectModel() {
       onOpenChange={setOpen}
     >
       <SelectEmptyTrigger className="h-6 sm:h-8">
-        <MenuButton
+        <IconTextButton
           className="w-24 md:w-28"
           Icon={ChevronDown}
           text="Models"

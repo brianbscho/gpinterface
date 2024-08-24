@@ -53,7 +53,7 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   responsive?: boolean;
 };
 
-export default function MenuButton({
+export default function IconTextButton({
   className,
   Icon,
   text,

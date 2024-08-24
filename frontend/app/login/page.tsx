@@ -33,7 +33,7 @@ import {
 } from "lucide-react";
 import { Checkbox } from "@/components/ui";
 import { useSearchParams } from "next/navigation";
-import MenuButton from "@/components/buttons/MenuButton";
+import IconTextButton from "@/components/buttons/IconTextButton";
 
 function Login() {
   const searchParams = useSearchParams();
@@ -157,7 +157,7 @@ function Login() {
           </div>
           <div>
             <TabsContent value="login" className="mt-12">
-              <MenuButton
+              <IconTextButton
                 className="w-full"
                 disabled={loginDisabled}
                 type="submit"
@@ -207,7 +207,7 @@ function Login() {
                 </label>
               </div>
               <div className="mt-3"></div>
-              <MenuButton
+              <IconTextButton
                 className="w-full"
                 disabled={signupDisabled}
                 type="submit"

@@ -1,6 +1,6 @@
 "use client";
 
-import MenuButton from "@/components/buttons/MenuButton";
+import IconTextButton from "@/components/buttons/IconTextButton";
 import { useToast } from "@/components/ui";
 import useModelStore from "@/store/model";
 import callApi from "@/utils/callApi";
@@ -64,7 +64,7 @@ export default function EditApi({ useApi }: Props) {
   return (
     <>
       <div className="h-8">
-        <MenuButton
+        <IconTextButton
           className="w-28"
           Icon={!api?.isPublic ? Circle : CheckCircle2}
           text="Public"
@@ -72,7 +72,7 @@ export default function EditApi({ useApi }: Props) {
         />
       </div>
       <div>
-        <MenuButton
+        <IconTextButton
           className="w-28 mt-3"
           Icon={Save}
           text="Save"

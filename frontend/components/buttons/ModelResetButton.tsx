@@ -1,7 +1,7 @@
 "use client";
 
 import { RotateCcw } from "lucide-react";
-import MenuButton from "./MenuButton";
+import IconTextButton from "./IconTextButton";
 import useModelStore, { ConfigType } from "@/store/model";
 import { useCallback } from "react";
 
@@ -27,7 +27,7 @@ export default function ModelResetButton() {
   }, [model, setModelStore]);
 
   return (
-    <MenuButton
+    <IconTextButton
       className="w-24 md:w-28"
       Icon={RotateCcw}
       text="Reset"

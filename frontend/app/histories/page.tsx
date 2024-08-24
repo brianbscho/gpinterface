@@ -5,7 +5,7 @@ import callApi from "@/utils/callApi";
 import { HistoriesGetResponse } from "gpinterface-shared/type/history";
 import { Fragment, useCallback, useMemo, useState } from "react";
 import Link from "next/link";
-import MenuButton from "@/components/buttons/MenuButton";
+import IconTextButton from "@/components/buttons/IconTextButton";
 import { MessageSquareCode, ReceiptText, SquareCode } from "lucide-react";
 import { Badge } from "@/components/ui";
 import HistoryDialog from "@/components/dialogs/HistoryDialog";
@@ -64,7 +64,7 @@ export default function Page() {
               <Fragment key={h.hashId}>
                 <div className="pl-3 flex flex-wrap flex-col gap-3">
                   <HistoryDialog history={h}>
-                    <MenuButton
+                    <IconTextButton
                       className="w-28 md:w-36"
                       Icon={ReceiptText}
                       text="Show detail"
@@ -80,7 +80,7 @@ export default function Page() {
                         : "/#"
                     }
                   >
-                    <MenuButton
+                    <IconTextButton
                       Icon={h.apiHashId ? SquareCode : MessageSquareCode}
                       text={`Go to ${h.apiHashId ? "api" : "chat"}`}
                       className="w-28 md:w-36"

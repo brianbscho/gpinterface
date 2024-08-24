@@ -15,7 +15,7 @@ import {
 import useUserStore from "@/store/user";
 import LoginDialog from "../dialogs/LoginDialog";
 import { PlusCircle } from "lucide-react";
-import MenuButton from "./MenuButton";
+import IconTextButton from "./IconTextButton";
 
 export default function NewChat({
   setChats,
@@ -50,7 +50,7 @@ export default function NewChat({
 
   return (
     <>
-      <MenuButton
+      <IconTextButton
         Icon={PlusCircle}
         text="New chat"
         loading={loading}

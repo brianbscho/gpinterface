@@ -11,7 +11,7 @@ import List from "../List";
 import NewChatButton from "../buttons/NewChatButton";
 import { useRouter, useSearchParams } from "next/navigation";
 import useUserStore from "@/store/user";
-import MenuButton from "../buttons/MenuButton";
+import IconTextButton from "../buttons/IconTextButton";
 import { ChevronLeft } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "../ui";
 import Provider from "./Provider";
@@ -78,7 +78,7 @@ function _Chats() {
       <div className="md:hidden absolute top-3 right-3 z-40 md:hidden">
         <Sheet>
           <SheetTrigger>
-            <MenuButton
+            <IconTextButton
               Icon={ChevronLeft}
               text="Models"
               size="small"
