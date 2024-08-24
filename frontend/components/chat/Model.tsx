@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
-import Select from "../general/selects/Select";
+import Select from "../selects";
 import { Input } from "../ui";
 import { Slider } from "../ui/slider";
 import useModelStore from "@/store/model";
