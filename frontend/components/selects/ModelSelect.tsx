@@ -73,9 +73,9 @@ export default function ModelSelect() {
       open={open}
       onOpenChange={setOpen}
     >
-      <SelectEmptyTrigger className="h-6 sm:h-8">
+      <SelectEmptyTrigger className="w-full md:w-auto h-6 sm:h-8">
         <IconTextButton
-          className="w-24 md:w-28"
+          className="w-full md:w-28"
           Icon={ChevronDown}
           text="Models"
           onClick={() => setOpen(true)}

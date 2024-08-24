@@ -1,6 +1,5 @@
 "use client";
 
-import Provider from "@/components/chat/Provider";
 import Document from "./Document";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import callApi from "@/utils/callApi";
@@ -12,6 +11,9 @@ import { ChevronLeft, MessageSquareCode, SquareCode } from "lucide-react";
 import IconTextButton from "@/components/buttons/IconTextButton";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui";
 import Contents from "@/components/Contents";
+import ModelSelect from "@/components/selects/ModelSelect";
+import ModelResetButton from "@/components/buttons/ModelResetButton";
+import Model from "@/components/Model";
 
 export default function Page({ params }: { params: { hashId: string } }) {
   const { hashId } = params;
@@ -73,8 +75,19 @@ export default function Page({ params }: { params: { hashId: string } }) {
                 className="w-24"
               />
             </SheetTrigger>
-            <SheetContent className="px-0 py-12">
-              <Provider />
+            <SheetContent className="p-0">
+              <div className="w-full h-full overflow-y-auto relative">
+                <div className="w-full sticky top-0 px-3 py-3 z-30 grid grid-cols-2 gap-3 bg-background">
+                  <div className="w-full">
+                    <ModelSelect />
+                  </div>
+                  <ModelResetButton />
+                  {editable && <EditApi useApi={[api, setApi]} />}
+                </div>
+                <div className="h-full px-3">
+                  <Model className="pb-3" />
+                </div>
+              </div>
             </SheetContent>
           </Sheet>
         </div>
@@ -101,14 +114,16 @@ export default function Page({ params }: { params: { hashId: string } }) {
         >
           <Document api={api} />
         </div>
-        <div className="hidden md:flex flex-col w-full h-full relative overflow-hidden">
-          {editable && (
-            <div className="absolute top-[6.25rem] left-3 h-0">
-              <EditApi useApi={[api, setApi]} />
+        <div className="hidden md:block w-full h-full relative overflow-hidden">
+          <div className="h-full w-[32rem] overflow-hidden">
+            <div className="absolute top-0 left-3 z-30 flex flex-col gap-3">
+              <ModelSelect />
+              <ModelResetButton />
+              {editable && <EditApi useApi={[api, setApi]} />}
             </div>
-          )}
-          <div className="flex-1 overflow-hidden">
-            <Provider />
+            <div className="h-full overflow-y-auto pr-3">
+              <Model className="pb-3" />
+            </div>
           </div>
         </div>
       </div>

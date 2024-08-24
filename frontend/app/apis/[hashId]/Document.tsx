@@ -48,7 +48,7 @@ export default function Document({ api }: { api?: ApiGetResponse }) {
   if (!api) return null;
 
   return (
-    <div className="w-full h-full overflow-y-auto pl-[9.5rem] p-3 flex flex-col gap-7">
+    <div className="md:pl-[9.5rem] px-3 pb-3 w-full h-full overflow-y-auto flex flex-col gap-7">
       {!!model && (
         <>
           <div>

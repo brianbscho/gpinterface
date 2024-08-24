@@ -13,9 +13,11 @@ import useUserStore from "@/store/user";
 import IconTextButton from "../buttons/IconTextButton";
 import { ChevronLeft } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "../ui";
-import Provider from "./Provider";
 import Contents from "../Contents";
 import DeployButton from "../buttons/DeployButton";
+import ModelSelect from "../selects/ModelSelect";
+import ModelResetButton from "../buttons/ModelResetButton";
+import Model from "../Model";
 
 function _Chats() {
   const [chats, setChats] = useState<ChatsGetResponse["chats"]>();
@@ -86,8 +88,20 @@ function _Chats() {
               className="w-24"
             />
           </SheetTrigger>
-          <SheetContent className="px-0 py-3">
-            <Provider />
+          <SheetContent className="p-0">
+            <div className="w-full h-full overflow-y-auto relative">
+              <div className="w-full sticky top-0 p-3 z-30 flex gap-3 bg-background">
+                <div className="flex-1">
+                  <ModelSelect />
+                </div>
+                <div className="flex-1">
+                  <ModelResetButton />
+                </div>
+              </div>
+              <div className="h-full px-3">
+                <Model className="pb-3" />
+              </div>
+            </div>
           </SheetContent>
         </Sheet>
       </div>
@@ -102,7 +116,7 @@ function _Chats() {
           {chats?.map((c) => (
             <div
               key={c.hashId}
-              className="w-full border-b border-theme pb-0 md:pb-8 mb-12 last:border-none last:mb-0"
+              className="w-full border-b border-theme pb-3 md:pb-8 mb-12 last:border-none last:mb-0"
             >
               <div className="sticky top-0 md:top-14 pl-[7.5rem] md:pl-3 w-full md:h-0 py-3 md:py-0 bg-background z-30">
                 <DeployButton chatHashId={c.hashId} />

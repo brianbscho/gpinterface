@@ -63,20 +63,22 @@ export default function EditApi({ useApi }: Props) {
 
   return (
     <>
-      <div className="h-8">
+      <div>
         <IconTextButton
-          className="w-28"
+          className="w-full md:w-28"
           Icon={!api?.isPublic ? Circle : CheckCircle2}
           text="Public"
           onClick={() => onCheckedChange(!api?.isPublic)}
+          responsive
         />
       </div>
       <div>
         <IconTextButton
-          className="w-28 mt-3"
+          className="w-full md:w-28"
           Icon={Save}
           text="Save"
           onClick={onClickDefault}
+          responsive
         />
       </div>
     </>
