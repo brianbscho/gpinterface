@@ -53,6 +53,11 @@ export default function Model({ className }: { className?: string }) {
               placeholder={typeof c.default === "string" ? c.default : "null"}
               value={config[c.name] ?? c.default}
               onChange={(e) => onChange(c.name)(e.currentTarget.value)}
+              type={
+                c.type === "number" || c.type === "integer"
+                  ? "number"
+                  : undefined
+              }
             />
           )}
           {typeof c.min === "number" && typeof c.max === "number" && (
