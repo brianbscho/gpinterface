@@ -20,7 +20,7 @@ import {
   ContentsGetResponse,
 } from "gpinterface-shared/type/content";
 import { getApiConfig } from "@/utils/model";
-import ContentsDialog from "../api/ContentsDialog";
+import ContentsDialog from "../dialogs/ContentsDialog";
 import SmallHoverButton from "../general/buttons/SmallHoverButton";
 import useModelStore from "@/store/model";
 
