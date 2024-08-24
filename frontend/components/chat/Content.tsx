@@ -20,7 +20,7 @@ import { Static } from "@sinclair/typebox";
 import callApi from "@/utils/callApi";
 import { getApiConfig } from "@/utils/model";
 import SmallHoverButton from "../buttons/SmallHoverButton";
-import History from "../general/dialogs/History";
+import HistoryDialog from "../dialogs/HistoryDialog";
 import useModelStore from "@/store/model";
 
 type RefreshingHashId = string | undefined;
@@ -193,11 +193,11 @@ export default function Content({
         )}
         {!!content.history && (
           <SmallHoverButton message="Detail">
-            <History history={content.history}>
+            <HistoryDialog history={content.history}>
               <Button className="p-1 h-6 w-6" variant="default">
                 <ReceiptText />
               </Button>
-            </History>
+            </HistoryDialog>
           </SmallHoverButton>
         )}
         {isRefreshVisible && (

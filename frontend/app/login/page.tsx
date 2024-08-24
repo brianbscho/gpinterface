@@ -10,7 +10,7 @@ import {
 } from "react";
 import { validateEmail, validatePassword } from "gpinterface-shared/string";
 import callApi from "@/utils/callApi";
-import TermsAndConditions from "@/components/general/dialogs/TermsAndConditions";
+import TermsAndConditionsDialog from "@/components/dialogs/TermsAndConditionsDialog";
 import useUserStore from "@/store/user";
 import {
   UserCreateSchema,
@@ -220,7 +220,7 @@ function Login() {
           </div>
         </form>
       </Tabs>
-      <TermsAndConditions useOpen={[termsOpen, setTermsOpen]} />
+      <TermsAndConditionsDialog useOpen={[termsOpen, setTermsOpen]} />
     </div>
   );
 }

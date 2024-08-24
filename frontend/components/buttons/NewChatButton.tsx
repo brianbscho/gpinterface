@@ -13,7 +13,7 @@ import {
   ChatsGetResponse,
 } from "gpinterface-shared/type/chat";
 import useUserStore from "@/store/user";
-import Login from "../general/dialogs/Login";
+import LoginDialog from "../dialogs/LoginDialog";
 import { PlusCircle } from "lucide-react";
 import MenuButton from "./MenuButton";
 
@@ -58,7 +58,7 @@ export default function NewChat({
         className="w-24 md:w-32"
         responsive
       />
-      <Login
+      <LoginDialog
         title="Please login to create new chat :)"
         useOpen={[open, setOpen]}
       />

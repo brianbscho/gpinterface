@@ -4,7 +4,7 @@ import useUserStore from "@/store/user";
 import callApi from "@/utils/callApi";
 import { useRouter } from "next/navigation";
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
-import UpdatePassword from "@/components/general/dialogs/UpdatePassword";
+import UpdatePasswordDialog from "@/components/dialogs/UpdatePasswordDialog";
 import {
   UserGetMeResponse,
   UserUpdateSchema,
@@ -215,7 +215,7 @@ export default function Page() {
         </div>
         <div className="font-bold">Password</div>
         <div className="col-span-2">
-          <UpdatePassword />
+          <UpdatePasswordDialog />
         </div>
         <div className="col-span-2"></div>
         <MenuButton

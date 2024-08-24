@@ -8,7 +8,7 @@ import Link from "next/link";
 import MenuButton from "@/components/buttons/MenuButton";
 import { MessageSquareCode, ReceiptText, SquareCode } from "lucide-react";
 import { Badge } from "@/components/ui";
-import History from "@/components/general/dialogs/History";
+import HistoryDialog from "@/components/dialogs/HistoryDialog";
 
 type HistoriesType = HistoriesGetResponse["histories"];
 export default function Page() {
@@ -63,14 +63,14 @@ export default function Page() {
             {history.histories.map((h) => (
               <Fragment key={h.hashId}>
                 <div className="pl-3 flex flex-wrap flex-col gap-3">
-                  <History history={h}>
+                  <HistoryDialog history={h}>
                     <MenuButton
                       className="w-28 md:w-36"
                       Icon={ReceiptText}
                       text="Show detail"
                       responsive
                     />
-                  </History>
+                  </HistoryDialog>
                   <Link
                     href={
                       h.apiHashId
