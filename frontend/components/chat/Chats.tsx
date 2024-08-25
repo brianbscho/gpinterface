@@ -70,9 +70,10 @@ function _Chats() {
 
   return (
     <div className="w-full h-full overflow-hidden relative">
-      <div className="absolute top-3 left-3 z-40">
-        <NewChatButton setChats={setChats} />
-      </div>
+      <NewChatButton
+        className="absolute top-3 left-3 z-40"
+        setChats={setChats}
+      />
       <div className="md:hidden absolute top-3 right-3 z-40">
         <ModelSheetButton />
       </div>

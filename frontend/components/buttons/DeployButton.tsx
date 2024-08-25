@@ -66,53 +66,51 @@ export default function DeployButton({ chatHashId }: { chatHashId: string }) {
   );
 
   return (
-    <div>
-      <Dialog open={open} onOpenChange={loading ? undefined : setOpen}>
-        <DialogTrigger asChild>
+    <Dialog open={open} onOpenChange={loading ? undefined : setOpen}>
+      <DialogTrigger asChild>
+        <IconTextButton
+          Icon={StepForward}
+          text="Deploy"
+          className="w-24 md:w-32"
+          responsive
+        />
+      </DialogTrigger>
+      <DialogContent className="max-w-3xl w-11/12 gap-3 rounded-md">
+        <div className="flex items-center gap-3">
+          <Badge variant="tag" className="h-6">
+            Deploy API
+          </Badge>
+          <div className="flex-1"></div>
           <IconTextButton
-            Icon={StepForward}
-            text="Deploy"
-            className="w-24 md:w-32"
+            className="w-24"
+            Icon={!isPublic ? Circle : CheckCircle2}
+            text="Public"
+            onClick={() => setIsPublic((prev) => !prev)}
+            loading={loading}
             responsive
           />
-        </DialogTrigger>
-        <DialogContent className="max-w-3xl w-11/12 gap-3 rounded-md">
-          <div className="flex items-center gap-3">
-            <Badge variant="tag" className="h-6">
-              Deploy API
-            </Badge>
-            <div className="flex-1"></div>
-            <IconTextButton
-              className="w-24"
-              Icon={!isPublic ? Circle : CheckCircle2}
-              text="Public"
-              onClick={() => setIsPublic((prev) => !prev)}
-              loading={loading}
-              responsive
-            />
-          </div>
+        </div>
 
-          <form onSubmit={onSubmit}>
-            <div className="w-full flex gap-3">
-              <Input
-                autoFocus
-                className="flex-1"
-                placeholder="API description"
-                value={description}
-                onChange={(e) => setDescription(e.currentTarget.value)}
-                disabled={loading}
-              />
-              <Button
-                type="submit"
-                disabled={description === ""}
-                loading={loading}
-              >
-                <CornerDownLeft />
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
-    </div>
+        <form onSubmit={onSubmit}>
+          <div className="w-full flex gap-3">
+            <Input
+              autoFocus
+              className="flex-1"
+              placeholder="API description"
+              value={description}
+              onChange={(e) => setDescription(e.currentTarget.value)}
+              disabled={loading}
+            />
+            <Button
+              type="submit"
+              disabled={description === ""}
+              loading={loading}
+            >
+              <CornerDownLeft />
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }
