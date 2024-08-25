@@ -108,6 +108,26 @@ export function getTypedContent<T>(content: T & { config: Prisma.JsonValue }) {
   return { ...content, config: content.config as any };
 }
 
+export function getTypedContents<T, H>(
+  contents: (T & {
+    config: Prisma.JsonValue;
+    histories?: (H & {
+      response: Prisma.JsonValue;
+      config: Prisma.JsonValue;
+      messages: Prisma.JsonValue;
+      createdAt: Date;
+    })[];
+  })[]
+) {
+  return contents.map((c) => {
+    const { histories, ...rest } = c;
+    const content = getTypedContent(rest);
+    if (!histories || histories.length === 0) return content;
+
+    return { history: getTypedHistory(histories[0]), ...content };
+  });
+}
+
 export function getTypedHistory<T>(
   history:
     | T & {

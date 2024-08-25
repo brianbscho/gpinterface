@@ -3,10 +3,9 @@ import { Static } from "@sinclair/typebox";
 import { getDateString } from "../util/string";
 import { QueryParamSchema } from "gpinterface-shared/type";
 import {
-  getTypedContent,
   getIdByHashId,
-  getTypedHistory,
   ContentHistorySelect,
+  getTypedContents,
 } from "../util/prisma";
 import { ChatsGetResponse } from "gpinterface-shared/type/chat";
 
@@ -55,15 +54,9 @@ export default async function (fastify: FastifyInstance) {
               const { _count, createdAt, contents, ...chat } = c;
               return {
                 ...chat,
-                contents: contents.map((c) => {
-                  const { histories, ...rest } = c;
-                  const content = getTypedContent(rest);
-                  if (histories.length === 0) return content;
-
-                  return { history: getTypedHistory(histories[0]), ...content };
-                }),
-                isApi: _count.apis > 0,
+                contents: getTypedContents(contents),
                 createdAt: getDateString(createdAt),
+                isApi: _count.apis > 0,
               };
             }),
         };

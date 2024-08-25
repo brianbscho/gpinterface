@@ -2,11 +2,10 @@ import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
 import { QueryParamSchema } from "gpinterface-shared/type";
 import {
-  getTypedContent,
   createManyEntities,
   getIdByHashId,
-  getTypedHistory,
   ContentHistorySelect,
+  getTypedContents,
 } from "../util/prisma";
 import {
   ContentsCreateResponse,
@@ -54,17 +53,7 @@ export default async function (fastify: FastifyInstance) {
           take: 20,
         });
 
-        return {
-          contents: contents
-            .map((c) => {
-              const { histories, ...rest } = c;
-              const content = getTypedContent(rest);
-              if (histories.length === 0) return content;
-
-              return { history: getTypedHistory(histories[0]), ...content };
-            })
-            .reverse(),
-        };
+        return { contents: getTypedContents(contents).reverse() };
       } catch (ex) {
         console.error("path: /contents:chatHashId, method: get, error:", ex);
         throw ex;
@@ -133,15 +122,7 @@ export default async function (fastify: FastifyInstance) {
           }
         );
 
-        return {
-          contents: contents.map((c) => {
-            const { histories, ...rest } = c;
-            const content = getTypedContent(rest);
-            if (histories.length === 0) return content;
-
-            return { history: getTypedHistory(histories[0]), ...content };
-          }),
-        };
+        return { contents: getTypedContents(contents) };
       } catch (ex) {
         console.error("path: /chats, method: post, error:", ex);
         throw ex;

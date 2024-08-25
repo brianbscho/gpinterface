@@ -11,10 +11,9 @@ import {
 import { ParamSchema, QueryParamSchema } from "gpinterface-shared/type";
 import { createApi } from "../controllers/api";
 import {
-  getTypedContent,
   getIdByHashId,
-  getTypedHistory,
   ContentHistorySelect,
+  getTypedContents,
 } from "../util/prisma";
 import { getDateString } from "../util/string";
 
@@ -67,16 +66,7 @@ export default async function (fastify: FastifyInstance) {
         return {
           ...rest,
           config: config as any,
-          chat: {
-            ...chat,
-            contents: chat.contents.map((c) => {
-              const { histories, ...rest } = c;
-              const content = getTypedContent(rest);
-              if (histories.length === 0) return content;
-
-              return { history: getTypedHistory(histories[0]), ...content };
-            }),
-          },
+          chat: { ...chat, contents: getTypedContents(chat.contents) },
         };
       } catch (ex) {
         console.error("path: /api/:hashId, method: get, error:", ex);

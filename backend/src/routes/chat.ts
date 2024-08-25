@@ -1,9 +1,8 @@
 import { FastifyInstance } from "fastify";
 import {
-  getTypedContent,
   createEntity,
-  getTypedHistory,
   ContentHistorySelect,
+  getTypedContents,
 } from "../util/prisma";
 import {
   ChatCreateResponse,
@@ -56,15 +55,9 @@ export default async function (fastify: FastifyInstance) {
         const { _count, createdAt, contents, ...rest } = chat;
         return {
           ...rest,
-          contents: contents.map((c) => {
-            const { histories, ...rest } = c;
-            const content = getTypedContent(rest);
-            if (histories.length === 0) return content;
-
-            return { history: getTypedHistory(histories[0]), ...content };
-          }),
-          isApi: _count.apis > 0,
+          contents: getTypedContents(contents),
           createdAt: getDateString(createdAt),
+          isApi: _count.apis > 0,
         };
       } catch (ex) {
         console.error("path: /chat/:hashId, method: get, error:", ex);
