@@ -1,5 +1,9 @@
 import { FastifyInstance } from "fastify";
-import { createEntity } from "../../util/prisma";
+import {
+  ChatCompletionContentsQuery,
+  ChatCompletionModelSelect,
+  createEntity,
+} from "../../util/prisma";
 import { Static, Type } from "@sinclair/typebox";
 import { getTextResponse } from "../../util/text";
 import { Prisma } from "@prisma/client";
@@ -33,21 +37,11 @@ export default async function (fastify: FastifyInstance) {
           },
           select: {
             config: true,
-            model: {
-              select: {
-                name: true,
-                inputPricePerMillion: true,
-                outputPricePerMillion: true,
-                provider: { select: { name: true } },
-              },
-            },
+            model: { select: ChatCompletionModelSelect },
             chat: {
               select: {
                 systemMessage: true,
-                contents: {
-                  select: { role: true, content: true },
-                  orderBy: { id: "asc" },
-                },
+                contents: ChatCompletionContentsQuery,
               },
             },
           },
@@ -68,13 +62,12 @@ export default async function (fastify: FastifyInstance) {
           role: "user",
           content: message,
         });
-        const { content, response, inputTokens, outputTokens, price } =
-          await getTextResponse({
-            model,
-            systemMessage,
-            config: config as any,
-            messages,
-          });
+        const { content, ...response } = await getTextResponse({
+          model,
+          systemMessage,
+          config: config as any,
+          messages,
+        });
 
         await createEntity(fastify.prisma.history.create, {
           data: {
@@ -88,10 +81,7 @@ export default async function (fastify: FastifyInstance) {
               : []
             ).concat(messages),
             content,
-            response,
-            price,
-            inputTokens,
-            outputTokens,
+            ...response,
           },
         });
 

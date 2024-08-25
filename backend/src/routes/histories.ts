@@ -1,7 +1,11 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
 import { QueryParamSchema } from "gpinterface-shared/type";
-import { getIdByHashId, getTypedHistory } from "../util/prisma";
+import {
+  ContentHistorySelect,
+  getIdByHashId,
+  getTypedHistory,
+} from "../util/prisma";
 import { HistoriesGetResponse } from "gpinterface-shared/type/history";
 
 export default async function (fastify: FastifyInstance) {
@@ -25,16 +29,7 @@ export default async function (fastify: FastifyInstance) {
           },
           select: {
             hashId: true,
-            provider: true,
-            model: true,
-            config: true,
-            messages: true,
-            content: true,
-            response: true,
-            price: true,
-            inputTokens: true,
-            outputTokens: true,
-            createdAt: true,
+            ...ContentHistorySelect,
             chatHashId: true,
             apiHashId: true,
           },

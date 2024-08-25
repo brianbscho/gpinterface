@@ -126,3 +126,28 @@ export function getTypedHistory<T>(
     messages: history.messages as any,
   };
 }
+
+export const ChatCompletionModelSelect = {
+  name: true,
+  inputPricePerMillion: true,
+  outputPricePerMillion: true,
+  provider: { select: { name: true } },
+};
+
+export const ChatCompletionContentsQuery = {
+  select: { role: true, content: true },
+  orderBy: { id: "asc" as const },
+};
+
+export const ContentHistorySelect = {
+  provider: true,
+  model: true,
+  config: true,
+  messages: true,
+  content: true,
+  response: true,
+  price: true,
+  inputTokens: true,
+  outputTokens: true,
+  createdAt: true,
+};

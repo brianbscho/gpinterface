@@ -6,6 +6,7 @@ import {
   createManyEntities,
   getIdByHashId,
   getTypedHistory,
+  ContentHistorySelect,
 } from "../util/prisma";
 import {
   ContentsCreateResponse,
@@ -47,20 +48,7 @@ export default async function (fastify: FastifyInstance) {
             role: true,
             content: true,
             config: true,
-            histories: {
-              select: {
-                provider: true,
-                model: true,
-                config: true,
-                messages: true,
-                content: true,
-                response: true,
-                price: true,
-                inputTokens: true,
-                outputTokens: true,
-                createdAt: true,
-              },
-            },
+            histories: { select: ContentHistorySelect },
           },
           orderBy: { id: "desc" },
           take: 20,
@@ -140,20 +128,7 @@ export default async function (fastify: FastifyInstance) {
               role: true,
               content: true,
               config: true,
-              histories: {
-                select: {
-                  provider: true,
-                  model: true,
-                  config: true,
-                  messages: true,
-                  content: true,
-                  response: true,
-                  price: true,
-                  inputTokens: true,
-                  outputTokens: true,
-                  createdAt: true,
-                },
-              },
+              histories: { select: ContentHistorySelect },
             },
           }
         );

@@ -14,6 +14,7 @@ import {
   getTypedContent,
   getIdByHashId,
   getTypedHistory,
+  ContentHistorySelect,
 } from "../util/prisma";
 import { getDateString } from "../util/string";
 
@@ -48,20 +49,7 @@ export default async function (fastify: FastifyInstance) {
                     content: true,
                     config: true,
                     model: { select: { hashId: true, name: true } },
-                    histories: {
-                      select: {
-                        provider: true,
-                        model: true,
-                        config: true,
-                        messages: true,
-                        content: true,
-                        response: true,
-                        price: true,
-                        inputTokens: true,
-                        outputTokens: true,
-                        createdAt: true,
-                      },
-                    },
+                    histories: { select: ContentHistorySelect },
                   },
                 },
               },
