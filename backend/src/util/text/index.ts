@@ -26,10 +26,14 @@ export async function getTextResponse(body: {
 }) {
   const { model, systemMessage, messages, config } = body;
   const { provider, name, inputPricePerMillion, outputPricePerMillion } = model;
+  const typedMEssages = messages.map((m) => ({
+    role: m.role === "user" ? ("user" as const) : ("assistant" as const),
+    content: m.content,
+  }));
   const systemMergedMessages =
     systemMessage.length > 0
-      ? [{ role: "system", content: systemMessage }].concat(messages)
-      : messages;
+      ? [{ role: "system" as const, content: systemMessage }, ...typedMEssages]
+      : typedMEssages;
 
   const response = await (async function () {
     switch (provider.name) {
@@ -42,7 +46,7 @@ export async function getTextResponse(body: {
       case providers.Anthropic:
         return callClaude({
           model: name,
-          messages,
+          messages: typedMEssages,
           ...(systemMessage.length > 0 && { system: systemMessage }),
           max_tokens: 4096,
           ...config,
@@ -56,13 +60,13 @@ export async function getTextResponse(body: {
       case providers.Cohere:
         const message = messages[messages.length - 1].content;
         const chatHistory = messages.slice(0, -1).map((m) => ({
-          role: m.role !== "user" ? "CHATBOT" : "USER",
+          role: m.role !== "user" ? ("CHATBOT" as const) : ("USER" as const),
           message: m.content,
         }));
         return callCommand({
           model: name,
           message,
-          chat_history: chatHistory,
+          chatHistory,
           ...(systemMessage.length > 0 && { preamble: systemMessage }),
           ...config,
         });
@@ -75,7 +79,7 @@ export async function getTextResponse(body: {
       case providers.Meta:
         return callBedrock({
           modelId: name,
-          messages: messages.map(({ role, content }) => ({
+          messages: typedMEssages.map(({ role, content }) => ({
             role,
             content: [{ text: content }],
           })),

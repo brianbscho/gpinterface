@@ -1,6 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 
-export async function callClaude(body: any) {
+export async function callClaude(
+  body: Anthropic.Messages.MessageCreateParamsNonStreaming
+) {
   if (process.env.NODE_ENV === "development") {
     console.log("🚀 ~ body:", body);
   }

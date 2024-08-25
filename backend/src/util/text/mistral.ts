@@ -1,6 +1,7 @@
 import { Mistral } from "@mistralai/mistralai";
+import { ChatCompletionRequest } from "@mistralai/mistralai/models/components";
 
-export async function callMistral(body: any) {
+export async function callMistral(body: ChatCompletionRequest) {
   if (process.env.NODE_ENV === "development") {
     console.log("🚀 ~ body:", body);
   }

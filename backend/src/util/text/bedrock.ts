@@ -3,7 +3,12 @@ import {
   ConverseCommand,
 } from "@aws-sdk/client-bedrock-runtime";
 
-export async function callBedrock(body: any) {
+export async function callBedrock(body: {
+  modelId: string;
+  messages: { role: "user" | "assistant"; content: [{ text: string }] }[];
+  system?: [{ text: string }];
+  inferenceConfig: object;
+}) {
   if (process.env.NODE_ENV === "development") {
     console.log("🚀 ~ body:", body);
   }
