@@ -6,7 +6,6 @@ import callApi from "@/utils/callApi";
 import { ApiGetResponse } from "gpinterface-shared/type/api";
 import { cn } from "@/utils/css";
 import useUserStore from "@/store/user";
-import EditApi from "./EditApi";
 import { ChevronLeft, MessageSquareCode, SquareCode } from "lucide-react";
 import IconTextButton from "@/components/buttons/IconTextButton";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui";
@@ -14,6 +13,7 @@ import Contents from "@/components/Contents";
 import ModelSelect from "@/components/selects/ModelSelect";
 import ModelResetButton from "@/components/buttons/ModelResetButton";
 import Model from "@/components/Model";
+import EditApiButtons from "@/components/buttons/EditApiButtons";
 
 export default function Page({ params }: { params: { hashId: string } }) {
   const { hashId } = params;
@@ -119,7 +119,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
             <div className="absolute top-0 left-3 z-30 flex flex-col gap-3">
               <ModelSelect />
               <ModelResetButton />
-              {editable && <EditApi useApi={[api, setApi]} />}
+              {editable && <EditApiButtons useApi={[api, setApi]} />}
             </div>
             <div className="h-full overflow-y-auto pr-3">
               <Model className="pb-3" />
