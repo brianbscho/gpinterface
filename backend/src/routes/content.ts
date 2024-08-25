@@ -12,7 +12,7 @@ import {
   Content,
   ContentCreateSchema,
   ContentRefreshSchema,
-  ContentsGetResponse,
+  ContentsCreateResponse,
   ContentUpdateResponse,
   ContentUpdateSchema,
 } from "gpinterface-shared/type/content";
@@ -25,7 +25,7 @@ export default async function (fastify: FastifyInstance) {
   fastify.post<{ Body: Static<typeof ContentCreateSchema> }>(
     "/",
     { schema: { body: ContentCreateSchema } },
-    async (request, reply): Promise<ContentsGetResponse> => {
+    async (request, reply): Promise<ContentsCreateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
         const userHashId = user.hashId || null;

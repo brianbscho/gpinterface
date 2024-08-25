@@ -50,13 +50,6 @@ export const ContentRefreshSchema = Type.Object({
   config: Type.Any(),
 });
 
-export const ContentsGetSchema = Type.Object({
-  chatHashId: Type.String(),
-});
-export type ContentsGetResponse = {
-  contents: Content[];
-};
-
 export const ContentsCreateSchema = Type.Object({
   chatHashId: Type.String(),
 });

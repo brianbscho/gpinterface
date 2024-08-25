@@ -7,9 +7,9 @@ import {
   Dialog,
   DialogContent,
 } from "../ui";
-import { ContentsGetResponse } from "gpinterface-shared/type/content";
+import { ContentsCreateResponse } from "gpinterface-shared/type/content";
 
-type ContentType = ContentsGetResponse["contents"][0];
+type ContentType = ContentsCreateResponse["contents"][0];
 type Props = {
   useContents: [ContentType[], (contents: ContentType[]) => void];
 };

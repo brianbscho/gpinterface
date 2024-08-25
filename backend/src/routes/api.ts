@@ -1,21 +1,14 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
 import {
-  ApiChatsGetResponse,
   ApiCreateResponse,
   ApiCreateSchema,
   ApiGetResponse,
-  ApiSessionsGetResponse,
   ApiUpdateSchema,
 } from "gpinterface-shared/type/api";
-import { ParamSchema, QueryParamSchema } from "gpinterface-shared/type";
+import { ParamSchema } from "gpinterface-shared/type";
 import { createApi } from "../controllers/api";
-import {
-  getIdByHashId,
-  ContentHistorySelect,
-  getTypedContents,
-} from "../util/prisma";
-import { getDateString } from "../util/string";
+import { ContentHistorySelect, getTypedContents } from "../util/prisma";
 
 export default async function (fastify: FastifyInstance) {
   const { httpErrors } = fastify;
@@ -70,119 +63,6 @@ export default async function (fastify: FastifyInstance) {
         };
       } catch (ex) {
         console.error("path: /api/:hashId, method: get, error:", ex);
-        throw ex;
-      }
-    }
-  );
-  fastify.get<{
-    Params: Static<typeof ParamSchema>;
-    Querystring: Static<typeof QueryParamSchema>;
-  }>(
-    "/:hashId/chats",
-    { schema: { params: ParamSchema, querystring: QueryParamSchema } },
-    async (request, reply): Promise<ApiChatsGetResponse> => {
-      try {
-        const { user } = await fastify.getUser(request, reply, true);
-        if (!user.hashId) return { chats: [] };
-        const { hashId } = request.params;
-        const { lastHashId } = request.query;
-
-        const id = await getIdByHashId(
-          fastify.prisma.history.findFirst,
-          lastHashId
-        );
-
-        const histories = await fastify.prisma.history.findMany({
-          where: {
-            ...(id > 0 && { id: { lt: id } }),
-            apiHashId: hashId,
-            userHashId: user.hashId,
-          },
-          select: {
-            hashId: true,
-            messages: true,
-            content: true,
-            createdAt: true,
-          },
-          orderBy: { id: "desc" },
-          take: 20,
-        });
-
-        return {
-          chats: histories.map((h) => {
-            const messages = [];
-            if (
-              Array.isArray(h.messages) &&
-              h.messages.every(
-                (m: any) =>
-                  typeof m === "object" &&
-                  m !== null &&
-                  typeof m.role === "string" &&
-                  typeof m.content === "string"
-              )
-            ) {
-              const message = h.messages[h.messages.length - 1] as {
-                role: string;
-                content: string;
-              };
-              messages.push(message);
-            }
-            messages.push({ role: "assistant", content: h.content });
-            return {
-              hashId: h.hashId,
-              createdAt: getDateString(h.createdAt),
-              messages,
-            };
-          }),
-        };
-      } catch (ex) {
-        console.error("path: /api/:hashId/chats, method: get, error:", ex);
-        throw ex;
-      }
-    }
-  );
-  fastify.get<{
-    Params: Static<typeof ParamSchema>;
-    Querystring: Static<typeof QueryParamSchema>;
-  }>(
-    "/:hashId/sessions",
-    { schema: { params: ParamSchema, querystring: QueryParamSchema } },
-    async (request, reply): Promise<ApiSessionsGetResponse> => {
-      try {
-        const { user } = await fastify.getUser(request, reply, true);
-        if (!user.hashId) return { sessions: [] };
-
-        const { hashId } = request.params;
-        const { lastHashId } = request.query;
-
-        const id = await getIdByHashId(
-          fastify.prisma.session.findFirst,
-          lastHashId
-        );
-
-        const sessions = await fastify.prisma.session.findMany({
-          where: {
-            ...(id > 0 && { id: { lt: id } }),
-            api: { hashId, userHashId: user.hashId },
-            histories: { every: { userHashId: user.hashId } },
-          },
-          select: {
-            hashId: true,
-            messages: { select: { hashId: true, role: true, content: true } },
-            createdAt: true,
-          },
-          orderBy: { id: "desc" },
-          take: 20,
-        });
-
-        return {
-          sessions: sessions.map((s) => ({
-            ...s,
-            createdAt: getDateString(s.createdAt),
-          })),
-        };
-      } catch (ex) {
-        console.error("path: /api/:hashId/sessions, method: get, error:", ex);
         throw ex;
       }
     }

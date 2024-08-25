@@ -22,4 +22,3 @@ export const ChatUpdateSchema = Type.Object({
 });
 
 export type ChatCreateResponse = Chat;
-export type ChatDuplicateResponse = { hashId: string };
