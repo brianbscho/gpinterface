@@ -40,7 +40,7 @@ export default function Model({ className }: { className?: string }) {
           {`$${model.inputPricePerMillion} / 1M input tokens, $${model.outputPricePerMillion} / 1M output tokens`}
         </div>
       </div>
-      {model.configs.map((c) => (
+      {model.configs.map(({ config: c }) => (
         <div key={c.hashId} className="flex flex-col gap-1">
           <div className="flex gap-1 items-center">
             <div className="font-bold">{c.name}</div>

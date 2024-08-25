@@ -190,9 +190,9 @@ model Model {
   providerHashId String   @map("provider_hash_id")
   provider       Provider @relation(fields: [providerHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
-  configsOnModels ConfigOnModel[]
-  chatContents    ChatContent[]
-  apis            Api[]
+  configs      ConfigOnModel[]
+  chatContents ChatContent[]
+  apis         Api[]
 
   @@map("models")
 }

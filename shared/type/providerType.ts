@@ -21,7 +21,7 @@ export type Model = {
   isFree: boolean;
   isLoginRequired: boolean;
   isAvailable: boolean;
-} & { configs: (Config & { options: ConfigOption[] })[] };
+} & { configs: { config: Config & { options: ConfigOption[] } }[] };
 
 interface Provider {
   hashId: string;

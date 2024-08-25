@@ -23,7 +23,7 @@ export default async function (fastify: FastifyInstance) {
                     isFree: true,
                     isLoginRequired: true,
                     isAvailable: true,
-                    configsOnModels: {
+                    configs: {
                       select: {
                         config: {
                           select: {
@@ -51,21 +51,7 @@ export default async function (fastify: FastifyInstance) {
           },
         });
 
-        return {
-          providerTypes: providerTypes.map((providerType) => ({
-            ...providerType,
-            providers: providerType.providers.map((provider) => ({
-              ...provider,
-              models: provider.models.map((model) => {
-                const { configsOnModels, ...m } = model;
-                return {
-                  ...m,
-                  configs: model.configsOnModels.map((config) => config.config),
-                };
-              }),
-            })),
-          })),
-        };
+        return { providerTypes };
       } catch (ex) {
         console.error("path: /provider/types, method: get, error:", ex);
         throw ex;
