@@ -11,9 +11,9 @@ import IconTextButton from "@/components/buttons/IconTextButton";
 import Contents from "@/components/Contents";
 import ModelSelect from "@/components/selects/ModelSelect";
 import ModelResetButton from "@/components/buttons/ModelResetButton";
-import Model from "@/components/Model";
 import ModelSheetButton from "@/components/buttons/ModelSheetButton";
 import EditApiButtons from "@/components/buttons/EditApiButtons";
+import ModelPanel from "@/components/ModelPanel";
 
 export default function Page({ params }: { params: { hashId: string } }) {
   const { hashId } = params;
@@ -92,18 +92,11 @@ export default function Page({ params }: { params: { hashId: string } }) {
         >
           <Document api={api} />
         </div>
-        <div className="hidden md:block w-full h-full relative overflow-hidden">
-          <div className="h-full w-[32rem] overflow-hidden">
-            <div className="absolute top-0 left-3 z-30 flex flex-col gap-3">
-              <ModelSelect />
-              <ModelResetButton />
-              {editable && <EditApiButtons useApi={[api, setApi]} />}
-            </div>
-            <div className="h-full overflow-y-auto pr-3">
-              <Model className="pb-3" />
-            </div>
-          </div>
-        </div>
+        <ModelPanel topPadding={false}>
+          <ModelSelect />
+          <ModelResetButton />
+          {editable && <EditApiButtons useApi={[api, setApi]} />}
+        </ModelPanel>
       </div>
     </div>
   );
