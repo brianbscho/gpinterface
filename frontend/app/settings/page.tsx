@@ -19,7 +19,6 @@ import { Static } from "@sinclair/typebox";
 import {
   Check,
   CircleX,
-  Copy,
   KeyRound,
   Mail,
   Save,
@@ -36,6 +35,7 @@ import {
   Input,
 } from "@/components/ui";
 import IconTextButton from "@/components/buttons/IconTextButton";
+import CopyButton from "@/components/buttons/CopyButton";
 
 export default function Page() {
   const { user, setUser } = useUserStore();
@@ -241,17 +241,8 @@ export default function Page() {
                   not be able to see it again.
                 </span>
               </div>
-              <Card className="mt-3 p-3">
-                <div className="flex items-center gap-3">
-                  <div className="text-sm">{newKey}</div>
-                  <IconTextButton
-                    responsive
-                    Icon={Copy}
-                    text="Copy"
-                    onClick={() => navigator.clipboard.writeText(newKey)}
-                    className="w-24"
-                  />
-                </div>
+              <Card className="mt-3 p-0 pl-3">
+                <CopyButton text={newKey} />
               </Card>
             </div>
           </AlertDialogDescription>

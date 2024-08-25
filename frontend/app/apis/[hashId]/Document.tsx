@@ -1,9 +1,9 @@
-import { Badge, useToast } from "@/components/ui";
+import CopyButton from "@/components/buttons/CopyButton";
+import { Badge } from "@/components/ui";
 import useModelStore from "@/store/model";
 import { getApiConfig } from "@/utils/model";
 import { stringify } from "@/utils/string";
 import { ApiGetResponse } from "gpinterface-shared/type/api";
-import { Copy } from "lucide-react";
 import { ReactNode } from "react";
 
 type TitlePropt = { title: string; description: string };
@@ -25,23 +25,6 @@ function Element({ title, children }: ElementProp) {
     </div>
   );
 }
-
-const CopyUrl = ({ url }: { url: string }) => {
-  const { toast } = useToast();
-
-  return (
-    <div
-      className="flex items-center underline gap-1 cursor-pointer"
-      onClick={() => {
-        navigator.clipboard.writeText(url);
-        toast({ title: "Copied!", duration: 1000 });
-      }}
-    >
-      {url}
-      <Copy />
-    </div>
-  );
-};
 
 const Authentication = ({ userHashId }: { userHashId: string | null }) => {
   if (!userHashId) return null;
@@ -74,8 +57,8 @@ export default function Document({ api }: { api?: ApiGetResponse }) {
           : "Only the owner can access, test, edit, and call this API."}
       </Element>
       <Element title="Share">
-        <CopyUrl
-          url={`${process.env.NEXT_PUBLIC_HOSTNAME}/apis/${api.hashId}`}
+        <CopyButton
+          text={`${process.env.NEXT_PUBLIC_HOSTNAME}/apis/${api.hashId}`}
         />
       </Element>
       <Title
