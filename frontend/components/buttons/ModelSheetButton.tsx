@@ -31,16 +31,12 @@ export default function ModelSheetButton({
       </SheetTrigger>
       <SheetContent className="p-0">
         <div className="w-full h-full overflow-y-auto relative">
-          <div className="w-full sticky top-0 px-3 py-3 z-30 grid grid-cols-2 gap-3 bg-background">
-            <div className="w-full">
-              <ModelSelect />
-            </div>
+          <div className="w-full sticky top-0 p-3 z-30 grid grid-cols-2 gap-3 bg-background">
+            <ModelSelect />
             <ModelResetButton />
             {editable === true && useApi && <EditApiButtons useApi={useApi} />}
           </div>
-          <div className="h-full px-3">
-            <Model className="pb-3" />
-          </div>
+          <Model className="px-3 pb-3" />
         </div>
       </SheetContent>
     </Sheet>

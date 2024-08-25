@@ -68,6 +68,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
         <ModelSheetButton
           className="md:hidden absolute h-6 top-0 right-3"
           useApi={[api, setApi]}
+          editable={editable}
         />
         <div
           className={cn(
