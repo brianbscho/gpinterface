@@ -6,13 +6,13 @@ import callApi from "@/utils/callApi";
 import { ApiGetResponse } from "gpinterface-shared/type/api";
 import { cn } from "@/utils/css";
 import useUserStore from "@/store/user";
-import { ChevronLeft, MessageSquareCode, SquareCode } from "lucide-react";
+import { MessageSquareCode, SquareCode } from "lucide-react";
 import IconTextButton from "@/components/buttons/IconTextButton";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui";
 import Contents from "@/components/Contents";
 import ModelSelect from "@/components/selects/ModelSelect";
 import ModelResetButton from "@/components/buttons/ModelResetButton";
 import Model from "@/components/Model";
+import ModelSheetButton from "@/components/buttons/ModelSheetButton";
 import EditApiButtons from "@/components/buttons/EditApiButtons";
 
 export default function Page({ params }: { params: { hashId: string } }) {
@@ -65,32 +65,10 @@ export default function Page({ params }: { params: { hashId: string } }) {
             responsive
           />
         </div>
-        <div className="md:hidden absolute top-0 right-3">
-          <Sheet>
-            <SheetTrigger>
-              <IconTextButton
-                Icon={ChevronLeft}
-                text="Models"
-                size="small"
-                className="w-24"
-              />
-            </SheetTrigger>
-            <SheetContent className="p-0">
-              <div className="w-full h-full overflow-y-auto relative">
-                <div className="w-full sticky top-0 px-3 py-3 z-30 grid grid-cols-2 gap-3 bg-background">
-                  <div className="w-full">
-                    <ModelSelect />
-                  </div>
-                  <ModelResetButton />
-                  {editable && <EditApi useApi={[api, setApi]} />}
-                </div>
-                <div className="h-full px-3">
-                  <Model className="pb-3" />
-                </div>
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
+        <ModelSheetButton
+          className="md:hidden absolute h-6 top-0 right-3"
+          useApi={[api, setApi]}
+        />
         <div
           className={cn(
             "w-full h-full pt-9 md:pt-0 overflow-hidden",
