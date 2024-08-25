@@ -14,7 +14,7 @@ export default async function (fastify: FastifyInstance) {
       return {
         apiKeys: apiKeys.map((a) => ({
           hashId: a.hashId,
-          key: `${a.key.slice(0, 2)}........................${a.key.slice(-4)}`,
+          key: `${a.key.slice(0, 2)}${".".repeat(40)}${a.key.slice(-4)}`,
         })),
       };
     } catch (ex) {
