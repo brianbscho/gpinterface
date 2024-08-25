@@ -75,7 +75,7 @@ export default function DeployButton({ chatHashId }: { chatHashId: string }) {
           responsive
         />
       </DialogTrigger>
-      <DialogContent className="max-w-3xl w-11/12 gap-3 rounded-md">
+      <DialogContent className="max-w-3xl w-11/12 gap-3">
         <div className="flex items-center gap-3">
           <Badge variant="tag" className="h-6">
             Deploy API

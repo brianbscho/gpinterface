@@ -81,7 +81,7 @@ export default function UpdatePassword() {
         <IconTextButton
           responsive
           Icon={Key}
-          text="Password update"
+          text="P/W update"
           className="w-32 md:w-44"
         />
       </DialogTrigger>
