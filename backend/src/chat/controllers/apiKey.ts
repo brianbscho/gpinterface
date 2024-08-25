@@ -11,7 +11,7 @@ export async function getApiKey(
       throw fastify.httpErrors.unauthorized("Please provide your api key.");
     }
 
-    const key = authorization.split(" ")[1] ?? "";
+    const key = authorization.split(" ")[1];
     if (!key) {
       throw fastify.httpErrors.unauthorized("Please provide your api key.");
     }
@@ -24,9 +24,9 @@ export async function getApiKey(
       throw fastify.httpErrors.unauthorized("Please provide your api key.");
     }
 
-    return apiKey;
+    return apiKey.user.hashId;
   } catch (ex) {
-    if (optional) return { hashId: "", user: { hashId: "" } };
+    if (optional) return null;
     throw ex;
   }
 }

@@ -19,8 +19,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: ChatCompletionSchema } },
     async (request, reply): Promise<ChatCompletionResponse> => {
       try {
-        const { user } = await getApiKey(fastify, request, true);
-        const userHashId = user.hashId || null;
+        const userHashId = await getApiKey(fastify, request, true);
         const { apiHashId, message } = request.body;
 
         const api = await fastify.prisma.api.findFirst({
