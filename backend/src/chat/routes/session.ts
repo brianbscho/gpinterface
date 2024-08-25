@@ -3,7 +3,6 @@ import { createEntity } from "../../util/prisma";
 import { Static, Type } from "@sinclair/typebox";
 import { getApiKey } from "../controllers/apiKey";
 import { getTextResponse } from "../../util/text";
-import { MILLION } from "../../util/model";
 import { Prisma } from "@prisma/client";
 import { createSession } from "../../controllers/session";
 
@@ -113,24 +112,18 @@ export default async function (fastify: FastifyInstance) {
 
         const { messages, api } = session;
         const { chat, config, model } = api;
-        const { provider, name, inputPricePerMillion, outputPricePerMillion } =
-          model;
         const { systemMessage } = chat;
         messages.push({
           role: "user",
           content: message,
         });
-        let { content, response, inputTokens, outputTokens } =
+        const { content, response, inputTokens, outputTokens, price } =
           await getTextResponse({
-            provider: provider.name,
-            model: name,
+            model,
             systemMessage,
             config: config as any,
             messages,
           });
-        const price =
-          (inputPricePerMillion * inputTokens) / MILLION +
-          (outputPricePerMillion * outputTokens) / MILLION;
 
         await createEntity(fastify.prisma.history.create, {
           data: {

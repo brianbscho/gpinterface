@@ -4,7 +4,6 @@ import { Static, Type } from "@sinclair/typebox";
 import { getTextResponse } from "../../util/text";
 import { Prisma } from "@prisma/client";
 import { getApiKey } from "../controllers/apiKey";
-import { MILLION } from "../../util/model";
 
 const ChatCompletionSchema = Type.Object({
   apiHashId: Type.String(),
@@ -64,24 +63,18 @@ export default async function (fastify: FastifyInstance) {
         }
 
         const { chat, config, model } = api;
-        const { provider, name, inputPricePerMillion, outputPricePerMillion } =
-          model;
         const { systemMessage, contents } = chat;
         const messages = contents.concat({
           role: "user",
           content: message,
         });
-        let { content, response, inputTokens, outputTokens } =
+        const { content, response, inputTokens, outputTokens, price } =
           await getTextResponse({
-            provider: provider.name,
-            model: name,
+            model,
             systemMessage,
             config: config as any,
             messages,
           });
-        const price =
-          (inputPricePerMillion * inputTokens) / MILLION +
-          (outputPricePerMillion * outputTokens) / MILLION;
 
         await createEntity(fastify.prisma.history.create, {
           data: {

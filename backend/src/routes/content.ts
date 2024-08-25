@@ -16,7 +16,6 @@ import {
 import { Static } from "@sinclair/typebox";
 import { getTextResponse } from "../util/text";
 import { ParamSchema } from "gpinterface-shared/type";
-import { MILLION } from "../util/model";
 import { nanoid } from "nanoid";
 
 export default async function (fastify: FastifyInstance) {
@@ -70,17 +69,13 @@ export default async function (fastify: FastifyInstance) {
         const { systemMessage, contents } = chat;
         const messages = [...contents];
         messages.push({ role: "user", content: userContent });
-        let { content, response, inputTokens, outputTokens } =
+        let { content, response, inputTokens, outputTokens, price } =
           await getTextResponse({
-            provider: model.provider.name,
-            model: model.name,
+            model,
             systemMessage,
             config: body.config,
             messages,
           });
-        const price =
-          (model.inputPricePerMillion * inputTokens) / MILLION +
-          (model.outputPricePerMillion * outputTokens) / MILLION;
 
         const history = await createEntity(fastify.prisma.history.create, {
           data: {
@@ -249,17 +244,13 @@ export default async function (fastify: FastifyInstance) {
         }
 
         const { systemMessage } = chat;
-        let { content, response, inputTokens, outputTokens } =
+        let { content, response, inputTokens, outputTokens, price } =
           await getTextResponse({
-            provider: model.provider.name,
-            model: model.name,
+            model,
             systemMessage,
             config,
             messages,
           });
-        const price =
-          (model.inputPricePerMillion * inputTokens) / MILLION +
-          (model.outputPricePerMillion * outputTokens) / MILLION;
 
         await createEntity(fastify.prisma.history.create, {
           data: {
