@@ -1,6 +1,7 @@
 import OpenAI from "openai";
+import { ChatCompletionCreateParamsNonStreaming } from "openai/resources";
 
-export async function callOpenai(body: any) {
+export async function callOpenai(body: ChatCompletionCreateParamsNonStreaming) {
   if (process.env.NODE_ENV === "development") {
     console.log("🚀 ~ body:", body);
   }

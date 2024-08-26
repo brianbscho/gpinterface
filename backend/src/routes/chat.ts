@@ -1,15 +1,17 @@
 import { FastifyInstance } from "fastify";
-import { getTypedContent, createEntity, getTypedHistory } from "../util/prisma";
+import {
+  createEntity,
+  ContentHistorySelect,
+  getTypedContents,
+} from "../util/prisma";
 import {
   ChatCreateResponse,
-  ChatDuplicateResponse,
   ChatUpdateSchema,
   ChatUpdateResponse,
   ChatsGetResponse,
 } from "gpinterface-shared/type/chat";
 import { Static } from "@sinclair/typebox";
 import { ParamSchema } from "gpinterface-shared/type";
-import { createChat } from "../controllers/chat";
 import { getDateString } from "../util/string";
 
 export default async function (fastify: FastifyInstance) {
@@ -35,20 +37,7 @@ export default async function (fastify: FastifyInstance) {
                 role: true,
                 content: true,
                 config: true,
-                histories: {
-                  select: {
-                    provider: true,
-                    model: true,
-                    config: true,
-                    messages: true,
-                    content: true,
-                    response: true,
-                    price: true,
-                    inputTokens: true,
-                    outputTokens: true,
-                    createdAt: true,
-                  },
-                },
+                histories: { select: ContentHistorySelect },
               },
               orderBy: { id: "asc" },
             },
@@ -64,15 +53,9 @@ export default async function (fastify: FastifyInstance) {
         const { _count, createdAt, contents, ...rest } = chat;
         return {
           ...rest,
-          contents: contents.map((c) => {
-            const { histories, ...rest } = c;
-            const content = getTypedContent(rest);
-            if (histories.length === 0) return content;
-
-            return { history: getTypedHistory(histories[0]), ...content };
-          }),
-          isApi: _count.apis > 0,
+          contents: getTypedContents(contents),
           createdAt: getDateString(createdAt),
+          isApi: _count.apis > 0,
         };
       } catch (ex) {
         console.error("path: /chat/:hashId, method: get, error:", ex);
@@ -131,46 +114,6 @@ export default async function (fastify: FastifyInstance) {
         return { systemMessage };
       } catch (ex) {
         console.error("path: /chat/:hashId, method: put, error:", ex);
-        throw ex;
-      }
-    }
-  );
-  fastify.post<{ Params: Static<typeof ParamSchema> }>(
-    "/duplicate/:hashId",
-    { schema: { params: ParamSchema } },
-    async (request, reply): Promise<ChatDuplicateResponse> => {
-      try {
-        const { user } = await fastify.getUser(request, reply);
-        const { hashId } = request.params;
-
-        const oldChat = await fastify.prisma.chat.findFirst({
-          where: { hashId },
-          select: {
-            systemMessage: true,
-            contents: {
-              select: {
-                role: true,
-                content: true,
-                config: true,
-                modelHashId: true,
-              },
-              orderBy: { id: "asc" },
-            },
-          },
-        });
-        if (!oldChat) {
-          throw fastify.httpErrors.badRequest("chat is not available.");
-        }
-        const newChat = await createChat(fastify.prisma.chat, {
-          userHashId: user.hashId,
-          ...oldChat,
-        });
-        return newChat;
-      } catch (ex) {
-        console.error(
-          "path: /chat/duplicate/:hashId, method: post, error:",
-          ex
-        );
         throw ex;
       }
     }

@@ -10,14 +10,9 @@ import List from "../List";
 import NewChatButton from "../buttons/NewChatButton";
 import { useRouter, useSearchParams } from "next/navigation";
 import useUserStore from "@/store/user";
-import IconTextButton from "../buttons/IconTextButton";
-import { ChevronLeft } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "../ui";
 import Contents from "../Contents";
 import DeployButton from "../buttons/DeployButton";
-import ModelSelect from "../selects/ModelSelect";
-import ModelResetButton from "../buttons/ModelResetButton";
-import Model from "../Model";
+import ModelSheetButton from "../buttons/ModelSheetButton";
 
 function _Chats() {
   const [chats, setChats] = useState<ChatsGetResponse["chats"]>();
@@ -75,35 +70,12 @@ function _Chats() {
 
   return (
     <div className="w-full h-full overflow-hidden relative">
-      <div className="absolute top-3 left-3 z-40">
-        <NewChatButton setChats={setChats} />
-      </div>
+      <NewChatButton
+        className="absolute top-3 left-3 z-40"
+        setChats={setChats}
+      />
       <div className="md:hidden absolute top-3 right-3 z-40">
-        <Sheet>
-          <SheetTrigger>
-            <IconTextButton
-              Icon={ChevronLeft}
-              text="Models"
-              size="small"
-              className="w-24"
-            />
-          </SheetTrigger>
-          <SheetContent className="p-0">
-            <div className="w-full h-full overflow-y-auto relative">
-              <div className="w-full sticky top-0 p-3 z-30 flex gap-3 bg-background">
-                <div className="flex-1">
-                  <ModelSelect />
-                </div>
-                <div className="flex-1">
-                  <ModelResetButton />
-                </div>
-              </div>
-              <div className="h-full px-3">
-                <Model className="pb-3" />
-              </div>
-            </div>
-          </SheetContent>
-        </Sheet>
+        <ModelSheetButton />
       </div>
       <div className="h-full overflow-y-auto">
         <List

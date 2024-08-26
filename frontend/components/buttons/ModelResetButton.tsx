@@ -15,11 +15,11 @@ export default function ModelResetButton() {
     if (!model) return;
 
     const newConfig: ConfigType = {};
-    model.configs.forEach((c) => {
-      if (!c.default) {
-        newConfig[c.name] = "";
+    model.configs.forEach(({ config }) => {
+      if (!config.default) {
+        newConfig[config.name] = "";
       } else {
-        newConfig[c.name] = c.default;
+        newConfig[config.name] = config.default;
       }
     });
 

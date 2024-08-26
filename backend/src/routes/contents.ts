@@ -1,88 +1,18 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
-import { QueryParamSchema } from "gpinterface-shared/type";
 import {
-  getTypedContent,
   createManyEntities,
-  getIdByHashId,
-  getTypedHistory,
+  ContentHistorySelect,
+  getTypedContents,
 } from "../util/prisma";
 import {
   ContentsCreateResponse,
   ContentsCreateSchema,
   ContentsDeleteResponse,
   ContentsDeleteSchema,
-  ContentsGetResponse,
-  ContentsGetSchema,
 } from "gpinterface-shared/type/content";
 
 export default async function (fastify: FastifyInstance) {
-  fastify.get<{
-    Params: Static<typeof ContentsGetSchema>;
-    Querystring: Static<typeof QueryParamSchema>;
-  }>(
-    "/:chatHashId",
-    { schema: { params: ContentsGetSchema, querystring: QueryParamSchema } },
-    async (request, reply): Promise<ContentsGetResponse> => {
-      try {
-        const { user } = await fastify.getUser(request, reply, true);
-        const { lastHashId } = request.query;
-        const { chatHashId } = request.params;
-
-        const id = await getIdByHashId(
-          fastify.prisma.chatContent.findFirst,
-          lastHashId
-        );
-
-        const contents = await fastify.prisma.chatContent.findMany({
-          where: {
-            ...(id > 0 && { id: { lt: id } }),
-            chat: { hashId: chatHashId, userHashId: user.hashId || null },
-          },
-          select: {
-            hashId: true,
-            model: {
-              select: { hashId: true, name: true },
-            },
-            role: true,
-            content: true,
-            config: true,
-            histories: {
-              select: {
-                provider: true,
-                model: true,
-                config: true,
-                messages: true,
-                content: true,
-                response: true,
-                price: true,
-                inputTokens: true,
-                outputTokens: true,
-                createdAt: true,
-              },
-            },
-          },
-          orderBy: { id: "desc" },
-          take: 20,
-        });
-
-        return {
-          contents: contents
-            .map((c) => {
-              const { histories, ...rest } = c;
-              const content = getTypedContent(rest);
-              if (histories.length === 0) return content;
-
-              return { history: getTypedHistory(histories[0]), ...content };
-            })
-            .reverse(),
-        };
-      } catch (ex) {
-        console.error("path: /contents:chatHashId, method: get, error:", ex);
-        throw ex;
-      }
-    }
-  );
   fastify.delete<{ Body: Static<typeof ContentsDeleteSchema> }>(
     "/",
     { schema: { body: ContentsDeleteSchema } },
@@ -140,33 +70,12 @@ export default async function (fastify: FastifyInstance) {
               role: true,
               content: true,
               config: true,
-              histories: {
-                select: {
-                  provider: true,
-                  model: true,
-                  config: true,
-                  messages: true,
-                  content: true,
-                  response: true,
-                  price: true,
-                  inputTokens: true,
-                  outputTokens: true,
-                  createdAt: true,
-                },
-              },
+              histories: { select: ContentHistorySelect },
             },
           }
         );
 
-        return {
-          contents: contents.map((c) => {
-            const { histories, ...rest } = c;
-            const content = getTypedContent(rest);
-            if (histories.length === 0) return content;
-
-            return { history: getTypedHistory(histories[0]), ...content };
-          }),
-        };
+        return { contents: getTypedContents(contents) };
       } catch (ex) {
         console.error("path: /chats, method: post, error:", ex);
         throw ex;

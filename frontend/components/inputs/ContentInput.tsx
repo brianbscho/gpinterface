@@ -17,7 +17,6 @@ import {
   ContentCreateSchema,
   ContentsCreateResponse,
   ContentsCreateSchema,
-  ContentsGetResponse,
 } from "gpinterface-shared/type/content";
 import { getApiConfig } from "@/utils/model";
 import ContentsDialog from "../dialogs/ContentsDialog";
@@ -53,7 +52,7 @@ export default function ContentInput({
       setRefreshingHashId("");
       setLoading(true);
       const response = await callApi<
-        ContentsGetResponse,
+        ContentsCreateResponse,
         Static<typeof ContentCreateSchema>
       >({
         endpoint: `/content`,

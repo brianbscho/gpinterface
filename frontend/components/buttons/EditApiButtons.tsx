@@ -16,7 +16,7 @@ import { Dispatch, SetStateAction, useCallback } from "react";
 
 type ApiType = ApiGetResponse | undefined;
 type Props = { useApi: [api: ApiType, Dispatch<SetStateAction<ApiType>>] };
-export default function EditApi({ useApi }: Props) {
+export default function EditApiButtons({ useApi }: Props) {
   const [api, setApi] = useApi;
 
   const { toast } = useToast();
@@ -63,7 +63,7 @@ export default function EditApi({ useApi }: Props) {
 
   return (
     <>
-      <div>
+      <div className="flex-1 w-full">
         <IconTextButton
           className="w-full md:w-28"
           Icon={!api?.isPublic ? Circle : CheckCircle2}
@@ -72,7 +72,7 @@ export default function EditApi({ useApi }: Props) {
           responsive
         />
       </div>
-      <div>
+      <div className="flex-1 w-full">
         <IconTextButton
           className="w-full md:w-28"
           Icon={Save}

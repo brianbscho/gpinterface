@@ -1,6 +1,6 @@
-import { CohereClient } from "cohere-ai";
+import { CohereClient, Cohere } from "cohere-ai";
 
-export async function callCommand(body: any) {
+export async function callCommand(body: Cohere.ChatRequest) {
   if (process.env.NODE_ENV === "development") {
     console.log("🚀 ~ body:", body);
   }

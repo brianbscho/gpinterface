@@ -18,8 +18,10 @@ import { PlusCircle } from "lucide-react";
 import IconTextButton from "./IconTextButton";
 
 export default function NewChat({
+  className,
   setChats,
 }: {
+  className: string;
   setChats: Dispatch<SetStateAction<ChatsGetResponse["chats"] | undefined>>;
 }) {
   const [loading, setLoading] = useState(false);
@@ -49,7 +51,7 @@ export default function NewChat({
   );
 
   return (
-    <>
+    <div className={className}>
       <IconTextButton
         Icon={PlusCircle}
         text="New chat"
@@ -62,6 +64,6 @@ export default function NewChat({
         title="Please login to create new chat :)"
         useOpen={[open, setOpen]}
       />
-    </>
+    </div>
   );
 }

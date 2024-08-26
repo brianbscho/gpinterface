@@ -6,7 +6,7 @@ export const getApiConfig = (model: Model, config: ConfigType) => {
     [key: string]: boolean | string | string[] | object | number;
   } = {};
 
-  model.configs.forEach((c) => {
+  model.configs.forEach(({ config: c }) => {
     if (!config[c.name] || config[c.name] === c.default) return;
 
     if (c.type === "boolean") {

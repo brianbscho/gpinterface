@@ -4,26 +4,28 @@ import {
   createEntity,
   getIdByHashId,
   getTypedHistory,
+  ChatCompletionModelSelect,
+  ChatCompletionContentsQuery,
+  ContentHistorySelect,
 } from "../util/prisma";
 import {
   Content,
   ContentCreateSchema,
   ContentRefreshSchema,
-  ContentsGetResponse,
+  ContentsCreateResponse,
   ContentUpdateResponse,
   ContentUpdateSchema,
 } from "gpinterface-shared/type/content";
 import { Static } from "@sinclair/typebox";
 import { getTextResponse } from "../util/text";
 import { ParamSchema } from "gpinterface-shared/type";
-import { MILLION } from "../util/model";
 import { nanoid } from "nanoid";
 
 export default async function (fastify: FastifyInstance) {
   fastify.post<{ Body: Static<typeof ContentCreateSchema> }>(
     "/",
     { schema: { body: ContentCreateSchema } },
-    async (request, reply): Promise<ContentsGetResponse> => {
+    async (request, reply): Promise<ContentsCreateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
         const userHashId = user.hashId || null;
@@ -36,12 +38,7 @@ export default async function (fastify: FastifyInstance) {
             isFree: true,
             ...(!userHashId && { isLoginRequired: false }),
           },
-          select: {
-            name: true,
-            inputPricePerMillion: true,
-            outputPricePerMillion: true,
-            provider: { select: { name: true } },
-          },
+          select: ChatCompletionModelSelect,
         });
         if (!model) {
           throw fastify.httpErrors.badRequest("model is not available.");
@@ -51,10 +48,7 @@ export default async function (fastify: FastifyInstance) {
           where: { hashId: body.chatHashId },
           select: {
             systemMessage: true,
-            contents: {
-              select: { role: true, content: true },
-              orderBy: { id: "asc" },
-            },
+            contents: ChatCompletionContentsQuery,
             userHashId: true,
           },
         });
@@ -70,17 +64,12 @@ export default async function (fastify: FastifyInstance) {
         const { systemMessage, contents } = chat;
         const messages = [...contents];
         messages.push({ role: "user", content: userContent });
-        let { content, response, inputTokens, outputTokens } =
-          await getTextResponse({
-            provider: model.provider.name,
-            model: model.name,
-            systemMessage,
-            config: body.config,
-            messages,
-          });
-        const price =
-          (model.inputPricePerMillion * inputTokens) / MILLION +
-          (model.outputPricePerMillion * outputTokens) / MILLION;
+        let { content, ...response } = await getTextResponse({
+          model,
+          systemMessage,
+          config: body.config,
+          messages,
+        });
 
         const history = await createEntity(fastify.prisma.history.create, {
           data: {
@@ -95,23 +84,9 @@ export default async function (fastify: FastifyInstance) {
               : []
             ).concat(messages),
             content,
-            response,
-            price,
-            inputTokens,
-            outputTokens,
+            ...response,
           },
-          select: {
-            provider: true,
-            model: true,
-            config: true,
-            messages: true,
-            content: true,
-            response: true,
-            price: true,
-            inputTokens: true,
-            outputTokens: true,
-            createdAt: true,
-          },
+          select: ContentHistorySelect,
         });
 
         const newContents = [
@@ -212,12 +187,7 @@ export default async function (fastify: FastifyInstance) {
             isFree: true,
             ...(!userHashId && { isLoginRequired: false }),
           },
-          select: {
-            name: true,
-            inputPricePerMillion: true,
-            outputPricePerMillion: true,
-            provider: { select: { name: true } },
-          },
+          select: ChatCompletionModelSelect,
         });
         if (!model) {
           throw fastify.httpErrors.badRequest("model is not available.");
@@ -239,8 +209,7 @@ export default async function (fastify: FastifyInstance) {
         }
         const messages = await fastify.prisma.chatContent.findMany({
           where: { chatHashId, id: { lt: id } },
-          select: { role: true, content: true },
-          orderBy: { id: "asc" },
+          ...ChatCompletionContentsQuery,
         });
         if (messages.some((m) => m.content === "")) {
           throw fastify.httpErrors.badRequest(
@@ -249,17 +218,12 @@ export default async function (fastify: FastifyInstance) {
         }
 
         const { systemMessage } = chat;
-        let { content, response, inputTokens, outputTokens } =
-          await getTextResponse({
-            provider: model.provider.name,
-            model: model.name,
-            systemMessage,
-            config,
-            messages,
-          });
-        const price =
-          (model.inputPricePerMillion * inputTokens) / MILLION +
-          (model.outputPricePerMillion * outputTokens) / MILLION;
+        let { content, ...response } = await getTextResponse({
+          model,
+          systemMessage,
+          config,
+          messages,
+        });
 
         await createEntity(fastify.prisma.history.create, {
           data: {
@@ -273,10 +237,7 @@ export default async function (fastify: FastifyInstance) {
               : []
             ).concat(messages),
             content,
-            response,
-            price,
-            inputTokens,
-            outputTokens,
+            ...response,
           },
         });
         const newContent = await fastify.prisma.chatContent.update({

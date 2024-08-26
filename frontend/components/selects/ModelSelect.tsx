@@ -73,7 +73,7 @@ export default function ModelSelect() {
       open={open}
       onOpenChange={setOpen}
     >
-      <SelectEmptyTrigger className="w-full md:w-auto h-6 sm:h-8">
+      <SelectEmptyTrigger className="w-full md:w-auto h-6 sm:h-8" asChild>
         <IconTextButton
           className="w-full md:w-28"
           Icon={ChevronDown}

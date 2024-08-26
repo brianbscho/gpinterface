@@ -1,9 +1,12 @@
 import { FastifyInstance } from "fastify";
-import { createEntity } from "../../util/prisma";
+import {
+  ChatCompletionContentsQuery,
+  ChatCompletionModelSelect,
+  createEntity,
+} from "../../util/prisma";
 import { Static, Type } from "@sinclair/typebox";
 import { getApiKey } from "../controllers/apiKey";
 import { getTextResponse } from "../../util/text";
-import { MILLION } from "../../util/model";
 import { Prisma } from "@prisma/client";
 import { createSession } from "../../controllers/session";
 
@@ -31,18 +34,16 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: SessionCreateSchema } },
     async (request, reply): Promise<SessionCreateResponse> => {
       try {
-        const { user } = await getApiKey(fastify, request, true);
+        const userHashId = await getApiKey(fastify, request, true);
         const { apiHashId } = request.body;
         const api = await fastify.prisma.api.findFirst({
           where: {
             hashId: apiHashId,
-            OR: [{ userHashId: user.hashId || null }, { isPublic: true }],
+            OR: [{ userHashId }, { isPublic: true }],
           },
           select: {
             hashId: true,
-            chat: {
-              select: { contents: { select: { role: true, content: true } } },
-            },
+            chat: { select: { contents: ChatCompletionContentsQuery } },
           },
         });
         if (!api) {
@@ -65,8 +66,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: SessionCompletionSchema } },
     async (request, reply): Promise<SessionCompletionResponse> => {
       try {
-        const { user } = await getApiKey(fastify, request, true);
-        const userHashId = user.hashId || null;
+        const userHashId = await getApiKey(fastify, request, true);
         const { sessionHashId, message } = request.body;
 
         const session = await fastify.prisma.session.findFirst({
@@ -86,25 +86,11 @@ export default async function (fastify: FastifyInstance) {
               select: {
                 hashId: true,
                 config: true,
-                model: {
-                  select: {
-                    name: true,
-                    inputPricePerMillion: true,
-                    outputPricePerMillion: true,
-                    provider: { select: { name: true } },
-                  },
-                },
-                chat: {
-                  select: {
-                    systemMessage: true,
-                  },
-                },
+                model: { select: ChatCompletionModelSelect },
+                chat: { select: { systemMessage: true } },
               },
             },
-            messages: {
-              select: { role: true, content: true },
-              orderBy: { id: "asc" },
-            },
+            messages: ChatCompletionContentsQuery,
           },
         });
 
@@ -114,24 +100,17 @@ export default async function (fastify: FastifyInstance) {
 
         const { messages, api } = session;
         const { chat, config, model } = api;
-        const { provider, name, inputPricePerMillion, outputPricePerMillion } =
-          model;
         const { systemMessage } = chat;
         messages.push({
           role: "user",
           content: message,
         });
-        let { content, response, inputTokens, outputTokens } =
-          await getTextResponse({
-            provider: provider.name,
-            model: name,
-            systemMessage,
-            config: config as any,
-            messages,
-          });
-        const price =
-          (inputPricePerMillion * inputTokens) / MILLION +
-          (outputPricePerMillion * outputTokens) / MILLION;
+        const { content, ...response } = await getTextResponse({
+          model,
+          systemMessage,
+          config: config as any,
+          messages,
+        });
 
         await createEntity(fastify.prisma.history.create, {
           data: {
@@ -145,10 +124,7 @@ export default async function (fastify: FastifyInstance) {
               : []
             ).concat(messages),
             content,
-            response,
-            price,
-            inputTokens,
-            outputTokens,
+            ...response,
           },
         });
 
@@ -164,22 +140,15 @@ export default async function (fastify: FastifyInstance) {
     { schema: { params: SessionMessagesGetSchema } },
     async (request, reply): Promise<SessionMessagesGetResponse> => {
       try {
-        const { user } = await getApiKey(fastify, request, true);
+        const userHashId = await getApiKey(fastify, request, true);
         const { sessionHashId } = request.params;
 
         const session = await fastify.prisma.session.findFirst({
           where: {
             hashId: sessionHashId,
-            api: {
-              OR: [{ userHashId: user.hashId || null }, { isPublic: true }],
-            },
+            api: { OR: [{ userHashId }, { isPublic: true }] },
           },
-          select: {
-            messages: {
-              select: { role: true, content: true },
-              orderBy: { id: "asc" },
-            },
-          },
+          select: { messages: ChatCompletionContentsQuery },
         });
 
         if (!session) {

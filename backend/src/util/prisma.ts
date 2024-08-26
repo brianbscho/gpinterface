@@ -108,6 +108,26 @@ export function getTypedContent<T>(content: T & { config: Prisma.JsonValue }) {
   return { ...content, config: content.config as any };
 }
 
+export function getTypedContents<T, H>(
+  contents: (T & {
+    config: Prisma.JsonValue;
+    histories?: (H & {
+      response: Prisma.JsonValue;
+      config: Prisma.JsonValue;
+      messages: Prisma.JsonValue;
+      createdAt: Date;
+    })[];
+  })[]
+) {
+  return contents.map((c) => {
+    const { histories, ...rest } = c;
+    const content = getTypedContent(rest);
+    if (!histories || histories.length === 0) return content;
+
+    return { history: getTypedHistory(histories[0]), ...content };
+  });
+}
+
 export function getTypedHistory<T>(
   history:
     | T & {
@@ -126,3 +146,28 @@ export function getTypedHistory<T>(
     messages: history.messages as any,
   };
 }
+
+export const ChatCompletionModelSelect = {
+  name: true,
+  inputPricePerMillion: true,
+  outputPricePerMillion: true,
+  provider: { select: { name: true } },
+};
+
+export const ChatCompletionContentsQuery = {
+  select: { role: true, content: true },
+  orderBy: { id: "asc" as const },
+};
+
+export const ContentHistorySelect = {
+  provider: true,
+  model: true,
+  config: true,
+  messages: true,
+  content: true,
+  response: true,
+  price: true,
+  inputTokens: true,
+  outputTokens: true,
+  createdAt: true,
+};
