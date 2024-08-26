@@ -7,7 +7,7 @@ import {
   GpiUpdateSchema,
 } from "gpinterface-shared/type/gpi";
 import { ParamSchema } from "gpinterface-shared/type";
-import { createGpi } from "../controllers/api";
+import { createGpi } from "../controllers/gpi";
 import { ContentHistorySelect, getTypedContents } from "../util/prisma";
 
 export default async function (fastify: FastifyInstance) {
