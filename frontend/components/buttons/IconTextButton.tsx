@@ -92,7 +92,9 @@ export default function IconTextButton({
         )}
       >
         {loading === true ? (
-          <Loader2 className="animate-spin" />
+          <Loader2
+            className={`animate-spin ${sizeClass.iconHeight} ${sizeClass.iconWidth}`}
+          />
         ) : (
           <Icon className={`${sizeClass.iconHeight} ${sizeClass.iconWidth}`} />
         )}
