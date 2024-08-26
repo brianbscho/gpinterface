@@ -11,7 +11,7 @@ import { Prisma } from "@prisma/client";
 import { createSession } from "../../controllers/session";
 
 const SessionCreateSchema = Type.Object({
-  apiHashId: Type.String(),
+  gpiHashId: Type.String(),
 });
 type SessionCreateResponse = { hashId: string };
 
@@ -35,10 +35,10 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<SessionCreateResponse> => {
       try {
         const userHashId = await getApiKey(fastify, request, true);
-        const { apiHashId } = request.body;
-        const api = await fastify.prisma.api.findFirst({
+        const { gpiHashId } = request.body;
+        const gpi = await fastify.prisma.gpi.findFirst({
           where: {
-            hashId: apiHashId,
+            hashId: gpiHashId,
             OR: [{ userHashId }, { isPublic: true }],
           },
           select: {
@@ -46,13 +46,13 @@ export default async function (fastify: FastifyInstance) {
             chat: { select: { contents: ChatCompletionContentsQuery } },
           },
         });
-        if (!api) {
-          throw fastify.httpErrors.badRequest("no api");
+        if (!gpi) {
+          throw fastify.httpErrors.badRequest("no gpi");
         }
 
         const session = await createSession(fastify.prisma.session, {
-          apiHashId,
-          messages: api.chat.contents,
+          gpiHashId,
+          messages: gpi.chat.contents,
         });
         return session;
       } catch (ex) {
@@ -72,7 +72,7 @@ export default async function (fastify: FastifyInstance) {
         const session = await fastify.prisma.session.findFirst({
           where: {
             hashId: sessionHashId,
-            api: {
+            gpi: {
               OR: [{ userHashId }, { isPublic: true }],
               model: {
                 isAvailable: true,
@@ -82,7 +82,7 @@ export default async function (fastify: FastifyInstance) {
             },
           },
           select: {
-            api: {
+            gpi: {
               select: {
                 hashId: true,
                 config: true,
@@ -98,8 +98,8 @@ export default async function (fastify: FastifyInstance) {
           throw fastify.httpErrors.badRequest("session is not available.");
         }
 
-        const { messages, api } = session;
-        const { chat, config, model } = api;
+        const { messages, gpi } = session;
+        const { chat, config, model } = gpi;
         const { systemMessage } = chat;
         messages.push({
           role: "user",
@@ -146,7 +146,7 @@ export default async function (fastify: FastifyInstance) {
         const session = await fastify.prisma.session.findFirst({
           where: {
             hashId: sessionHashId,
-            api: { OR: [{ userHashId }, { isPublic: true }] },
+            gpi: { OR: [{ userHashId }, { isPublic: true }] },
           },
           select: { messages: ChatCompletionContentsQuery },
         });

@@ -29,7 +29,7 @@ type ApiResponse = {
   createdAt: string;
 };
 export type ApisGetResponse = {
-  apis: ApiResponse[];
+  gpis: ApiResponse[];
 };
 
 export const ApiUpdateSchema = Type.Object({

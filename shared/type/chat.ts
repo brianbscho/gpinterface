@@ -5,7 +5,7 @@ interface Chat {
   hashId: string;
   userHashId: string | null;
 
-  isApi: boolean;
+  isGpi: boolean;
 
   systemMessage: string;
   contents: Content[];

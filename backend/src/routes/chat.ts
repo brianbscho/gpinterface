@@ -28,7 +28,7 @@ export default async function (fastify: FastifyInstance) {
           select: {
             hashId: true,
             userHashId: true,
-            _count: { select: { apis: true } },
+            _count: { select: { gpis: true } },
             systemMessage: true,
             contents: {
               select: {
@@ -55,7 +55,7 @@ export default async function (fastify: FastifyInstance) {
           ...rest,
           contents: getTypedContents(contents),
           createdAt: getDateString(createdAt),
-          isApi: _count.apis > 0,
+          isGpi: _count.gpis > 0,
         };
       } catch (ex) {
         console.error("path: /chat/:hashId, method: get, error:", ex);
@@ -76,7 +76,7 @@ export default async function (fastify: FastifyInstance) {
       return {
         hashId: chat.hashId,
         userHashId: user.hashId,
-        isApi: false,
+        isGpi: false,
         systemMessage: "",
         contents: [],
         createdAt: getDateString(chat.createdAt),

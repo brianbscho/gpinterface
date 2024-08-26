@@ -12,9 +12,9 @@ interface History {
   outputTokens: number;
   createdAt: string;
 
-  apiHashId?: string | null;
+  gpiHashId?: string | null;
   chatHashId?: string | null;
-  isApi: boolean;
+  isGpi: boolean;
 }
 
 export type HistoriesGetResponse = { histories: History[] };

@@ -4,7 +4,7 @@ import { getDataWithHashId } from "../util/prisma";
 export async function createSession(
   sessionDelegate: Prisma.SessionDelegate,
   session: {
-    apiHashId: string;
+    gpiHashId: string;
     messages: {
       role: string;
       content: string;
