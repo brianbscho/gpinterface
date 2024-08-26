@@ -42,7 +42,6 @@ export default async function (fastify: FastifyInstance) {
           histories: histories.map((h) => ({
             ...getTypedHistory(h),
             isApi: typeof h.apiHashId === "string",
-            isPost: false,
           })),
         };
       } catch (ex) {

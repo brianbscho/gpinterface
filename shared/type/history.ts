@@ -15,7 +15,6 @@ interface History {
   apiHashId?: string | null;
   chatHashId?: string | null;
   isApi: boolean;
-  isPost: boolean;
 }
 
 export type HistoriesGetResponse = { histories: History[] };
