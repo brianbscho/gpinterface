@@ -28,7 +28,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
     callApiApi();
   }, [hashId]);
 
-  const [tab, setTab] = useState("chat");
+  const [tab, setTab] = useState("api");
   const getTabContentClassName = useCallback(
     (_tab: string) => {
       const className = "w-full h-full pt-9 md:pt-0 overflow-hidden";
@@ -50,11 +50,11 @@ export default function Page({ params }: { params: { hashId: string } }) {
       <div className="flex-1 grid grid-cols-[1fr_auto] overflow-hidden relative">
         <div className="absolute top-0 left-3 flex md:flex-col gap-3">
           <IconTextButton
-            onClick={() => setTab("chat")}
+            onClick={() => setTab("api")}
             className="w-24 md:w-32"
             Icon={MessageSquareCode}
-            text="Chat"
-            selected={tab === "chat"}
+            text="API"
+            selected={tab === "api"}
             responsive
           />
           <IconTextButton
@@ -71,7 +71,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
           useApi={[api, setApi]}
           editable={editable}
         />
-        <div className={getTabContentClassName("chat")}>
+        <div className={getTabContentClassName("api")}>
           {!!api && (
             <Contents
               chat={api.chat}
