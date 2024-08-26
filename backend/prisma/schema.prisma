@@ -243,6 +243,7 @@ model History {
   content      String
   response     Json
   price        Float
+  paid         Float  @default(0)
   inputTokens  Int    @map("input_tokens")
   outputTokens Int    @map("output_tokens")
 
