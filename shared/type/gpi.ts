@@ -28,7 +28,7 @@ type GpiResponse = {
   messages: { hashId: string; role: string; content: string }[];
   createdAt: string;
 };
-export type GpisGetResponse = {
+export type GpisUserGetResponse = {
   gpis: GpiResponse[];
 };
 
