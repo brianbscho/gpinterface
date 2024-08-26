@@ -9,7 +9,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { CircleX, Cpu, Loader, ReceiptText, RefreshCcw } from "lucide-react";
+import { CircleX, Cpu, Loader, FileClock, RefreshCcw } from "lucide-react";
 import {
   Content as ContentType,
   ContentRefreshSchema,
@@ -204,7 +204,7 @@ function Content({
           <SmallHoverButton message="Detail">
             <HistoryDialog history={content.history}>
               <Button className="p-1 h-6 w-6" variant="default">
-                <ReceiptText />
+                <FileClock />
               </Button>
             </HistoryDialog>
           </SmallHoverButton>
