@@ -3,7 +3,7 @@
 import Document from "./Document";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import callApi from "@/utils/callApi";
-import { ApiGetResponse } from "gpinterface-shared/type/api";
+import { ApiGetResponse } from "gpinterface-shared/type/gpi";
 import useUserStore from "@/store/user";
 import { File, FilePen, MessageSquareCode, SquareCode } from "lucide-react";
 import IconTextButton from "@/components/buttons/IconTextButton";

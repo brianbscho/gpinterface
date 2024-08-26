@@ -5,7 +5,7 @@ import {
   ApiCreateSchema,
   ApiGetResponse,
   ApiUpdateSchema,
-} from "gpinterface-shared/type/api";
+} from "gpinterface-shared/type/gpi";
 import { ParamSchema } from "gpinterface-shared/type";
 import { createGpi } from "../controllers/api";
 import { ContentHistorySelect, getTypedContents } from "../util/prisma";

@@ -3,7 +3,7 @@
 import callApi from "@/utils/callApi";
 import { useCallback, useState, Fragment } from "react";
 import List from "@/components/List";
-import { ApisGetResponse } from "gpinterface-shared/type/api";
+import { ApisGetResponse } from "gpinterface-shared/type/gpi";
 import { Badge } from "@/components/ui";
 import Link from "next/link";
 

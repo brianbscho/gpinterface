@@ -20,7 +20,7 @@ import { Static } from "@sinclair/typebox";
 import {
   ApiCreateResponse,
   ApiCreateSchema,
-} from "gpinterface-shared/type/api";
+} from "gpinterface-shared/type/gpi";
 import { useRouter } from "next/navigation";
 import { getApiConfig } from "@/utils/model";
 import IconTextButton from "./IconTextButton";

@@ -3,7 +3,7 @@ import { Static } from "@sinclair/typebox";
 import { getDateString } from "../util/string";
 import { QueryParamSchema } from "gpinterface-shared/type";
 import { getIdByHashId } from "../util/prisma";
-import { ApisGetResponse } from "gpinterface-shared/type/api";
+import { ApisGetResponse } from "gpinterface-shared/type/gpi";
 
 export default async function (fastify: FastifyInstance) {
   fastify.get<{

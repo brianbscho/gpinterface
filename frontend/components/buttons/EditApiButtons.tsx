@@ -10,7 +10,7 @@ import {
   ApiCreateResponse,
   ApiGetResponse,
   ApiUpdateSchema,
-} from "gpinterface-shared/type/api";
+} from "gpinterface-shared/type/gpi";
 import { CheckCircle2, Circle, Save } from "lucide-react";
 import { Dispatch, SetStateAction, useCallback } from "react";
 

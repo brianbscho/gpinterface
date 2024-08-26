@@ -5,7 +5,7 @@ import ModelSelect from "../selects/ModelSelect";
 import ModelResetButton from "./ModelResetButton";
 import Model from "../Model";
 import EditApiButtons from "./EditApiButtons";
-import { ApiGetResponse } from "gpinterface-shared/type/api";
+import { ApiGetResponse } from "gpinterface-shared/type/gpi";
 import { Dispatch, SetStateAction } from "react";
 
 type ApiType = ApiGetResponse | undefined;
