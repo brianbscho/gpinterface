@@ -7,8 +7,11 @@ import {
   GpiUpdateSchema,
 } from "gpinterface-shared/type/gpi";
 import { ParamSchema } from "gpinterface-shared/type";
-import { createGpi } from "../controllers/gpi";
-import { ContentHistorySelect, getTypedContents } from "../util/prisma";
+import {
+  ContentHistorySelect,
+  createEntity,
+  getTypedContents,
+} from "../util/prisma";
 
 export default async function (fastify: FastifyInstance) {
   const { httpErrors } = fastify;
@@ -72,40 +75,24 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: GpiCreateSchema } },
     async (request, reply): Promise<GpiCreateResponse> => {
       try {
-        const { user } = await fastify.getUser(request, reply, true);
-        const { description, chatHashId, ...body } = request.body;
+        const { user } = await fastify.getUser(request, reply);
+        const { description, chatHashId } = request.body;
 
         if (description.trim() === "") {
           throw httpErrors.badRequest("description is empty.");
         }
 
-        const userHashId = user.hashId || null;
         const chat = await fastify.prisma.chat.findFirst({
-          where: {
-            hashId: chatHashId,
-            OR: [{ userHashId }, { gpis: { every: { isPublic: true } } }],
-          },
-          select: {
-            systemMessage: true,
-            contents: {
-              select: {
-                role: true,
-                content: true,
-                config: true,
-                modelHashId: true,
-              },
-              orderBy: { id: "asc" },
-            },
-          },
+          where: { hashId: chatHashId, userHashId: user.hashId },
+          select: { hashId: true, _count: { select: { gpis: true } } },
         });
-        if (!chat) {
+        if (!chat || chat._count.gpis > 0) {
           throw httpErrors.badRequest("chat is not available.");
         }
 
-        const newGpi = await createGpi(fastify.prisma.chat, {
-          userHashId,
-          ...chat,
-          gpis: { description, userHashId, ...body },
+        const newGpi = await createEntity(fastify.prisma.gpi.create, {
+          data: request.body,
+          select: { hashId: true },
         });
 
         return { hashId: newGpi.hashId };
