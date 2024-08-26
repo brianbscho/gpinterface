@@ -6,7 +6,7 @@ import { HistoriesGetResponse } from "gpinterface-shared/type/history";
 import { Fragment, useCallback, useMemo, useState } from "react";
 import Link from "next/link";
 import IconTextButton from "@/components/buttons/IconTextButton";
-import { MessageSquareCode, ReceiptText, SquareCode } from "lucide-react";
+import { FileClock, MessageSquareCode, SquareCode } from "lucide-react";
 import { Badge } from "@/components/ui";
 import HistoryDialog from "@/components/dialogs/HistoryDialog";
 
@@ -40,7 +40,7 @@ export default function Page() {
       }
 
       acc[date].histories.push(curr);
-      acc[date].priceSum += curr.price;
+      acc[date].priceSum += curr.paid;
 
       return acc;
     }, {});
@@ -57,17 +57,36 @@ export default function Page() {
       spinnerHidden={spinnerHidden}
       useLastHashId={[lastHashId, setLastHashId]}
     >
-      <div className="w-full flex-1 grid grid-cols-[auto_auto_1fr] gap-3 items-center py-3 overflow-y-auto">
+      <div className="w-full flex-1 grid grid-cols-5 gap-y-3 items-center overflow-y-auto">
+        <div className="z-10 sticky top-0 self-start h-16 md:h-12 py-3 pl-3 bg-background font-bold">
+          Date
+        </div>
+        <div className="z-10 sticky top-0 self-start h-16 md:h-12 py-3 bg-background font-bold">
+          Model
+        </div>
+        <div className="z-10 sticky top-0 self-start h-16 md:h-12 py-3 bg-background font-bold">
+          Input tokens
+        </div>
+        <div className="z-10 sticky top-0 self-start h-16 md:h-12 py-3 bg-background font-bold">
+          Output tokens
+        </div>
+        <div className="z-10 sticky top-0 self-start h-16 md:h-12 py-3 bg-background font-bold">
+          Price
+        </div>
         {groupedTextHistories?.map(([date, history], index) => (
           <Fragment key={date}>
             {history.histories.map((h) => (
               <Fragment key={h.hashId}>
-                <div className="pl-3 flex flex-wrap flex-col gap-3">
+                <div></div>
+                <div className="flex flex-wrap flex-col gap-3 pr-3">
+                  <Badge variant="tag" className="self-start w-full">
+                    <div className="w-full truncate">{h.model}</div>
+                  </Badge>
                   <HistoryDialog history={h}>
                     <IconTextButton
-                      className="w-28 md:w-36"
-                      Icon={ReceiptText}
-                      text="Show detail"
+                      className="w-16 md:w-24"
+                      Icon={FileClock}
+                      text="Detail"
                       responsive
                     />
                   </HistoryDialog>
@@ -82,29 +101,34 @@ export default function Page() {
                   >
                     <IconTextButton
                       Icon={h.apiHashId ? SquareCode : MessageSquareCode}
-                      text={`Go to ${h.apiHashId ? "api" : "chat"}`}
-                      className="w-28 md:w-36"
+                      text={h.apiHashId ? "Api" : "Chat"}
+                      className="w-16 md:w-24"
                       responsive
                     />
                   </Link>
                 </div>
-                <Badge variant="tag" className="self-start">
-                  assistant
-                </Badge>
-                <div className="whitespace-pre-wrap line-clamp-3 pr-3 self-start text-sm">
-                  {h.content}
+                <div className="self-start text-sm">{h.inputTokens}</div>
+                <div className="self-start text-sm">{h.outputTokens}</div>
+                <div
+                  className={`self-start text-sm${
+                    h.paid === 0 ? " line-through" : ""
+                  }`}
+                >
+                  ${h.price.toFixed(5)}
                 </div>
-                <div className="mx-3 col-span-2 border-b border-theme border-dashed"></div>
-                <div></div>
+                <div className="col-span-2"></div>
+                <div className="col-span-3 border-b border-theme border-dashed"></div>
               </Fragment>
             ))}
             {(spinnerHidden || index < groupedTextHistories.length) && (
               <Fragment>
-                <div className="font-bold text-lg w-28 pl-3">{date}</div>
-                <div className="col-span-2 leading-7 pr-3">
+                <div className="col-span-4 font-bold text-lg w-28 pl-3">
+                  {date}
+                </div>
+                <div className="leading-7 pr-3">
                   ${history.priceSum.toFixed(5)}
                 </div>
-                <div className="col-span-3 border-b border-theme"></div>
+                <div className="col-span-5 border-b border-theme"></div>
               </Fragment>
             )}
           </Fragment>

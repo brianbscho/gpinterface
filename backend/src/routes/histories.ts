@@ -30,6 +30,7 @@ export default async function (fastify: FastifyInstance) {
           select: {
             hashId: true,
             ...ContentHistorySelect,
+            paid: true,
             chatHashId: true,
             apiHashId: true,
           },

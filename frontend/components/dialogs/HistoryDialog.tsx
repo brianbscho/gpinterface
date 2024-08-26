@@ -40,10 +40,6 @@ export default function History({ history, children }: Props) {
           <DialogDescription className="mt-3 whitespace-pre text-wrap">
             {history.content}
           </DialogDescription>
-          <DialogTitle className="mt-7">Price</DialogTitle>
-          <DialogDescription className="mt-3 whitespace-pre text-wrap">
-            ${history.price}
-          </DialogDescription>
           <DialogTitle className="mt-7">Response</DialogTitle>
           <DialogDescription className="mt-3 whitespace-pre text-wrap">
             {stringify(history.response)}

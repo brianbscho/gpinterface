@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "histories" ADD COLUMN     "paid" DOUBLE PRECISION NOT NULL DEFAULT 0;
