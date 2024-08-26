@@ -54,7 +54,7 @@ export default function Document({ gpi }: { gpi?: GpiGetResponse }) {
       <Element title={gpi.isPublic ? "Public" : "Private"}>
         {gpi.isPublic
           ? "Accessible by anyone for testing and calling. Only the owner has editing privileges."
-          : "Only the owner can access, test, edit, and call this API."}
+          : "Only the owner can access, test, edit, and call this GPI."}
       </Element>
       <Element title="Share">
         <CopyButton
