@@ -117,16 +117,18 @@ export default function ContentInput({
       <div className="flex items-center mb-3">
         <Badge variant="tag">user</Badge>
         <div className="flex-1"></div>
-        <SmallHoverButton message="Answer yourself">
-          <Button
-            className="p-1 h-6 w-6"
-            variant="default"
-            loading={loading}
-            onClick={onClickAnswerYourself}
-          >
-            <PenSquare />
-          </Button>
-        </SmallHoverButton>
+        {editable && (
+          <SmallHoverButton message="Answer yourself">
+            <Button
+              className="p-1 h-6 w-6"
+              variant="default"
+              loading={loading}
+              onClick={onClickAnswerYourself}
+            >
+              <PenSquare />
+            </Button>
+          </SmallHoverButton>
+        )}
       </div>
       <CardDescription>
         <form onSubmit={onSubmit}>
