@@ -6,6 +6,7 @@ interface History {
   messages: object;
   content: string;
   response: object;
+  paid: number;
   price: number;
   inputTokens: number;
   outputTokens: number;
