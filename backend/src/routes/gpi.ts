@@ -102,13 +102,13 @@ export default async function (fastify: FastifyInstance) {
           throw httpErrors.badRequest("chat is not available.");
         }
 
-        const newApi = await createGpi(fastify.prisma.chat, {
+        const newGpi = await createGpi(fastify.prisma.chat, {
           userHashId,
           ...chat,
           gpis: { description, userHashId, ...body },
         });
 
-        return { hashId: newApi.hashId };
+        return { hashId: newGpi.hashId };
       } catch (ex) {
         console.error("path: /gpi, method: post, error:", ex);
         throw ex;
@@ -132,7 +132,7 @@ export default async function (fastify: FastifyInstance) {
           select: { hashId: true },
         });
         if (!oldGpi) {
-          throw fastify.httpErrors.unauthorized("Api not found.");
+          throw fastify.httpErrors.unauthorized("Gpi not found.");
         }
 
         const isIsPublicBoolean = typeof isPublic === "boolean";

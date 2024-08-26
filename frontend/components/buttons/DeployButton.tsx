@@ -44,7 +44,7 @@ export default function DeployButton({ chatHashId }: { chatHashId: string }) {
         GpiCreateResponse,
         Static<typeof GpiCreateSchema>
       >({
-        endpoint: "/api",
+        endpoint: "/gpi",
         method: "POST",
         body: {
           description,
@@ -57,7 +57,7 @@ export default function DeployButton({ chatHashId }: { chatHashId: string }) {
       });
 
       if (response) {
-        router.push(`apis/${response.hashId}`);
+        router.push(`gpis/${response.hashId}`);
       } else {
         setLoading(false);
       }

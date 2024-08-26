@@ -35,10 +35,10 @@ const Authentication = ({ userHashId }: { userHashId: string | null }) => {
   );
 };
 
-export default function Document({ api }: { api?: GpiGetResponse }) {
+export default function Document({ gpi }: { gpi?: GpiGetResponse }) {
   const models = useModelStore((state) => state.models);
-  const model = models.find((m) => m.hashId === api?.modelHashId);
-  if (!api || !model) return null;
+  const model = models.find((m) => m.hashId === gpi?.modelHashId);
+  if (!gpi || !model) return null;
 
   return (
     <div className="md:pl-[9.5rem] px-3 pb-3 w-full h-full overflow-y-auto flex flex-col gap-7">
@@ -47,18 +47,18 @@ export default function Document({ api }: { api?: GpiGetResponse }) {
         <div className="font-bold">{model.name}</div>
       </div>
       <Element title="Model config">
-        {Object.keys(api.config).length === 0
+        {Object.keys(gpi.config).length === 0
           ? "Default"
-          : stringify(getApiConfig(model, api.config))}
+          : stringify(getApiConfig(model, gpi.config))}
       </Element>
-      <Element title={api.isPublic ? "Public" : "Private"}>
-        {api.isPublic
+      <Element title={gpi.isPublic ? "Public" : "Private"}>
+        {gpi.isPublic
           ? "Accessible by anyone for testing and calling. Only the owner has editing privileges."
           : "Only the owner can access, test, edit, and call this API."}
       </Element>
       <Element title="Share">
         <CopyButton
-          text={`${process.env.NEXT_PUBLIC_HOSTNAME}/apis/${api.hashId}`}
+          text={`${process.env.NEXT_PUBLIC_HOSTNAME}/gpis/${gpi.hashId}`}
         />
       </Element>
       <Title
@@ -70,9 +70,9 @@ export default function Document({ api }: { api?: GpiGetResponse }) {
       <Element title="POST">
         {process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/chat/completion
       </Element>
-      <Authentication userHashId={api.userHashId} />
+      <Authentication userHashId={gpi.userHashId} />
       <Element title="Body">
-        {`{apiHashId: "${api.hashId}", message: string}`}
+        {`{gpiHashId: "${gpi.hashId}", message: string}`}
       </Element>
       <Element title="Response">{`{content: string}`}</Element>
       <Title
@@ -83,9 +83,9 @@ export default function Document({ api }: { api?: GpiGetResponse }) {
       <Element title="POST">
         {process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/session
       </Element>
-      <Authentication userHashId={api.userHashId} />
+      <Authentication userHashId={gpi.userHashId} />
       <Element title="Body">
-        <div>{`{apiHashId: "${api.hashId}"}`}</div>
+        <div>{`{gpiHashId: "${gpi.hashId}"}`}</div>
       </Element>
       <Element title="Response">{`{hashId: "SESSION_ID"}`}</Element>
       <Title
@@ -97,7 +97,7 @@ export default function Document({ api }: { api?: GpiGetResponse }) {
       <Element title="POST">
         {process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/session/completion
       </Element>
-      <Authentication userHashId={api.userHashId} />
+      <Authentication userHashId={gpi.userHashId} />
       <Element title="Body">
         <div>{`{sessionHashId: "SESSION_ID", message: string}`}</div>
       </Element>
@@ -109,7 +109,7 @@ export default function Document({ api }: { api?: GpiGetResponse }) {
       <Element title="GET">
         {`${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/session/{sessionHashId}/messages`}
       </Element>
-      <Authentication userHashId={api.userHashId} />
+      <Authentication userHashId={gpi.userHashId} />
       <Element title="Query Parameter">
         {`{sessionHashId: "SESSION_ID"}`}
       </Element>

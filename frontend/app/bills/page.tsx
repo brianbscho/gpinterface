@@ -93,7 +93,7 @@ export default function Page() {
                   <Link
                     href={
                       h.gpiHashId
-                        ? `/apis/${h.gpiHashId}`
+                        ? `/gpis/${h.gpiHashId}`
                         : h.chatHashId
                         ? `/chats/${h.chatHashId}`
                         : "/#"

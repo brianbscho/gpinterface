@@ -7,7 +7,7 @@ import { GpisGetResponse } from "gpinterface-shared/type/gpi";
 import { Badge } from "@/components/ui";
 import Link from "next/link";
 
-function Api({ gpi }: { gpi: GpisGetResponse["gpis"][0] }) {
+function Gpi({ gpi }: { gpi: GpisGetResponse["gpis"][0] }) {
   const messages = [
     {
       hashId: Math.random().toString(),
@@ -19,7 +19,7 @@ function Api({ gpi }: { gpi: GpisGetResponse["gpis"][0] }) {
     .filter((m) => m.content.length > 0)
     .slice(0, 2);
   return (
-    <Link key={gpi.hashId} href={`/apis/${gpi.hashId}`}>
+    <Link key={gpi.hashId} href={`/gpis/${gpi.hashId}`}>
       <div className="w-full p-3 border-b">
         <div className="w-full flex gap-3 items-end mb-3">
           <div className="truncate">{gpi.description}</div>
@@ -41,17 +41,17 @@ function Api({ gpi }: { gpi: GpisGetResponse["gpis"][0] }) {
 }
 
 export default function Page() {
-  const [gpis, setApis] = useState<GpisGetResponse["gpis"]>();
+  const [gpis, setGpis] = useState<GpisGetResponse["gpis"]>();
   const [lastHashId, setLastHashId] = useState("");
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 
-  const callApisApi = useCallback(async () => {
+  const callGpisApi = useCallback(async () => {
     const response = await callApi<GpisGetResponse>({
-      endpoint: `/apis?lastHashId=${lastHashId}`,
+      endpoint: `/gpis?lastHashId=${lastHashId}`,
       showError: true,
     });
     if (response) {
-      setApis((prev) => [...(prev ?? []), ...response.gpis]);
+      setGpis((prev) => [...(prev ?? []), ...response.gpis]);
       if (response.gpis.length === 0) {
         setSpinnerHidden(true);
       }
@@ -61,14 +61,14 @@ export default function Page() {
   return (
     <div className="w-full">
       <List
-        callApi={callApisApi}
-        emptyMessage="No Apis yet"
+        callApi={callGpisApi}
+        emptyMessage="No Gpis yet"
         elements={gpis}
         spinnerHidden={spinnerHidden}
         useLastHashId={[lastHashId, setLastHashId]}
       >
         {gpis?.map((gpi) => (
-          <Api key={gpi.hashId} gpi={gpi} />
+          <Gpi key={gpi.hashId} gpi={gpi} />
         ))}
       </List>
     </div>

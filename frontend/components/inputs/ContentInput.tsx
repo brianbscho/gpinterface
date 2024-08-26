@@ -25,7 +25,7 @@ import useModelStore from "@/store/model";
 
 type Props = {
   chatHashId: string;
-  apiHashId?: string;
+  gpiHashId?: string;
   setContents: Dispatch<SetStateAction<Content[]>>;
   setRefreshingHashId: (hashId: string | undefined) => void;
   editable: boolean;
@@ -33,7 +33,7 @@ type Props = {
 
 export default function ContentInput({
   chatHashId,
-  apiHashId,
+  gpiHashId,
   setContents,
   setRefreshingHashId,
   editable,
@@ -59,7 +59,7 @@ export default function ContentInput({
         method: "POST",
         body: {
           chatHashId,
-          apiHashId,
+          gpiHashId,
           modelHashId: model.hashId,
           content,
           config: getApiConfig(model, config),
@@ -79,7 +79,7 @@ export default function ContentInput({
     },
     [
       chatHashId,
-      apiHashId,
+      gpiHashId,
       model,
       content,
       config,
