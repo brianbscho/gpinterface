@@ -230,6 +230,20 @@ model ProviderType {
 // User
 // 
 
+model Deposit {
+  id        Int      @id @default(autoincrement())
+  hashId    String   @unique @map("hash_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  amount Float
+
+  userHashId String? @map("user_hash_id")
+  user       User?   @relation(fields: [userHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+
+  @@map("deposits")
+}
+
 model History {
   id        Int      @id @default(autoincrement())
   hashId    String   @unique @map("hash_id")
@@ -289,6 +303,7 @@ model User {
   notificationCheckedAt DateTime @default(now()) @map("notification_checked_at")
 
   apiKeys       ApiKey[]
+  deposits      Deposit[]
   notifications Notification[]
   apis          Api[]
   chats         Chat[]
