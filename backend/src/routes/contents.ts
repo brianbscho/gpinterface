@@ -46,11 +46,11 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: ContentsCreateSchema } },
     async (request, reply): Promise<ContentsCreateResponse> => {
       try {
-        const { user } = await fastify.getUser(request, reply, true);
+        const { user } = await fastify.getUser(request, reply);
         const { chatHashId } = request.body;
 
         const chat = await fastify.prisma.chat.findFirst({
-          where: { userHashId: user.hashId || null, hashId: chatHashId },
+          where: { userHashId: user.hashId, hashId: chatHashId },
           select: { hashId: true },
         });
         if (!chat) {
@@ -70,6 +70,7 @@ export default async function (fastify: FastifyInstance) {
               role: true,
               content: true,
               config: true,
+              histories: { select: ContentHistorySelect },
             },
           }
         );
