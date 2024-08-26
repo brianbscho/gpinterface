@@ -16,7 +16,7 @@ import { Dispatch, SetStateAction, useCallback } from "react";
 
 type GpiType = GpiGetResponse | undefined;
 type Props = { useGpi: [gpi: GpiType, Dispatch<SetStateAction<GpiType>>] };
-export default function EditApiButtons({ useGpi }: Props) {
+export default function EditGpiButtons({ useGpi }: Props) {
   const [gpi, setGpi] = useGpi;
 
   const { toast } = useToast();
