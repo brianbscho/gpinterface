@@ -23,7 +23,7 @@ export interface Content {
 
 export const ContentCreateSchema = Type.Object({
   chatHashId: Type.String(),
-  apiHashId: Type.Optional(Type.String()),
+  gpiHashId: Type.Optional(Type.String()),
   modelHashId: Type.String(),
   content: Type.String(),
   config: Type.Any(),
