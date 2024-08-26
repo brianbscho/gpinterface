@@ -1,10 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
-import {
-  createManyEntities,
-  ContentHistorySelect,
-  getTypedContents,
-} from "../util/prisma";
+import { createManyEntities, getTypedContents } from "../util/prisma";
 import {
   ContentsCreateResponse,
   ContentsCreateSchema,

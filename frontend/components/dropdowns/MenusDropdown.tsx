@@ -99,9 +99,9 @@ function _Menus() {
             <MessageSquareCode />
             <span className="ml-3">Chat</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => push(`/apis`)}>
+          <DropdownMenuItem onClick={() => push(`/gpis`)}>
             <SquareCode />
-            <span className="ml-3">Api</span>
+            <span className="ml-3">Gpi</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => push("/settings")}>
             <Settings />

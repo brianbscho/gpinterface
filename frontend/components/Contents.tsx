@@ -264,13 +264,13 @@ type ChatType = {
 };
 type ContentsProps = {
   chat: ChatType;
-  apiHashId?: string;
+  gpiHashId?: string;
   ownerUserHashId: string | null | undefined;
   className?: string;
 };
 export default function Contents({
   chat,
-  apiHashId,
+  gpiHashId,
   ownerUserHashId,
   className,
 }: ContentsProps) {
@@ -350,7 +350,7 @@ export default function Contents({
       })}
       <ContentInput
         chatHashId={chat.hashId}
-        apiHashId={apiHashId}
+        gpiHashId={gpiHashId}
         setContents={setContents}
         setRefreshingHashId={setRefreshingHashId}
         editable={editable}

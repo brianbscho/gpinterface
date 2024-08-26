@@ -16,7 +16,7 @@ export default function Page() {
   const [lastHashId, setLastHashId] = useState("");
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 
-  const callTextHistoriesApi = useCallback(async () => {
+  const callTextHistoriesGpi = useCallback(async () => {
     const response = await callApi<HistoriesGetResponse>({
       endpoint: `/histories?lastHashId=${lastHashId}`,
       showError: true,
@@ -51,7 +51,7 @@ export default function Page() {
 
   return (
     <List
-      callApi={callTextHistoriesApi}
+      callApi={callTextHistoriesGpi}
       emptyMessage="No history of usage yet"
       elements={histories}
       spinnerHidden={spinnerHidden}
@@ -92,16 +92,16 @@ export default function Page() {
                   </HistoryDialog>
                   <Link
                     href={
-                      h.apiHashId
-                        ? `/apis/${h.apiHashId}`
+                      h.gpiHashId
+                        ? `/gpis/${h.gpiHashId}`
                         : h.chatHashId
                         ? `/chats/${h.chatHashId}`
                         : "/#"
                     }
                   >
                     <IconTextButton
-                      Icon={h.apiHashId ? SquareCode : MessageSquareCode}
-                      text={h.apiHashId ? "Api" : "Chat"}
+                      Icon={h.gpiHashId ? SquareCode : MessageSquareCode}
+                      text={h.gpiHashId ? "Gpi" : "Chat"}
                       className="w-16 md:w-24"
                       responsive
                     />

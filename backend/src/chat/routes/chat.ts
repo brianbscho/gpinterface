@@ -10,7 +10,7 @@ import { Prisma } from "@prisma/client";
 import { getApiKey } from "../controllers/apiKey";
 
 const ChatCompletionSchema = Type.Object({
-  apiHashId: Type.String(),
+  gpiHashId: Type.String(),
   message: Type.String(),
 });
 
@@ -23,11 +23,11 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<ChatCompletionResponse> => {
       try {
         const userHashId = await getApiKey(fastify, request, true);
-        const { apiHashId, message } = request.body;
+        const { gpiHashId, message } = request.body;
 
-        const api = await fastify.prisma.api.findFirst({
+        const gpi = await fastify.prisma.gpi.findFirst({
           where: {
-            hashId: apiHashId,
+            hashId: gpiHashId,
             OR: [{ userHashId }, { isPublic: true }],
             model: {
               isAvailable: true,
@@ -47,16 +47,16 @@ export default async function (fastify: FastifyInstance) {
           },
         });
 
-        if (!api) {
-          throw fastify.httpErrors.badRequest("api is not available.");
+        if (!gpi) {
+          throw fastify.httpErrors.badRequest("gpi is not available.");
         }
-        if (api.chat.contents.some((c) => c.content === "")) {
+        if (gpi.chat.contents.some((c) => c.content === "")) {
           throw fastify.httpErrors.badRequest(
             "There is empty content in chat."
           );
         }
 
-        const { chat, config, model } = api;
+        const { chat, config, model } = gpi;
         const { systemMessage, contents } = chat;
         const messages = contents.concat({
           role: "user",
@@ -72,7 +72,7 @@ export default async function (fastify: FastifyInstance) {
         await createEntity(fastify.prisma.history.create, {
           data: {
             userHashId,
-            apiHashId,
+            gpiHashId,
             provider: model.provider.name,
             model: model.name,
             config: config ?? Prisma.JsonNull,

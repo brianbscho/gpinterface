@@ -3,27 +3,27 @@
 import callApi from "@/utils/callApi";
 import { useCallback, useState, Fragment } from "react";
 import List from "@/components/List";
-import { ApisGetResponse } from "gpinterface-shared/type/api";
+import { GpisGetResponse } from "gpinterface-shared/type/gpi";
 import { Badge } from "@/components/ui";
 import Link from "next/link";
 
-function Api({ api }: { api: ApisGetResponse["apis"][0] }) {
+function Gpi({ gpi }: { gpi: GpisGetResponse["gpis"][0] }) {
   const messages = [
     {
       hashId: Math.random().toString(),
       role: "system",
-      content: api.systemMessage,
+      content: gpi.systemMessage,
     },
-    ...api.messages,
+    ...gpi.messages,
   ]
     .filter((m) => m.content.length > 0)
     .slice(0, 2);
   return (
-    <Link key={api.hashId} href={`/apis/${api.hashId}`}>
+    <Link key={gpi.hashId} href={`/gpis/${gpi.hashId}`}>
       <div className="w-full p-3 border-b">
         <div className="w-full flex gap-3 items-end mb-3">
-          <div className="truncate">{api.description}</div>
-          <div className="text-neutral-400 text-xs mb-1">{api.createdAt}</div>
+          <div className="truncate">{gpi.description}</div>
+          <div className="text-neutral-400 text-xs mb-1">{gpi.createdAt}</div>
         </div>
         <div className="grid grid-cols-[auto_1fr] items-center gap-3">
           {messages.map((message) => (
@@ -41,18 +41,18 @@ function Api({ api }: { api: ApisGetResponse["apis"][0] }) {
 }
 
 export default function Page() {
-  const [apis, setApis] = useState<ApisGetResponse["apis"]>();
+  const [gpis, setGpis] = useState<GpisGetResponse["gpis"]>();
   const [lastHashId, setLastHashId] = useState("");
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 
-  const callApisApi = useCallback(async () => {
-    const response = await callApi<ApisGetResponse>({
-      endpoint: `/apis?lastHashId=${lastHashId}`,
+  const callGpisApi = useCallback(async () => {
+    const response = await callApi<GpisGetResponse>({
+      endpoint: `/gpis?lastHashId=${lastHashId}`,
       showError: true,
     });
     if (response) {
-      setApis((prev) => [...(prev ?? []), ...response.apis]);
-      if (response.apis.length === 0) {
+      setGpis((prev) => [...(prev ?? []), ...response.gpis]);
+      if (response.gpis.length === 0) {
         setSpinnerHidden(true);
       }
     }
@@ -61,14 +61,14 @@ export default function Page() {
   return (
     <div className="w-full">
       <List
-        callApi={callApisApi}
-        emptyMessage="No Apis yet"
-        elements={apis}
+        callApi={callGpisApi}
+        emptyMessage="No Gpis yet"
+        elements={gpis}
         spinnerHidden={spinnerHidden}
         useLastHashId={[lastHashId, setLastHashId]}
       >
-        {apis?.map((api) => (
-          <Api key={api.hashId} api={api} />
+        {gpis?.map((gpi) => (
+          <Gpi key={gpi.hashId} gpi={gpi} />
         ))}
       </List>
     </div>

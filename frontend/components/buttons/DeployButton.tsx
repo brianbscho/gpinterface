@@ -18,9 +18,9 @@ import { FormEvent, useCallback, useState } from "react";
 import callApi from "@/utils/callApi";
 import { Static } from "@sinclair/typebox";
 import {
-  ApiCreateResponse,
-  ApiCreateSchema,
-} from "gpinterface-shared/type/api";
+  GpiCreateResponse,
+  GpiCreateSchema,
+} from "gpinterface-shared/type/gpi";
 import { useRouter } from "next/navigation";
 import { getApiConfig } from "@/utils/model";
 import IconTextButton from "./IconTextButton";
@@ -41,10 +41,10 @@ export default function DeployButton({ chatHashId }: { chatHashId: string }) {
       if (!model) return;
       setLoading(true);
       const response = await callApi<
-        ApiCreateResponse,
-        Static<typeof ApiCreateSchema>
+        GpiCreateResponse,
+        Static<typeof GpiCreateSchema>
       >({
-        endpoint: "/api",
+        endpoint: "/gpi",
         method: "POST",
         body: {
           description,
@@ -57,7 +57,7 @@ export default function DeployButton({ chatHashId }: { chatHashId: string }) {
       });
 
       if (response) {
-        router.push(`apis/${response.hashId}`);
+        router.push(`gpis/${response.hashId}`);
       } else {
         setLoading(false);
       }
@@ -78,7 +78,7 @@ export default function DeployButton({ chatHashId }: { chatHashId: string }) {
       <DialogContent className="max-w-3xl w-11/12 gap-3">
         <div className="flex items-center gap-3">
           <Badge variant="tag" className="h-6">
-            Deploy API
+            Deploy
           </Badge>
           <div className="flex-1"></div>
           <IconTextButton
@@ -96,7 +96,7 @@ export default function DeployButton({ chatHashId }: { chatHashId: string }) {
             <Input
               autoFocus
               className="flex-1"
-              placeholder="API description"
+              placeholder="Description"
               value={description}
               onChange={(e) => setDescription(e.currentTarget.value)}
               disabled={loading}

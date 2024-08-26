@@ -32,7 +32,7 @@ export default async function (fastify: FastifyInstance) {
             ...ContentHistorySelect,
             paid: true,
             chatHashId: true,
-            apiHashId: true,
+            gpiHashId: true,
           },
           orderBy: { id: "desc" },
           take: 20,
@@ -41,8 +41,7 @@ export default async function (fastify: FastifyInstance) {
         return {
           histories: histories.map((h) => ({
             ...getTypedHistory(h),
-            isApi: typeof h.apiHashId === "string",
-            isPost: false,
+            isGpi: typeof h.gpiHashId === "string",
           })),
         };
       } catch (ex) {

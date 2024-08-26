@@ -36,7 +36,7 @@ function _Chats() {
     });
     if (chatsResponse) {
       setChats((prev) => [...(prev ?? []), ...chatsResponse.chats]);
-      if (chatsResponse.chats.length == 0) {
+      if (chatsResponse.chats.length === 0) {
         setSpinnerHidden(true);
       }
     } else {

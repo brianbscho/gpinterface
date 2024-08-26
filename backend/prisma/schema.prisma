@@ -15,10 +15,10 @@ datasource db {
 }
 
 // * * * * * * * * * * * *
-// Api
+// Gpi
 // 
 
-model Api {
+model Gpi {
   id        Int      @id @default(autoincrement())
   hashId    String   @unique @map("hash_id")
   createdAt DateTime @default(now()) @map("created_at")
@@ -38,7 +38,7 @@ model Api {
   userHashId  String? @map("user_hash_id")
   user        User?   @relation(fields: [userHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
 
-  @@map("apis")
+  @@map("gpis")
 }
 
 model ApiKey {
@@ -61,8 +61,8 @@ model Session {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
-  apiHashId String
-  api       Api    @relation(fields: [apiHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+  gpiHashId String @map("gpi_hash_id")
+  gpi       Gpi    @relation(fields: [gpiHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
   histories History[]
   messages  SessionMessage[]
@@ -101,7 +101,7 @@ model Chat {
   user       User?   @relation(fields: [userHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
 
   contents  ChatContent[]
-  apis      Api[]
+  gpis      Gpi[]
   histories History[]
 
   @@map("chats")
@@ -192,7 +192,7 @@ model Model {
 
   configs      ConfigOnModel[]
   chatContents ChatContent[]
-  apis         Api[]
+  gpis         Gpi[]
 
   @@map("models")
 }
@@ -261,8 +261,8 @@ model History {
   inputTokens  Int    @map("input_tokens")
   outputTokens Int    @map("output_tokens")
 
-  apiHashId         String?      @map("api_hash_id")
-  api               Api?         @relation(fields: [apiHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
+  gpiHashId         String?      @map("gpi_hash_id")
+  gpi               Gpi?         @relation(fields: [gpiHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
   sessionHashId     String?      @map("session_hash_id")
   session           Session?     @relation(fields: [sessionHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
   chatHashId        String?      @map("chat_hash_id")
@@ -305,7 +305,7 @@ model User {
   apiKeys       ApiKey[]
   deposits      Deposit[]
   notifications Notification[]
-  apis          Api[]
+  gpis          Gpi[]
   chats         Chat[]
   histories     History[]
 

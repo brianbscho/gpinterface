@@ -7,68 +7,68 @@ import callApi from "@/utils/callApi";
 import { getApiConfig } from "@/utils/model";
 import { Static } from "@sinclair/typebox";
 import {
-  ApiCreateResponse,
-  ApiGetResponse,
-  ApiUpdateSchema,
-} from "gpinterface-shared/type/api";
+  GpiCreateResponse,
+  GpiGetResponse,
+  GpiUpdateSchema,
+} from "gpinterface-shared/type/gpi";
 import { CheckCircle2, Circle, Save } from "lucide-react";
 import { Dispatch, SetStateAction, useCallback } from "react";
 
-type ApiType = ApiGetResponse | undefined;
-type Props = { useApi: [api: ApiType, Dispatch<SetStateAction<ApiType>>] };
-export default function EditApiButtons({ useApi }: Props) {
-  const [api, setApi] = useApi;
+type GpiType = GpiGetResponse | undefined;
+type Props = { useGpi: [gpi: GpiType, Dispatch<SetStateAction<GpiType>>] };
+export default function EditGpiButtons({ useGpi }: Props) {
+  const [gpi, setGpi] = useGpi;
 
   const { toast } = useToast();
   const [config, model] = useModelStore((state) => [state.config, state.model]);
   const onCheckedChange = useCallback(
     async (c: boolean) => {
-      if (!api?.hashId) return;
+      if (!gpi?.hashId) return;
 
       const response = await callApi<
-        ApiCreateResponse,
-        Static<typeof ApiUpdateSchema>
+        GpiCreateResponse,
+        Static<typeof GpiUpdateSchema>
       >({
-        endpoint: `/api/${api.hashId}`,
+        endpoint: `/gpi/${gpi.hashId}`,
         method: "PUT",
         body: { isPublic: c },
         showError: true,
       });
       if (response) {
         toast({ title: "Saved!", duration: 1000 });
-        setApi((prev) => (!prev ? prev : { ...prev, isPublic: c }));
+        setGpi((prev) => (!prev ? prev : { ...prev, isPublic: c }));
       }
     },
-    [api?.hashId, toast, setApi]
+    [gpi?.hashId, toast, setGpi]
   );
   const onClickDefault = useCallback(async () => {
-    if (!model || !api?.hashId) return;
+    if (!model || !gpi?.hashId) return;
 
     const response = await callApi<
-      ApiCreateResponse,
-      Static<typeof ApiUpdateSchema>
+      GpiCreateResponse,
+      Static<typeof GpiUpdateSchema>
     >({
-      endpoint: `/api/${api.hashId}`,
+      endpoint: `/gpi/${gpi.hashId}`,
       method: "PUT",
       body: { modelHashId: model.hashId, config: getApiConfig(model, config) },
       showError: true,
     });
     if (response) {
       toast({ title: "Saved!", duration: 1000 });
-      setApi((prev) =>
+      setGpi((prev) =>
         !prev ? prev : { ...prev, modelHashId: model.hashId, config }
       );
     }
-  }, [api?.hashId, model, config, toast, setApi]);
+  }, [gpi?.hashId, model, config, toast, setGpi]);
 
   return (
     <>
       <div className="flex-1 w-full">
         <IconTextButton
           className="w-full md:w-28"
-          Icon={!api?.isPublic ? Circle : CheckCircle2}
+          Icon={!gpi?.isPublic ? Circle : CheckCircle2}
           text="Public"
-          onClick={() => onCheckedChange(!api?.isPublic)}
+          onClick={() => onCheckedChange(!gpi?.isPublic)}
           responsive
         />
       </div>

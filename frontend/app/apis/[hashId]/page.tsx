@@ -3,37 +3,32 @@
 import Document from "./Document";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import callApi from "@/utils/callApi";
-import { ApiGetResponse } from "gpinterface-shared/type/api";
+import { GpiGetResponse } from "gpinterface-shared/type/gpi";
 import useUserStore from "@/store/user";
-import {
-  File,
-  FilePen,
-  MessageSquareCode,
-  SquareCode,
-} from "lucide-react";
+import { File, FilePen, MessageSquareCode, SquareCode } from "lucide-react";
 import IconTextButton from "@/components/buttons/IconTextButton";
 import Contents from "@/components/Contents";
 import ModelSelect from "@/components/selects/ModelSelect";
 import ModelResetButton from "@/components/buttons/ModelResetButton";
 import ModelSheetButton from "@/components/buttons/ModelSheetButton";
-import EditApiButtons from "@/components/buttons/EditApiButtons";
+import EditGpiButtons from "@/components/buttons/EditGpiButtons";
 import ModelPanel from "@/components/ModelPanel";
 
 export default function Page({ params }: { params: { hashId: string } }) {
   const { hashId } = params;
-  const [api, setApi] = useState<ApiGetResponse>();
+  const [gpi, setGpi] = useState<GpiGetResponse>();
   useEffect(() => {
     const callApiApi = async () => {
-      const response = await callApi<ApiGetResponse>({
-        endpoint: `/api/${hashId}`,
+      const response = await callApi<GpiGetResponse>({
+        endpoint: `/gpi/${hashId}`,
         showError: true,
       });
-      setApi(response);
+      setGpi(response);
     };
     callApiApi();
   }, [hashId]);
 
-  const [tab, setTab] = useState("api");
+  const [tab, setTab] = useState<"gpi" | "document">("gpi");
   const getTabContentClassName = useCallback(
     (_tab: string) => {
       const className = "w-full h-full pt-9 md:pt-0 overflow-hidden";
@@ -45,22 +40,22 @@ export default function Page({ params }: { params: { hashId: string } }) {
 
   const userHashId = useUserStore((state) => state.user?.hashId);
   const editable = useMemo(
-    () => !api?.userHashId || api?.userHashId === userHashId,
-    [api?.userHashId, userHashId]
+    () => !gpi?.userHashId || gpi?.userHashId === userHashId,
+    [gpi?.userHashId, userHashId]
   );
   const [isEditing, setIsEditing] = useState(false);
 
   return (
     <div className="w-full flex-1 flex flex-col gap-3 pt-3 overflow-hidden">
-      <div className="px-3 whitespace-pre-wrap">{api?.description ?? ""}</div>
+      <div className="px-3 whitespace-pre-wrap">{gpi?.description ?? ""}</div>
       <div className="flex-1 grid grid-cols-[1fr_auto] overflow-hidden relative">
         <div className="absolute top-0 left-3 flex md:flex-col gap-3">
           <IconTextButton
-            onClick={() => setTab("api")}
+            onClick={() => setTab("gpi")}
             className="w-24 md:w-32"
             Icon={MessageSquareCode}
-            text="API"
-            selected={tab === "api"}
+            text="GPI"
+            selected={tab === "gpi"}
             responsive
           />
           <IconTextButton
@@ -74,10 +69,10 @@ export default function Page({ params }: { params: { hashId: string } }) {
         </div>
         <ModelSheetButton
           className="md:hidden absolute h-6 top-0 right-3"
-          useApi={[api, setApi]}
+          useGpi={[gpi, setGpi]}
           editable={editable}
         />
-        <div className={getTabContentClassName("api")}>
+        <div className={getTabContentClassName("gpi")}>
           <div className="md:pl-[9.5rem] px-3 pb-3 w-full h-full overflow-y-auto">
             {editable && (
               <div className="flex gap-3 items-center mb-3">
@@ -91,22 +86,22 @@ export default function Page({ params }: { params: { hashId: string } }) {
                 />
               </div>
             )}
-            {!!api && (
+            {!!gpi && (
               <Contents
-                chat={api.chat}
-                apiHashId={api.hashId}
-                ownerUserHashId={isEditing ? api.userHashId : "non-editable"}
+                chat={gpi.chat}
+                gpiHashId={gpi.hashId}
+                ownerUserHashId={isEditing ? gpi.userHashId : "non-editable"}
               />
             )}
           </div>
         </div>
         <div className={getTabContentClassName("document")}>
-          <Document api={api} />
+          <Document gpi={gpi} />
         </div>
         <ModelPanel topPadding={false}>
           <ModelSelect />
           <ModelResetButton />
-          {editable && <EditApiButtons useApi={[api, setApi]} />}
+          {editable && <EditGpiButtons useGpi={[gpi, setGpi]} />}
         </ModelPanel>
       </div>
     </div>

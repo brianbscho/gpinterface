@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { getTypedContent, getDataWithHashId } from "../util/prisma";
 
-export async function createApi(
+export async function createGpi(
   chatDelegate: Prisma.ChatDelegate,
   chat: {
     userHashId: string | null;
@@ -12,7 +12,7 @@ export async function createApi(
       config: Prisma.JsonValue;
       modelHashId: string | null;
     }[];
-    apis: {
+    gpis: {
       description: string;
       userHashId: string | null;
       config: object;
@@ -24,7 +24,7 @@ export async function createApi(
 
   while (retries < 5) {
     try {
-      const newApi = await chatDelegate.create({
+      const newGpi = await chatDelegate.create({
         data: {
           ...getDataWithHashId({
             ...chat,
@@ -35,16 +35,16 @@ export async function createApi(
                 ),
               },
             },
-            apis: { create: getDataWithHashId(chat.apis) },
+            gpis: { create: getDataWithHashId(chat.gpis) },
           }),
         },
-        select: { apis: { select: { hashId: true } } },
+        select: { gpis: { select: { hashId: true } } },
       });
 
-      if (newApi.apis.length === 0) {
-        throw "Failed to create api";
+      if (newGpi.gpis.length === 0) {
+        throw "Failed to create gpi";
       }
-      return newApi.apis[0];
+      return newGpi.gpis[0];
     } catch (error) {
       retries++;
       console.log("🚀 ~ error:", error);

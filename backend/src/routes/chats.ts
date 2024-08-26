@@ -28,7 +28,7 @@ export default async function (fastify: FastifyInstance) {
           select: {
             hashId: true,
             userHashId: true,
-            _count: { select: { apis: true } },
+            _count: { select: { gpis: true } },
             systemMessage: true,
             contents: {
               select: {
@@ -49,14 +49,14 @@ export default async function (fastify: FastifyInstance) {
 
         return {
           chats: chats
-            .filter((c) => c._count.apis === 0)
+            .filter((c) => c._count.gpis === 0)
             .map((c) => {
               const { _count, createdAt, contents, ...chat } = c;
               return {
                 ...chat,
                 contents: getTypedContents(contents),
                 createdAt: getDateString(createdAt),
-                isApi: _count.apis > 0,
+                isGpi: _count.gpis > 0,
               };
             }),
         };

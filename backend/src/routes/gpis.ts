@@ -3,7 +3,7 @@ import { Static } from "@sinclair/typebox";
 import { getDateString } from "../util/string";
 import { QueryParamSchema } from "gpinterface-shared/type";
 import { getIdByHashId } from "../util/prisma";
-import { ApisGetResponse } from "gpinterface-shared/type/api";
+import { GpisGetResponse } from "gpinterface-shared/type/gpi";
 
 export default async function (fastify: FastifyInstance) {
   fastify.get<{
@@ -11,17 +11,17 @@ export default async function (fastify: FastifyInstance) {
   }>(
     "/",
     { schema: { querystring: QueryParamSchema } },
-    async (request, reply): Promise<ApisGetResponse> => {
+    async (request, reply): Promise<GpisGetResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
         const { lastHashId } = request.query;
 
         const id = await getIdByHashId(
-          fastify.prisma.api.findFirst,
+          fastify.prisma.gpi.findFirst,
           lastHashId
         );
 
-        const apis = await fastify.prisma.api.findMany({
+        const gpis = await fastify.prisma.gpi.findMany({
           where: { ...(id > 0 && { id: { lt: id } }), userHashId: user.hashId },
           select: {
             hashId: true,
@@ -43,8 +43,8 @@ export default async function (fastify: FastifyInstance) {
         });
 
         return {
-          apis: apis.map((api) => {
-            const { chat, createdAt, ...rest } = api;
+          gpis: gpis.map((gpi) => {
+            const { chat, createdAt, ...rest } = gpi;
             return {
               ...rest,
               systemMessage: chat.systemMessage,
@@ -54,7 +54,7 @@ export default async function (fastify: FastifyInstance) {
           }),
         };
       } catch (ex) {
-        console.error("path: /apis/?lastHashId, method: get, error:", ex);
+        console.error("path: /gpis/?lastHashId, method: get, error:", ex);
         throw ex;
       }
     }
