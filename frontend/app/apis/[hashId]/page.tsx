@@ -5,7 +5,12 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import callApi from "@/utils/callApi";
 import { ApiGetResponse } from "gpinterface-shared/type/api";
 import useUserStore from "@/store/user";
-import { MessageSquareCode, SquareCode } from "lucide-react";
+import {
+  File,
+  FilePen,
+  MessageSquareCode,
+  SquareCode,
+} from "lucide-react";
 import IconTextButton from "@/components/buttons/IconTextButton";
 import Contents from "@/components/Contents";
 import ModelSelect from "@/components/selects/ModelSelect";
@@ -43,6 +48,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
     () => !api?.userHashId || api?.userHashId === userHashId,
     [api?.userHashId, userHashId]
   );
+  const [isEditing, setIsEditing] = useState(false);
 
   return (
     <div className="w-full flex-1 flex flex-col gap-3 pt-3 overflow-hidden">
@@ -72,14 +78,27 @@ export default function Page({ params }: { params: { hashId: string } }) {
           editable={editable}
         />
         <div className={getTabContentClassName("api")}>
-          {!!api && (
-            <Contents
-              chat={api.chat}
-              apiHashId={api.hashId}
-              ownerUserHashId={api.userHashId}
-              className="md:pl-[9.5rem] px-3 pb-3 w-full h-full overflow-y-auto"
-            />
-          )}
+          <div className="md:pl-[9.5rem] px-3 pb-3 w-full h-full overflow-y-auto">
+            {editable && (
+              <div className="flex gap-3 items-center mb-3">
+                <IconTextButton
+                  Icon={isEditing ? FilePen : File}
+                  text={isEditing ? "Editing" : "Edit"}
+                  className="w-24 md:w-28"
+                  selected={isEditing}
+                  onClick={() => setIsEditing((prev) => !prev)}
+                  responsive
+                />
+              </div>
+            )}
+            {!!api && (
+              <Contents
+                chat={api.chat}
+                apiHashId={api.hashId}
+                ownerUserHashId={isEditing ? api.userHashId : "non-editable"}
+              />
+            )}
+          </div>
         </div>
         <div className={getTabContentClassName("document")}>
           <Document api={api} />
