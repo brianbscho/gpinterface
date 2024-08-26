@@ -107,9 +107,9 @@ function _Menus() {
             <Settings />
             <span className="ml-3">Settings</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => push("/histories")}>
+          <DropdownMenuItem onClick={() => push("/bills")}>
             <ReceiptText />
-            <span className="ml-3">History</span>
+            <span className="ml-3">Bills</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={onClickLogout}>
             <LogOut />
