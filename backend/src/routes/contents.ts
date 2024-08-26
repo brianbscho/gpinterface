@@ -70,7 +70,6 @@ export default async function (fastify: FastifyInstance) {
               role: true,
               content: true,
               config: true,
-              histories: { select: ContentHistorySelect },
             },
           }
         );

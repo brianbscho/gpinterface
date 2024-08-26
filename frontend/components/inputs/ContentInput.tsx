@@ -1,7 +1,7 @@
 "use client";
 
 import { CornerDownLeft, PenSquare } from "lucide-react";
-import { Badge, Button, CardContent, CardDescription, Textarea } from "../ui";
+import { Badge, Button, Textarea } from "../ui";
 import {
   Dispatch,
   FormEvent,
@@ -113,22 +113,26 @@ export default function ContentInput({
   }, [chatHashId, setContents]);
 
   return (
-    <CardContent className="p-0">
+    <div className="p-0">
       <div className="flex items-center mb-3">
-        <Badge variant="tag">user</Badge>
+        <Badge variant="tag" className="h-6">
+          user
+        </Badge>
         <div className="flex-1"></div>
-        <SmallHoverButton message="Answer yourself">
-          <Button
-            className="p-1 h-6 w-6"
-            variant="default"
-            loading={loading}
-            onClick={onClickAnswerYourself}
-          >
-            <PenSquare />
-          </Button>
-        </SmallHoverButton>
+        {editable && (
+          <SmallHoverButton message="Answer yourself">
+            <Button
+              className="p-1 h-6 w-6"
+              variant="default"
+              loading={loading}
+              onClick={onClickAnswerYourself}
+            >
+              <PenSquare />
+            </Button>
+          </SmallHoverButton>
+        )}
       </div>
-      <CardDescription>
+      <div className="text-sm text-muted-foreground">
         <form onSubmit={onSubmit}>
           <div className="flex items-center gap-3">
             <div className="relative flex-1 items-start">
@@ -149,8 +153,8 @@ export default function ContentInput({
             </Button>
           </div>
         </form>
-      </CardDescription>
+      </div>
       <ContentsDialog useContents={[responseContents, setResponseContents]} />
-    </CardContent>
+    </div>
   );
 }

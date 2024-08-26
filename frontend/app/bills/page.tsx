@@ -79,7 +79,7 @@ export default function Page() {
               <Fragment key={h.hashId}>
                 <div></div>
                 <div className="flex flex-wrap flex-col gap-3 pr-3">
-                  <Badge variant="tag" className="self-start w-full">
+                  <Badge variant="tag" className="self-start w-full md:w-auto">
                     <div className="w-full truncate">{h.model}</div>
                   </Badge>
                   <HistoryDialog history={h}>
