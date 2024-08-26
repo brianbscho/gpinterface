@@ -11,9 +11,6 @@
     "start": "node dist/app.js",
     "dev": "nodemon"
   },
-  "prisma": {
-    "seed": "ts-node prisma/seed.ts"
-  },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.614.0",
     "@aws-sdk/credential-providers": "^3.614.0",
