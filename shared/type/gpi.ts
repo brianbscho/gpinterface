@@ -19,6 +19,9 @@ export type GpiGetResponse = {
   modelHashId: string;
   isPublic: boolean;
 };
+export type GpisGetResponse = {
+  gpis: GpiGetResponse[];
+};
 
 type GpiResponse = {
   hashId: string;
