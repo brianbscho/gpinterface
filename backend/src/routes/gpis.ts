@@ -3,15 +3,15 @@ import { Static } from "@sinclair/typebox";
 import { getDateString } from "../util/string";
 import { QueryParamSchema } from "gpinterface-shared/type";
 import { getIdByHashId } from "../util/prisma";
-import { GpisGetResponse } from "gpinterface-shared/type/gpi";
+import { GpisUserGetResponse } from "gpinterface-shared/type/gpi";
 
 export default async function (fastify: FastifyInstance) {
   fastify.get<{
     Querystring: Static<typeof QueryParamSchema>;
   }>(
-    "/",
+    "/user",
     { schema: { querystring: QueryParamSchema } },
-    async (request, reply): Promise<GpisGetResponse> => {
+    async (request, reply): Promise<GpisUserGetResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
         const { lastHashId } = request.query;
@@ -54,7 +54,7 @@ export default async function (fastify: FastifyInstance) {
           }),
         };
       } catch (ex) {
-        console.error("path: /gpis/?lastHashId, method: get, error:", ex);
+        console.error("path: /gpis/user?lastHashId, method: get, error:", ex);
         throw ex;
       }
     }
