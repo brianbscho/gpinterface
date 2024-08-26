@@ -77,9 +77,9 @@ function _Menus() {
 
   if (!user) {
     return (
-      <ShadcnButton asChild>
+      <ShadcnButton asChild className="h-6 w-6 p-0 md:h-8 md:w-8">
         <Link href={`/login${param}`}>
-          <UserRound />
+          <UserRound className="h-4 w-4 md:h-5 md:w-5" />
         </Link>
       </ShadcnButton>
     );
@@ -87,8 +87,8 @@ function _Menus() {
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
-        <ShadcnButton>
-          <UserRound />
+        <ShadcnButton className="h-6 w-6 p-0 md:h-8 md:w-8">
+          <UserRound className="h-4 w-4 md:h-5 md:w-5" />
         </ShadcnButton>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
