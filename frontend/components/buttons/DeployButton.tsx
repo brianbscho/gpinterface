@@ -18,8 +18,8 @@ import { FormEvent, useCallback, useState } from "react";
 import callApi from "@/utils/callApi";
 import { Static } from "@sinclair/typebox";
 import {
-  ApiCreateResponse,
-  ApiCreateSchema,
+  GpiCreateResponse,
+  GpiCreateSchema,
 } from "gpinterface-shared/type/gpi";
 import { useRouter } from "next/navigation";
 import { getApiConfig } from "@/utils/model";
@@ -41,8 +41,8 @@ export default function DeployButton({ chatHashId }: { chatHashId: string }) {
       if (!model) return;
       setLoading(true);
       const response = await callApi<
-        ApiCreateResponse,
-        Static<typeof ApiCreateSchema>
+        GpiCreateResponse,
+        Static<typeof GpiCreateSchema>
       >({
         endpoint: "/api",
         method: "POST",

@@ -3,7 +3,7 @@ import { Static } from "@sinclair/typebox";
 import { getDateString } from "../util/string";
 import { QueryParamSchema } from "gpinterface-shared/type";
 import { getIdByHashId } from "../util/prisma";
-import { ApisGetResponse } from "gpinterface-shared/type/gpi";
+import { GpisGetResponse } from "gpinterface-shared/type/gpi";
 
 export default async function (fastify: FastifyInstance) {
   fastify.get<{
@@ -11,7 +11,7 @@ export default async function (fastify: FastifyInstance) {
   }>(
     "/",
     { schema: { querystring: QueryParamSchema } },
-    async (request, reply): Promise<ApisGetResponse> => {
+    async (request, reply): Promise<GpisGetResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
         const { lastHashId } = request.query;

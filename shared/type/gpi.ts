@@ -1,16 +1,16 @@
 import { Type } from "@sinclair/typebox";
 import { Content } from "./content";
 
-export const ApiCreateSchema = Type.Object({
+export const GpiCreateSchema = Type.Object({
   description: Type.String(),
   chatHashId: Type.String(),
   modelHashId: Type.String(),
   config: Type.Any(),
   isPublic: Type.Boolean(),
 });
-export type ApiCreateResponse = { hashId: string };
+export type GpiCreateResponse = { hashId: string };
 
-export type ApiGetResponse = {
+export type GpiGetResponse = {
   hashId: string;
   userHashId: string | null;
   description: string;
@@ -20,7 +20,7 @@ export type ApiGetResponse = {
   isPublic: boolean;
 };
 
-type ApiResponse = {
+type GpiResponse = {
   hashId: string;
   description: string;
 
@@ -28,11 +28,11 @@ type ApiResponse = {
   messages: { hashId: string; role: string; content: string }[];
   createdAt: string;
 };
-export type ApisGetResponse = {
-  gpis: ApiResponse[];
+export type GpisGetResponse = {
+  gpis: GpiResponse[];
 };
 
-export const ApiUpdateSchema = Type.Object({
+export const GpiUpdateSchema = Type.Object({
   description: Type.Optional(Type.String()),
   config: Type.Optional(Type.Any()),
   modelHashId: Type.Optional(Type.Any()),

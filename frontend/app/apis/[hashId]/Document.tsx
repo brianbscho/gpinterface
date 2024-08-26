@@ -3,7 +3,7 @@ import { Badge } from "@/components/ui";
 import useModelStore from "@/store/model";
 import { getApiConfig } from "@/utils/model";
 import { stringify } from "@/utils/string";
-import { ApiGetResponse } from "gpinterface-shared/type/gpi";
+import { GpiGetResponse } from "gpinterface-shared/type/gpi";
 import { ReactNode } from "react";
 
 type TitlePropt = { title: string; description: string };
@@ -35,7 +35,7 @@ const Authentication = ({ userHashId }: { userHashId: string | null }) => {
   );
 };
 
-export default function Document({ api }: { api?: ApiGetResponse }) {
+export default function Document({ api }: { api?: GpiGetResponse }) {
   const models = useModelStore((state) => state.models);
   const model = models.find((m) => m.hashId === api?.modelHashId);
   if (!api || !model) return null;

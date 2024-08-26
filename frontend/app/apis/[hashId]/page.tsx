@@ -3,7 +3,7 @@
 import Document from "./Document";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import callApi from "@/utils/callApi";
-import { ApiGetResponse } from "gpinterface-shared/type/gpi";
+import { GpiGetResponse } from "gpinterface-shared/type/gpi";
 import useUserStore from "@/store/user";
 import { File, FilePen, MessageSquareCode, SquareCode } from "lucide-react";
 import IconTextButton from "@/components/buttons/IconTextButton";
@@ -16,10 +16,10 @@ import ModelPanel from "@/components/ModelPanel";
 
 export default function Page({ params }: { params: { hashId: string } }) {
   const { hashId } = params;
-  const [api, setApi] = useState<ApiGetResponse>();
+  const [api, setApi] = useState<GpiGetResponse>();
   useEffect(() => {
     const callApiApi = async () => {
-      const response = await callApi<ApiGetResponse>({
+      const response = await callApi<GpiGetResponse>({
         endpoint: `/api/${hashId}`,
         showError: true,
       });

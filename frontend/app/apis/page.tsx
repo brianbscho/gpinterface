@@ -3,11 +3,11 @@
 import callApi from "@/utils/callApi";
 import { useCallback, useState, Fragment } from "react";
 import List from "@/components/List";
-import { ApisGetResponse } from "gpinterface-shared/type/gpi";
+import { GpisGetResponse } from "gpinterface-shared/type/gpi";
 import { Badge } from "@/components/ui";
 import Link from "next/link";
 
-function Api({ gpi }: { gpi: ApisGetResponse["gpis"][0] }) {
+function Api({ gpi }: { gpi: GpisGetResponse["gpis"][0] }) {
   const messages = [
     {
       hashId: Math.random().toString(),
@@ -41,12 +41,12 @@ function Api({ gpi }: { gpi: ApisGetResponse["gpis"][0] }) {
 }
 
 export default function Page() {
-  const [gpis, setApis] = useState<ApisGetResponse["gpis"]>();
+  const [gpis, setApis] = useState<GpisGetResponse["gpis"]>();
   const [lastHashId, setLastHashId] = useState("");
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 
   const callApisApi = useCallback(async () => {
-    const response = await callApi<ApisGetResponse>({
+    const response = await callApi<GpisGetResponse>({
       endpoint: `/apis?lastHashId=${lastHashId}`,
       showError: true,
     });

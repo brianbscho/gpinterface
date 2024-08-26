@@ -1,10 +1,10 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
 import {
-  ApiCreateResponse,
-  ApiCreateSchema,
-  ApiGetResponse,
-  ApiUpdateSchema,
+  GpiCreateResponse,
+  GpiCreateSchema,
+  GpiGetResponse,
+  GpiUpdateSchema,
 } from "gpinterface-shared/type/gpi";
 import { ParamSchema } from "gpinterface-shared/type";
 import { createGpi } from "../controllers/api";
@@ -16,7 +16,7 @@ export default async function (fastify: FastifyInstance) {
   fastify.get<{ Params: Static<typeof ParamSchema> }>(
     "/:hashId",
     { schema: { params: ParamSchema } },
-    async (request, reply): Promise<ApiGetResponse> => {
+    async (request, reply): Promise<GpiGetResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
         const { hashId } = request.params;
@@ -67,10 +67,10 @@ export default async function (fastify: FastifyInstance) {
       }
     }
   );
-  fastify.post<{ Body: Static<typeof ApiCreateSchema> }>(
+  fastify.post<{ Body: Static<typeof GpiCreateSchema> }>(
     "/",
-    { schema: { body: ApiCreateSchema } },
-    async (request, reply): Promise<ApiCreateResponse> => {
+    { schema: { body: GpiCreateSchema } },
+    async (request, reply): Promise<GpiCreateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
         const { description, chatHashId, ...body } = request.body;
@@ -117,11 +117,11 @@ export default async function (fastify: FastifyInstance) {
   );
   fastify.put<{
     Params: Static<typeof ParamSchema>;
-    Body: Static<typeof ApiUpdateSchema>;
+    Body: Static<typeof GpiUpdateSchema>;
   }>(
     "/:hashId",
-    { schema: { params: ParamSchema, body: ApiUpdateSchema } },
-    async (request, reply): Promise<ApiCreateResponse> => {
+    { schema: { params: ParamSchema, body: GpiUpdateSchema } },
+    async (request, reply): Promise<GpiCreateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
         const { hashId } = request.params;

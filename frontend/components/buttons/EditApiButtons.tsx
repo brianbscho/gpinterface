@@ -7,14 +7,14 @@ import callApi from "@/utils/callApi";
 import { getApiConfig } from "@/utils/model";
 import { Static } from "@sinclair/typebox";
 import {
-  ApiCreateResponse,
-  ApiGetResponse,
-  ApiUpdateSchema,
+  GpiCreateResponse,
+  GpiGetResponse,
+  GpiUpdateSchema,
 } from "gpinterface-shared/type/gpi";
 import { CheckCircle2, Circle, Save } from "lucide-react";
 import { Dispatch, SetStateAction, useCallback } from "react";
 
-type ApiType = ApiGetResponse | undefined;
+type ApiType = GpiGetResponse | undefined;
 type Props = { useApi: [api: ApiType, Dispatch<SetStateAction<ApiType>>] };
 export default function EditApiButtons({ useApi }: Props) {
   const [api, setApi] = useApi;
@@ -26,8 +26,8 @@ export default function EditApiButtons({ useApi }: Props) {
       if (!api?.hashId) return;
 
       const response = await callApi<
-        ApiCreateResponse,
-        Static<typeof ApiUpdateSchema>
+        GpiCreateResponse,
+        Static<typeof GpiUpdateSchema>
       >({
         endpoint: `/api/${api.hashId}`,
         method: "PUT",
@@ -45,8 +45,8 @@ export default function EditApiButtons({ useApi }: Props) {
     if (!model || !api?.hashId) return;
 
     const response = await callApi<
-      ApiCreateResponse,
-      Static<typeof ApiUpdateSchema>
+      GpiCreateResponse,
+      Static<typeof GpiUpdateSchema>
     >({
       endpoint: `/api/${api.hashId}`,
       method: "PUT",
