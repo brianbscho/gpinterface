@@ -78,7 +78,7 @@ export default function DeployButton({ chatHashId }: { chatHashId: string }) {
       <DialogContent className="max-w-3xl w-11/12 gap-3">
         <div className="flex items-center gap-3">
           <Badge variant="tag" className="h-6">
-            Deploy API
+            Deploy
           </Badge>
           <div className="flex-1"></div>
           <IconTextButton
@@ -96,7 +96,7 @@ export default function DeployButton({ chatHashId }: { chatHashId: string }) {
             <Input
               autoFocus
               className="flex-1"
-              placeholder="API description"
+              placeholder="Description"
               value={description}
               onChange={(e) => setDescription(e.currentTarget.value)}
               disabled={loading}
