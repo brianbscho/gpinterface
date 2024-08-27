@@ -3,7 +3,6 @@ import { ThemeProvider } from "next-themes";
 import MenusDropdown from "./dropdowns/MenusDropdown";
 import Link from "next/link";
 import { Toaster } from "@/components/ui/toaster";
-import NewGpiButton from "./buttons/NewGpiButton";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,7 +30,6 @@ export default function Body({
                   </div>
                 </Link>
                 <div className="flex-1"></div>
-                <NewGpiButton />
                 <MenusDropdown />
               </div>
             </div>
