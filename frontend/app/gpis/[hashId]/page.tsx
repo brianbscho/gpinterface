@@ -5,7 +5,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import callApi from "@/utils/callApi";
 import { GpiGetResponse } from "gpinterface-shared/type/gpi";
 import useUserStore from "@/store/user";
-import { File, FilePen, MessageSquareCode, SquareCode } from "lucide-react";
+import {
+  BotMessageSquare,
+  File,
+  FilePen,
+  MessageSquareCode,
+  SquareCode,
+} from "lucide-react";
 import IconTextButton from "@/components/buttons/IconTextButton";
 import Contents from "@/components/Contents";
 import ModelSelect from "@/components/selects/ModelSelect";
@@ -82,6 +88,13 @@ export default function Page({ params }: { params: { hashId: string } }) {
                   className="w-24 md:w-28"
                   selected={isEditing}
                   onClick={() => setIsEditing((prev) => !prev)}
+                  responsive
+                />
+                <IconTextButton
+                  Icon={BotMessageSquare}
+                  text="Start chat"
+                  className="w-24 md:w-28"
+                  disabled={isEditing}
                   responsive
                 />
               </div>
