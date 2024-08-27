@@ -7,7 +7,8 @@ import { Slider } from "./ui/slider";
 import useModelStore from "@/store/model";
 import { cn } from "@/utils/css";
 
-export default function Model({ className }: { className?: string }) {
+type Props = { className?: string; disabled?: boolean };
+export default function Model({ className, disabled }: Props) {
   const [model, config, setModelStore] = useModelStore((state) => [
     state.model,
     state.config,
@@ -58,6 +59,7 @@ export default function Model({ className }: { className?: string }) {
                   ? "number"
                   : undefined
               }
+              disabled={disabled}
             />
           )}
           {typeof c.min === "number" && typeof c.max === "number" && (
@@ -73,6 +75,7 @@ export default function Model({ className }: { className?: string }) {
                 step={c.type === "integer" ? 1 : 0.01}
                 value={[Number(config[c.name] ?? c.default)]}
                 onValueChange={(v) => onChange(c.name)(v[0].toString())}
+                disabled={disabled}
               />
             </div>
           )}
@@ -80,6 +83,7 @@ export default function Model({ className }: { className?: string }) {
             <Select
               options={c.options.map((o) => o.value)}
               useOption={[config[c.name] ?? c.default, onChange(c.name)]}
+              disabled={disabled}
             />
           )}
           <div className="text-neutral-400">{c.description}</div>
