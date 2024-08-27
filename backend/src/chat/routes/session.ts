@@ -4,29 +4,19 @@ import {
   ChatCompletionModelSelect,
   createEntity,
 } from "../../util/prisma";
-import { Static, Type } from "@sinclair/typebox";
+import { Static } from "@sinclair/typebox";
 import { getApiKey } from "../controllers/apiKey";
 import { getTextResponse } from "../../util/text";
 import { Prisma } from "@prisma/client";
 import { createSession } from "../../controllers/session";
-
-const SessionCreateSchema = Type.Object({
-  gpiHashId: Type.String(),
-});
-type SessionCreateResponse = { hashId: string };
-
-const SessionCompletionSchema = Type.Object({
-  sessionHashId: Type.String(),
-  message: Type.String(),
-});
-type SessionCompletionResponse = { content: string };
-
-const SessionMessagesGetSchema = Type.Object({
-  sessionHashId: Type.String(),
-});
-type SessionMessagesGetResponse = {
-  messages: { role: string; content: string }[];
-};
+import {
+  SessionCompletionResponse,
+  SessionCompletionSchema,
+  SessionCreateResponse,
+  SessionCreateSchema,
+  SessionMessagesGetResponse,
+  SessionMessagesGetSchema,
+} from "gpinterface-shared/type/session";
 
 export default async function (fastify: FastifyInstance) {
   fastify.post<{ Body: Static<typeof SessionCreateSchema> }>(
