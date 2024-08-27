@@ -1,33 +1,37 @@
 import CopyButton from "@/components/buttons/CopyButton";
+import IconTextButton from "@/components/buttons/IconTextButton";
 import { Badge } from "@/components/ui";
 import useModelStore from "@/store/model";
 import { getApiConfig } from "@/utils/model";
 import { stringify } from "@/utils/string";
 import { GpiGetResponse } from "gpinterface-shared/type/gpi";
+import { Play } from "lucide-react";
 import { ReactNode } from "react";
 
-type TitlePropt = { title: string; description: string };
-function Title({ title, description }: TitlePropt) {
+type TitleProps = { title: string; description: string };
+function Title({ title, description }: TitleProps) {
   return (
     <div>
-      <Badge variant="tag">{title}</Badge>
+      <div className="flex gap-3 items-center mb-1">
+        <Badge variant="tag">{title}</Badge>
+        <IconTextButton Icon={Play} text="Try" size="small" className="w-16" />
+      </div>
       <div className="text-neutral-400">{description}</div>
     </div>
   );
 }
 
-type ElementProp = { title: string; children: ReactNode };
-function Element({ title, children }: ElementProp) {
+type ElementProps = { title: string; children: ReactNode };
+function Element({ title, children }: ElementProps) {
   return (
     <div>
       <div className="font-bold text-neutral-100">{title}</div>
-      <div className="text-sm text-neutral-400">{children}</div>
+      <div className="text-sm text-neutral-400 text-wrap">{children}</div>
     </div>
   );
 }
 
-const Authentication = ({ userHashId }: { userHashId: string | null }) => {
-  if (!userHashId) return null;
+const Authentication = () => {
   return (
     <Element title="Header">
       {`Authorization: Bearer {YOUR_GPINTERFACE_API_KEY}`}
@@ -35,9 +39,83 @@ const Authentication = ({ userHashId }: { userHashId: string | null }) => {
   );
 };
 
+type GpiProps = {
+  title: string;
+  description: string;
+  method: "GET" | "POST";
+  path: string;
+  body: { [key: string]: string | undefined };
+  keys: string[];
+  response: string;
+};
+function Gpi({ title, description, response, ...props }: GpiProps) {
+  const { method, path, body, keys } = props;
+  keys.forEach((key) => {
+    body[key] = "string";
+  });
+
+  return (
+    <>
+      <Title title={title} description={description} />
+      <Element title={method}>
+        {`${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}${path}`}
+      </Element>
+      <Authentication />
+      {Object.keys(body).length > 0 && (
+        <Element title="Body">
+          {JSON.stringify(body).split(":").join(": ").split(",").join(", ")}
+        </Element>
+      )}
+      <Element title="Response">{response}</Element>
+    </>
+  );
+}
+
 export default function Document({ gpi }: { gpi?: GpiGetResponse }) {
   const models = useModelStore((state) => state.models);
   const model = models.find((m) => m.hashId === gpi?.modelHashId);
+  const documents = [
+    {
+      title: "Chat Completion",
+      description:
+        "Send a message that will be added to the end of a predefined messages and receive an response for one-time chat interactions. Ideal for isolated queries without session persistence.",
+      method: "POST" as const,
+      path: "/chat/completion",
+      body: { gpiHashId: gpi?.hashId ?? "" },
+      keys: ["message"],
+      response: "{content: string}",
+    },
+    {
+      title: "Create Session",
+      description:
+        "Initialize a new session and receive a hashed session ID, enabling users to maintain a continuous conversation.",
+      method: "POST" as const,
+      path: "/session",
+      body: { gpiHashId: gpi?.hashId ?? "" },
+      keys: [],
+      response: '{hashId: "SESSION_ID"}',
+    },
+    {
+      title: "Session Completion",
+      description:
+        "Submit query within an active session, where it will be appended to the end of existing messages, to receive response that will be stored within the session, allowing ongoing dialogue.",
+      method: "POST" as const,
+      path: "/session/completion",
+      body: {},
+      keys: ["sessionHashId", "message"],
+      response: "{content: string}",
+    },
+    {
+      title: "Retrieve Session Messages",
+      description:
+        "Retrieve the entire message history from a specific session.",
+      method: "GET" as const,
+      path: "/session/{sessionHashId}/messages",
+      body: {},
+      keys: [],
+      response: "{ messages: {role: string; content: string;}[] }",
+    },
+  ];
   if (!gpi || !model) return null;
 
   return (
@@ -61,61 +139,9 @@ export default function Document({ gpi }: { gpi?: GpiGetResponse }) {
           text={`${process.env.NEXT_PUBLIC_HOSTNAME}/gpis/${gpi.hashId}`}
         />
       </Element>
-      <Title
-        title="Chat Completion"
-        description="Send a message that will be added to the end of a predefined messages
-          and receive an response for one-time chat interactions. Ideal for
-          isolated queries without session persistence."
-      />
-      <Element title="POST">
-        {process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/chat/completion
-      </Element>
-      <Authentication userHashId={gpi.userHashId} />
-      <Element title="Body">
-        {`{gpiHashId: "${gpi.hashId}", message: string}`}
-      </Element>
-      <Element title="Response">{`{content: string}`}</Element>
-      <Title
-        title="Create Session"
-        description="Initialize a new session and receive a hashed session ID, enabling
-          users to maintain a continuous conversation."
-      />
-      <Element title="POST">
-        {process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/session
-      </Element>
-      <Authentication userHashId={gpi.userHashId} />
-      <Element title="Body">
-        <div>{`{gpiHashId: "${gpi.hashId}"}`}</div>
-      </Element>
-      <Element title="Response">{`{hashId: "SESSION_ID"}`}</Element>
-      <Title
-        title="Session Completion"
-        description="Submit query within an active session, where it will be appended to
-          the end of existing messages, to receive response that will be stored
-          within the session, allowing ongoing dialogue."
-      />
-      <Element title="POST">
-        {process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/session/completion
-      </Element>
-      <Authentication userHashId={gpi.userHashId} />
-      <Element title="Body">
-        <div>{`{sessionHashId: "SESSION_ID", message: string}`}</div>
-      </Element>
-      <Element title="Response">{`{content: string}`}</Element>
-      <Title
-        title="Retrieve Session Messages"
-        description="Retrieve the entire message history from a specific session."
-      />
-      <Element title="GET">
-        {`${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/session/{sessionHashId}/messages`}
-      </Element>
-      <Authentication userHashId={gpi.userHashId} />
-      <Element title="Query Parameter">
-        {`{sessionHashId: "SESSION_ID"}`}
-      </Element>
-      <Element title="Response">
-        {`{ messages: {role: string; content: string;}[] }`}
-      </Element>
+      {documents.map((doc) => (
+        <Gpi key={doc.path} {...doc} />
+      ))}
     </div>
   );
 }
