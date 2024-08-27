@@ -428,7 +428,9 @@ export default function Contents({
       })}
       {editable && (
         <ContentInput onSubmit={onSubmit}>
-          <AnswerYourselfButton chat={chat} setContents={setContents} />
+          {!hideButtons && (
+            <AnswerYourselfButton chat={chat} setContents={setContents} />
+          )}
         </ContentInput>
       )}
     </div>
