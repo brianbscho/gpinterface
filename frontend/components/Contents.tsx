@@ -167,12 +167,10 @@ function Content({
     <CardContent className="p-0">
       <div className="flex items-center gap-1 mb-3">
         {content.role !== "assistant" && (
-          <Badge className="h-6" variant="tag">
-            {content.role}
-          </Badge>
+          <Badge className="h-6">{content.role}</Badge>
         )}
         {content.role === "assistant" && (
-          <Badge className="h-6" variant="tag">
+          <Badge className="h-6">
             {!content.model ? "assistant" : content.model.name}
           </Badge>
         )}

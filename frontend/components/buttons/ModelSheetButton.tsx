@@ -28,9 +28,10 @@ export default function ModelSheetButton({
       <SheetTrigger className={className} asChild>
         <IconTextButton
           Icon={ChevronLeft}
-          text="Models"
+          text="Model"
           size="small"
-          className="w-24"
+          className="w-full md:w-32"
+          responsive
         />
       </SheetTrigger>
       <SheetContent className="p-0">

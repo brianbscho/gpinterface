@@ -41,7 +41,7 @@ export default function Document({ gpi }: { gpi?: GpiGetResponse }) {
   if (!gpi || !model) return null;
 
   return (
-    <div className="md:pl-[9.5rem] px-3 pb-3 w-full h-full overflow-y-auto flex flex-col gap-7">
+    <div className="w-full h-full flex flex-col gap-7">
       <div>
         <Badge variant="tag">Info</Badge>
         <div className="font-bold">{model.name}</div>

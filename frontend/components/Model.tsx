@@ -40,7 +40,7 @@ export default function Model({ className, disabled, modelHashId }: Props) {
   return (
     <div
       className={cn(
-        "w-full flex flex-col gap-7 md:pl-[8.5rem] whitespace-pre-wrap text-sm",
+        "w-full flex flex-col gap-7 whitespace-pre-wrap text-sm",
         className
       )}
     >
