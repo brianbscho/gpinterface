@@ -94,24 +94,24 @@ export default function Page() {
                         responsive
                       />
                     </HistoryDialog>
-                    <div>
-                      <Link
-                        href={
-                          h.gpiHashId
-                            ? `/gpis/${h.gpiHashId}`
-                            : h.chatHashId
-                            ? `/chats/${h.chatHashId}`
-                            : "/#"
-                        }
-                      >
-                        <IconTextButton
-                          Icon={h.gpiHashId ? SquareCode : MessageSquareCode}
-                          text={h.gpiHashId ? "Gpi" : "Chat"}
-                          className="w-16 md:w-24"
-                          responsive
-                        />
-                      </Link>
-                    </div>
+                    {(!!h.gpiHashId || !!h.chatHashId) && (
+                      <div>
+                        <Link
+                          href={
+                            h.gpiHashId
+                              ? `/gpis/${h.gpiHashId}`
+                              : `/chats/${h.chatHashId}`
+                          }
+                        >
+                          <IconTextButton
+                            Icon={h.gpiHashId ? SquareCode : MessageSquareCode}
+                            text={h.gpiHashId ? "Gpi" : "Chat"}
+                            className="w-16 md:w-24"
+                            responsive
+                          />
+                        </Link>
+                      </div>
+                    )}
                   </div>
                   <div className="self-start text-sm">{h.inputTokens}</div>
                   <div className="self-start text-sm">{h.outputTokens}</div>
