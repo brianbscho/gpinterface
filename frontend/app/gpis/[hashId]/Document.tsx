@@ -1,5 +1,6 @@
 import CopyButton from "@/components/buttons/CopyButton";
 import IconTextButton from "@/components/buttons/IconTextButton";
+import TryButton from "@/components/buttons/TryButton";
 import { Badge } from "@/components/ui";
 import useModelStore from "@/store/model";
 import { getApiConfig } from "@/utils/model";
@@ -8,13 +9,20 @@ import { GpiGetResponse } from "gpinterface-shared/type/gpi";
 import { Play } from "lucide-react";
 import { ReactNode } from "react";
 
-type TitleProps = { title: string; description: string };
-function Title({ title, description }: TitleProps) {
+type TitleProps = {
+  title: string;
+  description: string;
+  method: "GET" | "POST";
+  path: string;
+  body: { [key: string]: string | undefined };
+  keys: string[];
+};
+function Title({ title, description, ...props }: TitleProps) {
   return (
     <div>
       <div className="flex gap-3 items-center mb-1">
         <Badge variant="tag">{title}</Badge>
-        <IconTextButton Icon={Play} text="Try" size="small" className="w-16" />
+        <TryButton title={title} {...props} />
       </div>
       <div className="text-neutral-400">{description}</div>
     </div>
@@ -50,20 +58,22 @@ type GpiProps = {
 };
 function Gpi({ title, description, response, ...props }: GpiProps) {
   const { method, path, body, keys } = props;
-  keys.forEach((key) => {
-    body[key] = "string";
-  });
 
   return (
     <>
-      <Title title={title} description={description} />
+      <Title title={title} description={description} {...props} />
       <Element title={method}>
         {`${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}${path}`}
       </Element>
       <Authentication />
-      {Object.keys(body).length > 0 && (
+      {(Object.keys(body).length > 0 || keys.length > 0) && (
         <Element title="Body">
-          {JSON.stringify(body).split(":").join(": ").split(",").join(", ")}
+          {`{`}
+          {Object.keys(body)
+            .map((key) => `"${key}": "${body[key]}"`)
+            .concat(keys.map((key) => `"${key}": "string"`))
+            .join(", ")}
+          {`}`}
         </Element>
       )}
       <Element title="Response">{response}</Element>
