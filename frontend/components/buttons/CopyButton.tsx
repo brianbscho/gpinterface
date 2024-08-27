@@ -14,10 +14,7 @@ export default function CopyButton({ text }: Props) {
   }, [text, toast]);
 
   return (
-    <div
-      className="flex items-center underline gap-3 cursor-pointer"
-      onClick={onClick}
-    >
+    <div className="flex items-center gap-3 cursor-pointer" onClick={onClick}>
       <div className="text-sm flex-1 truncate">{text}</div>
       <IconTextButton
         Icon={Copy}
