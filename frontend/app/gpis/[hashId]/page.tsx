@@ -5,7 +5,13 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import callApi from "@/utils/callApi";
 import { GpiGetResponse } from "gpinterface-shared/type/gpi";
 import useUserStore from "@/store/user";
-import { File, FilePen, MessageSquareCode, SquareCode } from "lucide-react";
+import {
+  Bot,
+  File,
+  FilePen,
+  MessageSquareCode,
+  SquareCode,
+} from "lucide-react";
 import IconTextButton from "@/components/buttons/IconTextButton";
 import Contents from "@/components/Contents";
 import ModelSelect from "@/components/selects/ModelSelect";
@@ -52,7 +58,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
         <div className="absolute top-0 left-3 flex md:flex-col gap-3">
           <IconTextButton
             onClick={() => setTab("gpi")}
-            className="w-24 md:w-32"
+            className="w-28 md:w-32"
             Icon={MessageSquareCode}
             text="GPI"
             selected={tab === "gpi"}
@@ -66,6 +72,25 @@ export default function Page({ params }: { params: { hashId: string } }) {
             selected={tab === "document"}
             responsive
           />
+          {editable && (
+            <>
+              <IconTextButton
+                Icon={isEditing ? FilePen : File}
+                text={isEditing ? "Editing" : "Edit"}
+                className="w-28 md:w-32"
+                selected={isEditing}
+                onClick={() => setIsEditing((prev) => !prev)}
+                responsive
+              />
+              <IconTextButton
+                Icon={Bot}
+                text="Start chat"
+                className="w-28 md:w-32"
+                onClick={() => setIsEditing((prev) => !prev)}
+                responsive
+              />
+            </>
+          )}
         </div>
         <ModelSheetButton
           className="md:hidden absolute h-6 top-0 right-3"
@@ -73,27 +98,15 @@ export default function Page({ params }: { params: { hashId: string } }) {
           editable={editable}
         />
         <div className={getTabContentClassName("gpi")}>
-          <div className="md:pl-[9.5rem] px-3 pb-3 w-full h-full overflow-y-auto">
-            {editable && (
-              <div className="flex gap-3 items-center mb-3">
-                <IconTextButton
-                  Icon={isEditing ? FilePen : File}
-                  text={isEditing ? "Editing" : "Edit"}
-                  className="w-24 md:w-28"
-                  selected={isEditing}
-                  onClick={() => setIsEditing((prev) => !prev)}
-                  responsive
-                />
-              </div>
-            )}
-            {!!gpi && (
+          {!!gpi && (
+            <div className="md:pl-[9.5rem] px-3 pb-3 w-full h-full overflow-y-auto">
               <Contents
                 chat={gpi.chat}
                 gpiHashId={gpi.hashId}
                 ownerUserHashId={isEditing ? gpi.userHashId : "non-editable"}
               />
-            )}
-          </div>
+            </div>
+          )}
         </div>
         <div className={getTabContentClassName("document")}>
           <Document gpi={gpi} />
