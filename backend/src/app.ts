@@ -17,6 +17,7 @@ import content from "./routes/content";
 import contents from "./routes/contents";
 import histories from "./routes/histories";
 import providerTypes from "./routes/providerTypes";
+import session from "./routes/session";
 
 const fastify = Fastify({
   logger: {
@@ -55,6 +56,7 @@ fastify.register(gpi, { prefix: "/gpi" });
 fastify.register(gpis, { prefix: "/gpis" });
 fastify.register(histories, { prefix: "/histories" });
 fastify.register(providerTypes, { prefix: "/provider/types" });
+fastify.register(session, { prefix: "/session" });
 fastify.register(user, { prefix: "/user" });
 
 const start = async () => {
