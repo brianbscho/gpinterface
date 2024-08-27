@@ -5,13 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import callApi from "@/utils/callApi";
 import { GpiGetResponse } from "gpinterface-shared/type/gpi";
 import useUserStore from "@/store/user";
-import {
-  Bot,
-  File,
-  FilePen,
-  MessageSquareCode,
-  SquareCode,
-} from "lucide-react";
+import { MessageSquareCode, SquareCode } from "lucide-react";
 import IconTextButton from "@/components/buttons/IconTextButton";
 import Contents from "@/components/Contents";
 import ModelSelect from "@/components/selects/ModelSelect";
@@ -49,7 +43,6 @@ export default function Page({ params }: { params: { hashId: string } }) {
     () => !gpi?.userHashId || gpi?.userHashId === userHashId,
     [gpi?.userHashId, userHashId]
   );
-  const [isEditing, setIsEditing] = useState(false);
 
   return (
     <div className="w-full flex-1 flex flex-col gap-3 pt-3 overflow-hidden">
@@ -72,25 +65,6 @@ export default function Page({ params }: { params: { hashId: string } }) {
             selected={tab === "document"}
             responsive
           />
-          {editable && (
-            <>
-              <IconTextButton
-                Icon={isEditing ? FilePen : File}
-                text={isEditing ? "Editing" : "Edit"}
-                className="w-28 md:w-32"
-                selected={isEditing}
-                onClick={() => setIsEditing((prev) => !prev)}
-                responsive
-              />
-              <IconTextButton
-                Icon={Bot}
-                text="Start chat"
-                className="w-28 md:w-32"
-                onClick={() => setIsEditing((prev) => !prev)}
-                responsive
-              />
-            </>
-          )}
         </div>
         <ModelSheetButton
           className="md:hidden absolute h-6 top-0 right-3"
@@ -103,7 +77,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
               <Contents
                 chat={gpi.chat}
                 gpiHashId={gpi.hashId}
-                ownerUserHashId={isEditing ? gpi.userHashId : "non-editable"}
+                ownerUserHashId={gpi.userHashId}
               />
             </div>
           )}
