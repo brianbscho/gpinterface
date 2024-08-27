@@ -1,5 +1,5 @@
 import { ChevronLeft } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "../ui";
+import { Button, Sheet, SheetContent, SheetTrigger } from "../ui";
 import IconTextButton from "./IconTextButton";
 import ModelSelect from "../selects/ModelSelect";
 import ModelResetButton from "./ModelResetButton";
@@ -15,6 +15,7 @@ type Props = {
   disabled?: boolean;
   useGpi?: [gpi: GpiType, Dispatch<SetStateAction<GpiType>>];
   modelHashId?: string;
+  isIcon?: boolean;
 };
 export default function ModelSheetButton({
   className,
@@ -22,17 +23,24 @@ export default function ModelSheetButton({
   disabled,
   useGpi,
   modelHashId,
+  isIcon,
 }: Props) {
   return (
     <Sheet>
       <SheetTrigger className={className} asChild>
-        <IconTextButton
-          Icon={ChevronLeft}
-          text="Model"
-          size="small"
-          className="w-full md:w-32"
-          responsive
-        />
+        {isIcon ? (
+          <Button variant="default" className="h-6 w-6 p-1 ">
+            <ChevronLeft />
+          </Button>
+        ) : (
+          <IconTextButton
+            Icon={ChevronLeft}
+            text="Model"
+            size="small"
+            className="w-full md:w-32"
+            responsive
+          />
+        )}
       </SheetTrigger>
       <SheetContent className="p-0">
         <div className="w-full h-full overflow-y-auto relative">

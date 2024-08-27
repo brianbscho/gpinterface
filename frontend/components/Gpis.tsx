@@ -34,9 +34,12 @@ function Gpi({ gpi }: { gpi: GpiGetResponse }) {
   return (
     <div className="w-full">
       <div className="whitespace-pre-wrap">
-        <Badge variant="tag" className="text-sm">
-          {model?.name || "assistant"}
-        </Badge>
+        <div className="flex items-center gap-1">
+          <Badge variant="tag" className="text-sm">
+            {model?.name || "assistant"}
+          </Badge>
+          <ModelSheetButton disabled isIcon />
+        </div>
         <div className="mt-1">{gpi?.description ?? ""}</div>
       </div>
       <div className="flex flex-col md:flex-row gap-3 items-start mt-0 md:mt-3">
@@ -68,9 +71,6 @@ function Gpi({ gpi }: { gpi: GpiGetResponse }) {
               className="w-full md:w-32"
               responsive
             />
-          </div>
-          <div>
-            <ModelSheetButton disabled />
           </div>
         </div>
         <div className="flex-1 w-full md:w-auto">
