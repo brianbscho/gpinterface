@@ -1,84 +1,34 @@
 "use client";
 
-import { CornerDownLeft, PenSquare } from "lucide-react";
+import { CornerDownLeft } from "lucide-react";
 import { Badge, Button, Textarea } from "../ui";
 import {
-  Dispatch,
   FormEvent,
   KeyboardEvent,
-  SetStateAction,
+  ReactNode,
   useCallback,
   useState,
 } from "react";
-import callApi from "@/utils/callApi";
-import { Static } from "@sinclair/typebox";
-import {
-  Content,
-  ContentCreateSchema,
-  ContentsCreateResponse,
-  ContentsCreateSchema,
-} from "gpinterface-shared/type/content";
-import { getApiConfig } from "@/utils/model";
-import SmallHoverButton from "../buttons/SmallHoverButton";
-import useModelStore from "@/store/model";
 
 type Props = {
-  chatHashId: string;
-  gpiHashId?: string;
-  setContents: Dispatch<SetStateAction<Content[]>>;
-  setRefreshingHashId: (hashId: string | undefined) => void;
+  onSubmit: (content: string) => Promise<void>;
+  children?: ReactNode;
 };
 
-export default function ContentInput({
-  chatHashId,
-  gpiHashId,
-  setContents,
-  setRefreshingHashId,
-}: Props) {
+export default function ContentInput({ onSubmit: _onSubmit, children }: Props) {
   const [content, setContent] = useState("");
-
-  const [config, model] = useModelStore((state) => [state.config, state.model]);
-
   const [loading, setLoading] = useState(false);
   const onSubmit = useCallback(
     async (e: FormEvent) => {
       e.preventDefault();
-      if (!model) return;
-
-      setRefreshingHashId("");
       setLoading(true);
-      const response = await callApi<
-        ContentsCreateResponse,
-        Static<typeof ContentCreateSchema>
-      >({
-        endpoint: `/content`,
-        method: "POST",
-        body: {
-          chatHashId,
-          gpiHashId,
-          modelHashId: model.hashId,
-          content,
-          config: getApiConfig(model, config),
-        },
-        showError: true,
-      });
-      if (response) {
-        setContent("");
-        setContents((prev) => [...prev, ...response.contents]);
-      }
-      setRefreshingHashId(undefined);
+      await _onSubmit(content);
+      setContent("");
       setLoading(false);
     },
-    [
-      chatHashId,
-      gpiHashId,
-      model,
-      content,
-      config,
-      setContents,
-      setRefreshingHashId,
-    ]
+    [content]
   );
+
   const onKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === "Enter" && !e.shiftKey) {
@@ -89,20 +39,6 @@ export default function ContentInput({
     [onSubmit]
   );
 
-  const onClickAnswerYourself = useCallback(async () => {
-    const response = await callApi<
-      ContentsCreateResponse,
-      Static<typeof ContentsCreateSchema>
-    >({
-      method: "POST",
-      endpoint: "/contents",
-      body: { chatHashId },
-    });
-    if (response) {
-      setContents((prev) => prev.concat(response.contents));
-    }
-  }, [chatHashId, setContents]);
-
   return (
     <div className="p-0">
       <div className="flex items-center mb-3">
@@ -110,16 +46,7 @@ export default function ContentInput({
           user
         </Badge>
         <div className="flex-1"></div>
-        <SmallHoverButton message="Answer yourself">
-          <Button
-            className="p-1 h-6 w-6"
-            variant="default"
-            loading={loading}
-            onClick={onClickAnswerYourself}
-          >
-            <PenSquare />
-          </Button>
-        </SmallHoverButton>
+        {children}
       </div>
       <div className="text-sm text-muted-foreground">
         <form onSubmit={onSubmit}>

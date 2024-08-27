@@ -317,6 +317,35 @@ export default function Contents({
   );
   const [refreshingHashId, setRefreshingHashId] = useState<string>();
 
+  const [config, model] = useModelStore((state) => [state.config, state.model]);
+  const onSubmit = useCallback(
+    async (content: string) => {
+      if (!model) return;
+
+      setRefreshingHashId("");
+      const response = await callApi<
+        ContentsCreateResponse,
+        Static<typeof ContentCreateSchema>
+      >({
+        endpoint: `/content`,
+        method: "POST",
+        body: {
+          chatHashId: chat.hashId,
+          gpiHashId,
+          modelHashId: model.hashId,
+          content,
+          config: getApiConfig(model, config),
+        },
+        showError: true,
+      });
+      if (response) {
+        setContents((prev) => [...prev, ...response.contents]);
+      }
+      setRefreshingHashId(undefined);
+    },
+    [chat.hashId, gpiHashId, model, config]
+  );
+
   return (
     <div className={cn("flex flex-col gap-3", className)}>
       <Content
@@ -349,12 +378,9 @@ export default function Contents({
         );
       })}
       {editable && (
-        <ContentInput
-          chatHashId={chat.hashId}
-          gpiHashId={gpiHashId}
-          setContents={setContents}
-          setRefreshingHashId={setRefreshingHashId}
-        />
+        <ContentInput onSubmit={onSubmit}>
+          <AnswerYourselfButton chat={chat} setContents={setContents} />
+        </ContentInput>
       )}
     </div>
   );
