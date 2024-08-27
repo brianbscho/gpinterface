@@ -22,3 +22,10 @@ export const ChatUpdateSchema = Type.Object({
 });
 
 export type ChatCreateResponse = Chat;
+
+export const ChatCompletionSchema = Type.Object({
+  gpiHashId: Type.String(),
+  message: Type.String(),
+});
+
+export type ChatCompletionResponse = { content: string };
