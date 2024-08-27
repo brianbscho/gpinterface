@@ -66,7 +66,7 @@ export default function TryButton({ title, method, path, body, keys }: Props) {
       <DialogTrigger asChild>
         <IconTextButton Icon={Play} text="Try" size="small" className="w-16" />
       </DialogTrigger>
-      <DialogContent className="max-w-4xl w-11/12 overflow-y-auto">
+      <DialogContent className="max-w-3xl w-11/12 overflow-y-auto">
         <DialogHeader>{title}</DialogHeader>
         <DialogDescription className="whitespace-pre-wrap text-neutral-400 text-xs md:text-base">
           <form onSubmit={onSubmit}>

@@ -24,7 +24,7 @@ export default function ContentsDialog({ useContents }: Props) {
         }
       }}
     >
-      <DialogContent close className="w-11/12 max-w-4xl">
+      <DialogContent close className="max-w-3xl w-11/12">
         {contents.map((content) => (
           <CardContent key={content.hashId} className="p-3">
             <div className="flex items-center mb-3">

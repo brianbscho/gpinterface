@@ -21,7 +21,7 @@ export default function History({ history, children }: Props) {
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent close className="w-11/12 max-w-4xl">
+      <DialogContent close className="max-w-3xl w-11/12">
         <DialogHeader>
           <DialogTitle>Detail</DialogTitle>
         </DialogHeader>

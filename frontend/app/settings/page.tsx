@@ -146,8 +146,8 @@ export default function Page() {
 
   if (!user) return null;
   return (
-    <div className="flex flex-col gap-3 px-3">
-      <div className="mt-3 grid grid-cols-[auto_auto_1fr] gap-3 items-center text-sm">
+    <div className="w-full flex flex-col gap-3 px-3">
+      <div className="w-full max-w-4xl mt-3 mx-auto grid grid-cols-[auto_1fr_auto] gap-3 items-center text-sm">
         <div className="font-bold">Email</div>
         <div className="text-neutral-400 col-span-2">{user.email}</div>
         <div className="font-bold">Username</div>
@@ -228,7 +228,7 @@ export default function Page() {
         />
       </div>
       <AlertDialog open={newKey.length > 0}>
-        <AlertDialogContent className="max-w-4xl w-11/12 rounded-md">
+        <AlertDialogContent className="max-w-3xl w-11/12 rounded-md">
           <AlertDialogTitle>API Key</AlertDialogTitle>
           <AlertDialogDescription>
             <div>
