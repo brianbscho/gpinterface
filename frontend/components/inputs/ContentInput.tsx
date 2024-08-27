@@ -19,7 +19,6 @@ import {
   ContentsCreateSchema,
 } from "gpinterface-shared/type/content";
 import { getApiConfig } from "@/utils/model";
-import ContentsDialog from "../dialogs/ContentsDialog";
 import SmallHoverButton from "../buttons/SmallHoverButton";
 import useModelStore from "@/store/model";
 
@@ -28,7 +27,6 @@ type Props = {
   gpiHashId?: string;
   setContents: Dispatch<SetStateAction<Content[]>>;
   setRefreshingHashId: (hashId: string | undefined) => void;
-  editable: boolean;
 };
 
 export default function ContentInput({
@@ -36,13 +34,11 @@ export default function ContentInput({
   gpiHashId,
   setContents,
   setRefreshingHashId,
-  editable,
 }: Props) {
   const [content, setContent] = useState("");
 
   const [config, model] = useModelStore((state) => [state.config, state.model]);
 
-  const [responseContents, setResponseContents] = useState<Content[]>([]);
   const [loading, setLoading] = useState(false);
   const onSubmit = useCallback(
     async (e: FormEvent) => {
@@ -68,11 +64,7 @@ export default function ContentInput({
       });
       if (response) {
         setContent("");
-        if (editable) {
-          setContents((prev) => [...prev, ...response.contents]);
-        } else {
-          setResponseContents(response.contents);
-        }
+        setContents((prev) => [...prev, ...response.contents]);
       }
       setRefreshingHashId(undefined);
       setLoading(false);
@@ -85,7 +77,6 @@ export default function ContentInput({
       config,
       setContents,
       setRefreshingHashId,
-      editable,
     ]
   );
   const onKeyDown = useCallback(
@@ -119,18 +110,16 @@ export default function ContentInput({
           user
         </Badge>
         <div className="flex-1"></div>
-        {editable && (
-          <SmallHoverButton message="Answer yourself">
-            <Button
-              className="p-1 h-6 w-6"
-              variant="default"
-              loading={loading}
-              onClick={onClickAnswerYourself}
-            >
-              <PenSquare />
-            </Button>
-          </SmallHoverButton>
-        )}
+        <SmallHoverButton message="Answer yourself">
+          <Button
+            className="p-1 h-6 w-6"
+            variant="default"
+            loading={loading}
+            onClick={onClickAnswerYourself}
+          >
+            <PenSquare />
+          </Button>
+        </SmallHoverButton>
       </div>
       <div className="text-sm text-muted-foreground">
         <form onSubmit={onSubmit}>
@@ -154,7 +143,6 @@ export default function ContentInput({
           </div>
         </form>
       </div>
-      <ContentsDialog useContents={[responseContents, setResponseContents]} />
     </div>
   );
 }

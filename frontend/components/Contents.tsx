@@ -346,13 +346,14 @@ export default function Contents({
           />
         );
       })}
-      <ContentInput
-        chatHashId={chat.hashId}
-        gpiHashId={gpiHashId}
-        setContents={setContents}
-        setRefreshingHashId={setRefreshingHashId}
-        editable={editable}
-      />
+      {editable && (
+        <ContentInput
+          chatHashId={chat.hashId}
+          gpiHashId={gpiHashId}
+          setContents={setContents}
+          setRefreshingHashId={setRefreshingHashId}
+        />
+      )}
     </div>
   );
 }
