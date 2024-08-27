@@ -28,7 +28,6 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<ContentsCreateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
-        const userHashId = user.hashId || null;
         const { content: userContent, gpiHashId, ...body } = request.body;
 
         const model = await fastify.prisma.model.findFirst({
@@ -36,7 +35,7 @@ export default async function (fastify: FastifyInstance) {
             hashId: body.modelHashId,
             isAvailable: true,
             isFree: true,
-            ...(!userHashId && { isLoginRequired: false }),
+            ...(!user.hashId && { isLoginRequired: false }),
           },
           select: ChatCompletionModelSelect,
         });
@@ -45,7 +44,10 @@ export default async function (fastify: FastifyInstance) {
         }
 
         const chat = await fastify.prisma.chat.findFirst({
-          where: { hashId: body.chatHashId },
+          where: {
+            hashId: body.chatHashId,
+            OR: [{ userHashId: user.hashId }, { userHashId: null }],
+          },
           select: {
             systemMessage: true,
             contents: ChatCompletionContentsQuery,
@@ -73,7 +75,7 @@ export default async function (fastify: FastifyInstance) {
 
         const history = await createEntity(fastify.prisma.history.create, {
           data: {
-            userHashId,
+            userHashId: user.hashId || null,
             chatHashId: body.chatHashId,
             gpiHashId,
             provider: model.provider.name,
@@ -101,7 +103,7 @@ export default async function (fastify: FastifyInstance) {
           },
         ];
 
-        if (!chat.userHashId || chat.userHashId === userHashId) {
+        if (!chat.userHashId || chat.userHashId === user.hashId) {
           const _userContent = await createEntity(
             fastify.prisma.chatContent.create,
             {
@@ -144,19 +146,18 @@ export default async function (fastify: FastifyInstance) {
         const { content } = request.body;
 
         const oldContent = await fastify.prisma.chatContent.findFirst({
-          where: { hashId },
-          select: { hashId: true, chat: { select: { userHashId: true } } },
+          where: {
+            hashId,
+            chat: { OR: [{ userHashId: user.hashId }, { userHashId: null }] },
+          },
+          select: { hashId: true },
         });
-        if (
-          !oldContent ||
-          (oldContent.chat.userHashId &&
-            oldContent.chat.userHashId !== user.hashId)
-        ) {
+        if (!oldContent) {
           throw fastify.httpErrors.badRequest("content is not available.");
         }
 
         await fastify.prisma.chatContent.update({
-          where: { hashId: oldContent.hashId },
+          where: { hashId },
           data: { content },
         });
 
@@ -176,7 +177,6 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<Content> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
-        const userHashId = user.hashId || null;
         const { hashId } = request.params;
         const { chatHashId, modelHashId, config } = request.body;
 
@@ -185,7 +185,7 @@ export default async function (fastify: FastifyInstance) {
             hashId: modelHashId,
             isAvailable: true,
             isFree: true,
-            ...(!userHashId && { isLoginRequired: false }),
+            ...(!user.hashId && { isLoginRequired: false }),
           },
           select: ChatCompletionModelSelect,
         });
@@ -193,7 +193,10 @@ export default async function (fastify: FastifyInstance) {
           throw fastify.httpErrors.badRequest("model is not available.");
         }
         const chat = await fastify.prisma.chat.findFirst({
-          where: { hashId: chatHashId },
+          where: {
+            hashId: chatHashId,
+            OR: [{ userHashId: user.hashId }, { userHashId: null }],
+          },
           select: { systemMessage: true },
         });
         if (!chat) {
@@ -227,7 +230,7 @@ export default async function (fastify: FastifyInstance) {
 
         await createEntity(fastify.prisma.history.create, {
           data: {
-            userHashId,
+            userHashId: user.hashId || null,
             chatHashId,
             provider: model.provider.name,
             model: model.name,

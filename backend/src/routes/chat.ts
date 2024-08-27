@@ -24,7 +24,10 @@ export default async function (fastify: FastifyInstance) {
         const { hashId } = request.params;
 
         const chat = await fastify.prisma.chat.findFirst({
-          where: { hashId, userHashId: user.hashId || null },
+          where: {
+            hashId,
+            OR: [{ userHashId: user.hashId }, { userHashId: null }],
+          },
           select: {
             hashId: true,
             userHashId: true,
@@ -75,7 +78,7 @@ export default async function (fastify: FastifyInstance) {
 
       return {
         hashId: chat.hashId,
-        userHashId: user.hashId,
+        userHashId,
         isGpi: false,
         systemMessage: "",
         contents: [],
@@ -99,10 +102,13 @@ export default async function (fastify: FastifyInstance) {
         const { systemMessage } = request.body;
 
         const chat = await fastify.prisma.chat.findFirst({
-          where: { hashId },
+          where: {
+            hashId,
+            OR: [{ userHashId: user.hashId }, { userHashId: null }],
+          },
           select: { userHashId: true },
         });
-        if (!chat || (chat.userHashId && chat.userHashId !== user.hashId)) {
+        if (!chat) {
           throw fastify.httpErrors.badRequest("chat is not available.");
         }
 

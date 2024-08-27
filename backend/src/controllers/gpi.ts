@@ -15,6 +15,7 @@ export async function createGpi(
     gpis: {
       description: string;
       userHashId: string | null;
+      isPublic: boolean;
       config: object;
       modelHashId: string;
     };
