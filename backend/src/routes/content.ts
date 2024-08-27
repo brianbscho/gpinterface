@@ -88,7 +88,7 @@ export default async function (fastify: FastifyInstance) {
             content,
             ...response,
           },
-          select: ContentHistorySelect,
+          select: { ...ContentHistorySelect, hashId: true },
         });
 
         const newContents = [
@@ -124,6 +124,10 @@ export default async function (fastify: FastifyInstance) {
             }
           );
           newContents[1].hashId = _assistantContent.hashId;
+          await fastify.prisma.history.update({
+            where: { hashId: history.hashId },
+            data: { chatContentHashId: _assistantContent.hashId },
+          });
         }
 
         return { contents: newContents };
@@ -232,6 +236,7 @@ export default async function (fastify: FastifyInstance) {
           data: {
             userHashId: user.hashId || null,
             chatHashId,
+            contentHashId: hashId,
             provider: model.provider.name,
             model: model.name,
             config,
