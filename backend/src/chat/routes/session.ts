@@ -102,6 +102,7 @@ export default async function (fastify: FastifyInstance) {
         await createEntity(fastify.prisma.history.create, {
           data: {
             userHashId,
+            gpiHashId: session.gpi.hashId,
             sessionHashId,
             provider: model.provider.name,
             model: model.name,
