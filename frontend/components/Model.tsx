@@ -1,19 +1,31 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import Select from "./selects";
 import { Input } from "./ui";
 import { Slider } from "./ui/slider";
 import useModelStore from "@/store/model";
 import { cn } from "@/utils/css";
 
-type Props = { className?: string; disabled?: boolean };
-export default function Model({ className, disabled }: Props) {
-  const [model, config, setModelStore] = useModelStore((state) => [
+type Props = { className?: string; disabled?: boolean; modelHashId?: string };
+export default function Model({ className, disabled, modelHashId }: Props) {
+  const [model, models, config, setModelStore] = useModelStore((state) => [
     state.model,
+    state.models,
     state.config,
     state.setModelStore,
   ]);
+
+  useEffect(() => {
+    if (modelHashId) {
+      setModelStore({ modelHashId });
+    } else {
+      const freeAvailableModel = models?.find(
+        (m) => m.isAvailable && m.isFree && !m.isLoginRequired
+      );
+      setModelStore({ modelHashId: freeAvailableModel?.hashId });
+    }
+  }, [modelHashId, setModelStore, models]);
   const onChange = useCallback(
     (name: string) => (value: string) => {
       const newConfig = { ...config };

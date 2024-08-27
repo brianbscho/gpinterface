@@ -14,12 +14,14 @@ type Props = {
   editable?: boolean;
   disabled?: boolean;
   useGpi?: [gpi: GpiType, Dispatch<SetStateAction<GpiType>>];
+  modelHashId?: string;
 };
 export default function ModelSheetButton({
   className,
   editable,
   disabled,
   useGpi,
+  modelHashId,
 }: Props) {
   return (
     <Sheet>
@@ -42,7 +44,11 @@ export default function ModelSheetButton({
               )}
             </div>
           )}
-          <Model className="p-3" disabled={disabled} />
+          <Model
+            className="p-3"
+            disabled={disabled}
+            modelHashId={modelHashId}
+          />
         </div>
       </SheetContent>
     </Sheet>
