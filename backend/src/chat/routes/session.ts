@@ -34,12 +34,13 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: SessionCreateSchema } },
     async (request, reply): Promise<SessionCreateResponse> => {
       try {
-        const userHashId = await getApiKey(fastify, request, true);
+        const userHashId = await getApiKey(fastify, request);
         const { gpiHashId } = request.body;
         const gpi = await fastify.prisma.gpi.findFirst({
           where: {
             hashId: gpiHashId,
             OR: [{ userHashId }, { isPublic: true }],
+            model: { isAvailable: true, isFree: true },
           },
           select: {
             hashId: true,
@@ -66,7 +67,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: SessionCompletionSchema } },
     async (request, reply): Promise<SessionCompletionResponse> => {
       try {
-        const userHashId = await getApiKey(fastify, request, true);
+        const userHashId = await getApiKey(fastify, request);
         const { sessionHashId, message } = request.body;
 
         const session = await fastify.prisma.session.findFirst({
@@ -74,11 +75,7 @@ export default async function (fastify: FastifyInstance) {
             hashId: sessionHashId,
             gpi: {
               OR: [{ userHashId }, { isPublic: true }],
-              model: {
-                isAvailable: true,
-                isFree: true,
-                ...(!userHashId && { isLoginRequired: false }),
-              },
+              model: { isAvailable: true, isFree: true },
             },
           },
           select: {
@@ -140,13 +137,16 @@ export default async function (fastify: FastifyInstance) {
     { schema: { params: SessionMessagesGetSchema } },
     async (request, reply): Promise<SessionMessagesGetResponse> => {
       try {
-        const userHashId = await getApiKey(fastify, request, true);
+        const userHashId = await getApiKey(fastify, request);
         const { sessionHashId } = request.params;
 
         const session = await fastify.prisma.session.findFirst({
           where: {
             hashId: sessionHashId,
-            gpi: { OR: [{ userHashId }, { isPublic: true }] },
+            gpi: {
+              OR: [{ userHashId }, { isPublic: true }],
+              model: { isAvailable: true, isFree: true },
+            },
           },
           select: { messages: ChatCompletionContentsQuery },
         });

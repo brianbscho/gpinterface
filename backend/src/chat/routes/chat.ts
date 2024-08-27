@@ -22,18 +22,14 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: ChatCompletionSchema } },
     async (request, reply): Promise<ChatCompletionResponse> => {
       try {
-        const userHashId = await getApiKey(fastify, request, true);
+        const userHashId = await getApiKey(fastify, request);
         const { gpiHashId, message } = request.body;
 
         const gpi = await fastify.prisma.gpi.findFirst({
           where: {
             hashId: gpiHashId,
             OR: [{ userHashId }, { isPublic: true }],
-            model: {
-              isAvailable: true,
-              isFree: true,
-              ...(!userHashId && { isLoginRequired: false }),
-            },
+            model: { isAvailable: true, isFree: true },
           },
           select: {
             config: true,
