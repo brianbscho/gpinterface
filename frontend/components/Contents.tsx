@@ -17,6 +17,8 @@ import {
   ContentsDeleteSchema,
   ContentUpdateResponse,
   ContentUpdateSchema,
+  ContentsCreateResponse,
+  ContentCreateSchema,
 } from "gpinterface-shared/type/content";
 import { Static } from "@sinclair/typebox";
 import callApi from "@/utils/callApi";
@@ -31,6 +33,80 @@ import {
 import ContentInput from "./inputs/ContentInput";
 import { cn } from "@/utils/css";
 import useUserStore from "@/store/user";
+import AnswerYourselfButton from "./buttons/AnswerYourselfButton";
+
+type ButtonsProps = {
+  onClickModel: () => void;
+  history: ContentType["history"];
+  isRefreshVisible: boolean;
+  onClickRefresh: () => void;
+  isDeleteVisible: boolean;
+  onClickDelete: () => void;
+  disabled: boolean;
+  loading: boolean;
+};
+function Buttons({
+  onClickModel,
+  history,
+  isRefreshVisible,
+  onClickRefresh,
+  isDeleteVisible,
+  onClickDelete,
+  disabled,
+  loading,
+}: ButtonsProps) {
+  return (
+    <>
+      {!!onClickModel && (
+        <SmallHoverButton message="Set this to model">
+          <Button
+            className="p-1 h-6 w-6"
+            variant="default"
+            onClick={onClickModel}
+            disabled={disabled}
+            loading={loading}
+          >
+            <Cpu />
+          </Button>
+        </SmallHoverButton>
+      )}
+      {!!history && (
+        <SmallHoverButton message="Detail">
+          <HistoryDialog history={history}>
+            <Button className="p-1 h-6 w-6" variant="default">
+              <FileClock />
+            </Button>
+          </HistoryDialog>
+        </SmallHoverButton>
+      )}
+      {isRefreshVisible && (
+        <SmallHoverButton message="Regenerate">
+          <Button
+            className="p-1 h-6 w-6"
+            variant="default"
+            onClick={onClickRefresh}
+            disabled={disabled}
+            loading={loading}
+          >
+            <RefreshCcw />
+          </Button>
+        </SmallHoverButton>
+      )}
+      {isDeleteVisible && (
+        <SmallHoverButton message="Delete">
+          <Button
+            className="p-1 h-6 w-6"
+            onClick={onClickDelete}
+            disabled={disabled}
+            loading={loading}
+          >
+            <CircleX />
+          </Button>
+        </SmallHoverButton>
+      )}
+    </>
+  );
+}
 
 type RefreshingHashId = string | undefined;
 type ContentProps = {
@@ -42,6 +118,7 @@ type ContentProps = {
   callUpdateContent: (content: string) => Promise<string | undefined>;
   hashIds?: string[];
   editable?: boolean;
+  hideButtons?: boolean;
 };
 
 function Content({
@@ -52,16 +129,10 @@ function Content({
   callUpdateContent,
   hashIds,
   editable,
+  hideButtons,
 }: ContentProps) {
   const [newContent, setNewContent] = useState(content.content);
   const [oldContent, setOldContent] = useState(content.content);
-  useEffect(() => {
-    setNewContent(content.content);
-    setOldContent(content.content);
-  }, [content.content]);
-
-  const [isSaving, setIsSaving] = useState(false);
-
   const [refreshingHashId, setRefreshingHashId] = useRefreshingHashId;
   const [model, config, setModelStore] = useModelStore((state) => [
     state.model,
@@ -69,6 +140,11 @@ function Content({
     state.setModelStore,
   ]);
 
+  useEffect(() => {
+    setNewContent(content.content);
+    setOldContent(content.content);
+  }, [content.content]);
+  const [isSaving, setIsSaving] = useState(false);
   useEffect(() => {
     if (oldContent === newContent) {
       setIsSaving(false);
@@ -183,69 +259,38 @@ function Content({
           </>
         )}
         <div className="flex-1"></div>
-        {!!content.model?.hashId && !!content.config && (
-          <SmallHoverButton message="Set this to model">
-            <Button
-              className="p-1 h-6 w-6"
-              variant="default"
-              onClick={() =>
-                setModelStore({
-                  modelHashId: content.model!.hashId,
-                  config: content.config!,
-                })
-              }
-              loading={loading}
-            >
-              <Cpu />
-            </Button>
-          </SmallHoverButton>
-        )}
-        {!!content.history && (
-          <SmallHoverButton message="Detail">
-            <HistoryDialog history={content.history}>
-              <Button className="p-1 h-6 w-6" variant="default">
-                <FileClock />
-              </Button>
-            </HistoryDialog>
-          </SmallHoverButton>
-        )}
-        {isRefreshVisible && (
-          <SmallHoverButton message="Regenerate">
-            <Button
-              className="p-1 h-6 w-6"
-              variant="default"
-              onClick={onClickRefresh}
-              disabled={disabled}
-              loading={loading}
-            >
-              <RefreshCcw />
-            </Button>
-          </SmallHoverButton>
-        )}
-        {isDeleteVisible && (
-          <SmallHoverButton message="Delete">
-            <Button
-              className="p-1 h-6 w-6"
-              onClick={onClickDelete}
-              loading={loading}
-            >
-              <CircleX />
-            </Button>
-          </SmallHoverButton>
+        {!hideButtons && (
+          <Buttons
+            onClickModel={() =>
+              setModelStore({
+                modelHashId: content.model!.hashId,
+                config: content.config!,
+              })
+            }
+            history={content.history}
+            isRefreshVisible={isRefreshVisible === true}
+            onClickRefresh={onClickRefresh}
+            isDeleteVisible={isDeleteVisible === true}
+            onClickDelete={onClickDelete}
+            disabled={disabled}
+            loading={loading}
+          />
         )}
       </div>
       <CardDescription>
         <div className="relative">
-          <div className="whitespace-pre-wrap px-3 py-2 text-base invisible border">
-            {newContent + "."}
+          <div className="whitespace-pre-wrap px-3 py-2 text-base border rounded-md">
+            <div className="min-h-6">{newContent + (editable ? "." : "")}</div>
           </div>
-          <Textarea
-            className="absolute max-h-none inset-0 z-10 text-base overflow-hidden resize-none"
-            value={newContent}
-            onChange={(e) => setNewContent(e.currentTarget.value)}
-            placeholder={`${content.role} message`}
-            disabled={disabled || !editable}
-          />
+          {editable && (
+            <Textarea
+              className="absolute max-h-none inset-0 z-10 text-base overflow-hidden resize-none"
+              value={newContent}
+              onChange={(e) => setNewContent(e.currentTarget.value)}
+              placeholder={`${content.role} message`}
+              disabled={disabled}
+            />
+          )}
           {loading && (
             <div className="absolute inset-0 border z-20 flex items-center justify-center rounded-md">
               Refreshing answer...
@@ -267,12 +312,14 @@ type ContentsProps = {
   gpiHashId?: string;
   ownerUserHashId: string | null | undefined;
   className?: string;
+  hideButtons?: boolean;
 };
 export default function Contents({
   chat,
   gpiHashId,
   ownerUserHashId,
   className,
+  hideButtons,
 }: ContentsProps) {
   const [contents, setContents] = useState(chat.contents);
 
@@ -355,6 +402,7 @@ export default function Contents({
         useRefreshingHashId={[refreshingHashId, setRefreshingHashId]}
         callUpdateContent={callUpdateSystemMessage}
         editable={editable}
+        hideButtons={hideButtons}
       />
       {contents.map((c, i) => {
         let hashIds: string[] = [];
@@ -374,6 +422,7 @@ export default function Contents({
             callUpdateContent={callUpdateContent(c.hashId)}
             hashIds={hashIds}
             editable={editable}
+            hideButtons={hideButtons}
           />
         );
       })}
