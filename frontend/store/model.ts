@@ -1,32 +1,53 @@
-import { Model } from "gpinterface-shared/type/providerType";
+import {
+  Model,
+  ProviderTypesGetResponse,
+} from "gpinterface-shared/type/providerType";
 import { create } from "zustand";
 
 export type ConfigType<T extends object = { [key: string]: any }> = T;
+type ProviderType = ProviderTypesGetResponse["providerTypes"];
 type ModelState = {
-  config: ConfigType;
   modelHashId?: string;
-  models: Model[];
+  config: ConfigType;
+  providerTypes: ProviderType;
 };
 type SetModelState = {
-  setModelStore: (content: Partial<ModelState>) => void;
+  setModelHashId: (modelHashId: string) => void;
+  setConfig: (config: ConfigType) => void;
+  setProviderTypes: (providerTypes: ProviderType) => void;
 };
 
 const useModelStore = create<
-  ModelState & SetModelState & { model: Model | undefined }
+  ModelState & SetModelState & { models: Model[]; model: Model | undefined }
 >((set) => {
   return {
-    config: {},
     modelHashId: undefined,
+    config: {},
+    providerTypes: [],
     models: [],
     model: undefined,
-    setModelStore: (content: Partial<ModelState>) => {
-      set((state) => ({
-        ...state,
-        ...content,
-        model: state.models
-          .concat(content.models ?? [])
-          .find((m) => m.hashId === (content.modelHashId || state.modelHashId)),
-      }));
+    setModelHashId: (modelHashId: string) =>
+      set((state) => {
+        const model = state.models.find((m) => m.hashId === modelHashId);
+        return { model, modelHashId };
+      }),
+    setConfig: (config: ConfigType) => set({ config }),
+    setProviderTypes: (providerTypes: ProviderType) => {
+      set((state) => {
+        const models = providerTypes
+          .flatMap((type) => type.providers)
+          .flatMap((provider) => provider.models);
+        const model = models.find(
+          (m) =>
+            m.hashId === state.modelHashId ||
+            (m.isAvailable && m.isFree && !m.isLoginRequired)
+        );
+        return {
+          providerTypes,
+          models,
+          model,
+        };
+      });
     },
   };
 });

@@ -31,6 +31,7 @@ import {
 import ContentInput from "./inputs/ContentInput";
 import { cn } from "@/utils/css";
 import useUserStore from "@/store/user";
+import ModelSheetButton from "./buttons/ModelSheetButton";
 
 type RefreshingHashId = string | undefined;
 type ContentProps = {
@@ -63,10 +64,11 @@ function Content({
   const [isSaving, setIsSaving] = useState(false);
 
   const [refreshingHashId, setRefreshingHashId] = useRefreshingHashId;
-  const [model, config, setModelStore] = useModelStore((state) => [
+  const [model, config, setModelHashId, setConfig] = useModelStore((state) => [
     state.model,
     state.config,
-    state.setModelStore,
+    state.setModelHashId,
+    state.setConfig,
   ]);
 
   useEffect(() => {
@@ -170,9 +172,30 @@ function Content({
           <Badge className="h-6">{content.role}</Badge>
         )}
         {content.role === "assistant" && (
-          <Badge className="h-6">
-            {!content.model ? "assistant" : content.model.name}
-          </Badge>
+          <div className="flex items-center gap-1">
+            <Badge className="h-6">
+              {!content.model ? "assistant" : content.model.name}
+            </Badge>
+            {!!content.model?.hashId &&
+              !!content.config &&
+              (editable ? (
+                <SmallHoverButton message="Set this to model">
+                  <Button
+                    className="p-1 h-6 w-6"
+                    variant="default"
+                    onClick={() => {
+                      setModelHashId(content.model!.hashId!);
+                      setConfig(content.config!);
+                    }}
+                    loading={loading}
+                  >
+                    <Cpu />
+                  </Button>
+                </SmallHoverButton>
+              ) : (
+                <ModelSheetButton editable={editable} isIcon />
+              ))}
+          </div>
         )}
         {isSaving && (
           <>
@@ -181,23 +204,6 @@ function Content({
           </>
         )}
         <div className="flex-1"></div>
-        {!!content.model?.hashId && !!content.config && (
-          <SmallHoverButton message="Set this to model">
-            <Button
-              className="p-1 h-6 w-6"
-              variant="default"
-              onClick={() =>
-                setModelStore({
-                  modelHashId: content.model!.hashId,
-                  config: content.config!,
-                })
-              }
-              loading={loading}
-            >
-              <Cpu />
-            </Button>
-          </SmallHoverButton>
-        )}
         {!!content.history && (
           <SmallHoverButton message="Detail">
             <HistoryDialog history={content.history}>

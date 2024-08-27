@@ -9,30 +9,25 @@ import { cn } from "@/utils/css";
 
 type Props = { className?: string; disabled?: boolean; modelHashId?: string };
 export default function Model({ className, disabled, modelHashId }: Props) {
-  const [model, models, config, setModelStore] = useModelStore((state) => [
+  const [model, config, setModelHashId, setConfig] = useModelStore((state) => [
     state.model,
-    state.models,
     state.config,
-    state.setModelStore,
+    state.setModelHashId,
+    state.setConfig,
   ]);
 
   useEffect(() => {
     if (modelHashId) {
-      setModelStore({ modelHashId });
-    } else {
-      const freeAvailableModel = models?.find(
-        (m) => m.isAvailable && m.isFree && !m.isLoginRequired
-      );
-      setModelStore({ modelHashId: freeAvailableModel?.hashId });
+      setModelHashId(modelHashId);
     }
-  }, [modelHashId, setModelStore, models]);
+  }, [modelHashId, setModelHashId]);
   const onChange = useCallback(
     (name: string) => (value: string) => {
       const newConfig = { ...config };
       newConfig[name] = value;
-      setModelStore({ config: newConfig });
+      setConfig(newConfig);
     },
-    [config, setModelStore]
+    [config, setConfig]
   );
 
   if (!model) return null;

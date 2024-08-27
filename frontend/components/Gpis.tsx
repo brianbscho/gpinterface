@@ -25,7 +25,6 @@ function Gpi({ gpi }: { gpi: GpiGetResponse }) {
     [tab]
   );
 
-  useModels();
   const models = useModelStore((state) => state.models);
   const model = useMemo(
     () => models.find((m) => m.hashId === gpi.modelHashId),
@@ -109,6 +108,7 @@ export default function Gpis() {
       }
     }
   }, [lastHashId]);
+  useModels();
 
   return (
     <div className="w-full h-full overflow-hidden">

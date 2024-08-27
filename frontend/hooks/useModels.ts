@@ -6,25 +6,20 @@ import { ProviderTypesGetResponse } from "gpinterface-shared/type/providerType";
 import useModelStore from "@/store/model";
 
 export default function useModels() {
-  const [models, setModelStore] = useModelStore((state) => [
-    state.models,
-    state.setModelStore,
+  const [providerTypes, setProviderTypes] = useModelStore((state) => [
+    state.providerTypes,
+    state.setProviderTypes,
   ]);
   useEffect(() => {
-    if (models.length > 0) return;
+    if (providerTypes.length > 0) return;
 
     const getProviderGetTypes = async () => {
       const response = await callApi<ProviderTypesGetResponse>({
         endpoint: "/provider/types",
         showError: true,
       });
-      if (response) {
-        const models = response.providerTypes
-          .flatMap((type) => type.providers)
-          .flatMap((provider) => provider.models);
-        setModelStore({ models });
-      }
+      setProviderTypes(response?.providerTypes ?? []);
     };
     getProviderGetTypes();
-  }, [models, setModelStore]);
+  }, [providerTypes, setProviderTypes]);
 }

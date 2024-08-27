@@ -6,9 +6,9 @@ import useModelStore, { ConfigType } from "@/store/model";
 import { useCallback } from "react";
 
 export default function ModelResetButton() {
-  const [model, setModelStore] = useModelStore((state) => [
+  const [model, setConfig] = useModelStore((state) => [
     state.model,
-    state.setModelStore,
+    state.setConfig,
   ]);
 
   const onClickReset = useCallback(() => {
@@ -23,8 +23,8 @@ export default function ModelResetButton() {
       }
     });
 
-    setModelStore({ config: newConfig });
-  }, [model, setModelStore]);
+    setConfig(newConfig);
+  }, [model, setConfig]);
 
   return (
     <IconTextButton

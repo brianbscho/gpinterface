@@ -1,8 +1,6 @@
 "use client";
 
-import callApi from "@/utils/callApi";
-import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
-import { ProviderTypesGetResponse } from "gpinterface-shared/type/providerType";
+import { Fragment, useCallback, useState } from "react";
 import {
   Select,
   SelectContent,
@@ -17,54 +15,17 @@ import IconTextButton from "../buttons/IconTextButton";
 import useModelStore from "@/store/model";
 
 export default function ModelSelect() {
-  const [providerTypes, setProviderTypes] =
-    useState<ProviderTypesGetResponse["providerTypes"]>();
-  useEffect(() => {
-    const getProviderGetTypes = async () => {
-      const response = await callApi<ProviderTypesGetResponse>({
-        endpoint: "/provider/types",
-        showError: true,
-      });
-      setProviderTypes(response?.providerTypes);
-    };
-    getProviderGetTypes();
-  }, [setProviderTypes]);
-
   const isLoggedOut = useUserStore((state) => state.isLoggedOut);
-  const [modelHashId, setModelStore] = useModelStore((state) => [
-    state.modelHashId,
-    state.setModelStore,
-  ]);
+  const [modelHashId, providerTypes, setModelHashId] = useModelStore(
+    (state) => [state.modelHashId, state.providerTypes, state.setModelHashId]
+  );
 
-  const models = useMemo(() => {
-    if (!providerTypes) return [];
-
-    return providerTypes
-      .flatMap((type) => type.providers)
-      .flatMap((provider) => provider.models);
-  }, [providerTypes]);
-  useEffect(() => {
-    setModelStore({ models });
-  }, [setModelStore, models]);
-  useEffect(() => {
-    if (modelHashId) return;
-
-    const index = models.findIndex(
-      (m) => m.isAvailable && m.isFree && (!isLoggedOut || !m.isLoginRequired)
-    );
-    setModelStore({ modelHashId: models[index]?.hashId });
-  }, [isLoggedOut, models, modelHashId, setModelStore]);
   const onValueChange = useCallback(
-    (modelHashId: string) => {
-      const _model = models.find((m) => m.hashId === modelHashId);
-      setModelStore({ modelHashId: _model?.hashId });
-    },
-    [models, setModelStore]
+    (modelHashId: string) => setModelHashId(modelHashId),
+    [setModelHashId]
   );
 
   const [open, setOpen] = useState(false);
-
-  if (!providerTypes) return null;
 
   return (
     <Select
@@ -78,7 +39,6 @@ export default function ModelSelect() {
           className="w-full md:w-28"
           Icon={ChevronDown}
           text="Models"
-          onClick={() => setOpen(true)}
           selected={open}
           responsive
         />
