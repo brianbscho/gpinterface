@@ -75,7 +75,7 @@ function _Chats() {
         setChats={setChats}
       />
       <div className="md:hidden absolute top-3 right-3 z-40">
-        <ModelSheetButton />
+        <ModelSheetButton className="w-24" />
       </div>
       <div className="h-full overflow-y-auto">
         <List

@@ -34,7 +34,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
           <div className="sticky top-0 md:top-3 px-3 md:h-0 py-3 md:py-0 w-full bg-background z-20 flex">
             <DeployButton chatHashId={chat.hashId} />
             <div className="flex-1"></div>
-            <ModelSheetButton className="md:hidden" />
+            <ModelSheetButton className="md:hidden w-24" />
           </div>
         )}
         {!!chat && (

@@ -30,7 +30,7 @@ export default function ModelSheetButton({
           Icon={ChevronLeft}
           text="Model"
           size="small"
-          className="w-24 md:w-32"
+          className="md:w-32"
           responsive
         />
       </SheetTrigger>
