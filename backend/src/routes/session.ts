@@ -3,12 +3,11 @@ import {
   ChatCompletionContentsQuery,
   ChatCompletionModelSelect,
   createEntity,
-} from "../../util/prisma";
+} from "../util/prisma";
 import { Static } from "@sinclair/typebox";
-import { getApiKey } from "../controllers/apiKey";
-import { getTextResponse } from "../../util/text";
+import { getTextResponse } from "../util/text";
 import { Prisma } from "@prisma/client";
-import { createSession } from "../../controllers/session";
+import { createSession } from "../controllers/session";
 import {
   SessionCompletionResponse,
   SessionCompletionSchema,
@@ -24,13 +23,16 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: SessionCreateSchema } },
     async (request, reply): Promise<SessionCreateResponse> => {
       try {
-        const userHashId = await getApiKey(fastify, request);
+        const { user } = await fastify.getUser(request, reply, true);
         const { gpiHashId } = request.body;
         const gpi = await fastify.prisma.gpi.findFirst({
           where: {
             hashId: gpiHashId,
-            OR: [{ userHashId }, { isPublic: true }],
-            model: { isAvailable: true, isFree: true },
+            OR: [
+              { userHashId: user.hashId },
+              { userHashId: null },
+              { isPublic: true },
+            ],
           },
           select: {
             hashId: true,
@@ -57,15 +59,23 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: SessionCompletionSchema } },
     async (request, reply): Promise<SessionCompletionResponse> => {
       try {
-        const userHashId = await getApiKey(fastify, request);
+        const { user } = await fastify.getUser(request, reply, true);
         const { sessionHashId, message } = request.body;
 
         const session = await fastify.prisma.session.findFirst({
           where: {
             hashId: sessionHashId,
             gpi: {
-              OR: [{ userHashId }, { isPublic: true }],
-              model: { isAvailable: true, isFree: true },
+              OR: [
+                { userHashId: user.hashId },
+                { userHashId: null },
+                { isPublic: true },
+              ],
+              model: {
+                isAvailable: true,
+                isFree: true,
+                ...(!user.hashId && { isLoginRequired: false }),
+              },
             },
           },
           select: {
@@ -101,7 +111,7 @@ export default async function (fastify: FastifyInstance) {
 
         await createEntity(fastify.prisma.history.create, {
           data: {
-            userHashId,
+            userHashId: user.hashId || null,
             gpiHashId: session.gpi.hashId,
             sessionHashId,
             provider: model.provider.name,
@@ -128,14 +138,18 @@ export default async function (fastify: FastifyInstance) {
     { schema: { params: SessionMessagesGetSchema } },
     async (request, reply): Promise<SessionMessagesGetResponse> => {
       try {
-        const userHashId = await getApiKey(fastify, request);
+        const { user } = await fastify.getUser(request, reply, true);
         const { sessionHashId } = request.params;
 
         const session = await fastify.prisma.session.findFirst({
           where: {
             hashId: sessionHashId,
             gpi: {
-              OR: [{ userHashId }, { isPublic: true }],
+              OR: [
+                { userHashId: user.hashId },
+                { userHashId: null },
+                { isPublic: true },
+              ],
               model: { isAvailable: true, isFree: true },
             },
           },

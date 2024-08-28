@@ -104,7 +104,7 @@ function Login() {
   const [termsOpen, setTermsOpen] = useState(false);
 
   return (
-    <div className="w-full max-w-md px-3 mt-16">
+    <div className="w-full max-w-xl px-3 mt-16">
       <Tabs
         className="w-full"
         defaultValue="login"

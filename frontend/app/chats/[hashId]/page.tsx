@@ -6,6 +6,7 @@ import ModelSheetButton from "@/components/buttons/ModelSheetButton";
 import Contents from "@/components/Contents";
 import ModelPanel from "@/components/ModelPanel";
 import ModelSelect from "@/components/selects/ModelSelect";
+import useProviderTypes from "@/hooks/useProviderTypes";
 import callApi from "@/utils/callApi";
 import { ChatsGetResponse } from "gpinterface-shared/type/chat";
 import { useEffect, useState } from "react";
@@ -27,6 +28,8 @@ export default function Page({ params }: { params: { hashId: string } }) {
     callChatApi();
   }, [hashId]);
 
+  useProviderTypes();
+
   return (
     <div className="w-full flex-1 grid grid-cols-[1fr_auto] overflow-hidden">
       <div className="h-full overflow-y-auto">
@@ -34,7 +37,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
           <div className="sticky top-0 md:top-3 px-3 md:h-0 py-3 md:py-0 w-full bg-background z-20 flex">
             <DeployButton chatHashId={chat.hashId} />
             <div className="flex-1"></div>
-            <ModelSheetButton className="md:hidden" />
+            <ModelSheetButton className="md:hidden w-24" />
           </div>
         )}
         {!!chat && (

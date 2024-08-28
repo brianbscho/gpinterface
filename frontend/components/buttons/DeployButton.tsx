@@ -29,7 +29,7 @@ import useModelStore from "@/store/model";
 export default function DeployButton({ chatHashId }: { chatHashId: string }) {
   const [open, setOpen] = useState(false);
 
-  const [isPublic, setIsPublic] = useState(false);
+  const [isPublic, setIsPublic] = useState(true);
   const [description, setDescription] = useState("");
   const [model, config] = useModelStore((state) => [state.model, state.config]);
   const [loading, setLoading] = useState(false);
@@ -57,7 +57,7 @@ export default function DeployButton({ chatHashId }: { chatHashId: string }) {
       });
 
       if (response) {
-        router.push(`gpis/${response.hashId}`);
+        router.push(`/gpis/${response.hashId}`);
       } else {
         setLoading(false);
       }
@@ -90,7 +90,6 @@ export default function DeployButton({ chatHashId }: { chatHashId: string }) {
             responsive
           />
         </div>
-
         <form onSubmit={onSubmit}>
           <div className="w-full flex gap-3">
             <Input

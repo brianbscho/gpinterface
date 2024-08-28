@@ -11,37 +11,17 @@ import {
   GpiGetResponse,
   GpiUpdateSchema,
 } from "gpinterface-shared/type/gpi";
-import { CheckCircle2, Circle, Save } from "lucide-react";
+import { Save } from "lucide-react";
 import { Dispatch, SetStateAction, useCallback } from "react";
 
 type GpiType = GpiGetResponse | undefined;
 type Props = { useGpi: [gpi: GpiType, Dispatch<SetStateAction<GpiType>>] };
-export default function EditGpiButtons({ useGpi }: Props) {
+export default function GpiSaveButton({ useGpi }: Props) {
   const [gpi, setGpi] = useGpi;
 
   const { toast } = useToast();
   const [config, model] = useModelStore((state) => [state.config, state.model]);
-  const onCheckedChange = useCallback(
-    async (c: boolean) => {
-      if (!gpi?.hashId) return;
-
-      const response = await callApi<
-        GpiCreateResponse,
-        Static<typeof GpiUpdateSchema>
-      >({
-        endpoint: `/gpi/${gpi.hashId}`,
-        method: "PUT",
-        body: { isPublic: c },
-        showError: true,
-      });
-      if (response) {
-        toast({ title: "Saved!", duration: 1000 });
-        setGpi((prev) => (!prev ? prev : { ...prev, isPublic: c }));
-      }
-    },
-    [gpi?.hashId, toast, setGpi]
-  );
-  const onClickDefault = useCallback(async () => {
+  const onClickSave = useCallback(async () => {
     if (!model || !gpi?.hashId) return;
 
     const response = await callApi<
@@ -62,25 +42,12 @@ export default function EditGpiButtons({ useGpi }: Props) {
   }, [gpi?.hashId, model, config, toast, setGpi]);
 
   return (
-    <>
-      <div className="flex-1 w-full">
-        <IconTextButton
-          className="w-full md:w-28"
-          Icon={!gpi?.isPublic ? Circle : CheckCircle2}
-          text="Public"
-          onClick={() => onCheckedChange(!gpi?.isPublic)}
-          responsive
-        />
-      </div>
-      <div className="flex-1 w-full">
-        <IconTextButton
-          className="w-full md:w-28"
-          Icon={Save}
-          text="Save"
-          onClick={onClickDefault}
-          responsive
-        />
-      </div>
-    </>
+    <IconTextButton
+      className="w-full md:w-28"
+      Icon={Save}
+      text="Save"
+      onClick={onClickSave}
+      responsive
+    />
   );
 }

@@ -13,6 +13,7 @@ import useUserStore from "@/store/user";
 import Contents from "../Contents";
 import DeployButton from "../buttons/DeployButton";
 import ModelSheetButton from "../buttons/ModelSheetButton";
+import useProviderTypes from "@/hooks/useProviderTypes";
 
 function _Chats() {
   const [chats, setChats] = useState<ChatsGetResponse["chats"]>();
@@ -48,7 +49,7 @@ function _Chats() {
       if (chatResponse) {
         setChats([chatResponse]);
         setSpinnerHidden(true);
-        router.push(`/?chatHashId=${chatResponse.hashId}`);
+        router.push(`/chats?chatHashId=${chatResponse.hashId}`);
       }
     }
   }, [lastHashId, router, chatHashId]);
@@ -68,6 +69,8 @@ function _Chats() {
     callGetChatApi();
   }, [isLoggedOut, chatHashId]);
 
+  useProviderTypes();
+
   return (
     <div className="w-full h-full overflow-hidden relative">
       <NewChatButton
@@ -75,7 +78,7 @@ function _Chats() {
         setChats={setChats}
       />
       <div className="md:hidden absolute top-3 right-3 z-40">
-        <ModelSheetButton />
+        <ModelSheetButton className="w-24" />
       </div>
       <div className="h-full overflow-y-auto">
         <List

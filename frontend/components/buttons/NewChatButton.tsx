@@ -17,7 +17,7 @@ import LoginDialog from "../dialogs/LoginDialog";
 import { PlusCircle } from "lucide-react";
 import IconTextButton from "./IconTextButton";
 
-export default function NewChat({
+export default function NewChatButton({
   className,
   setChats,
 }: {

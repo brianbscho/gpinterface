@@ -2,8 +2,7 @@ import { FastifyInstance, FastifyRequest } from "fastify";
 
 export async function getApiKey(
   fastify: FastifyInstance,
-  request: FastifyRequest,
-  optional?: boolean
+  request: FastifyRequest
 ) {
   try {
     const { authorization } = request.headers;
@@ -26,7 +25,6 @@ export async function getApiKey(
 
     return apiKey.user.hashId;
   } catch (ex) {
-    if (optional) return null;
     throw ex;
   }
 }

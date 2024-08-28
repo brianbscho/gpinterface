@@ -15,11 +15,13 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<ContentsDeleteResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
-        const userHashId = user.hashId || null;
         const { hashIds } = request.body;
 
         const oldContents = await fastify.prisma.chatContent.findMany({
-          where: { hashId: { in: hashIds }, chat: { userHashId } },
+          where: {
+            hashId: { in: hashIds },
+            chat: { OR: [{ userHashId: user.hashId }, { userHashId: null }] },
+          },
           select: { hashId: true },
         });
         if (oldContents.length !== hashIds.length) {
@@ -42,11 +44,14 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: ContentsCreateSchema } },
     async (request, reply): Promise<ContentsCreateResponse> => {
       try {
-        const { user } = await fastify.getUser(request, reply);
+        const { user } = await fastify.getUser(request, reply, true);
         const { chatHashId } = request.body;
 
         const chat = await fastify.prisma.chat.findFirst({
-          where: { userHashId: user.hashId, hashId: chatHashId },
+          where: {
+            OR: [{ userHashId: user.hashId }, { userHashId: null }],
+            hashId: chatHashId,
+          },
           select: { hashId: true },
         });
         if (!chat) {

@@ -28,8 +28,11 @@ type GpiResponse = {
   messages: { hashId: string; role: string; content: string }[];
   createdAt: string;
 };
-export type GpisGetResponse = {
+export type GpisUserGetResponse = {
   gpis: GpiResponse[];
+};
+export type GpisGetResponse = {
+  gpis: GpiGetResponse[];
 };
 
 export const GpiUpdateSchema = Type.Object({

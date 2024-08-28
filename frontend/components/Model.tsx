@@ -1,26 +1,39 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import Select from "./selects";
 import { Input } from "./ui";
 import { Slider } from "./ui/slider";
 import useModelStore from "@/store/model";
 import { cn } from "@/utils/css";
+import useProviderTypes from "@/hooks/useProviderTypes";
 
-export default function Model({ className }: { className?: string }) {
-  const [model, config, setModelStore] = useModelStore((state) => [
-    state.model,
-    state.config,
-    state.setModelStore,
-  ]);
+type Props = { className?: string; disabled?: boolean; modelHashId?: string };
+export default function Model({ className, disabled, modelHashId }: Props) {
+  const [model, models, config, setModelHashId, setConfig] = useModelStore(
+    (state) => [
+      state.model,
+      state.models,
+      state.config,
+      state.setModelHashId,
+      state.setConfig,
+    ]
+  );
+
+  useEffect(() => {
+    if (modelHashId) {
+      setModelHashId(modelHashId);
+    }
+  }, [modelHashId, setModelHashId, model, models]);
   const onChange = useCallback(
     (name: string) => (value: string) => {
       const newConfig = { ...config };
       newConfig[name] = value;
-      setModelStore({ config: newConfig });
+      setConfig(newConfig);
     },
-    [config, setModelStore]
+    [config, setConfig]
   );
+  useProviderTypes();
 
   if (!model) return null;
 
@@ -58,6 +71,7 @@ export default function Model({ className }: { className?: string }) {
                   ? "number"
                   : undefined
               }
+              disabled={disabled}
             />
           )}
           {typeof c.min === "number" && typeof c.max === "number" && (
@@ -73,6 +87,7 @@ export default function Model({ className }: { className?: string }) {
                 step={c.type === "integer" ? 1 : 0.01}
                 value={[Number(config[c.name] ?? c.default)]}
                 onValueChange={(v) => onChange(c.name)(v[0].toString())}
+                disabled={disabled}
               />
             </div>
           )}
@@ -80,6 +95,7 @@ export default function Model({ className }: { className?: string }) {
             <Select
               options={c.options.map((o) => o.value)}
               useOption={[config[c.name] ?? c.default, onChange(c.name)]}
+              disabled={disabled}
             />
           )}
           <div className="text-neutral-400">{c.description}</div>

@@ -24,7 +24,11 @@ export default async function (fastify: FastifyInstance) {
         const gpi = await fastify.prisma.gpi.findFirst({
           where: {
             hashId,
-            OR: [{ userHashId: user.hashId || null }, { isPublic: true }],
+            OR: [
+              { userHashId: user.hashId },
+              { userHashId: null },
+              { isPublic: true },
+            ],
           },
           select: {
             hashId: true,
@@ -73,17 +77,16 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<GpiCreateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
-        const { description, chatHashId, ...body } = request.body;
+        const { description, chatHashId, isPublic, ...body } = request.body;
 
         if (description.trim() === "") {
           throw httpErrors.badRequest("description is empty.");
         }
 
-        const userHashId = user.hashId || null;
         const chat = await fastify.prisma.chat.findFirst({
           where: {
             hashId: chatHashId,
-            OR: [{ userHashId }, { gpis: { every: { isPublic: true } } }],
+            OR: [{ userHashId: user.hashId }, { userHashId: null }],
           },
           select: {
             systemMessage: true,
@@ -103,9 +106,14 @@ export default async function (fastify: FastifyInstance) {
         }
 
         const newGpi = await createGpi(fastify.prisma.chat, {
-          userHashId,
+          userHashId: user.hashId || null,
           ...chat,
-          gpis: { description, userHashId, ...body },
+          gpis: {
+            description,
+            userHashId: user.hashId || null,
+            isPublic: isPublic || user.hashId === "",
+            ...body,
+          },
         });
 
         return { hashId: newGpi.hashId };
@@ -128,7 +136,10 @@ export default async function (fastify: FastifyInstance) {
         const { description, config, modelHashId, isPublic } = request.body;
 
         const oldGpi = await fastify.prisma.gpi.findFirst({
-          where: { hashId, userHashId: user.hashId || null },
+          where: {
+            hashId,
+            OR: [{ userHashId: user.hashId }, { userHashId: null }],
+          },
           select: { hashId: true },
         });
         if (!oldGpi) {

@@ -4,17 +4,14 @@ import {
   ChatCompletionModelSelect,
   createEntity,
 } from "../../util/prisma";
-import { Static, Type } from "@sinclair/typebox";
+import { Static } from "@sinclair/typebox";
 import { getTextResponse } from "../../util/text";
 import { Prisma } from "@prisma/client";
 import { getApiKey } from "../controllers/apiKey";
-
-const ChatCompletionSchema = Type.Object({
-  gpiHashId: Type.String(),
-  message: Type.String(),
-});
-
-type ChatCompletionResponse = { content: string };
+import {
+  ChatCompletionResponse,
+  ChatCompletionSchema,
+} from "gpinterface-shared/type/chat";
 
 export default async function (fastify: FastifyInstance) {
   fastify.post<{ Body: Static<typeof ChatCompletionSchema> }>(
@@ -22,18 +19,14 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: ChatCompletionSchema } },
     async (request, reply): Promise<ChatCompletionResponse> => {
       try {
-        const userHashId = await getApiKey(fastify, request, true);
+        const userHashId = await getApiKey(fastify, request);
         const { gpiHashId, message } = request.body;
 
         const gpi = await fastify.prisma.gpi.findFirst({
           where: {
             hashId: gpiHashId,
             OR: [{ userHashId }, { isPublic: true }],
-            model: {
-              isAvailable: true,
-              isFree: true,
-              ...(!userHashId && { isLoginRequired: false }),
-            },
+            model: { isAvailable: true, isFree: true },
           },
           select: {
             config: true,
