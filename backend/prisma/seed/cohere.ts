@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   const providerHashId = await getProviderHashId(providers.Cohere);
-  const models = await Promise.all(
+  let models = await Promise.all(
     [
       {
         hashId: nanoid(),
@@ -29,10 +29,19 @@ async function main() {
         isAvailable: true,
         providerHashId,
       },
-    ].map((model) =>
-      prisma.model.create({ data: model, select: { hashId: true } })
-    )
+    ].map(async (model) => {
+      const m = await prisma.model.findFirst({
+        where: { name: model.name },
+        select: { hashId: true },
+      });
+      if (m) {
+        return { hashId: "" };
+      }
+
+      return prisma.model.create({ data: model, select: { hashId: true } });
+    })
   );
+  models = models.filter((m) => m.hashId.length > 0);
 
   const configs = await Promise.all(
     [
