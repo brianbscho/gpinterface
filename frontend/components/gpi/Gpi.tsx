@@ -47,7 +47,11 @@ export default function Gpi({ gpi }: { gpi: GpiGetResponse }) {
           />
         </div>
         <div>
-          <ModelSheetButton editable={gpi.userHashId === userHashId} disabled />
+          <ModelSheetButton
+            editable={gpi.userHashId === userHashId}
+            disabled
+            modelHashId={gpi.modelHashId}
+          />
         </div>
       </div>
       <div className={getTabContentClassName("gpi")}>
