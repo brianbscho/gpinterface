@@ -134,10 +134,11 @@ function Content({
   const [newContent, setNewContent] = useState(content.content);
   const [oldContent, setOldContent] = useState(content.content);
   const [refreshingHashId, setRefreshingHashId] = useRefreshingHashId;
-  const [model, config, setModelStore] = useModelStore((state) => [
+  const [model, config, setModelHashId, setConfig] = useModelStore((state) => [
     state.model,
     state.config,
-    state.setModelStore,
+    state.setModelHashId,
+    state.setConfig,
   ]);
 
   useEffect(() => {
@@ -261,12 +262,14 @@ function Content({
         <div className="flex-1"></div>
         {!hideButtons && (
           <Buttons
-            onClickModel={() =>
-              setModelStore({
-                modelHashId: content.model!.hashId,
-                config: content.config!,
-              })
-            }
+            onClickModel={() => {
+              if (content.model?.hashId) {
+                setModelHashId(content.model?.hashId);
+              }
+              if (content.config) {
+                setConfig(content.config);
+              }
+            }}
             history={content.history}
             isRefreshVisible={isRefreshVisible === true}
             onClickRefresh={onClickRefresh}
