@@ -24,7 +24,11 @@ export default async function (fastify: FastifyInstance) {
         );
 
         const chats = await fastify.prisma.chat.findMany({
-          where: { ...(id > 0 && { id: { lt: id } }), userHashId: user.hashId },
+          where: {
+            ...(id > 0 && { id: { lt: id } }),
+            userHashId: user.hashId,
+            gpis: { none: {} },
+          },
           select: {
             hashId: true,
             userHashId: true,
@@ -49,17 +53,15 @@ export default async function (fastify: FastifyInstance) {
         });
 
         return {
-          chats: chats
-            .filter((c) => c._count.gpis === 0)
-            .map((c) => {
-              const { _count, createdAt, contents, ...chat } = c;
-              return {
-                ...chat,
-                contents: getTypedContents(contents),
-                createdAt: getDateString(createdAt),
-                isGpi: _count.gpis > 0,
-              };
-            }),
+          chats: chats.map((c) => {
+            const { _count, createdAt, contents, ...chat } = c;
+            return {
+              ...chat,
+              contents: getTypedContents(contents),
+              createdAt: getDateString(createdAt),
+              isGpi: _count.gpis > 0,
+            };
+          }),
         };
       } catch (ex) {
         console.error("path: /chats, method: get, error:", ex);
