@@ -47,10 +47,9 @@ function _Menus() {
 
   const searchParams = useSearchParams();
   useEffect(() => {
-    const redirectPath = searchParams.get("redirect");
     if (user && loginRedirectPaths.some((p) => pathname.includes(p))) {
-      if (redirectPath) {
-        push(redirectPath);
+      if (searchParams.has("chatHashId")) {
+        push("/chats");
       } else {
         push("/");
       }
@@ -64,14 +63,13 @@ function _Menus() {
     location.reload();
   }, [setUser]);
 
-  const chatHashId = useMemo(
-    () => searchParams.get("chatHashId"),
-    [searchParams]
-  );
   const param = useMemo(() => {
-    if (chatHashId) return `?chatHashId=${chatHashId}`;
-    return "";
-  }, [chatHashId]);
+    let params = "?";
+    searchParams.forEach((value, key) => {
+      params += `${key}=${value}`;
+    });
+    return params;
+  }, [searchParams]);
 
   const [open, setOpen] = useState(false);
 
