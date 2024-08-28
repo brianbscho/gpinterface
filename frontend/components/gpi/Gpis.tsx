@@ -6,6 +6,68 @@ import { GpisGetResponse } from "gpinterface-shared/type/gpi";
 import List from "../List";
 import Gpi from "./Gpi";
 import useProviderTypes from "@/hooks/useProviderTypes";
+import { Dialog, DialogClose, DialogContent, DialogDescription } from "../ui";
+import IconTextButton from "../buttons/IconTextButton";
+import { Loader2, X } from "lucide-react";
+
+type TextBodyType = { [key: string]: string };
+type TestDialogProps = {
+  useTestBody: [TextBodyType, (testBody: TextBodyType) => void];
+  useTestResponse: [string, (testResponse: string) => void];
+};
+function TestDialog({ useTestBody, useTestResponse }: TestDialogProps) {
+  const [testBody, setTestBody] = useTestBody;
+  const [testResponse, setTestResponse] = useTestResponse;
+  return (
+    <Dialog
+      open={Object.keys(testBody).length > 0}
+      onOpenChange={(open) => {
+        if (!open) {
+          setTestBody({});
+          setTestResponse("");
+        }
+      }}
+    >
+      <DialogContent className="max-w-3xl w-11/12 overflow-y-auto">
+        <DialogDescription className="whitespace-pre-wrap text-neutral-400 text-xs md:text-base">
+          <div className="text-foreground text-base">Request</div>
+          <div className="mt-3">
+            {`curl -X POST ${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/chat/completion \\`}
+          </div>
+          <div>
+            {`\t-H "Authorization: Bearer `}
+            <span className="italic bold text-foreground">{"{API_KEY}"}</span>
+            &quot; \
+          </div>
+          <div>{`\t-H "Content-Type: application/json" \\`}</div>
+          <div>{`\t-d '${JSON.stringify(testBody)
+            .replace(":", ": ")
+            .replace(",", ", ")}'`}</div>
+          <div className="mt-7">
+            <div className="text-foreground text-base">Response</div>
+            {testResponse === "" ? (
+              <Loader2 className="animate-spin mx-auto mt-3" />
+            ) : (
+              <div className="mt-3 whitespace-pre-wrap">
+                {testResponse.replace(/\\n/g, "\n")}
+              </div>
+            )}
+          </div>
+          <div className="mt-3 w-full flex justify-end gap-3">
+            <DialogClose asChild>
+              <IconTextButton
+                Icon={X}
+                text="Close"
+                className="w-20 md:w-24"
+                responsive
+              />
+            </DialogClose>
+          </div>
+        </DialogDescription>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export default function Gpis() {
   const [gpis, setGpis] = useState<GpisGetResponse["gpis"]>();
@@ -26,6 +88,9 @@ export default function Gpis() {
 
   useProviderTypes();
 
+  const [testBody, setTestBody] = useState<{ [key: string]: string }>({});
+  const [testResponse, setTestResponse] = useState("");
+
   return (
     <div className="w-full h-full overflow-hidden relative">
       <div className="h-full w-full overflow-y-auto">
@@ -38,11 +103,20 @@ export default function Gpis() {
             useLastHashId={[lastHashId, setLastHashId]}
           >
             {gpis?.map((gpi) => (
-              <Gpi key={gpi.hashId} gpi={gpi} />
+              <Gpi
+                key={gpi.hashId}
+                gpi={gpi}
+                setTestBody={setTestBody}
+                setTestResponse={setTestResponse}
+              />
             ))}
           </List>
         </div>
       </div>
+      <TestDialog
+        useTestBody={[testBody, setTestBody]}
+        useTestResponse={[testResponse, setTestResponse]}
+      />
     </div>
   );
 }

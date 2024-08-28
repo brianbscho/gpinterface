@@ -1,13 +1,27 @@
+"use client";
+
 import { GpiGetResponse } from "gpinterface-shared/type/gpi";
-import { useCallback, useState } from "react";
+import { FormEvent, KeyboardEvent, useCallback, useState } from "react";
 import IconTextButton from "../buttons/IconTextButton";
-import { MessageSquareCode, SquareCode } from "lucide-react";
+import { Bot, CornerDownLeft, FileCode } from "lucide-react";
 import ModelSheetButton from "../buttons/ModelSheetButton";
 import useUserStore from "@/store/user";
 import Contents from "../Contents";
 import Document from "./Document";
+import { Badge, Button, Textarea } from "../ui";
+import callApi from "@/utils/callApi";
+import {
+  ChatCompletionResponse,
+  ChatCompletionSchema,
+} from "gpinterface-shared/type/chat";
+import { Static } from "@sinclair/typebox";
 
-export default function Gpi({ gpi }: { gpi: GpiGetResponse }) {
+type Props = {
+  gpi: GpiGetResponse;
+  setTestBody: (testBody: { [key: string]: string }) => void;
+  setTestResponse: (testResponse: string) => void;
+};
+export default function Gpi({ gpi, setTestBody, setTestResponse }: Props) {
   const [tab, setTab] = useState<"gpi" | "document">("gpi");
   const getTabContentClassName = useCallback(
     (_tab: string) => {
@@ -18,6 +32,42 @@ export default function Gpi({ gpi }: { gpi: GpiGetResponse }) {
     [tab]
   );
   const userHashId = useUserStore((state) => state.user?.hashId);
+
+  const [content, setContent] = useState("");
+  const [loading, setLoading] = useState(false);
+  const onSubmit = useCallback(
+    async (e: FormEvent) => {
+      e.preventDefault();
+
+      setLoading(true);
+      const body = { gpiHashId: gpi.hashId, message: content };
+      setTestBody(body);
+
+      const response = await callApi<
+        ChatCompletionResponse,
+        Static<typeof ChatCompletionSchema>
+      >({
+        endpoint: "/chat/completion",
+        method: "POST",
+        body,
+      });
+      if (response) {
+        setTestResponse(JSON.stringify(response, null, 2));
+      }
+      setContent("");
+      setLoading(false);
+    },
+    [gpi.hashId, content]
+  );
+  const onKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        onSubmit(e);
+      }
+    },
+    [onSubmit]
+  );
 
   return (
     <div
@@ -30,7 +80,7 @@ export default function Gpi({ gpi }: { gpi: GpiGetResponse }) {
           <IconTextButton
             onClick={() => setTab("gpi")}
             className="w-28 md:w-32"
-            Icon={MessageSquareCode}
+            Icon={Bot}
             text="GPI"
             selected={tab === "gpi"}
             responsive
@@ -40,7 +90,7 @@ export default function Gpi({ gpi }: { gpi: GpiGetResponse }) {
           <IconTextButton
             onClick={() => setTab("document")}
             className="w-28 md:w-32"
-            Icon={SquareCode}
+            Icon={FileCode}
             text="Document"
             selected={tab === "document"}
             responsive
@@ -63,6 +113,33 @@ export default function Gpi({ gpi }: { gpi: GpiGetResponse }) {
               ownerUserHashId={"non-editable-user"}
               hideButtons
             />
+            <div className="flex items-center mt-3">
+              <Badge variant="tag" className="h-6">
+                user
+              </Badge>
+            </div>
+            <div className="my-3 text-sm text-muted-foreground">
+              <form onSubmit={onSubmit}>
+                <div className="flex items-center gap-3">
+                  <div className="relative flex-1 items-start">
+                    <div className="whitespace-pre-wrap px-3 py-2 text-base invisible border">
+                      {content + "."}
+                    </div>
+                    <Textarea
+                      className="absolute max-h-none inset-0 z-10 text-base overflow-hidden resize-none"
+                      value={content}
+                      onChange={(e) => setContent(e.currentTarget.value)}
+                      placeholder="user message"
+                      disabled={loading}
+                      onKeyDown={onKeyDown}
+                    />
+                  </div>
+                  <Button type="submit" loading={loading}>
+                    <CornerDownLeft />
+                  </Button>
+                </div>
+              </form>
+            </div>
           </div>
         )}
       </div>
