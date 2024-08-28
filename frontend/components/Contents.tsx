@@ -111,8 +111,8 @@ function Buttons({
 type RefreshingHashId = string | undefined;
 type ContentProps = {
   chatHashId: string;
-  content: Omit<ContentType, "hashId"> &
-    Partial<Omit<ContentType, "role" | "content" | "config" | "model">>;
+  content: Omit<ContentType, "hashId" | "isModified"> &
+    Partial<Pick<ContentType, "hashId" | "isModified">>;
   setContents: Dispatch<SetStateAction<ContentType[]>>;
   useRefreshingHashId: [RefreshingHashId, (hashId: RefreshingHashId) => void];
   callUpdateContent: (content: string) => Promise<string | undefined>;
@@ -259,6 +259,9 @@ function Content({
             <div className="text-xs">saving...</div>
           </>
         )}
+        {content.isModified === true && !isSaving && (
+          <div className="ml-1 text-xs self-start">*answer modified</div>
+        )}
         <div className="flex-1"></div>
         {!hideButtons && (
           <Buttons
@@ -355,6 +358,13 @@ export default function Contents({
         method: "PUT",
         body: { content },
       });
+      if (response) {
+        setContents((prev) =>
+          prev.map((c) =>
+            c.hashId === hashId ? { ...c, isModified: response.isModified } : c
+          )
+        );
+      }
       return response?.content;
     },
     []

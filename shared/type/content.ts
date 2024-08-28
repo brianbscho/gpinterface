@@ -19,6 +19,7 @@ export interface Content {
     outputTokens: number;
     createdAt: string;
   } | null;
+  isModified: boolean;
 }
 
 export const ContentCreateSchema = Type.Object({
@@ -35,6 +36,7 @@ export const ContentUpdateSchema = Type.Object({
 export type ContentUpdateResponse = {
   hashId: string;
   content: string;
+  isModified: boolean;
 };
 
 export const ContentsDeleteSchema = Type.Object({

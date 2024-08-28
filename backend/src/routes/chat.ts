@@ -47,6 +47,7 @@ export default async function (fastify: FastifyInstance) {
                 content: true,
                 config: true,
                 histories: { select: ContentHistorySelect },
+                isModified: true,
               },
               orderBy: { id: "asc" },
             },

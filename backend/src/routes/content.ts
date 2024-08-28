@@ -92,7 +92,12 @@ export default async function (fastify: FastifyInstance) {
         });
 
         const newContents = [
-          { hashId: nanoid(), role: "user", content: userContent },
+          {
+            hashId: nanoid(),
+            role: "user",
+            content: userContent,
+            isModified: false,
+          },
           {
             hashId: nanoid(),
             model: { hashId: body.modelHashId, name: model.name },
@@ -100,6 +105,7 @@ export default async function (fastify: FastifyInstance) {
             content,
             config: body.config,
             history: getTypedHistory(history),
+            isModified: false,
           },
         ];
 
@@ -154,18 +160,20 @@ export default async function (fastify: FastifyInstance) {
             hashId,
             chat: { OR: [{ userHashId: user.hashId }, { userHashId: null }] },
           },
-          select: { hashId: true },
+          select: { hashId: true, role: true, modelHashId: true },
         });
         if (!oldContent) {
           throw fastify.httpErrors.badRequest("content is not available.");
         }
 
+        const isModified =
+          oldContent.role !== "user" && !!oldContent.modelHashId;
         await fastify.prisma.chatContent.update({
           where: { hashId },
-          data: { content },
+          data: { content, isModified },
         });
 
-        return { hashId, content };
+        return { hashId, content, isModified };
       } catch (ex) {
         console.error("path: /content/:hashId, method: put, error:", ex);
         throw ex;
@@ -250,13 +258,14 @@ export default async function (fastify: FastifyInstance) {
         });
         const newContent = await fastify.prisma.chatContent.update({
           where: { hashId },
-          data: { content, config, modelHashId },
+          data: { content, config, modelHashId, isModified: false },
           select: {
             hashId: true,
             model: { select: { hashId: true, name: true } },
             role: true,
             content: true,
             config: true,
+            isModified: true,
           },
         });
 
