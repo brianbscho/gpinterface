@@ -76,7 +76,7 @@ export default function Gpi({ gpi, setTestBody, setTestResponse }: Props) {
     >
       <div className="whitespace-pre-wrap pb-3">{gpi.description}</div>
       <div className="sticky top-0 md:top-3 w-full md:h-0 py-3 md:py-0 flex md:flex-col gap-3 bg-background z-30">
-        <div className="flex-1">
+        <div className="flex-1 md:w-32">
           <IconTextButton
             onClick={() => setTab("gpi")}
             className="w-full md:w-32"
@@ -86,7 +86,7 @@ export default function Gpi({ gpi, setTestBody, setTestResponse }: Props) {
             responsive
           />
         </div>
-        <div className="flex-1">
+        <div className="flex-1 md:w-32">
           <IconTextButton
             onClick={() => setTab("document")}
             className="w-full md:w-32"
@@ -96,7 +96,7 @@ export default function Gpi({ gpi, setTestBody, setTestResponse }: Props) {
             responsive
           />
         </div>
-        <div className="flex-1">
+        <div className="flex-1 md:w-32">
           <ModelSheetButton
             className="w-full"
             editable={gpi.userHashId === userHashId}

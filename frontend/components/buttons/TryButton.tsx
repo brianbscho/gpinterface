@@ -14,6 +14,31 @@ import { DialogDescription } from "@radix-ui/react-dialog";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import callApi from "@/utils/callApi";
 
+function handleSpecialCharacters(match: string, p1: string) {
+  switch (p1) {
+    case "n":
+      return "\n";
+    case "t":
+      return "\t";
+    case "r":
+      return "\r";
+    case "b":
+      return "\b";
+    case "f":
+      return "\f";
+    case "a":
+      return "a"; // Note: '\a' (alert) is not a standard escape sequence in JavaScript.
+    case '"':
+      return '"';
+    case "'":
+      return "'";
+    case "\\":
+      return "\\";
+    default:
+      return match; // This case is redundant as all cases are handled
+  }
+}
+
 type Props = {
   title: string;
   method: "POST" | "GET";
@@ -66,7 +91,7 @@ export default function TryButton({ title, method, path, body, keys }: Props) {
       <DialogTrigger asChild>
         <IconTextButton Icon={Play} text="Try" size="small" className="w-16" />
       </DialogTrigger>
-      <DialogContent className="max-w-3xl w-11/12 overflow-y-auto">
+      <DialogContent className="max-w-3xl w-11/12 h-[70vh] overflow-y-auto">
         <DialogHeader>{title}</DialogHeader>
         <DialogDescription className="whitespace-pre-wrap text-neutral-400 text-xs md:text-base">
           <form onSubmit={onSubmit}>
@@ -141,7 +166,7 @@ export default function TryButton({ title, method, path, body, keys }: Props) {
                   Response
                 </div>
                 <div className="mt-3 whitespace-pre-wrap">
-                  {response.replace("\\n", "\n")}
+                  {response.replace(/\\(.)/g, handleSpecialCharacters)}
                 </div>
               </div>
             )}
@@ -154,7 +179,8 @@ export default function TryButton({ title, method, path, body, keys }: Props) {
                 disabled={
                   (Object.keys(data).length > 0 &&
                     Object.keys(data).some((key) => !data[key])) ||
-                  (paramRequired && param === "")
+                  (paramRequired && param === "") ||
+                  loading
                 }
                 type="submit"
                 loading={loading}

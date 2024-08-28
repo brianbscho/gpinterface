@@ -28,30 +28,32 @@ function TestDialog({ useTestBody, useTestResponse }: TestDialogProps) {
         }
       }}
     >
-      <DialogContent className="max-w-3xl w-11/12 overflow-y-auto">
+      <DialogContent className="max-w-3xl w-11/12">
         <DialogDescription className="whitespace-pre-wrap text-neutral-400 text-xs md:text-base">
-          <div className="text-foreground text-base">Request</div>
-          <div className="mt-3">
-            {`curl -X POST ${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/chat/completion \\`}
-          </div>
-          <div>
-            {`\t-H "Authorization: Bearer `}
-            <span className="italic bold text-foreground">{"{API_KEY}"}</span>
-            &quot; \
-          </div>
-          <div>{`\t-H "Content-Type: application/json" \\`}</div>
-          <div>{`\t-d '${JSON.stringify(testBody)
-            .replace(":", ": ")
-            .replace(",", ", ")}'`}</div>
-          <div className="mt-7">
-            <div className="text-foreground text-base">Response</div>
-            {testResponse === "" ? (
-              <Loader2 className="animate-spin mx-auto mt-3" />
-            ) : (
-              <div className="mt-3 whitespace-pre-wrap">
-                {testResponse.replace(/\\n/g, "\n")}
-              </div>
-            )}
+          <div className="w-full h-[70vh] overflow-y-auto">
+            <div className="text-foreground text-base">Request</div>
+            <div className="mt-3">
+              {`curl -X POST ${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/chat/completion \\`}
+            </div>
+            <div>
+              {`\t-H "Authorization: Bearer `}
+              <span className="italic bold text-foreground">{"{API_KEY}"}</span>
+              &quot; \
+            </div>
+            <div>{`\t-H "Content-Type: application/json" \\`}</div>
+            <div>{`\t-d '${JSON.stringify(testBody)
+              .replace(":", ": ")
+              .replace(",", ", ")}'`}</div>
+            <div className="mt-7">
+              <div className="text-foreground text-base">Response</div>
+              {testResponse === "" ? (
+                <Loader2 className="animate-spin mx-auto mt-3" />
+              ) : (
+                <div className="mt-3 whitespace-pre-wrap">
+                  {testResponse.replace(/\\n/g, "\n")}
+                </div>
+              )}
+            </div>
           </div>
           <div className="mt-3 w-full flex justify-end gap-3">
             <DialogClose asChild>
