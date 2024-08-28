@@ -7,7 +7,7 @@ import List from "../List";
 import Gpi from "./Gpi";
 import useProviderTypes from "@/hooks/useProviderTypes";
 
-export function Gpis() {
+export default function Gpis() {
   const [gpis, setGpis] = useState<GpisGetResponse["gpis"]>();
   const [lastHashId, setLastHashId] = useState("");
   const [spinnerHidden, setSpinnerHidden] = useState(false);
