@@ -48,7 +48,7 @@ function _Chats() {
       if (chatResponse) {
         setChats([chatResponse]);
         setSpinnerHidden(true);
-        router.push(`/?chatHashId=${chatResponse.hashId}`);
+        router.push(`/chats?chatHashId=${chatResponse.hashId}`);
       }
     }
   }, [lastHashId, router, chatHashId]);
