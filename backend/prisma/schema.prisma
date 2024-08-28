@@ -160,9 +160,10 @@ model ChatContent {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
-  role    String
-  content String
-  config  Json?
+  role       String
+  content    String
+  config     Json?
+  isModified Boolean @default(false) @map("is_modified")
 
   chatHashId  String  @map("chat_hash_id")
   chat        Chat    @relation(fields: [chatHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
