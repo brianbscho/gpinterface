@@ -28,11 +28,7 @@ export default async function (fastify: FastifyInstance) {
         const gpis = await fastify.prisma.gpi.findMany({
           where: {
             ...(id > 0 && { id: { lt: id } }),
-            OR: [
-              { userHashId: user.hashId },
-              { userHashId: null },
-              { isPublic: true },
-            ],
+            OR: [{ userHashId: user.hashId }, { isPublic: true }],
           },
           select: {
             hashId: true,
