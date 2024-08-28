@@ -36,6 +36,7 @@ export const ContentUpdateSchema = Type.Object({
 export type ContentUpdateResponse = {
   hashId: string;
   content: string;
+  isModified: boolean;
 };
 
 export const ContentsDeleteSchema = Type.Object({

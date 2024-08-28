@@ -166,12 +166,14 @@ export default async function (fastify: FastifyInstance) {
           throw fastify.httpErrors.badRequest("content is not available.");
         }
 
+        const isModified =
+          oldContent.role !== "user" && !!oldContent.modelHashId;
         await fastify.prisma.chatContent.update({
           where: { hashId },
-          data: { content, isModified: true },
+          data: { content, isModified },
         });
 
-        return { hashId, content };
+        return { hashId, content, isModified };
       } catch (ex) {
         console.error("path: /content/:hashId, method: put, error:", ex);
         throw ex;
