@@ -1,0 +1,10 @@
+{
+  "extends": "../../tsconfig.json", // Adjust the path according to your project structure
+  "compilerOptions": {
+    "rootDir": "../../"
+  },
+  "include": ["**/*", "../../src/util"],
+  "exclude": [
+    // Specify any subfolders or files to exclude from compilation here
+  ]
+}
