@@ -1,51 +1,31 @@
 import { Prisma } from "@prisma/client";
-import { getTypedContent, getDataWithHashId } from "../util/prisma";
+import { getDataWithHashId } from "../util/prisma";
 
 export async function createGpi(
-  chatDelegate: Prisma.ChatDelegate,
-  chat: {
-    userHashId: string | null;
-    systemMessage: string;
-    contents: {
-      role: string;
-      content: string;
-      config: Prisma.JsonValue;
-      modelHashId: string | null;
-    }[];
-    gpis: {
-      description: string;
-      userHashId: string | null;
-      isPublic: boolean;
-      config: object;
-      modelHashId: string;
-    };
+  gpiDelegate: Prisma.GpiDelegate,
+  gpis: {
+    config: object;
+    description: string;
+    isPublic: boolean;
+    chatHashId: string;
+    modelHashId: string;
+    userHashId: string;
   }
 ) {
   let retries = 0;
 
   while (retries < 5) {
     try {
-      const newGpi = await chatDelegate.create({
+      const newGpi = await gpiDelegate.create({
         data: {
           ...getDataWithHashId({
-            ...chat,
-            contents: {
-              createMany: {
-                data: chat.contents.map((c) =>
-                  getDataWithHashId(getTypedContent(c))
-                ),
-              },
-            },
-            gpis: { create: getDataWithHashId(chat.gpis) },
+            ...gpis,
           }),
         },
-        select: { gpis: { select: { hashId: true } } },
+        select: { hashId: true },
       });
 
-      if (newGpi.gpis.length === 0) {
-        throw "Failed to create gpi";
-      }
-      return newGpi.gpis[0];
+      return newGpi;
     } catch (error) {
       retries++;
       console.log("🚀 ~ error:", error);

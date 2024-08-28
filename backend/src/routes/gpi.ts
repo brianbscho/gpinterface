@@ -106,15 +106,12 @@ export default async function (fastify: FastifyInstance) {
           throw httpErrors.badRequest("chat is not available.");
         }
 
-        const newGpi = await createGpi(fastify.prisma.chat, {
-          userHashId: user.hashId || null,
-          ...chat,
-          gpis: {
-            description,
-            userHashId: user.hashId || null,
-            isPublic: isPublic || user.hashId === "",
-            ...body,
-          },
+        const newGpi = await createGpi(fastify.prisma.gpi, {
+          ...body,
+          description,
+          isPublic,
+          userHashId: user.hashId,
+          chatHashId,
         });
 
         return { hashId: newGpi.hashId };
