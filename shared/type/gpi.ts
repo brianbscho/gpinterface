@@ -31,6 +31,9 @@ type GpiResponse = {
 export type GpisUserGetResponse = {
   gpis: GpiResponse[];
 };
+export type GpisGetResponse = {
+  gpis: GpiGetResponse[];
+};
 
 export const GpiUpdateSchema = Type.Object({
   description: Type.Optional(Type.String()),
