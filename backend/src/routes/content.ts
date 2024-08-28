@@ -162,7 +162,7 @@ export default async function (fastify: FastifyInstance) {
 
         await fastify.prisma.chatContent.update({
           where: { hashId },
-          data: { content },
+          data: { content, isModified: true },
         });
 
         return { hashId, content };
@@ -250,7 +250,7 @@ export default async function (fastify: FastifyInstance) {
         });
         const newContent = await fastify.prisma.chatContent.update({
           where: { hashId },
-          data: { content, config, modelHashId },
+          data: { content, config, modelHashId, isModified: false },
           select: {
             hashId: true,
             model: { select: { hashId: true, name: true } },
