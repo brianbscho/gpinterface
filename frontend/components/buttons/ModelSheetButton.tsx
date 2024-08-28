@@ -46,7 +46,7 @@ export default function ModelSheetButton({
             </div>
           )}
           <Model
-            className="p-3"
+            className={`p-3${disabled ? " pl-3 md:pl-3" : ""}`}
             disabled={disabled}
             modelHashId={modelHashId}
           />
