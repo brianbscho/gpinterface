@@ -71,6 +71,7 @@ export default async function (fastify: FastifyInstance) {
               role: true,
               content: true,
               config: true,
+              isModified: true,
             },
           }
         );

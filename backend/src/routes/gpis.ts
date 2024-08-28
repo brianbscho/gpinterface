@@ -46,6 +46,7 @@ export default async function (fastify: FastifyInstance) {
                     config: true,
                     model: { select: { hashId: true, name: true } },
                     histories: { select: ContentHistorySelect },
+                    isModified: true,
                   },
                 },
               },

@@ -19,6 +19,7 @@ export interface Content {
     outputTokens: number;
     createdAt: string;
   } | null;
+  isModified: boolean;
 }
 
 export const ContentCreateSchema = Type.Object({
