@@ -11,8 +11,8 @@ import Contents from "@/components/Contents";
 import ModelSelect from "@/components/selects/ModelSelect";
 import ModelResetButton from "@/components/buttons/ModelResetButton";
 import ModelSheetButton from "@/components/buttons/ModelSheetButton";
-import EditGpiButtons from "@/components/buttons/EditGpiButtons";
 import ModelPanel from "@/components/ModelPanel";
+import GpiSaveButton from "@/components/buttons/GpiSaveButton";
 
 export default function Page({ params }: { params: { hashId: string } }) {
   const { hashId } = params;
@@ -88,7 +88,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
         <ModelPanel topPadding={false}>
           <ModelSelect />
           <ModelResetButton />
-          {editable && <EditGpiButtons useGpi={[gpi, setGpi]} />}
+          {editable && <GpiSaveButton useGpi={[gpi, setGpi]} />}
         </ModelPanel>
       </div>
     </div>

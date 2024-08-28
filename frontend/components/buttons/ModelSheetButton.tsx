@@ -4,9 +4,9 @@ import IconTextButton from "./IconTextButton";
 import ModelSelect from "../selects/ModelSelect";
 import ModelResetButton from "./ModelResetButton";
 import Model from "../Model";
-import EditGpiButtons from "./EditGpiButtons";
 import { GpiGetResponse } from "gpinterface-shared/type/gpi";
 import { Dispatch, SetStateAction } from "react";
+import GpiSaveButton from "./GpiSaveButton";
 
 type GpiType = GpiGetResponse | undefined;
 type Props = {
@@ -40,9 +40,7 @@ export default function ModelSheetButton({
             <div className="w-full sticky top-0 p-3 z-30 grid grid-cols-2 gap-3 bg-background">
               <ModelSelect />
               <ModelResetButton />
-              {editable === true && useGpi && (
-                <EditGpiButtons useGpi={useGpi} />
-              )}
+              {editable === true && useGpi && <GpiSaveButton useGpi={useGpi} />}
             </div>
           )}
           <Model
