@@ -59,7 +59,6 @@ export default async function (fastify: FastifyInstance) {
               ...chat,
               contents: getTypedContents(contents),
               createdAt: getDateString(createdAt),
-              isGpi: _count.gpis > 0,
             };
           }),
         };

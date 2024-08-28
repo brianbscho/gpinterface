@@ -65,7 +65,6 @@ export default async function (fastify: FastifyInstance) {
           ...rest,
           contents: getTypedContents(contents),
           createdAt: getDateString(createdAt),
-          isGpi: _count.gpis > 0,
         };
       } catch (ex) {
         console.error("path: /chat/:hashId, method: get, error:", ex);
@@ -86,7 +85,6 @@ export default async function (fastify: FastifyInstance) {
       return {
         hashId: chat.hashId,
         userHashId,
-        isGpi: false,
         systemMessage: "",
         contents: [],
         createdAt: getDateString(chat.createdAt),

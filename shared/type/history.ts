@@ -14,7 +14,6 @@ interface History {
 
   gpiHashId?: string | null;
   chatHashId?: string | null;
-  isGpi: boolean;
 }
 
 export type HistoriesGetResponse = { histories: History[] };
