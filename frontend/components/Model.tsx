@@ -6,6 +6,7 @@ import { Input } from "./ui";
 import { Slider } from "./ui/slider";
 import useModelStore from "@/store/model";
 import { cn } from "@/utils/css";
+import useProviderTypes from "@/hooks/useProviderTypes";
 
 type Props = { className?: string; disabled?: boolean; modelHashId?: string };
 export default function Model({ className, disabled, modelHashId }: Props) {
@@ -32,6 +33,7 @@ export default function Model({ className, disabled, modelHashId }: Props) {
     },
     [config, setConfig]
   );
+  useProviderTypes();
 
   if (!model) return null;
 

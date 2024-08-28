@@ -14,6 +14,7 @@ import ModelSheetButton from "@/components/buttons/ModelSheetButton";
 import ModelPanel from "@/components/ModelPanel";
 import GpiSaveButton from "@/components/buttons/GpiSaveButton";
 import GpiPublicButton from "@/components/buttons/GpiPublicButton";
+import useProviderTypes from "@/hooks/useProviderTypes";
 
 export default function Page({ params }: { params: { hashId: string } }) {
   const { hashId } = params;
@@ -44,6 +45,8 @@ export default function Page({ params }: { params: { hashId: string } }) {
     () => !gpi?.userHashId || gpi?.userHashId === userHashId,
     [gpi?.userHashId, userHashId]
   );
+
+  useProviderTypes();
 
   return (
     <div className="w-full flex-1 flex flex-col gap-3 pt-3 overflow-hidden">

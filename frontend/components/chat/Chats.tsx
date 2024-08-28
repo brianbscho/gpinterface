@@ -13,6 +13,7 @@ import useUserStore from "@/store/user";
 import Contents from "../Contents";
 import DeployButton from "../buttons/DeployButton";
 import ModelSheetButton from "../buttons/ModelSheetButton";
+import useProviderTypes from "@/hooks/useProviderTypes";
 
 function _Chats() {
   const [chats, setChats] = useState<ChatsGetResponse["chats"]>();
@@ -67,6 +68,8 @@ function _Chats() {
     };
     callGetChatApi();
   }, [isLoggedOut, chatHashId]);
+
+  useProviderTypes();
 
   return (
     <div className="w-full h-full overflow-hidden relative">

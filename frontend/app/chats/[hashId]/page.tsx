@@ -6,6 +6,7 @@ import ModelSheetButton from "@/components/buttons/ModelSheetButton";
 import Contents from "@/components/Contents";
 import ModelPanel from "@/components/ModelPanel";
 import ModelSelect from "@/components/selects/ModelSelect";
+import useProviderTypes from "@/hooks/useProviderTypes";
 import callApi from "@/utils/callApi";
 import { ChatsGetResponse } from "gpinterface-shared/type/chat";
 import { useEffect, useState } from "react";
@@ -26,6 +27,8 @@ export default function Page({ params }: { params: { hashId: string } }) {
     };
     callChatApi();
   }, [hashId]);
+
+  useProviderTypes();
 
   return (
     <div className="w-full flex-1 grid grid-cols-[1fr_auto] overflow-hidden">

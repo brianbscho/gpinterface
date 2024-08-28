@@ -13,7 +13,7 @@ type Props = {
   className?: string;
   editable?: boolean;
   disabled?: boolean;
-  useGpi?: [gpi: GpiType, Dispatch<SetStateAction<GpiType>>];
+  useGpi?: [GpiType, Dispatch<SetStateAction<GpiType>>];
   modelHashId?: string;
 };
 export default function ModelSheetButton({
