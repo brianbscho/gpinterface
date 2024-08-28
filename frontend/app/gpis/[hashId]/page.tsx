@@ -1,6 +1,6 @@
 "use client";
 
-import Document from "./Document";
+import Document from "@/components/gpi/Document";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import callApi from "@/utils/callApi";
 import { GpiGetResponse } from "gpinterface-shared/type/gpi";
