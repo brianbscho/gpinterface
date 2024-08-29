@@ -15,6 +15,7 @@ import {
   ChatCompletionSchema,
 } from "gpinterface-shared/type/chat";
 import { Static } from "@sinclair/typebox";
+import GpiCopyButton from "../buttons/GpiCopyButton";
 
 export type TestDataType =
   | {
@@ -112,6 +113,9 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
             disabled
             modelHashId={gpi.modelHashId}
           />
+        </div>
+        <div className="flex-1 md:w-32">
+          <GpiCopyButton gpiHashId={gpi.hashId} />
         </div>
       </div>
       <div className={getTabContentClassName("gpi")}>
