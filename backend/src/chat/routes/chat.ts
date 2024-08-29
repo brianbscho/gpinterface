@@ -1,17 +1,11 @@
 import { FastifyInstance } from "fastify";
-import {
-  ChatCompletionContentsQuery,
-  ChatCompletionModelSelect,
-  createEntity,
-} from "../../util/prisma";
 import { Static } from "@sinclair/typebox";
-import { getTextResponse } from "../../util/text";
-import { Prisma } from "@prisma/client";
 import { getApiKey } from "../controllers/apiKey";
 import {
   ChatCompletionResponse,
   ChatCompletionSchema,
 } from "gpinterface-shared/type/chat";
+import { createChatCompletion } from "../controllers/chat";
 
 export default async function (fastify: FastifyInstance) {
   fastify.post<{ Body: Static<typeof ChatCompletionSchema> }>(
@@ -20,62 +14,12 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<ChatCompletionResponse> => {
       try {
         const userHashId = await getApiKey(fastify, request);
-        const { gpiHashId, content: userContent } = request.body;
+        const { body } = request;
 
-        const gpi = await fastify.prisma.gpi.findFirst({
-          where: {
-            hashId: gpiHashId,
-            OR: [{ userHashId }, { isPublic: true }],
-            model: { isAvailable: true, isFree: true },
-          },
-          select: {
-            config: true,
-            model: { select: ChatCompletionModelSelect },
-            chat: {
-              select: {
-                systemMessage: true,
-                contents: ChatCompletionContentsQuery,
-              },
-            },
-          },
-        });
-
-        if (!gpi) {
-          throw fastify.httpErrors.badRequest("gpi is not available.");
-        }
-        if (gpi.chat.contents.some((c) => c.content === "")) {
-          throw fastify.httpErrors.badRequest(
-            "There is empty content in chat."
-          );
-        }
-
-        const { chat, config, model } = gpi;
-        const { systemMessage, contents } = chat;
-        const messages = contents.concat({
-          role: "user",
-          content: userContent,
-        });
-        const { content, ...response } = await getTextResponse({
-          model,
-          systemMessage,
-          config: config as any,
-          messages,
-        });
-
-        await createEntity(fastify.prisma.history.create, {
-          data: {
-            userHashId,
-            gpiHashId,
-            provider: model.provider.name,
-            model: model.name,
-            config: config ?? Prisma.JsonNull,
-            messages: (systemMessage
-              ? [{ role: "system", content: systemMessage }]
-              : []
-            ).concat(messages),
-            content,
-            ...response,
-          },
+        const content = await createChatCompletion({
+          fastify,
+          body,
+          userHashId,
         });
 
         return { content };
