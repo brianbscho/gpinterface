@@ -26,14 +26,14 @@ export async function getTextResponse(body: {
 }) {
   const { model, systemMessage, messages, config } = body;
   const { provider, name, inputPricePerMillion, outputPricePerMillion } = model;
-  const typedMEssages = messages.map((m) => ({
+  const typedMessages = messages.map((m) => ({
     role: m.role === "user" ? ("user" as const) : ("assistant" as const),
     content: m.content,
   }));
   const systemMergedMessages =
     systemMessage.length > 0
-      ? [{ role: "system" as const, content: systemMessage }, ...typedMEssages]
-      : typedMEssages;
+      ? [{ role: "system" as const, content: systemMessage }, ...typedMessages]
+      : typedMessages;
 
   const response = await (async function () {
     switch (provider.name) {
@@ -46,7 +46,7 @@ export async function getTextResponse(body: {
       case providers.Anthropic:
         return callClaude({
           model: name,
-          messages: typedMEssages,
+          messages: typedMessages,
           ...(systemMessage.length > 0 && { system: systemMessage }),
           max_tokens: 4096,
           ...config,
@@ -79,7 +79,7 @@ export async function getTextResponse(body: {
       case providers.Meta:
         return callBedrock({
           modelId: name,
-          messages: typedMEssages.map(({ role, content }) => ({
+          messages: typedMessages.map(({ role, content }) => ({
             role,
             content: [{ text: content }],
           })),
