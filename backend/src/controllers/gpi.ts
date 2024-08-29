@@ -4,7 +4,7 @@ import { getDataWithHashId } from "../util/prisma";
 export async function createGpi(
   gpiDelegate: Prisma.GpiDelegate,
   gpis: {
-    config: object;
+    config: Prisma.JsonValue;
     description: string;
     isPublic: boolean;
     chatHashId: string;
@@ -17,7 +17,10 @@ export async function createGpi(
   while (retries < 5) {
     try {
       const newGpi = await gpiDelegate.create({
-        data: getDataWithHashId(gpis, 32),
+        data: getDataWithHashId(
+          { ...gpis, config: gpis.config ?? Prisma.JsonNull },
+          32
+        ),
         select: { hashId: true },
       });
 
