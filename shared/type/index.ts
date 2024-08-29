@@ -6,3 +6,7 @@ export const QueryParamSchema = Type.Object({
 export const ParamSchema = Type.Object({
   hashId: Type.String(),
 });
+export const SearchQueryParamSchema = Type.Object({
+  keyword: Type.String(),
+  lastHashId: Type.Optional(Type.String()),
+});

@@ -27,7 +27,7 @@ function TestDialog({ useTestData, useTestOpen }: TestDialogProps) {
     if (!open) {
       setTestData(undefined);
     }
-  }, [open]);
+  }, [open, setTestData]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -113,14 +113,21 @@ function TestDialog({ useTestData, useTestOpen }: TestDialogProps) {
   );
 }
 
-export default function Gpis() {
+type GpisProps = { baseUrl: string; emptyMessage?: string };
+export default function Gpis({ baseUrl, emptyMessage }: GpisProps) {
   const [gpis, setGpis] = useState<GpisGetResponse["gpis"]>();
   const [lastHashId, setLastHashId] = useState("");
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 
+  useEffect(() => {
+    setGpis([]);
+    setLastHashId("");
+    setSpinnerHidden(false);
+  }, [baseUrl]);
+
   const callGpisApi = useCallback(async () => {
     const response = await callApi<GpisGetResponse>({
-      endpoint: `/gpis?lastHashId=${lastHashId}`,
+      endpoint: `${baseUrl}&lastHashId=${lastHashId}`,
     });
     if (response) {
       setGpis((prev) => [...(prev ?? []), ...response.gpis]);
@@ -128,7 +135,7 @@ export default function Gpis() {
         setSpinnerHidden(true);
       }
     }
-  }, [lastHashId]);
+  }, [baseUrl, lastHashId]);
 
   useProviderTypes();
 
@@ -141,7 +148,7 @@ export default function Gpis() {
         <div className="w-full max-w-4xl mx-auto flex flex-col gap-3 p-3">
           <List
             callApi={callGpisApi}
-            emptyMessage="Start your chat!"
+            emptyMessage={emptyMessage ?? "Start your chat!"}
             elements={gpis}
             spinnerHidden={spinnerHidden}
             useLastHashId={[lastHashId, setLastHashId]}
