@@ -1,14 +1,5 @@
 import { FastifyInstance } from "fastify";
-import {
-  ChatCompletionContentsQuery,
-  ChatCompletionModelSelect,
-  createEntity,
-  createManyEntities,
-} from "../util/prisma";
 import { Static } from "@sinclair/typebox";
-import { getTextResponse } from "../util/text";
-import { Prisma } from "@prisma/client";
-import { createSession } from "../controllers/session";
 import {
   SessionCompletionResponse,
   SessionCompletionSchema,
@@ -17,6 +8,11 @@ import {
   SessionMessagesGetResponse,
   SessionMessagesGetSchema,
 } from "gpinterface-shared/type/session";
+import {
+  createSession,
+  createSessionCompletion,
+  getSessionMessages,
+} from "../chat/controllers/session";
 
 export default async function (fastify: FastifyInstance) {
   fastify.post<{ Body: Static<typeof SessionCreateSchema> }>(
@@ -26,23 +22,11 @@ export default async function (fastify: FastifyInstance) {
       try {
         const { user } = await fastify.getUser(request, reply, true);
         const { gpiHashId } = request.body;
-        const gpi = await fastify.prisma.gpi.findFirst({
-          where: {
-            hashId: gpiHashId,
-            OR: [{ userHashId: user.hashId }, { isPublic: true }],
-          },
-          select: {
-            hashId: true,
-            chat: { select: { contents: ChatCompletionContentsQuery } },
-          },
-        });
-        if (!gpi) {
-          throw fastify.httpErrors.badRequest("no gpi");
-        }
 
-        const session = await createSession(fastify.prisma.session, {
+        const session = await createSession({
+          fastify,
+          userHashId: user.hashId,
           gpiHashId,
-          messages: gpi.chat.contents,
         });
         return session;
       } catch (ex) {
@@ -57,71 +41,13 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<SessionCompletionResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
-        const { sessionHashId, content: userContent } = request.body;
+        const { body } = request;
 
-        const session = await fastify.prisma.session.findFirst({
-          where: {
-            hashId: sessionHashId,
-            gpi: {
-              OR: [{ userHashId: user.hashId }, { isPublic: true }],
-              model: {
-                isAvailable: true,
-                isFree: true,
-                ...(!user.hashId && { isLoginRequired: false }),
-              },
-            },
-          },
-          select: {
-            gpi: {
-              select: {
-                hashId: true,
-                config: true,
-                model: { select: ChatCompletionModelSelect },
-                chat: { select: { systemMessage: true } },
-              },
-            },
-            messages: ChatCompletionContentsQuery,
-          },
+        const content = await createSessionCompletion({
+          fastify,
+          userHashId: user.hashId,
+          body,
         });
-
-        if (!session) {
-          throw fastify.httpErrors.badRequest("session is not available.");
-        }
-
-        const { messages, gpi } = session;
-        const { chat, config, model } = gpi;
-        const { systemMessage } = chat;
-        messages.push({ role: "user", content: userContent });
-        const { content, ...response } = await getTextResponse({
-          model,
-          systemMessage,
-          config: config as any,
-          messages,
-        });
-
-        await createManyEntities(fastify.prisma.sessionMessage.createMany, {
-          data: [
-            { sessionHashId, role: "user", content: userContent },
-            { sessionHashId, role: "assistant", content },
-          ],
-        });
-        await createEntity(fastify.prisma.history.create, {
-          data: {
-            userHashId: user.hashId || null,
-            gpiHashId: session.gpi.hashId,
-            sessionHashId,
-            provider: model.provider.name,
-            model: model.name,
-            config: config ?? Prisma.JsonNull,
-            messages: (systemMessage
-              ? [{ role: "system", content: systemMessage }]
-              : []
-            ).concat(messages),
-            content,
-            ...response,
-          },
-        });
-
         return { content };
       } catch (ex) {
         console.error("path: /session/completion, method: post, error:", ex);
@@ -137,21 +63,11 @@ export default async function (fastify: FastifyInstance) {
         const { user } = await fastify.getUser(request, reply, true);
         const { sessionHashId } = request.params;
 
-        const session = await fastify.prisma.session.findFirst({
-          where: {
-            hashId: sessionHashId,
-            gpi: {
-              OR: [{ userHashId: user.hashId }, { isPublic: true }],
-              model: { isAvailable: true, isFree: true },
-            },
-          },
-          select: { messages: ChatCompletionContentsQuery },
+        const session = await getSessionMessages({
+          fastify,
+          userHashId: user.hashId,
+          sessionHashId,
         });
-
-        if (!session) {
-          throw fastify.httpErrors.badRequest("session is not available.");
-        }
-
         return session;
       } catch (ex) {
         console.error(
