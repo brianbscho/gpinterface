@@ -54,7 +54,12 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
       const response = await callApi<
         ChatCompletionSampleResponse,
         Static<typeof ChatCompletionSchema>
-      >({ endpoint: "/chat/completion/sample", method: "POST", body });
+      >({
+        endpoint: "/chat/completion/sample",
+        method: "POST",
+        body,
+        showError: true,
+      });
       if (response) {
         setTestData({ userContent: content, ...body, ...response });
       }
