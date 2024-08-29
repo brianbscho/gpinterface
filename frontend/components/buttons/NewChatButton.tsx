@@ -20,11 +20,13 @@ import IconTextButton from "./IconTextButton";
 export default function NewChatButton({
   className,
   setChats,
+  useLoading,
 }: {
   className: string;
   setChats: Dispatch<SetStateAction<ChatsGetResponse["chats"] | undefined>>;
+  useLoading: [boolean, (loading: boolean) => void];
 }) {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useLoading;
   const isLoggedOut = useUserStore((state) => state.isLoggedOut);
   const [open, setOpen] = useState(false);
   const onClick = useCallback(
