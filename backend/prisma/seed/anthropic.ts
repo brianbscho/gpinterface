@@ -5,7 +5,7 @@ import { providers } from "../../src/util/provider";
 
 const prisma = new PrismaClient();
 
-async function main() {
+export default async function anthropicSeed() {
   const providerHashId = await getProviderHashId(providers.Anthropic);
   let models = await Promise.all(
     [
@@ -139,13 +139,3 @@ Recommended for advanced use cases only. You usually only need to use temperatur
     }
   }
 }
-
-main()
-  .catch((e) => {
-    console.error(e);
-    // @ts-ignore
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });

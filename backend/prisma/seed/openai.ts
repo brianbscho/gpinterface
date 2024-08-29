@@ -5,7 +5,7 @@ import { providers } from "../../src/util/provider";
 
 const prisma = new PrismaClient();
 
-async function main() {
+export default async function openaiSeed() {
   const providerHashId = await getProviderHashId(providers.OpenAI);
   let models = await Promise.all(
     [
@@ -315,13 +315,3 @@ We generally recommend altering this or temperature but not both.`,
     }
   }
 }
-
-main()
-  .catch((e) => {
-    console.error(e);
-    // @ts-ignore
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });

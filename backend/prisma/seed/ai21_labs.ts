@@ -5,7 +5,7 @@ import { providers } from "../../src/util/provider";
 
 const prisma = new PrismaClient();
 
-async function main() {
+export default async function ai21LabsSeed() {
   const providerHashId = await getProviderHashId(providers.AI21Labs);
   let models = await Promise.all(
     [
@@ -132,13 +132,3 @@ Multiple stop strings and a newline: ["cat", "dog", " .", "####", "\n"]
     }
   }
 }
-
-main()
-  .catch((e) => {
-    console.error(e);
-    // @ts-ignore
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });

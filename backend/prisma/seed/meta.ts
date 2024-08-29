@@ -5,7 +5,7 @@ import { providers } from "../../src/util/provider";
 
 const prisma = new PrismaClient();
 
-async function main() {
+export default async function metaSeed() {
   const providerHashId = await getProviderHashId(providers.Meta);
   let models = await Promise.all(
     [
@@ -122,13 +122,3 @@ async function main() {
     }
   }
 }
-
-main()
-  .catch((e) => {
-    console.error(e);
-    // @ts-ignore
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
