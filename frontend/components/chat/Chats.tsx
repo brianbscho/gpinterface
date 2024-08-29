@@ -29,9 +29,11 @@ function _Chats() {
     [searchParams]
   );
 
+  const [loading, setLoading] = useState(false);
   const callChatsApi = useCallback(async () => {
     if (chatHashId) return;
 
+    setLoading(true);
     const chatsResponse = await callApi<ChatsGetResponse>({
       endpoint: `/chats?lastHashId=${lastHashId}`,
     });
@@ -40,6 +42,7 @@ function _Chats() {
       if (chatsResponse.chats.length === 0) {
         setSpinnerHidden(true);
       }
+      setLoading(false);
     } else {
       const chatResponse = await callApi<ChatCreateResponse>({
         endpoint: "/chat",
@@ -58,6 +61,7 @@ function _Chats() {
     if (!isLoggedOut || !chatHashId) return;
 
     const callGetChatApi = async () => {
+      setLoading(true);
       const response = await callApi<ChatsGetResponse["chats"][0]>({
         endpoint: `/chat/${chatHashId}`,
       });
@@ -65,6 +69,7 @@ function _Chats() {
         setChats([response]);
         setSpinnerHidden(true);
       }
+      setLoading(false);
     };
     callGetChatApi();
   }, [isLoggedOut, chatHashId]);
@@ -76,6 +81,7 @@ function _Chats() {
       <NewChatButton
         className="absolute top-3 left-3 z-40"
         setChats={setChats}
+        useLoading={[loading, setLoading]}
       />
       <div className="md:hidden absolute top-3 right-3 z-40">
         <ModelSheetButton className="w-24" />

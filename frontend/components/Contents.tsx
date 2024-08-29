@@ -162,7 +162,7 @@ function Content({
       } catch {}
 
       setIsSaving(false);
-    }, 3000);
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [newContent, oldContent, callUpdateContent]);

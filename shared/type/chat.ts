@@ -27,3 +27,7 @@ export const ChatCompletionSchema = Type.Object({
 });
 
 export type ChatCompletionResponse = { content: string };
+export type ChatCompletionSampleResponse = {
+  content: string;
+  sessionHashId: string;
+};

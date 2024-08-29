@@ -11,21 +11,29 @@ import Document from "./Document";
 import { Badge, Button, Textarea } from "../ui";
 import callApi from "@/utils/callApi";
 import {
-  ChatCompletionResponse,
+  ChatCompletionSampleResponse,
   ChatCompletionSchema,
 } from "gpinterface-shared/type/chat";
 import { Static } from "@sinclair/typebox";
 
+export type TestDataType =
+  | {
+      gpiHashId: string;
+      userContent: string;
+      content: string;
+      sessionHashId: string;
+    }
+  | undefined;
 type Props = {
   gpi: GpiGetResponse;
-  setTestBody: (testBody: { [key: string]: string }) => void;
-  setTestResponse: (testResponse: string) => void;
+  setTestData: (testData: TestDataType) => void;
+  setTestOpen: (open: boolean) => void;
 };
-export default function Gpi({ gpi, setTestBody, setTestResponse }: Props) {
+export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
   const [tab, setTab] = useState<"gpi" | "document">("gpi");
   const getTabContentClassName = useCallback(
     (_tab: string) => {
-      const className = "w-full h-full pt-9 md:pt-0 overflow-hidden";
+      const className = "w-full h-full px-3 pt-9 md:pt-0 overflow-hidden";
       if (tab === _tab) return className;
       return className + " hidden";
     },
@@ -40,19 +48,15 @@ export default function Gpi({ gpi, setTestBody, setTestResponse }: Props) {
       e.preventDefault();
 
       setLoading(true);
+      setTestOpen(true);
       const body = { gpiHashId: gpi.hashId, content };
-      setTestBody(body);
 
       const response = await callApi<
-        ChatCompletionResponse,
+        ChatCompletionSampleResponse,
         Static<typeof ChatCompletionSchema>
-      >({
-        endpoint: "/chat/completion",
-        method: "POST",
-        body,
-      });
+      >({ endpoint: "/chat/completion/sample", method: "POST", body });
       if (response) {
-        setTestResponse(JSON.stringify(response, null, 2));
+        setTestData({ userContent: content, ...body, ...response });
       }
       setContent("");
       setLoading(false);
@@ -72,10 +76,10 @@ export default function Gpi({ gpi, setTestBody, setTestResponse }: Props) {
   return (
     <div
       key={gpi.hashId}
-      className="w-full border border-theme rounded-md p-3 pb-[8.25rem]"
+      className="w-full border border-theme rounded-md py-3 pb-[8.25rem]"
     >
-      <div className="whitespace-pre-wrap pb-3">{gpi.description}</div>
-      <div className="sticky top-0 md:top-3 w-full md:h-0 py-3 md:py-0 flex md:flex-col gap-3 bg-background z-30">
+      <div className="whitespace-pre-wrap px-3 pb-3">{gpi.description}</div>
+      <div className="sticky top-0 md:top-3 w-full md:h-0 px-3 py-3 md:py-0 flex md:flex-col gap-3 bg-background z-30">
         <div className="flex-1 md:w-32">
           <IconTextButton
             onClick={() => setTab("gpi")}
