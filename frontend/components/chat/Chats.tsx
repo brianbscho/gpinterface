@@ -83,7 +83,7 @@ function _Chats() {
       <div className="h-full overflow-y-auto">
         <List
           callApi={callChatsApi}
-          emptyMessage="Start your chat!"
+          emptyMessage="Start new chat!"
           elements={chats}
           spinnerHidden={spinnerHidden}
           useLastHashId={[lastHashId, setLastHashId]}
