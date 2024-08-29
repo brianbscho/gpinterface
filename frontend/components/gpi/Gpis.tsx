@@ -27,7 +27,7 @@ function TestDialog({ useTestData, useTestOpen }: TestDialogProps) {
     if (!open) {
       setTestData(undefined);
     }
-  }, [open]);
+  }, [open, setTestData]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

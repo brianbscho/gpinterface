@@ -67,7 +67,7 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
       setContent("");
       setLoading(false);
     },
-    [gpi.hashId, content]
+    [gpi.hashId, content, setTestData, setTestOpen]
   );
   const onKeyDown = useCallback(
     (e: KeyboardEvent) => {

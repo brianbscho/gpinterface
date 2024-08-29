@@ -26,7 +26,7 @@ export default function ContentInput({ onSubmit: _onSubmit, children }: Props) {
       setContent("");
       setLoading(false);
     },
-    [content]
+    [_onSubmit, content]
   );
 
   const onKeyDown = useCallback(

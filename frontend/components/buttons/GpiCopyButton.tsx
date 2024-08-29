@@ -24,7 +24,7 @@ export default function GpiCopyButton({ gpiHashId }: { gpiHashId: string }) {
     if (response) {
       router.push(`/gpis/${response.hashId}`);
     }
-  }, [gpiHashId]);
+  }, [gpiHashId, router]);
 
   return (
     <IconTextButton

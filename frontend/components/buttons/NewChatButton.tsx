@@ -49,7 +49,7 @@ export default function NewChatButton({
       }
       setLoading(false);
     },
-    [setChats, isLoggedOut]
+    [setChats, isLoggedOut, setLoading]
   );
 
   return (
