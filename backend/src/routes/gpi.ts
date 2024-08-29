@@ -7,7 +7,7 @@ import {
   GpiUpdateSchema,
 } from "gpinterface-shared/type/gpi";
 import { ParamSchema } from "gpinterface-shared/type";
-import { createGpi } from "../controllers/gpi";
+import { copyGpi, createGpi } from "../controllers/gpi";
 import { ContentHistorySelect, getTypedContents } from "../util/prisma";
 
 export default async function (fastify: FastifyInstance) {
@@ -150,6 +150,22 @@ export default async function (fastify: FastifyInstance) {
         return { hashId };
       } catch (ex) {
         console.error("path: /gpi/:hashId, method: put, error:", ex);
+        throw ex;
+      }
+    }
+  );
+  fastify.post<{ Body: Static<typeof ParamSchema> }>(
+    "/copy",
+    { schema: { body: ParamSchema } },
+    async (request, reply): Promise<GpiCreateResponse> => {
+      try {
+        const { user } = await fastify.getUser(request, reply);
+        const { hashId } = request.body;
+
+        const gpi = await copyGpi(fastify.prisma, hashId, user.hashId);
+        return gpi;
+      } catch (ex) {
+        console.error("path: /gpi/copy, method: post, error:", ex);
         throw ex;
       }
     }
