@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  CheckCircle2,
-  Circle,
-  CornerDownLeft,
-  StepForward,
-} from "lucide-react";
+import { CircleCheck, Circle, CornerDownLeft, StepForward } from "lucide-react";
 import {
   Badge,
   Button,
@@ -83,7 +78,7 @@ export default function DeployButton({ chatHashId }: { chatHashId: string }) {
           <div className="flex-1"></div>
           <IconTextButton
             className="w-24"
-            Icon={!isPublic ? Circle : CheckCircle2}
+            Icon={!isPublic ? Circle : CircleCheck}
             text="Public"
             onClick={() => setIsPublic((prev) => !prev)}
             loading={loading}

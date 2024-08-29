@@ -14,7 +14,7 @@ import {
 } from "gpinterface-shared/type/chat";
 import useUserStore from "@/store/user";
 import LoginDialog from "../dialogs/LoginDialog";
-import { PlusCircle } from "lucide-react";
+import { CirclePlus } from "lucide-react";
 import IconTextButton from "./IconTextButton";
 
 export default function NewChatButton({
@@ -53,7 +53,7 @@ export default function NewChatButton({
   return (
     <div className={className}>
       <IconTextButton
-        Icon={PlusCircle}
+        Icon={CirclePlus}
         text="New chat"
         loading={loading}
         onClick={onClick}

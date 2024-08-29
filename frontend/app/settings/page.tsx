@@ -16,15 +16,7 @@ import {
   ApiKeysGetResponse,
 } from "gpinterface-shared/type/apiKey";
 import { Static } from "@sinclair/typebox";
-import {
-  Check,
-  CircleX,
-  KeyRound,
-  Mail,
-  Save,
-  Trash2,
-  UserRound,
-} from "lucide-react";
+import { Check, CircleX, KeyRound, Mail, Save, UserRound } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -186,7 +178,7 @@ export default function Page() {
             <IconTextButton
               responsive
               onClick={() => onClickApiKeyTrash(k.hashId)}
-              Icon={Trash2}
+              Icon={CircleX}
               text="Delete"
               className="w-32 md:w-44"
             />

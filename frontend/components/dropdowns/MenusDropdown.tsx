@@ -7,10 +7,10 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { UserGetMeResponse } from "gpinterface-shared/type/user";
 import {
   LogOut,
-  MessageSquareCode,
+  MessageCircle,
   ReceiptText,
   Settings,
-  SquareCode,
+  FileCode,
   UserRound,
 } from "lucide-react";
 import {
@@ -94,11 +94,11 @@ function _Menus() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem onClick={() => push(`/chats`)}>
-            <MessageSquareCode />
+            <MessageCircle />
             <span className="ml-3">Chat</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => push(`/gpis`)}>
-            <SquareCode />
+            <FileCode />
             <span className="ml-3">Gpi</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => push("/settings")}>

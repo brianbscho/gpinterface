@@ -1,6 +1,6 @@
 "use client";
 
-import { Play, X } from "lucide-react";
+import { CirclePlay, X } from "lucide-react";
 import IconTextButton from "./IconTextButton";
 import {
   Dialog,
@@ -89,7 +89,12 @@ export default function TryButton({ title, method, path, body, keys }: Props) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <IconTextButton Icon={Play} text="Try" size="small" className="w-16" />
+        <IconTextButton
+          Icon={CirclePlay}
+          text="Try"
+          size="small"
+          className="w-16"
+        />
       </DialogTrigger>
       <DialogContent className="max-w-3xl w-11/12 h-[70vh] overflow-y-auto">
         <DialogHeader>{title}</DialogHeader>
@@ -172,7 +177,7 @@ export default function TryButton({ title, method, path, body, keys }: Props) {
             )}
             <div className="mt-3 w-full flex justify-end gap-3">
               <IconTextButton
-                Icon={Play}
+                Icon={CirclePlay}
                 text="Run"
                 className="w-20 md:w-24"
                 responsive
