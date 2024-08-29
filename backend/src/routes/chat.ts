@@ -102,7 +102,7 @@ export default async function (fastify: FastifyInstance) {
         const { user } = await fastify.getUser(request, reply, true);
         const userHashId = user.hashId || null;
         const { hashId } = request.params;
-        const { systemMessage } = request.body;
+        const { body } = request;
 
         const chat = await fastify.prisma.chat.findFirst({
           where: { hashId, userHashId, gpis: { none: {} } },
@@ -112,12 +112,9 @@ export default async function (fastify: FastifyInstance) {
           throw fastify.httpErrors.badRequest("chat is not available.");
         }
 
-        await fastify.prisma.chat.update({
-          where: { hashId },
-          data: { systemMessage },
-        });
+        await fastify.prisma.chat.update({ where: { hashId }, data: body });
 
-        return { systemMessage };
+        return body;
       } catch (ex) {
         console.error("path: /chat/:hashId, method: put, error:", ex);
         throw ex;
