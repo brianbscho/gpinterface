@@ -15,7 +15,7 @@ export async function createSession({
   gpiHashId,
 }: {
   fastify: FastifyInstance;
-  userHashId: string;
+  userHashId: string | null;
   gpiHashId: string;
 }) {
   const gpi = await fastify.prisma.gpi.findFirst({
@@ -46,7 +46,7 @@ export async function createSessionCompletion({
   body,
 }: {
   fastify: FastifyInstance;
-  userHashId: string;
+  userHashId: string | null;
   body: { sessionHashId: string; content: string };
 }) {
   const { sessionHashId, content: userContent } = body;
@@ -119,7 +119,7 @@ export async function getSessionMessages({
   sessionHashId,
 }: {
   fastify: FastifyInstance;
-  userHashId: string;
+  userHashId: string | null;
   sessionHashId: string;
 }) {
   const session = await fastify.prisma.session.findFirst({

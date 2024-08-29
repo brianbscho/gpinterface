@@ -15,6 +15,7 @@ import {
   ChatCompletionSchema,
 } from "gpinterface-shared/type/chat";
 import { Static } from "@sinclair/typebox";
+import GpiCopyButton from "../buttons/GpiCopyButton";
 
 export type TestDataType =
   | {
@@ -54,7 +55,12 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
       const response = await callApi<
         ChatCompletionSampleResponse,
         Static<typeof ChatCompletionSchema>
-      >({ endpoint: "/chat/completion/sample", method: "POST", body });
+      >({
+        endpoint: "/chat/completion/sample",
+        method: "POST",
+        body,
+        showError: true,
+      });
       if (response) {
         setTestData({ userContent: content, ...body, ...response });
       }
@@ -76,11 +82,11 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
   return (
     <div
       key={gpi.hashId}
-      className="w-full border border-theme rounded-md py-3 pb-[8.25rem]"
+      className="w-full border border-theme rounded-md pt-3"
     >
       <div className="whitespace-pre-wrap px-3 pb-3">{gpi.description}</div>
-      <div className="sticky top-0 md:top-3 w-full md:h-0 px-3 py-3 md:py-0 flex md:flex-col gap-3 bg-background z-30">
-        <div className="flex-1 md:w-32">
+      <div className="sticky top-0 rounded-md w-full px-3 py-3 grid grid-cols-2 md:flex gap-3 bg-background z-30">
+        <div className="flex-1 md:flex-initial md:w-32">
           <IconTextButton
             onClick={() => setTab("gpi")}
             className="w-full md:w-32"
@@ -90,7 +96,7 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
             responsive
           />
         </div>
-        <div className="flex-1 md:w-32">
+        <div className="flex-1 md:flex-initial md:w-32">
           <IconTextButton
             onClick={() => setTab("document")}
             className="w-full md:w-32"
@@ -100,7 +106,10 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
             responsive
           />
         </div>
-        <div className="flex-1 md:w-32">
+        <div className="flex-1 md:flex-initial md:w-32">
+          <GpiCopyButton gpiHashId={gpi.hashId} />
+        </div>
+        <div className="flex-1 md:flex-initial md:w-32">
           <ModelSheetButton
             className="w-full"
             editable={gpi.userHashId === userHashId}
@@ -111,7 +120,7 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
       </div>
       <div className={getTabContentClassName("gpi")}>
         {!!gpi && (
-          <div className="md:pl-[8.75rem]">
+          <div>
             <Contents
               chat={gpi.chat}
               gpiHashId={gpi.hashId}
@@ -149,7 +158,7 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
         )}
       </div>
       <div className={getTabContentClassName("document")}>
-        <Document gpi={gpi} />
+        <Document gpi={gpi} className="px-0 md:pl-0" />
       </div>
     </div>
   );

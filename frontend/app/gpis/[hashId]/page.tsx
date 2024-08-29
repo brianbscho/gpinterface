@@ -15,6 +15,7 @@ import ModelPanel from "@/components/ModelPanel";
 import GpiSaveButton from "@/components/buttons/GpiSaveButton";
 import GpiPublicButton from "@/components/buttons/GpiPublicButton";
 import useProviderTypes from "@/hooks/useProviderTypes";
+import GpiCopyButton from "@/components/buttons/GpiCopyButton";
 
 export default function Page({ params }: { params: { hashId: string } }) {
   const { hashId } = params;
@@ -70,6 +71,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
             responsive
           />
           <GpiPublicButton useGpi={[gpi, setGpi]} />
+          <GpiCopyButton gpiHashId={hashId} />
           <ModelSheetButton
             className="md:hidden w-full h-6"
             useGpi={[gpi, setGpi]}
