@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Toaster } from "@/components/ui/toaster";
 import { Button } from "./ui";
 import { CirclePlus } from "lucide-react";
+import SearchInput from "./inputs/SearchInput";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -31,7 +32,11 @@ export default function Body({
                     </picture>
                   </div>
                 </Link>
-                <div className="flex-1"></div>
+                <div className="flex-1">
+                  <div className="hidden md:block w-full">
+                    <SearchInput />
+                  </div>
+                </div>
                 <Link href="/chats">
                   <Button
                     className="bg-background p-0 pl-6 md:pl-8 h-6 md:h-8 w-24 md:w-28 border border-primary box-border relative"
@@ -44,6 +49,9 @@ export default function Body({
                   </Button>
                 </Link>
                 <MenusDropdown />
+              </div>
+              <div className="md:hidden px-3 pb-3">
+                <SearchInput />
               </div>
             </div>
           </div>
