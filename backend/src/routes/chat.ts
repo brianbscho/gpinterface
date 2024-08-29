@@ -37,7 +37,6 @@ export default async function (fastify: FastifyInstance) {
           select: {
             hashId: true,
             userHashId: true,
-            _count: { select: { gpis: true } },
             systemMessage: true,
             contents: {
               select: {
@@ -60,7 +59,7 @@ export default async function (fastify: FastifyInstance) {
           throw fastify.httpErrors.badRequest("chat is not available.");
         }
 
-        const { _count, createdAt, contents, ...rest } = chat;
+        const { createdAt, contents, ...rest } = chat;
         return {
           ...rest,
           contents: getTypedContents(contents),

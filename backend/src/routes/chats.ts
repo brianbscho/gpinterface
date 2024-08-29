@@ -32,7 +32,6 @@ export default async function (fastify: FastifyInstance) {
           select: {
             hashId: true,
             userHashId: true,
-            _count: { select: { gpis: true } },
             systemMessage: true,
             contents: {
               select: {
@@ -54,7 +53,7 @@ export default async function (fastify: FastifyInstance) {
 
         return {
           chats: chats.map((c) => {
-            const { _count, createdAt, contents, ...chat } = c;
+            const { createdAt, contents, ...chat } = c;
             return {
               ...chat,
               contents: getTypedContents(contents),
