@@ -97,10 +97,13 @@ export default function TryButton({ title, method, path, body, keys }: Props) {
         />
       </DialogTrigger>
       <DialogContent className="max-w-3xl w-11/12 h-[70vh] overflow-y-auto">
-        <DialogHeader>{title}</DialogHeader>
+        <DialogHeader className="text-xl">{title}</DialogHeader>
         <DialogDescription className="whitespace-pre-wrap text-neutral-400 text-xs md:text-base">
           <form onSubmit={onSubmit}>
-            <div className="flex flex-wrap items-center">
+            <div className="text-foreground font-bold text-center sm:text-left">
+              Request
+            </div>
+            <div className="mt-3 flex flex-wrap items-center">
               <div>{`curl -X ${method} `}</div>
               <div>{`${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}`}</div>
               {path.split(/({[^}]+})/).map((p) =>
@@ -167,7 +170,7 @@ export default function TryButton({ title, method, path, body, keys }: Props) {
             )}
             {response.length > 0 && (
               <div className="mt-7">
-                <div className="text-foreground text-base text-center sm:text-left">
+                <div className="text-foreground font-bold text-center sm:text-left">
                   Response
                 </div>
                 <div className="mt-3 whitespace-pre-wrap">
