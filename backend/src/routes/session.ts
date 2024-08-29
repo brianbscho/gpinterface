@@ -25,7 +25,7 @@ export default async function (fastify: FastifyInstance) {
 
         const session = await createSession({
           fastify,
-          userHashId: user.hashId,
+          userHashId: user.hashId || null,
           gpiHashId,
         });
         return session;
@@ -45,7 +45,7 @@ export default async function (fastify: FastifyInstance) {
 
         const content = await createSessionCompletion({
           fastify,
-          userHashId: user.hashId,
+          userHashId: user.hashId || null,
           body,
         });
         return { content };
@@ -65,7 +65,7 @@ export default async function (fastify: FastifyInstance) {
 
         const session = await getSessionMessages({
           fastify,
-          userHashId: user.hashId,
+          userHashId: user.hashId || null,
           sessionHashId,
         });
         return session;

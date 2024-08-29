@@ -14,7 +14,7 @@ export const createChatCompletion = async ({
 }: {
   fastify: FastifyInstance;
   body: { gpiHashId: string; content: string };
-  userHashId: string;
+  userHashId: string | null;
 }) => {
   const { gpiHashId, content: userContent } = body;
   const gpi = await fastify.prisma.gpi.findFirst({

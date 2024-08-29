@@ -135,7 +135,7 @@ export default async function (fastify: FastifyInstance) {
         const content = await createChatCompletion({
           fastify,
           body,
-          userHashId: user.hashId,
+          userHashId: user.hashId || null,
         });
 
         return { content };
@@ -155,12 +155,12 @@ export default async function (fastify: FastifyInstance) {
 
         const { hashId: sessionHashId } = await createSession({
           fastify,
-          userHashId: user.hashId,
+          userHashId: user.hashId || null,
           gpiHashId: body.gpiHashId,
         });
         const content = await createSessionCompletion({
           fastify,
-          userHashId: user.hashId,
+          userHashId: user.hashId || null,
           body: { sessionHashId, content: body.content },
         });
 
