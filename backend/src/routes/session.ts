@@ -3,6 +3,7 @@ import {
   ChatCompletionContentsQuery,
   ChatCompletionModelSelect,
   createEntity,
+  createManyEntities,
 } from "../util/prisma";
 import { Static } from "@sinclair/typebox";
 import { getTextResponse } from "../util/text";
@@ -98,6 +99,12 @@ export default async function (fastify: FastifyInstance) {
           messages,
         });
 
+        await createManyEntities(fastify.prisma.sessionMessage.createMany, {
+          data: [
+            { sessionHashId, role: "user", content: userContent },
+            { sessionHashId, role: "assistant", content },
+          ],
+        });
         await createEntity(fastify.prisma.history.create, {
           data: {
             userHashId: user.hashId || null,
