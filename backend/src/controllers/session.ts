@@ -17,14 +17,17 @@ export async function createSession(
     try {
       const newSession = await sessionDelegate.create({
         data: {
-          ...getDataWithHashId({
-            ...session,
-            messages: {
-              createMany: {
-                data: session.messages.map((m) => getDataWithHashId(m)),
+          ...getDataWithHashId(
+            {
+              ...session,
+              messages: {
+                createMany: {
+                  data: session.messages.map((m) => getDataWithHashId(m)),
+                },
               },
             },
-          }),
+            32
+          ),
         },
         select: { hashId: true },
       });

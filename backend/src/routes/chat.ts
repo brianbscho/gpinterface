@@ -71,10 +71,11 @@ export default async function (fastify: FastifyInstance) {
       const { user } = await fastify.getUser(request, reply, true);
       const userHashId = user.hashId || null;
 
-      const chat = await createEntity(fastify.prisma.chat.create, {
-        data: { userHashId },
-        select: { hashId: true, createdAt: true },
-      });
+      const chat = await createEntity(
+        fastify.prisma.chat.create,
+        { data: { userHashId }, select: { hashId: true, createdAt: true } },
+        32
+      );
 
       return {
         hashId: chat.hashId,

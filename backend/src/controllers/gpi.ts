@@ -17,11 +17,7 @@ export async function createGpi(
   while (retries < 5) {
     try {
       const newGpi = await gpiDelegate.create({
-        data: {
-          ...getDataWithHashId({
-            ...gpis,
-          }),
-        },
+        data: getDataWithHashId(gpis, 32),
         select: { hashId: true },
       });
 
