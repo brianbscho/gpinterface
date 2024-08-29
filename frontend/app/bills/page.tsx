@@ -6,7 +6,7 @@ import { HistoriesGetResponse } from "gpinterface-shared/type/history";
 import { Fragment, useCallback, useMemo, useState } from "react";
 import Link from "next/link";
 import IconTextButton from "@/components/buttons/IconTextButton";
-import { FileClock, MessageSquareCode, SquareCode } from "lucide-react";
+import { FileCode, Layers, MessageCircle } from "lucide-react";
 import { Badge } from "@/components/ui";
 import HistoryDialog from "@/components/dialogs/HistoryDialog";
 
@@ -89,7 +89,7 @@ export default function Page() {
                     <HistoryDialog history={h}>
                       <IconTextButton
                         className="w-16 md:w-24"
-                        Icon={FileClock}
+                        Icon={Layers}
                         text="Detail"
                         responsive
                       />
@@ -104,7 +104,7 @@ export default function Page() {
                           }
                         >
                           <IconTextButton
-                            Icon={h.gpiHashId ? SquareCode : MessageSquareCode}
+                            Icon={h.gpiHashId ? FileCode : MessageCircle}
                             text={h.gpiHashId ? "Gpi" : "Chat"}
                             className="w-16 md:w-24"
                             responsive

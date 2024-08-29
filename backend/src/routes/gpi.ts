@@ -24,11 +24,7 @@ export default async function (fastify: FastifyInstance) {
         const gpi = await fastify.prisma.gpi.findFirst({
           where: {
             hashId,
-            OR: [
-              { userHashId: user.hashId },
-              { userHashId: null },
-              { isPublic: true },
-            ],
+            OR: [{ userHashId: user.hashId }, { isPublic: true }],
           },
           select: {
             hashId: true,
@@ -77,7 +73,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: GpiCreateSchema } },
     async (request, reply): Promise<GpiCreateResponse> => {
       try {
-        const { user } = await fastify.getUser(request, reply, true);
+        const { user } = await fastify.getUser(request, reply);
         const { description, chatHashId, isPublic, ...body } = request.body;
 
         if (description.trim() === "") {
@@ -85,10 +81,7 @@ export default async function (fastify: FastifyInstance) {
         }
 
         const chat = await fastify.prisma.chat.findFirst({
-          where: {
-            hashId: chatHashId,
-            OR: [{ userHashId: user.hashId }, { userHashId: null }],
-          },
+          where: { hashId: chatHashId, userHashId: user.hashId },
           select: {
             systemMessage: true,
             contents: {
@@ -106,15 +99,12 @@ export default async function (fastify: FastifyInstance) {
           throw httpErrors.badRequest("chat is not available.");
         }
 
-        const newGpi = await createGpi(fastify.prisma.chat, {
-          userHashId: user.hashId || null,
-          ...chat,
-          gpis: {
-            description,
-            userHashId: user.hashId || null,
-            isPublic: isPublic || user.hashId === "",
-            ...body,
-          },
+        const newGpi = await createGpi(fastify.prisma.gpi, {
+          ...body,
+          description,
+          isPublic,
+          userHashId: user.hashId,
+          chatHashId,
         });
 
         return { hashId: newGpi.hashId };
@@ -132,15 +122,12 @@ export default async function (fastify: FastifyInstance) {
     { schema: { params: ParamSchema, body: GpiUpdateSchema } },
     async (request, reply): Promise<GpiCreateResponse> => {
       try {
-        const { user } = await fastify.getUser(request, reply, true);
+        const { user } = await fastify.getUser(request, reply);
         const { hashId } = request.params;
         const { description, config, modelHashId, isPublic } = request.body;
 
         const oldGpi = await fastify.prisma.gpi.findFirst({
-          where: {
-            hashId,
-            OR: [{ userHashId: user.hashId }, { userHashId: null }],
-          },
+          where: { hashId, userHashId: user.hashId },
           select: { hashId: true },
         });
         if (!oldGpi) {

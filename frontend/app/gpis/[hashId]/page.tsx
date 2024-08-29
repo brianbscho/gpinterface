@@ -5,7 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import callApi from "@/utils/callApi";
 import { GpiGetResponse } from "gpinterface-shared/type/gpi";
 import useUserStore from "@/store/user";
-import { Bot, FileCode } from "lucide-react";
+import { FileCode, FileText } from "lucide-react";
 import IconTextButton from "@/components/buttons/IconTextButton";
 import Contents from "@/components/Contents";
 import ModelSelect from "@/components/selects/ModelSelect";
@@ -56,7 +56,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
           <IconTextButton
             onClick={() => setTab("gpi")}
             className="w-full md:w-32"
-            Icon={Bot}
+            Icon={FileCode}
             text="GPI"
             selected={tab === "gpi"}
             responsive
@@ -64,7 +64,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
           <IconTextButton
             onClick={() => setTab("document")}
             className="w-full md:w-32"
-            Icon={FileCode}
+            Icon={FileText}
             text="Document"
             selected={tab === "document"}
             responsive

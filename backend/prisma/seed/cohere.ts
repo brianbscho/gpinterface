@@ -5,7 +5,7 @@ import { providers } from "../../src/util/provider";
 
 const prisma = new PrismaClient();
 
-async function main() {
+export default async function cohereSeed() {
   const providerHashId = await getProviderHashId(providers.Cohere);
   let models = await Promise.all(
     [
@@ -250,13 +250,3 @@ Limitation: The parameter is not supported in RAG mode (when any of connectors, 
     }
   }
 }
-
-main()
-  .catch((e) => {
-    console.error(e);
-    // @ts-ignore
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });

@@ -5,7 +5,7 @@ import { providers } from "../../src/util/provider";
 
 const prisma = new PrismaClient();
 
-async function main() {
+export default async function mistralSeed() {
   const providerHashId = await getProviderHashId(providers.MistralAI);
   let models = await Promise.all(
     [
@@ -197,13 +197,3 @@ async function main() {
     }
   }
 }
-
-main()
-  .catch((e) => {
-    console.error(e);
-    // @ts-ignore
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });

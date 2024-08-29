@@ -2,7 +2,7 @@
 
 import { Button } from "../ui";
 import { Dispatch, SetStateAction, useCallback } from "react";
-import { PenSquare } from "lucide-react";
+import { FilePen } from "lucide-react";
 import {
   Content as ContentType,
   ContentsCreateResponse,
@@ -42,7 +42,7 @@ export default function AnswerYourselfButton({
         variant="default"
         onClick={onClickAnswerYourself}
       >
-        <PenSquare />
+        <FilePen />
       </Button>
     </SmallHoverButton>
   );

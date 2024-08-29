@@ -7,10 +7,10 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { UserGetMeResponse } from "gpinterface-shared/type/user";
 import {
   LogOut,
-  MessageSquareCode,
+  MessageCircle,
   ReceiptText,
   Settings,
-  SquareCode,
+  FileCode,
   UserRound,
 } from "lucide-react";
 import {
@@ -26,7 +26,7 @@ import {
 import Link from "next/link";
 
 const loginRedirectPaths = ["login"];
-const logoutRedirectPaths = ["histories", "settings"];
+const logoutRedirectPaths = ["bills", "gpis", "settings"];
 
 function _Menus() {
   const { user, setUser } = useUserStore();
@@ -47,10 +47,9 @@ function _Menus() {
 
   const searchParams = useSearchParams();
   useEffect(() => {
-    const redirectPath = searchParams.get("redirect");
     if (user && loginRedirectPaths.some((p) => pathname.includes(p))) {
-      if (redirectPath) {
-        push(redirectPath);
+      if (searchParams.has("chatHashId")) {
+        push("/chats");
       } else {
         push("/");
       }
@@ -64,14 +63,13 @@ function _Menus() {
     location.reload();
   }, [setUser]);
 
-  const chatHashId = useMemo(
-    () => searchParams.get("chatHashId"),
-    [searchParams]
-  );
   const param = useMemo(() => {
-    if (chatHashId) return `?chatHashId=${chatHashId}`;
-    return "";
-  }, [chatHashId]);
+    let params = "?";
+    searchParams.forEach((value, key) => {
+      params += `${key}=${value}`;
+    });
+    return params;
+  }, [searchParams]);
 
   const [open, setOpen] = useState(false);
 
@@ -96,11 +94,11 @@ function _Menus() {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem onClick={() => push(`/chats`)}>
-            <MessageSquareCode />
+            <MessageCircle />
             <span className="ml-3">Chat</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => push(`/gpis`)}>
-            <SquareCode />
+            <FileCode />
             <span className="ml-3">Gpi</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => push("/settings")}>

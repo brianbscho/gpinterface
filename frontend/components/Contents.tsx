@@ -9,7 +9,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { CircleX, Cpu, Loader, FileClock, RefreshCcw } from "lucide-react";
+import { CircleX, Cpu, Layers, Loader2, RefreshCcw } from "lucide-react";
 import {
   Content as ContentType,
   ContentRefreshSchema,
@@ -74,7 +74,7 @@ function Buttons({
         <SmallHoverButton message="Detail">
           <HistoryDialog history={history}>
             <Button className="p-1 h-6 w-6" variant="default">
-              <FileClock />
+              <Layers />
             </Button>
           </HistoryDialog>
         </SmallHoverButton>
@@ -255,7 +255,7 @@ function Content({
         )}
         {isSaving && (
           <>
-            <Loader className="ml-3 animate-spin" />
+            <Loader2 className="ml-3 animate-spin" />
             <div className="text-xs">saving...</div>
           </>
         )}

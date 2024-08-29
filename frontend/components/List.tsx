@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 export default function List({
@@ -53,7 +53,7 @@ export default function List({
       {children}
       {!spinnerHidden && (
         <div className="my-12 w-full h-4">
-          <Loader ref={spinnerRef} className="mx-auto w-4 h-4 animate-spin" />
+          <Loader2 ref={spinnerRef} className="mx-auto w-4 h-4 animate-spin" />
         </div>
       )}
     </>

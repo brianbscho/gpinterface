@@ -9,7 +9,6 @@ import {
 } from "gpinterface-shared/type/user";
 import { Static } from "@sinclair/typebox";
 import {
-  Button,
   Dialog,
   DialogClose,
   DialogContent,
@@ -19,7 +18,7 @@ import {
 } from "@/components/ui";
 import { validatePassword } from "gpinterface-shared/string";
 import IconTextButton from "../buttons/IconTextButton";
-import { CircleX, Key } from "lucide-react";
+import { X, Lock, Check } from "lucide-react";
 
 export default function UpdatePassword() {
   const isLoggedOut = useUserStore((state) => state.isLoggedOut);
@@ -80,7 +79,7 @@ export default function UpdatePassword() {
       <DialogTrigger>
         <IconTextButton
           responsive
-          Icon={Key}
+          Icon={Lock}
           text="P/W update"
           className="w-32 md:w-44"
         />
@@ -122,7 +121,7 @@ export default function UpdatePassword() {
             <DialogClose>
               <IconTextButton
                 responsive
-                Icon={CircleX}
+                Icon={X}
                 text="Cancel"
                 type="button"
                 className="w-28"
@@ -130,7 +129,7 @@ export default function UpdatePassword() {
             </DialogClose>
             <IconTextButton
               responsive
-              Icon={Key}
+              Icon={Check}
               text="Update"
               type="submit"
               disabled={[oldPassword, newPassword, newPasswordRepeat].some(

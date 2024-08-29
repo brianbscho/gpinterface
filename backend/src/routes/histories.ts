@@ -39,10 +39,7 @@ export default async function (fastify: FastifyInstance) {
         });
 
         return {
-          histories: histories.map((h) => ({
-            ...getTypedHistory(h),
-            isGpi: typeof h.gpiHashId === "string",
-          })),
+          histories: histories.map((h) => getTypedHistory(h)),
         };
       } catch (ex) {
         console.error("path: /histories?lastHashId, method: get, error:", ex);

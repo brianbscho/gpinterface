@@ -78,7 +78,7 @@ export default function IconTextButton({
     <Button
       {...props}
       className={cn(
-        `border-box bg-background p-0 ${sizeClass.paddingLeft} ${sizeClass.height} border box-border relative`,
+        `bg-background p-0 ${sizeClass.paddingLeft} ${sizeClass.height} border box-border relative`,
         border,
         className,
         selected ? css : ""

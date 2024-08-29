@@ -3,7 +3,7 @@
 import { GpiGetResponse } from "gpinterface-shared/type/gpi";
 import { FormEvent, KeyboardEvent, useCallback, useState } from "react";
 import IconTextButton from "../buttons/IconTextButton";
-import { Bot, CornerDownLeft, FileCode } from "lucide-react";
+import { CornerDownLeft, FileCode, FileText } from "lucide-react";
 import ModelSheetButton from "../buttons/ModelSheetButton";
 import useUserStore from "@/store/user";
 import Contents from "../Contents";
@@ -40,7 +40,7 @@ export default function Gpi({ gpi, setTestBody, setTestResponse }: Props) {
       e.preventDefault();
 
       setLoading(true);
-      const body = { gpiHashId: gpi.hashId, message: content };
+      const body = { gpiHashId: gpi.hashId, content };
       setTestBody(body);
 
       const response = await callApi<
@@ -80,7 +80,7 @@ export default function Gpi({ gpi, setTestBody, setTestResponse }: Props) {
           <IconTextButton
             onClick={() => setTab("gpi")}
             className="w-full md:w-32"
-            Icon={Bot}
+            Icon={FileCode}
             text="GPI"
             selected={tab === "gpi"}
             responsive
@@ -90,7 +90,7 @@ export default function Gpi({ gpi, setTestBody, setTestResponse }: Props) {
           <IconTextButton
             onClick={() => setTab("document")}
             className="w-full md:w-32"
-            Icon={FileCode}
+            Icon={FileText}
             text="Document"
             selected={tab === "document"}
             responsive

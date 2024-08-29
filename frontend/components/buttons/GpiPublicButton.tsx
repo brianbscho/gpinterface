@@ -9,7 +9,7 @@ import {
   GpiGetResponse,
   GpiUpdateSchema,
 } from "gpinterface-shared/type/gpi";
-import { CheckCircle2, Circle } from "lucide-react";
+import { CircleCheck, Circle } from "lucide-react";
 import { Dispatch, SetStateAction, useCallback } from "react";
 
 type GpiType = GpiGetResponse | undefined;
@@ -40,7 +40,7 @@ export default function GpiPublicButton({ useGpi }: Props) {
   return (
     <IconTextButton
       className="w-full md:w-32"
-      Icon={!gpi?.isPublic ? Circle : CheckCircle2}
+      Icon={!gpi?.isPublic ? Circle : CircleCheck}
       text="Public"
       onClick={onCheckedChange}
       responsive

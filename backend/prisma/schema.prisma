@@ -79,7 +79,7 @@ model SessionMessage {
   role    String
   content String
 
-  sessionHashId String
+  sessionHashId String  @map("session_hash_id")
   session       Session @relation(fields: [sessionHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
   @@map("session_messages")

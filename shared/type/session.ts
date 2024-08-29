@@ -7,7 +7,7 @@ export type SessionCreateResponse = { hashId: string };
 
 export const SessionCompletionSchema = Type.Object({
   sessionHashId: Type.String(),
-  message: Type.String(),
+  content: Type.String(),
 });
 export type SessionCompletionResponse = { content: string };
 

@@ -1,4 +1,4 @@
-import { ChevronLeft } from "lucide-react";
+import { CircleChevronLeft } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "../ui";
 import IconTextButton from "./IconTextButton";
 import ModelSelect from "../selects/ModelSelect";
@@ -27,7 +27,7 @@ export default function ModelSheetButton({
     <Sheet>
       <SheetTrigger className={className} asChild>
         <IconTextButton
-          Icon={ChevronLeft}
+          Icon={CircleChevronLeft}
           text="Model"
           size="small"
           className="md:w-32"
