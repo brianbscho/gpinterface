@@ -3,7 +3,6 @@ import {
   createEntity,
   ContentHistorySelect,
   getTypedContents,
-  createManyEntities,
 } from "../util/prisma";
 import {
   ChatCreateResponse,
