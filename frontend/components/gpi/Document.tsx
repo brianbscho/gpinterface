@@ -2,6 +2,7 @@ import CopyButton from "@/components/buttons/CopyButton";
 import TryButton from "@/components/buttons/TryButton";
 import { Badge } from "@/components/ui";
 import useModelStore from "@/store/model";
+import { cn } from "@/utils/css";
 import { getApiConfig } from "@/utils/model";
 import { stringify } from "@/utils/string";
 import { GpiGetResponse } from "gpinterface-shared/type/gpi";
@@ -79,7 +80,8 @@ function Gpi({ title, description, response, ...props }: GpiProps) {
   );
 }
 
-export default function Document({ gpi }: { gpi?: GpiGetResponse }) {
+type DocumentProps = { gpi?: GpiGetResponse; className?: string };
+export default function Document({ gpi, className }: DocumentProps) {
   const models = useModelStore((state) => state.models);
   const model = models.find((m) => m.hashId === gpi?.modelHashId);
   const documents = [
@@ -127,7 +129,12 @@ export default function Document({ gpi }: { gpi?: GpiGetResponse }) {
   if (!gpi || !model) return null;
 
   return (
-    <div className="md:pl-[9.5rem] px-3 pb-3 w-full h-full overflow-y-auto flex flex-col gap-7">
+    <div
+      className={cn(
+        "md:pl-[9.5rem] px-3 pb-3 w-full h-full overflow-y-auto flex flex-col gap-7",
+        className
+      )}
+    >
       <div>
         <Badge variant="tag">Info</Badge>
         <div className="font-bold">{model.name}</div>
