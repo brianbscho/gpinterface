@@ -27,13 +27,11 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<ChatsGetResponse["chats"][0]> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
+        const userHashId = user.hashId || null;
         const { hashId } = request.params;
 
         const chat = await fastify.prisma.chat.findFirst({
-          where: {
-            hashId,
-            OR: [{ userHashId: user.hashId }, { userHashId: null }],
-          },
+          where: { hashId, userHashId, gpis: { none: {} } },
           select: {
             hashId: true,
             userHashId: true,
@@ -102,14 +100,12 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<ChatUpdateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
+        const userHashId = user.hashId || null;
         const { hashId } = request.params;
         const { systemMessage } = request.body;
 
         const chat = await fastify.prisma.chat.findFirst({
-          where: {
-            hashId,
-            OR: [{ userHashId: user.hashId }, { userHashId: null }],
-          },
+          where: { hashId, userHashId, gpis: { none: {} } },
           select: { userHashId: true },
         });
         if (!chat) {
@@ -139,11 +135,7 @@ export default async function (fastify: FastifyInstance) {
         const gpi = await fastify.prisma.gpi.findFirst({
           where: {
             hashId: gpiHashId,
-            OR: [
-              { userHashId: user.hashId },
-              { userHashId: null },
-              { isPublic: true },
-            ],
+            OR: [{ userHashId: user.hashId }, { isPublic: true }],
             model: { isAvailable: true, isFree: true },
           },
           select: {

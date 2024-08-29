@@ -28,11 +28,7 @@ export default async function (fastify: FastifyInstance) {
         const gpi = await fastify.prisma.gpi.findFirst({
           where: {
             hashId: gpiHashId,
-            OR: [
-              { userHashId: user.hashId },
-              { userHashId: null },
-              { isPublic: true },
-            ],
+            OR: [{ userHashId: user.hashId }, { isPublic: true }],
           },
           select: {
             hashId: true,
@@ -66,11 +62,7 @@ export default async function (fastify: FastifyInstance) {
           where: {
             hashId: sessionHashId,
             gpi: {
-              OR: [
-                { userHashId: user.hashId },
-                { userHashId: null },
-                { isPublic: true },
-              ],
+              OR: [{ userHashId: user.hashId }, { isPublic: true }],
               model: {
                 isAvailable: true,
                 isFree: true,
@@ -145,11 +137,7 @@ export default async function (fastify: FastifyInstance) {
           where: {
             hashId: sessionHashId,
             gpi: {
-              OR: [
-                { userHashId: user.hashId },
-                { userHashId: null },
-                { isPublic: true },
-              ],
+              OR: [{ userHashId: user.hashId }, { isPublic: true }],
               model: { isAvailable: true, isFree: true },
             },
           },
