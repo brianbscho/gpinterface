@@ -19,7 +19,6 @@ import {
 import { Static } from "@sinclair/typebox";
 import { getTextResponse } from "../util/text";
 import { ParamSchema } from "gpinterface-shared/type";
-import { nanoid } from "nanoid";
 
 export default async function (fastify: FastifyInstance) {
   fastify.post<{ Body: Static<typeof ContentCreateSchema> }>(
@@ -76,11 +75,43 @@ export default async function (fastify: FastifyInstance) {
           messages,
         });
 
+        const userChatContent = await createEntity(
+          fastify.prisma.chatContent.create,
+          {
+            data: {
+              chatHashId: body.chatHashId,
+              role: "user",
+              content: userContent,
+            },
+            select: {
+              hashId: true,
+              role: true,
+              content: true,
+              isModified: true,
+            },
+          }
+        );
+        const assistantChatContent = await createEntity(
+          fastify.prisma.chatContent.create,
+          {
+            data: { ...body, role: "assistant", content },
+            select: {
+              hashId: true,
+              model: true,
+              role: true,
+              content: true,
+              config: true,
+              isModified: true,
+            },
+          }
+        );
+
         const history = await createEntity(fastify.prisma.history.create, {
           data: {
             userHashId: user.hashId || null,
             chatHashId: body.chatHashId,
             gpiHashId,
+            chatContentHashId: assistantChatContent.hashId,
             provider: model.provider.name,
             model: model.name,
             config: body.config,
@@ -94,52 +125,15 @@ export default async function (fastify: FastifyInstance) {
           select: { ...ContentHistorySelect, hashId: true },
         });
 
-        const newContents = [
-          {
-            hashId: nanoid(),
-            role: "user",
-            content: userContent,
-            isModified: false,
-          },
-          {
-            hashId: nanoid(),
-            model: { hashId: body.modelHashId, name: model.name },
-            role: "assistant",
-            content,
-            config: body.config,
-            history: getTypedHistory(history),
-            isModified: false,
-          },
-        ];
-
-        if (!chat.userHashId || chat.userHashId === user.hashId) {
-          const _userContent = await createEntity(
-            fastify.prisma.chatContent.create,
+        return {
+          contents: [
+            userChatContent,
             {
-              data: {
-                chatHashId: body.chatHashId,
-                role: "user",
-                content: userContent,
-              },
-              select: { hashId: true },
-            }
-          );
-          newContents[0].hashId = _userContent.hashId;
-          const _assistantContent = await createEntity(
-            fastify.prisma.chatContent.create,
-            {
-              data: { ...body, role: "assistant", content },
-              select: { hashId: true },
-            }
-          );
-          newContents[1].hashId = _assistantContent.hashId;
-          await fastify.prisma.history.update({
-            where: { hashId: history.hashId },
-            data: { chatContentHashId: _assistantContent.hashId },
-          });
-        }
-
-        return { contents: newContents };
+              ...getTypedContent(assistantChatContent),
+              history: getTypedHistory(history),
+            },
+          ],
+        };
       } catch (ex) {
         console.error("path: /content, method: post, error:", ex);
         throw ex;
