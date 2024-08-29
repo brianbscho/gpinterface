@@ -40,7 +40,7 @@ export default function Gpi({ gpi, setTestBody, setTestResponse }: Props) {
       e.preventDefault();
 
       setLoading(true);
-      const body = { gpiHashId: gpi.hashId, message: content };
+      const body = { gpiHashId: gpi.hashId, content };
       setTestBody(body);
 
       const response = await callApi<

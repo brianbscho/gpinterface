@@ -1,12 +1,10 @@
 import CopyButton from "@/components/buttons/CopyButton";
-import IconTextButton from "@/components/buttons/IconTextButton";
 import TryButton from "@/components/buttons/TryButton";
 import { Badge } from "@/components/ui";
 import useModelStore from "@/store/model";
 import { getApiConfig } from "@/utils/model";
 import { stringify } from "@/utils/string";
 import { GpiGetResponse } from "gpinterface-shared/type/gpi";
-import { Play } from "lucide-react";
 import { ReactNode } from "react";
 
 type TitleProps = {
@@ -92,7 +90,7 @@ export default function Document({ gpi }: { gpi?: GpiGetResponse }) {
       method: "POST" as const,
       path: "/chat/completion",
       body: { gpiHashId: gpi?.hashId ?? "" },
-      keys: ["message"],
+      keys: ["content"],
       response: "{content: string}",
     },
     {
@@ -112,7 +110,7 @@ export default function Document({ gpi }: { gpi?: GpiGetResponse }) {
       method: "POST" as const,
       path: "/session/completion",
       body: {},
-      keys: ["sessionHashId", "message"],
+      keys: ["sessionHashId", "content"],
       response: "{content: string}",
     },
     {

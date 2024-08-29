@@ -127,7 +127,7 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<ChatCompletionResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
-        const { gpiHashId, message } = request.body;
+        const { gpiHashId, content: userContent } = request.body;
 
         const gpi = await fastify.prisma.gpi.findFirst({
           where: {
@@ -160,7 +160,7 @@ export default async function (fastify: FastifyInstance) {
         const { systemMessage, contents } = chat;
         const messages = contents.concat({
           role: "user",
-          content: message,
+          content: userContent,
         });
         const { content, ...response } = await getTextResponse({
           model,

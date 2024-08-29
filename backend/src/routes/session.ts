@@ -56,7 +56,7 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<SessionCompletionResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
-        const { sessionHashId, message } = request.body;
+        const { sessionHashId, content: userContent } = request.body;
 
         const session = await fastify.prisma.session.findFirst({
           where: {
@@ -90,10 +90,7 @@ export default async function (fastify: FastifyInstance) {
         const { messages, gpi } = session;
         const { chat, config, model } = gpi;
         const { systemMessage } = chat;
-        messages.push({
-          role: "user",
-          content: message,
-        });
+        messages.push({ role: "user", content: userContent });
         const { content, ...response } = await getTextResponse({
           model,
           systemMessage,
