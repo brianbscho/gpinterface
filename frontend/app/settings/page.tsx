@@ -53,12 +53,7 @@ export default function Page() {
     const response = await callApi<
       UserGetMeResponse,
       Static<typeof UserUpdateSchema>
-    >({
-      endpoint: "/user",
-      method: "PUT",
-      body: { name },
-      showError: true,
-    });
+    >({ endpoint: "/user", method: "PUT", body: { name }, showError: true });
     if (response) {
       setUser(response.user);
       setSaveButtonText("Saved!");
