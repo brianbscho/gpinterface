@@ -9,11 +9,10 @@ import {
   useMemo,
   useState,
 } from "react";
-import { CircleX, Cpu, Layers, Loader2, RefreshCcw } from "lucide-react";
+import { CircleX, Cpu, Layers, Loader2, RefreshCcw, X } from "lucide-react";
 import {
   Content as ContentType,
   ContentRefreshSchema,
-  ContentsDeleteResponse,
   ContentsDeleteSchema,
   ContentUpdateResponse,
   ContentUpdateSchema,
@@ -34,6 +33,8 @@ import ContentInput from "./inputs/ContentInput";
 import { cn } from "@/utils/css";
 import useUserStore from "@/store/user";
 import AnswerYourselfButton from "./buttons/AnswerYourselfButton";
+import { DeleteResponse, ParamSchema } from "gpinterface-shared/type";
+import { useRouter } from "next/navigation";
 
 type ButtonsProps = {
   onClickModel: () => void;
@@ -227,7 +228,7 @@ function Content({
     if (!yes) return;
 
     const response = await callApi<
-      ContentsDeleteResponse,
+      DeleteResponse,
       Static<typeof ContentsDeleteSchema>
     >({
       endpoint: "/contents",
@@ -406,8 +407,45 @@ export default function Contents({
     [chat.hashId, gpiHashId, model, config]
   );
 
+  const router = useRouter();
+  const onClickDelete = useCallback(async () => {
+    const yes = confirm(
+      "Are you sure you want to delete this? This action cannot be undone."
+    );
+    if (!yes) return;
+
+    if (gpiHashId) {
+      const response = await callApi<
+        DeleteResponse,
+        Static<typeof ParamSchema>
+      >({ endpoint: `/gpi`, method: "DELETE", body: { hashId: gpiHashId } });
+      if (response?.success) {
+        router.push("/gpis");
+      }
+    } else {
+      const response = await callApi<
+        DeleteResponse,
+        Static<typeof ParamSchema>
+      >({ endpoint: `/chat`, method: "DELETE", body: { hashId: chat.hashId } });
+      if (response?.success) {
+        location.pathname = "/chats";
+      }
+    }
+  }, [gpiHashId, chat.hashId, router]);
+
   return (
     <div className={cn("flex flex-col gap-3", className)}>
+      {editable && !hideButtons && (
+        <div className="self-end">
+          <Button
+            variant="destructive"
+            className="h-6 w-6 p-0"
+            onClick={onClickDelete}
+          >
+            <X />
+          </Button>
+        </div>
+      )}
       <Content
         content={systemContent}
         chatHashId={chat.hashId}
