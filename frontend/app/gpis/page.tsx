@@ -48,7 +48,7 @@ export default function Page() {
   const callGpisApi = useCallback(async () => {
     const response = await callApi<GpisUserGetResponse>({
       endpoint: `/gpis/user?lastHashId=${lastHashId}`,
-      showError: true,
+      redirectToMain: true,
     });
     if (response) {
       setGpis((prev) => [...(prev ?? []), ...response.gpis]);

@@ -20,6 +20,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
       const response = await callApi<ChatType>({
         endpoint: `/chat/${hashId}`,
         showError: true,
+        redirectToMain: true,
       });
       if (response) {
         setChat(response);

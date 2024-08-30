@@ -48,6 +48,7 @@ function _Chats() {
         endpoint: "/chat",
         method: "POST",
         body: {},
+        redirectToMain: true,
       });
       if (chatResponse) {
         setChats([chatResponse]);
@@ -64,6 +65,8 @@ function _Chats() {
       setLoading(true);
       const response = await callApi<ChatsGetResponse["chats"][0]>({
         endpoint: `/chat/${chatHashId}`,
+        showError: true,
+        redirectToMain: true,
       });
       if (response) {
         setChats([response]);

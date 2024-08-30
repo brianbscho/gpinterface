@@ -25,6 +25,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
       const response = await callApi<GpiGetResponse>({
         endpoint: `/gpi/${hashId}`,
         showError: true,
+        redirectToMain: true,
       });
       setGpi(response);
     };

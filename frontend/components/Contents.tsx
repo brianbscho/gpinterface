@@ -180,7 +180,7 @@ function Content({
   );
 
   const onClickRefresh = useCallback(async () => {
-    if (!model) return;
+    if (!model || !editable) return;
 
     setRefreshingHashId(content.hashId);
     const response = await callApi<
@@ -208,7 +208,15 @@ function Content({
       );
     }
     setRefreshingHashId(undefined);
-  }, [chatHashId, content, model, config, setRefreshingHashId, setContents]);
+  }, [
+    editable,
+    chatHashId,
+    content,
+    model,
+    config,
+    setRefreshingHashId,
+    setContents,
+  ]);
 
   const isDeleteVisible = useMemo(
     () => hashIds?.length === 2 && editable,
@@ -329,6 +337,12 @@ export default function Contents({
   hideButtons,
 }: ContentsProps) {
   const [contents, setContents] = useState(chat.contents);
+  const userHashId = useUserStore((state) => state.user?.hashId);
+  const editable = useMemo(
+    () => !ownerUserHashId || ownerUserHashId === userHashId,
+    [ownerUserHashId, userHashId]
+  );
+  const [refreshingHashId, setRefreshingHashId] = useState<string>();
 
   const systemContent = useMemo(
     () => ({ role: "system", content: chat.systemMessage }),
@@ -337,6 +351,8 @@ export default function Contents({
 
   const callUpdateSystemMessage = useCallback(
     async (systemMessage: string) => {
+      if (!editable) return;
+
       const response = await callApi<
         ChatUpdateResponse,
         Static<typeof ChatUpdateSchema>
@@ -347,10 +363,12 @@ export default function Contents({
       });
       return response?.systemMessage;
     },
-    [chat.hashId]
+    [editable, chat.hashId]
   );
   const callUpdateContent = useCallback(
     (hashId: string) => async (content: string) => {
+      if (!editable) return;
+
       const response = await callApi<
         ContentUpdateResponse,
         Static<typeof ContentUpdateSchema>
@@ -368,20 +386,13 @@ export default function Contents({
       }
       return response?.content;
     },
-    []
+    [editable]
   );
-
-  const userHashId = useUserStore((state) => state.user?.hashId);
-  const editable = useMemo(
-    () => !ownerUserHashId || ownerUserHashId === userHashId,
-    [ownerUserHashId, userHashId]
-  );
-  const [refreshingHashId, setRefreshingHashId] = useState<string>();
 
   const [config, model] = useModelStore((state) => [state.config, state.model]);
   const onSubmit = useCallback(
     async (content: string) => {
-      if (!model) return;
+      if (!model || !editable) return;
 
       setRefreshingHashId("");
       const response = await callApi<
@@ -404,11 +415,13 @@ export default function Contents({
       }
       setRefreshingHashId(undefined);
     },
-    [chat.hashId, gpiHashId, model, config]
+    [editable, chat.hashId, gpiHashId, model, config]
   );
 
   const router = useRouter();
   const onClickDelete = useCallback(async () => {
+    if (!editable) return;
+
     const yes = confirm(
       "Are you sure you want to delete this? This action cannot be undone."
     );
@@ -418,7 +431,12 @@ export default function Contents({
       const response = await callApi<
         DeleteResponse,
         Static<typeof ParamSchema>
-      >({ endpoint: `/gpi`, method: "DELETE", body: { hashId: gpiHashId } });
+      >({
+        endpoint: `/gpi`,
+        method: "DELETE",
+        body: { hashId: gpiHashId },
+        showError: true,
+      });
       if (response?.success) {
         router.push("/gpis");
       }
@@ -426,12 +444,17 @@ export default function Contents({
       const response = await callApi<
         DeleteResponse,
         Static<typeof ParamSchema>
-      >({ endpoint: `/chat`, method: "DELETE", body: { hashId: chat.hashId } });
+      >({
+        endpoint: `/chat`,
+        method: "DELETE",
+        body: { hashId: chat.hashId },
+        showError: true,
+      });
       if (response?.success) {
         location.pathname = "/chats";
       }
     }
-  }, [gpiHashId, chat.hashId, router]);
+  }, [editable, gpiHashId, chat.hashId, router]);
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>
