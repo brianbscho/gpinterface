@@ -98,6 +98,9 @@ export default async function (fastify: FastifyInstance) {
         if (!chat) {
           throw httpErrors.badRequest("chat is not available.");
         }
+        if (chat.contents.some((c) => c.content === "")) {
+          throw httpErrors.badRequest("There is empty content in chat.");
+        }
 
         const newGpi = await createGpi(fastify.prisma.gpi, {
           ...body,

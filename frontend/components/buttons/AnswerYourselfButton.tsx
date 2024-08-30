@@ -31,6 +31,7 @@ export default function AnswerYourselfButton({
       method: "POST",
       endpoint: "/contents",
       body: { chatHashId: chat.hashId },
+      showError: true,
     });
     if (response) {
       setContents((prev) => prev.concat(response.contents));

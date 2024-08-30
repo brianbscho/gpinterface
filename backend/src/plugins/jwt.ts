@@ -35,7 +35,7 @@ const jwtPlugin: FastifyPluginAsync = fp(async (fastify: FastifyInstance) => {
           request.cookies.access_token ||
           request.headers.authorization?.slice("Bearer ".length);
         if (!token) {
-          throw "Session has expired. Please login again.";
+          throw "Please log in to complete this action.";
         }
 
         const payload = (await verify(token, secret)) as Payload;

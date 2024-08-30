@@ -25,6 +25,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
       const response = await callApi<GpiGetResponse>({
         endpoint: `/gpi/${hashId}`,
         showError: true,
+        redirectToMain: true,
       });
       setGpi(response);
     };
@@ -70,8 +71,8 @@ export default function Page({ params }: { params: { hashId: string } }) {
             selected={tab === "document"}
             responsive
           />
-          <GpiPublicButton useGpi={[gpi, setGpi]} />
-          <GpiCopyButton gpiHashId={hashId} />
+          {editable && <GpiPublicButton useGpi={[gpi, setGpi]} />}
+          {editable && <GpiCopyButton gpiHashId={hashId} />}
           <ModelSheetButton
             className="md:hidden w-full h-6"
             useGpi={[gpi, setGpi]}

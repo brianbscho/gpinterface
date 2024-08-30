@@ -7,6 +7,7 @@ import { getApiConfig } from "@/utils/model";
 import { stringify } from "@/utils/string";
 import { GpiGetResponse } from "gpinterface-shared/type/gpi";
 import { Fragment, ReactNode } from "react";
+import { CircleAlert } from "lucide-react";
 
 type TitleProps = { title: string; description: string };
 function Title({ title, description }: TitleProps) {
@@ -108,6 +109,13 @@ export default function Document({ gpi, className }: DocumentProps) {
           text={`${process.env.NEXT_PUBLIC_HOSTNAME}/gpis/${gpi.hashId}`}
         />
       </Element>
+      <div className="flex items-center bg-destructive rounded-md px-1 py-2 gap-3">
+        <CircleAlert className="text-primary w-5 h-5" />
+        <div className="text-primary text-xs">
+          This may become unavailable or have its functionality modified at any
+          time. To ensure secure access, please make a copy.
+        </div>
+      </div>
       {documents.map((doc) => {
         const { title, description, ...props } = doc;
         return (

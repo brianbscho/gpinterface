@@ -26,7 +26,7 @@ import {
 import Link from "next/link";
 
 const loginRedirectPaths = ["login"];
-const logoutRedirectPaths = ["bills", "gpis", "settings"];
+const logoutRedirectPaths = ["bills", "settings"];
 
 function _Menus() {
   const { user, setUser } = useUserStore();
