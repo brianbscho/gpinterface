@@ -44,6 +44,7 @@ export default function GpiPublicButton({ useGpi }: Props) {
       text="Public"
       onClick={onCheckedChange}
       responsive
+      disabled={!gpi}
     />
   );
 }

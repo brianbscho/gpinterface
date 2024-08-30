@@ -48,6 +48,7 @@ export default function GpiSaveButton({ useGpi }: Props) {
       text="Save"
       onClick={onClickSave}
       responsive
+      disabled={!gpi}
     />
   );
 }
