@@ -37,5 +37,5 @@ export default function useProviderTypes() {
       }
     };
     getProviderGetTypes();
-  }, [providerTypes, setProviderTypes]);
+  }, [providerTypes, setProviderTypes, setModelHashId]);
 }
