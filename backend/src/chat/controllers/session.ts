@@ -72,7 +72,7 @@ export async function createSessionCompletion({
     },
   });
 
-  if (!session) {
+  if (!session || !session.gpi) {
     throw fastify.httpErrors.badRequest("session is not available.");
   }
 

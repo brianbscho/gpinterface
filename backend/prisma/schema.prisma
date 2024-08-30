@@ -61,8 +61,8 @@ model Session {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
-  gpiHashId String @map("gpi_hash_id")
-  gpi       Gpi    @relation(fields: [gpiHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
+  gpiHashId String? @map("gpi_hash_id")
+  gpi       Gpi?    @relation(fields: [gpiHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
 
   histories History[]
   messages  SessionMessage[]
