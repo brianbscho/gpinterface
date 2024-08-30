@@ -6,7 +6,7 @@ import {
   GpiGetResponse,
   GpiUpdateSchema,
 } from "gpinterface-shared/type/gpi";
-import { ParamSchema } from "gpinterface-shared/type";
+import { DeleteResponse, ParamSchema } from "gpinterface-shared/type";
 import { copyGpi, createGpi } from "../controllers/gpi";
 import { ContentHistorySelect, getTypedContents } from "../util/prisma";
 
@@ -166,6 +166,31 @@ export default async function (fastify: FastifyInstance) {
         return gpi;
       } catch (ex) {
         console.error("path: /gpi/copy, method: post, error:", ex);
+        throw ex;
+      }
+    }
+  );
+  fastify.delete<{ Body: Static<typeof ParamSchema> }>(
+    "/",
+    { schema: { body: ParamSchema } },
+    async (request, reply): Promise<DeleteResponse> => {
+      try {
+        const { user } = await fastify.getUser(request, reply);
+        const { hashId } = request.body;
+
+        const gpi = await fastify.prisma.gpi.findFirst({
+          where: { hashId, userHashId: user.hashId },
+          select: { hashId: true },
+        });
+        if (!gpi) {
+          throw fastify.httpErrors.badRequest("gpi is not available.");
+        }
+
+        await fastify.prisma.gpi.delete({ where: { hashId } });
+
+        return { success: true };
+      } catch (ex) {
+        console.error("path: /chat/:hashId, method: put, error:", ex);
         throw ex;
       }
     }
