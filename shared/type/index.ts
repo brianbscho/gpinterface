@@ -10,3 +10,6 @@ export const SearchQueryParamSchema = Type.Object({
   keyword: Type.String(),
   lastHashId: Type.Optional(Type.String()),
 });
+export type DeleteResponse = {
+  success: boolean;
+};

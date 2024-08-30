@@ -4,15 +4,15 @@ import { createManyEntities, getTypedContents } from "../util/prisma";
 import {
   ContentsCreateResponse,
   ContentsCreateSchema,
-  ContentsDeleteResponse,
   ContentsDeleteSchema,
 } from "gpinterface-shared/type/content";
+import { DeleteResponse } from "gpinterface-shared/type";
 
 export default async function (fastify: FastifyInstance) {
   fastify.delete<{ Body: Static<typeof ContentsDeleteSchema> }>(
     "/",
     { schema: { body: ContentsDeleteSchema } },
-    async (request, reply): Promise<ContentsDeleteResponse> => {
+    async (request, reply): Promise<DeleteResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
         const { hashIds } = request.body;

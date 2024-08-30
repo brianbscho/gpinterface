@@ -110,6 +110,10 @@ export default async function (fastify: FastifyInstance) {
       }
 
       await fastify.prisma.apiKey.deleteMany({ where: { userHashId: hashId } });
+      await fastify.prisma.history.updateMany({
+        where: { userHashId: hashId },
+        data: { userHashId: null },
+      });
       await fastify.prisma.user.delete({ where: { hashId } });
       return reply.clearCookie("access_token").send({});
     } catch (ex) {

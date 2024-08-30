@@ -14,7 +14,7 @@ import {
   ChatCompletionSampleResponse,
 } from "gpinterface-shared/type/chat";
 import { Static } from "@sinclair/typebox";
-import { ParamSchema } from "gpinterface-shared/type";
+import { DeleteResponse, ParamSchema } from "gpinterface-shared/type";
 import { getDateString } from "../util/string";
 import { createChatCompletion } from "../chat/controllers/chat";
 import {
@@ -118,6 +118,31 @@ export default async function (fastify: FastifyInstance) {
         await fastify.prisma.chat.update({ where: { hashId }, data: body });
 
         return body;
+      } catch (ex) {
+        console.error("path: /chat/:hashId, method: put, error:", ex);
+        throw ex;
+      }
+    }
+  );
+  fastify.delete<{ Body: Static<typeof ParamSchema> }>(
+    "/",
+    { schema: { body: ParamSchema } },
+    async (request, reply): Promise<DeleteResponse> => {
+      try {
+        const { user } = await fastify.getUser(request, reply);
+        const { hashId } = request.body;
+
+        const chat = await fastify.prisma.chat.findFirst({
+          where: { hashId, userHashId: user.hashId, gpis: { none: {} } },
+          select: { hashId: true },
+        });
+        if (!chat) {
+          throw fastify.httpErrors.badRequest("chat is not available.");
+        }
+
+        await fastify.prisma.chat.delete({ where: { hashId } });
+
+        return { success: true };
       } catch (ex) {
         console.error("path: /chat/:hashId, method: put, error:", ex);
         throw ex;
