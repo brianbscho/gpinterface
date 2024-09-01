@@ -10,7 +10,6 @@ import {
 } from "react";
 import { validateEmail, validatePassword } from "gpinterface-shared/string";
 import callApi from "@/utils/callApi";
-import TermsAndConditionsDialog from "@/components/dialogs/TermsAndConditionsDialog";
 import useUserStore from "@/store/user";
 import {
   UserCreateSchema,
@@ -108,7 +107,6 @@ function Login() {
     },
     [email, name, password, isLogin, setUser, chatHashId]
   );
-  const [termsOpen, setTermsOpen] = useState(false);
   const onClickGoogleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
       setLoading(true);
@@ -232,15 +230,7 @@ function Login() {
                     privacy policy
                   </a>
                   &nbsp;and&nbsp;
-                  <a
-                    href="/#"
-                    target="_blank"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setTermsOpen(true);
-                    }}
-                    className="underline"
-                  >
+                  <a href="/terms" target="_blank" className="underline">
                     terms and conditions
                   </a>
                 </label>
@@ -259,7 +249,6 @@ function Login() {
           </div>
         </form>
       </Tabs>
-      <TermsAndConditionsDialog useOpen={[termsOpen, setTermsOpen]} />
     </div>
   );
 }
