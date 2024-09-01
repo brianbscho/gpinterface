@@ -11,6 +11,7 @@ import {
   UserGetMeResponse,
   UserGetResponse,
   UserGetSchema,
+  UserGithubSchema,
   UserGoogleSchema,
   UserLoginSchema,
   UserUpdatePasswordSchema,
@@ -242,6 +243,120 @@ export default async function (fastify: FastifyInstance) {
         return cookieReply(reply, accessToken, me);
       } catch (ex) {
         console.error("path: /user/google, method: post, error: ", ex);
+        throw ex;
+      }
+    }
+  );
+  fastify.post<{ Body: Static<typeof UserGithubSchema> }>(
+    "/github",
+    { schema: { body: UserGithubSchema } },
+    async (request, reply) => {
+      try {
+        const { code, chatHashId } = request.body;
+        console.log("🚀 ~ chatHashId:", chatHashId);
+        console.log("🚀 ~ code:", code);
+        const endpoint = `https://github.com/login/oauth/access_token`;
+        const tokenResponse = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            client_id: process.env.GITHUB_OAUTH_CLIENT_ID,
+            client_secret: process.env.GITHUB_OAUTH_SECRET,
+            code,
+          }),
+        });
+        if (!tokenResponse.ok) {
+          throw httpErrors.unauthorized(
+            "Github login failed. Please try again."
+          );
+        }
+        const token = (await tokenResponse.json()) as {
+          access_token: string;
+        };
+
+        const userResponse = await fetch("https://api.github.com/user", {
+          headers: { Authorization: `Bearer ${token.access_token}` },
+        });
+        if (!userResponse.ok) {
+          throw httpErrors.unauthorized(
+            "Github login failed. Please try again."
+          );
+        }
+        const identity = (await userResponse.json()) as {
+          login: string;
+          email: string | null | undefined;
+        };
+        let name = identity.login;
+        let email = identity.email;
+        if (!email) {
+          const emailResponse = await fetch(
+            "https://api.github.com/user/emails",
+            {
+              headers: {
+                Accept: "application/vnd.github+json",
+                Authorization: `Bearer ${token.access_token}`,
+                "X-GitHub-Api-Version": "2022-11-28",
+              },
+            }
+          );
+          if (!emailResponse.ok) {
+            throw httpErrors.unauthorized(
+              "Github login failed. Please try again."
+            );
+          }
+          const emailAddress = (await emailResponse.json()) as {
+            email: string;
+            primary: boolean;
+          }[];
+          email = emailAddress.find((e) => e.primary)?.email;
+          if (!email) {
+            throw httpErrors.unauthorized(
+              "Github login failed. Please try again."
+            );
+          }
+        }
+
+        name = name.replace(/\s+/g, "");
+        let user = await fastify.prisma.user.findFirst({
+          where: { email },
+          select: { hashId: true, email: true, name: true },
+        });
+        if (user) {
+          if (chatHashId) {
+            console.log("🚀 ~ chatHashId:", chatHashId);
+            await fastify.prisma.chat.update({
+              where: { hashId: chatHashId, userHashId: null },
+              data: { userHashId: user.hashId },
+            });
+          }
+          const accessToken = getAccessToken(httpErrors.internalServerError, {
+            user: { hashId: user.hashId, name: user.name },
+          });
+          const me = user;
+          return cookieReply(reply, accessToken, me);
+        }
+
+        const newUser = await createEntity(fastify.prisma.user.create, {
+          data: { email, name },
+          select: { hashId: true },
+        });
+        if (chatHashId) {
+          await fastify.prisma.chat.update({
+            where: { hashId: chatHashId, userHashId: null },
+            data: { userHashId: newUser.hashId },
+          });
+        }
+
+        const accessToken = getAccessToken(httpErrors.internalServerError, {
+          user: { hashId: newUser.hashId, name },
+        });
+        const me = { hashId: newUser.hashId, email, name };
+        return cookieReply(reply, accessToken, me);
+      } catch (ex) {
+        console.error("path: /user/github, method: post, error: ", ex);
         throw ex;
       }
     }
