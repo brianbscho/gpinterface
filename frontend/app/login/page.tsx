@@ -131,9 +131,21 @@ function Login() {
   });
 
   return (
-    <div className="w-full max-w-xl px-3 mt-16">
+    <div className="w-full max-w-xl px-3">
+      <div className="mt-20 w-full">
+        <GoogleLoginButton onClick={onClickGoogleLogin} />
+      </div>
+      <div className="my-12 flex items-center gap-3">
+        <div className="flex-1">
+          <Separator className="bg-theme" />
+        </div>
+        <div>OR</div>
+        <div className="flex-1">
+          <Separator className="bg-theme" />
+        </div>
+      </div>
       <Tabs
-        className="w-full"
+        className="w-full mt-12"
         defaultValue="login"
         onValueChange={(e) => setIsLogin(e === "login")}
       >
@@ -145,18 +157,6 @@ function Login() {
             Sign up
           </TabsTrigger>
         </TabsList>
-        <div className="mt-12 w-full">
-          <GoogleLoginButton onClick={onClickGoogleLogin} />
-        </div>
-        <div className="my-12 flex items-center gap-3">
-          <div className="flex-1">
-            <Separator className="bg-theme" />
-          </div>
-          <div>OR</div>
-          <div className="flex-1">
-            <Separator className="bg-theme" />
-          </div>
-        </div>
         <form onSubmit={onSubmit} noValidate>
           <div className="mt-12">
             <TabsContent value="signup">
