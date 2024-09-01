@@ -10,11 +10,11 @@ import {
 } from "react";
 import { validateEmail, validatePassword } from "gpinterface-shared/string";
 import callApi from "@/utils/callApi";
-import TermsAndConditionsDialog from "@/components/dialogs/TermsAndConditionsDialog";
 import useUserStore from "@/store/user";
 import {
   UserCreateSchema,
   UserGetMeResponse,
+  UserGoogleSchema,
 } from "gpinterface-shared/type/user";
 import { Static } from "@sinclair/typebox";
 import {
@@ -23,6 +23,7 @@ import {
   TabsList,
   TabsContent,
   TabsTrigger,
+  Separator,
 } from "@/components/ui";
 import {
   Lock,
@@ -34,6 +35,9 @@ import {
 import { Checkbox } from "@/components/ui";
 import { useSearchParams } from "next/navigation";
 import IconTextButton from "@/components/buttons/IconTextButton";
+import GoogleLoginButton from "./GoogleLoginButton";
+import { useGoogleLogin } from "@react-oauth/google";
+import GithubLoginButton from "./GithubLoginButton";
 
 function Login() {
   const searchParams = useSearchParams();
@@ -96,17 +100,72 @@ function Login() {
         body: { email, password, name, chatHashId },
         showError: true,
       });
-      setUser(response?.user);
-      setLoading(false);
+      if (response) {
+        setUser(response.user);
+      } else {
+        setLoading(false);
+      }
     },
     [email, name, password, isLogin, setUser, chatHashId]
   );
-  const [termsOpen, setTermsOpen] = useState(false);
+  const onClickGoogleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setLoading(true);
+      const { access_token } = tokenResponse;
+      const response = await callApi<
+        UserGetMeResponse,
+        Static<typeof UserGoogleSchema>
+      >({
+        endpoint: "/user/google",
+        method: "POST",
+        body: { access_token, chatHashId },
+        showError: true,
+      });
+      if (response) {
+        setUser(response.user);
+      } else {
+        setLoading(false);
+      }
+    },
+  });
+
+  const githubOauthEndpoint = useMemo(() => {
+    const clientId = encodeURI(
+      process.env.NEXT_PUBLIC_GITHUB_OAUTH_CLIENT_ID ?? ""
+    );
+    const redirectUri = encodeURI(
+      `${process.env.NEXT_PUBLIC_HOSTNAME}/login/github?chatHashId=${
+        chatHashId ?? ""
+      }`
+    );
+    const scope = encodeURI("scope=read:user,user:email");
+
+    return `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`;
+  }, [chatHashId]);
 
   return (
-    <div className="w-full max-w-xl px-3 mt-16">
+    <div className="w-full max-w-xl px-3">
+      <div className="mt-20 w-full">
+        <GoogleLoginButton onClick={onClickGoogleLogin} />
+      </div>
+      {!!githubOauthEndpoint && (
+        <div className="mt-3 w-full">
+          <a href={githubOauthEndpoint}>
+            <GithubLoginButton />
+          </a>
+        </div>
+      )}
+      <div className="my-12 flex items-center gap-3">
+        <div className="flex-1">
+          <Separator className="bg-theme" />
+        </div>
+        <div>OR</div>
+        <div className="flex-1">
+          <Separator className="bg-theme" />
+        </div>
+      </div>
       <Tabs
-        className="w-full"
+        className="w-full mt-12"
         defaultValue="login"
         onValueChange={(e) => setIsLogin(e === "login")}
       >
@@ -193,15 +252,7 @@ function Login() {
                     privacy policy
                   </a>
                   &nbsp;and&nbsp;
-                  <a
-                    href="/#"
-                    target="_blank"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setTermsOpen(true);
-                    }}
-                    className="underline"
-                  >
+                  <a href="/terms" target="_blank" className="underline">
                     terms and conditions
                   </a>
                 </label>
@@ -220,7 +271,6 @@ function Login() {
           </div>
         </form>
       </Tabs>
-      <TermsAndConditionsDialog useOpen={[termsOpen, setTermsOpen]} />
     </div>
   );
 }

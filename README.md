@@ -89,7 +89,7 @@ The frontend application requires the following environment variables:
 ```bash
 NEXT_PUBLIC_API_ENDPOINT="http://localhost:3000"
 NEXT_PUBLIC_SERVICE_ENDPOINT="http://localhost:3000"
-NEXT_PUBLIC_HOSTNAME="http://localhost:3001"
+NEXT_PUBLIC_HOSTNAME="http://localhost:3003"
 ```
 
 These should be configured to match the endpoints where the backend services are available, ensuring the frontend can communicate with the backend properly.

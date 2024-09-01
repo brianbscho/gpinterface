@@ -1,6 +1,6 @@
 {
   "name": "gpinterface-backend",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "scripts": {
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
