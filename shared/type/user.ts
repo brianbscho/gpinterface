@@ -45,3 +45,7 @@ export const UserGoogleSchema = Type.Object({
   access_token: Type.String(),
   chatHashId: Type.Union([Type.String(), Type.Null()]),
 });
+export const UserGithubSchema = Type.Object({
+  code: Type.String(),
+  chatHashId: Type.Union([Type.String(), Type.Null()]),
+});
