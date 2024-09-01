@@ -236,7 +236,8 @@ export default async function (fastify: FastifyInstance) {
           );
         }
 
-        const { name, email } = userinfo;
+        let { name, email } = userinfo;
+        name = name.replace(/\s+/g, "");
         let user = await fastify.prisma.user.findFirst({
           where: { email },
           select: { hashId: true, email: true, name: true },
