@@ -2,7 +2,7 @@ import { UserGetMeResponse } from "gpinterface-shared/type/user";
 import { create } from "zustand";
 
 type UserType = UserGetMeResponse["user"];
-type OptionalUserMe = Partial<Pick<UserType, "name" | "bio" | "notification">>;
+type OptionalUserMe = Partial<Pick<UserType, "name">>;
 type UserState = {
   user: UserType | undefined;
   isLoggedOut: boolean;

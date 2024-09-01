@@ -3,15 +3,12 @@ import { Type } from "@sinclair/typebox";
 interface UserInfo {
   hashId: string;
   name: string;
-  bio: string;
 }
 
 interface UserMe {
   hashId: string;
   email: string;
   name: string;
-  bio: string;
-  notification: boolean;
 }
 
 export interface User {
