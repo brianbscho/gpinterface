@@ -11,6 +11,7 @@ import {
   UserGetMeResponse,
   UserGetResponse,
   UserGetSchema,
+  UserGoogleSchema,
   UserLoginSchema,
   UserUpdatePasswordSchema,
   UserUpdateSchema,
@@ -208,6 +209,64 @@ export default async function (fastify: FastifyInstance) {
         return cookieReply(reply, accessToken, me);
       } catch (ex) {
         console.error("path: /user/signup, method: post, error: ", ex);
+        throw ex;
+      }
+    }
+  );
+  fastify.post<{ Body: Static<typeof UserGoogleSchema> }>(
+    "/google",
+    { schema: { body: UserGoogleSchema } },
+    async (request, reply) => {
+      try {
+        const { access_token, chatHashId } = request.body;
+        const endpoint = `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${access_token}`;
+        const response = await fetch(endpoint);
+        if (!response.ok) {
+          throw httpErrors.unauthorized(
+            "Google login failed. Please try again."
+          );
+        }
+        const userinfo = (await response.json()) as {
+          name?: string;
+          email?: string;
+        };
+        if (!userinfo?.name || !userinfo?.email) {
+          throw httpErrors.unauthorized(
+            "Google login failed. Please try again."
+          );
+        }
+
+        const { name, email } = userinfo;
+        let user = await fastify.prisma.user.findFirst({
+          where: { email },
+          select: { hashId: true, email: true, name: true },
+        });
+        if (user) {
+          const accessToken = getAccessToken(httpErrors.internalServerError, {
+            user: { hashId: user.hashId, name: user.name },
+          });
+          const me = { ...user, bio: "", notification: false };
+          return cookieReply(reply, accessToken, me);
+        }
+
+        const newUser = await createEntity(fastify.prisma.user.create, {
+          data: { email, name },
+          select: { hashId: true },
+        });
+        if (chatHashId) {
+          await fastify.prisma.chat.update({
+            where: { hashId: chatHashId, userHashId: null },
+            data: { userHashId: newUser.hashId },
+          });
+        }
+
+        const accessToken = getAccessToken(httpErrors.internalServerError, {
+          user: { hashId: newUser.hashId, name },
+        });
+        const me = { ...newUser, email, name, bio: "", notification: false };
+        return cookieReply(reply, accessToken, me);
+      } catch (ex) {
+        console.error("path: /user/google, method: post, error: ", ex);
         throw ex;
       }
     }
