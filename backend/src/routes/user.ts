@@ -134,6 +134,11 @@ export default async function (fastify: FastifyInstance) {
         if (!user) {
           throw httpErrors.badRequest("No user found with that email :(");
         }
+        if (!user.password) {
+          throw httpErrors.badRequest(
+            "Your account doesn't require password. Please try different method."
+          );
+        }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
@@ -277,6 +282,9 @@ export default async function (fastify: FastifyInstance) {
         });
         if (!user) {
           throw httpErrors.badRequest("User isn't available");
+        }
+        if (!user.password) {
+          throw httpErrors.badRequest("Your account doesn't require password.");
         }
 
         const isMatch = await bcrypt.compare(oldPassword, user.password);
