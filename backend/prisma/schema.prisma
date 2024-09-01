@@ -298,7 +298,7 @@ model User {
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
   email                 String
-  password              String
+  password              String?
   name                  String
   bio                   String   @default("")
   notificationCheckedAt DateTime @default(now()) @map("notification_checked_at")
