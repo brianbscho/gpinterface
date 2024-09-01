@@ -15,6 +15,7 @@ import useUserStore from "@/store/user";
 import {
   UserCreateSchema,
   UserGetMeResponse,
+  UserGoogleSchema,
 } from "gpinterface-shared/type/user";
 import { Static } from "@sinclair/typebox";
 import {
@@ -23,6 +24,7 @@ import {
   TabsList,
   TabsContent,
   TabsTrigger,
+  Separator,
 } from "@/components/ui";
 import {
   Lock,
@@ -34,6 +36,8 @@ import {
 import { Checkbox } from "@/components/ui";
 import { useSearchParams } from "next/navigation";
 import IconTextButton from "@/components/buttons/IconTextButton";
+import GoogleLoginButton from "./GoogleLoginButton";
+import { useGoogleLogin } from "@react-oauth/google";
 
 function Login() {
   const searchParams = useSearchParams();
@@ -97,11 +101,26 @@ function Login() {
         showError: true,
       });
       setUser(response?.user);
-      setLoading(false);
     },
     [email, name, password, isLogin, setUser, chatHashId]
   );
   const [termsOpen, setTermsOpen] = useState(false);
+  const onClickGoogleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setLoading(true);
+      const { access_token } = tokenResponse;
+      const response = await callApi<
+        UserGetMeResponse,
+        Static<typeof UserGoogleSchema>
+      >({
+        endpoint: "/user/google",
+        method: "POST",
+        body: { access_token, chatHashId },
+        showError: true,
+      });
+      setUser(response?.user);
+    },
+  });
 
   return (
     <div className="w-full max-w-xl px-3 mt-16">
@@ -118,6 +137,18 @@ function Login() {
             Sign up
           </TabsTrigger>
         </TabsList>
+        <div className="mt-12 w-full">
+          <GoogleLoginButton onClick={onClickGoogleLogin} />
+        </div>
+        <div className="my-12 flex items-center gap-3">
+          <div className="flex-1">
+            <Separator className="bg-theme" />
+          </div>
+          <div>OR</div>
+          <div className="flex-1">
+            <Separator className="bg-theme" />
+          </div>
+        </div>
         <form onSubmit={onSubmit} noValidate>
           <div className="mt-12">
             <TabsContent value="signup">
