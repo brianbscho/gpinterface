@@ -43,3 +43,8 @@ export const UserUpdatePasswordSchema = Type.Object({
 
 export type UserGetResponse = { user: UserInfo };
 export type UserGetMeResponse = { user: UserMe };
+
+export const UserGoogleSchema = Type.Object({
+  access_token: Type.String(),
+  chatHashId: Type.Union([Type.String(), Type.Null()]),
+});
