@@ -37,6 +37,7 @@ import { useSearchParams } from "next/navigation";
 import IconTextButton from "@/components/buttons/IconTextButton";
 import GoogleLoginButton from "./GoogleLoginButton";
 import { useGoogleLogin } from "@react-oauth/google";
+import GithubLoginButton from "./GithubLoginButton";
 
 function Login() {
   const searchParams = useSearchParams();
@@ -128,11 +129,32 @@ function Login() {
     },
   });
 
+  const githubOauthEndpoint = useMemo(() => {
+    const clientId = encodeURI(
+      process.env.NEXT_PUBLIC_GITHUB_OAUTH_CLIENT_ID ?? ""
+    );
+    const redirectUri = encodeURI(
+      `${process.env.NEXT_PUBLIC_HOSTNAME}/login/github?chatHashId=${
+        chatHashId ?? ""
+      }`
+    );
+    const scope = encodeURI("scope=read:user,user:email");
+
+    return `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`;
+  }, [chatHashId]);
+
   return (
     <div className="w-full max-w-xl px-3">
       <div className="mt-20 w-full">
         <GoogleLoginButton onClick={onClickGoogleLogin} />
       </div>
+      {!!githubOauthEndpoint && (
+        <div className="mt-3 w-full">
+          <a href={githubOauthEndpoint}>
+            <GithubLoginButton />
+          </a>
+        </div>
+      )}
       <div className="my-12 flex items-center gap-3">
         <div className="flex-1">
           <Separator className="bg-theme" />
