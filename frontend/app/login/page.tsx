@@ -100,7 +100,11 @@ function Login() {
         body: { email, password, name, chatHashId },
         showError: true,
       });
-      setUser(response?.user);
+      if (response) {
+        setUser(response.user);
+      } else {
+        setLoading(false);
+      }
     },
     [email, name, password, isLogin, setUser, chatHashId]
   );
@@ -118,7 +122,11 @@ function Login() {
         body: { access_token, chatHashId },
         showError: true,
       });
-      setUser(response?.user);
+      if (response) {
+        setUser(response.user);
+      } else {
+        setLoading(false);
+      }
     },
   });
 
