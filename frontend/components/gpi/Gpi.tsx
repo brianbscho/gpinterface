@@ -3,7 +3,7 @@
 import { GpiGetResponse } from "gpinterface-shared/type/gpi";
 import { FormEvent, KeyboardEvent, useCallback, useState } from "react";
 import IconTextButton from "../buttons/IconTextButton";
-import { CornerDownLeft, FileCode, FileText } from "lucide-react";
+import { CornerDownLeft, FileCode, FileCog, FileText } from "lucide-react";
 import ModelSheetButton from "../buttons/ModelSheetButton";
 import useUserStore from "@/store/user";
 import Contents from "../Contents";
@@ -17,6 +17,7 @@ import {
 import { Static } from "@sinclair/typebox";
 import GpiCopyButton from "../buttons/GpiCopyButton";
 import { TestDataType } from "../dialogs/GpiTestDialog";
+import Link from "next/link";
 
 type Props = {
   gpi: GpiGetResponse;
@@ -110,6 +111,18 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
             modelHashId={gpi.modelHashId}
           />
         </div>
+        {gpi.userHashId === userHashId && (
+          <div className="flex-1 md:flex-initial md:w-32">
+            <Link href={`/gpis/${gpi.hashId}/edit`}>
+              <IconTextButton
+                className="w-full md:w-32"
+                Icon={FileCog}
+                text="Edit"
+                responsive
+              />
+            </Link>
+          </div>
+        )}
       </div>
       <div className={getTabContentClassName("gpi")}>
         {!!gpi && (
