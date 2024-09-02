@@ -16,15 +16,8 @@ import {
 } from "gpinterface-shared/type/chat";
 import { Static } from "@sinclair/typebox";
 import GpiCopyButton from "../buttons/GpiCopyButton";
+import { TestDataType } from "../dialogs/GpiTestDialog";
 
-export type TestDataType =
-  | {
-      gpiHashId: string;
-      userContent: string;
-      content: string;
-      sessionHashId: string;
-    }
-  | undefined;
 type Props = {
   gpi: GpiGetResponse;
   setTestData: (testData: TestDataType) => void;
