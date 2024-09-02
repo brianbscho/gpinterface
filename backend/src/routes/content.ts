@@ -59,11 +59,6 @@ export default async function (fastify: FastifyInstance) {
         if (!chat) {
           throw fastify.httpErrors.badRequest("chat is not available.");
         }
-        if (chat.contents.some((c) => c.content === "")) {
-          throw fastify.httpErrors.badRequest(
-            "There is empty content in chat."
-          );
-        }
 
         const { systemMessage, contents } = chat;
         const messages = [...contents];
@@ -231,11 +226,6 @@ export default async function (fastify: FastifyInstance) {
           where: { chatHashId, id: { lt: id } },
           ...ChatCompletionContentsQuery,
         });
-        if (messages.some((m) => m.content === "")) {
-          throw fastify.httpErrors.badRequest(
-            "There is empty content in chat."
-          );
-        }
 
         const { systemMessage } = chat;
         let { content, ...response } = await getTextResponse({

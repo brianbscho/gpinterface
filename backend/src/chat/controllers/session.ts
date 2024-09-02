@@ -31,6 +31,9 @@ export async function createSession({
   if (!gpi) {
     throw fastify.httpErrors.badRequest("no gpi");
   }
+  if (gpi.chat.contents.some((c) => c.content === "")) {
+    throw fastify.httpErrors.badRequest("There is empty content in chat.");
+  }
 
   const session = await _createSession(fastify.prisma.session, {
     gpiHashId,
