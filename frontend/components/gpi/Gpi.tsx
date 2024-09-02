@@ -57,6 +57,9 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
       });
       if (response) {
         setTestData({ userContent: content, ...body, ...response });
+      } else {
+        setTestData(undefined);
+        setTestOpen(false);
       }
       setContent("");
       setLoading(false);
