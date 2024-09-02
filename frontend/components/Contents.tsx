@@ -473,15 +473,17 @@ export default function Contents({
           </Button>
         </div>
       )}
-      <Content
-        content={systemContent}
-        chatHashId={chat.hashId}
-        setContents={setContents}
-        useRefreshingHashId={[refreshingHashId, setRefreshingHashId]}
-        callUpdateContent={callUpdateSystemMessage}
-        editable={editable}
-        hideButtons={hideButtons}
-      />
+      {(editable || systemContent.content.length > 0) && (
+        <Content
+          content={systemContent}
+          chatHashId={chat.hashId}
+          setContents={setContents}
+          useRefreshingHashId={[refreshingHashId, setRefreshingHashId]}
+          callUpdateContent={callUpdateSystemMessage}
+          editable={editable}
+          hideButtons={hideButtons}
+        />
+      )}
       {contents.map((c, i) => {
         let hashIds: string[] = [];
         if (c.role === "user") {
