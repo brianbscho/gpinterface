@@ -78,7 +78,7 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
       className="w-full border border-theme rounded-md pt-3"
     >
       <div className="whitespace-pre-wrap px-3 pb-3">{gpi.description}</div>
-      <div className="sticky top-0 rounded-md w-full px-3 py-3 grid grid-cols-2 md:flex gap-3 bg-background z-30">
+      <div className="sticky top-0 rounded-md w-full px-3 py-3 grid grid-cols-3 md:flex gap-3 bg-background z-30">
         <div className="flex-1 md:flex-initial md:w-32">
           <IconTextButton
             onClick={() => setTab("gpi")}
