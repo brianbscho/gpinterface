@@ -9,7 +9,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { CircleX, Cpu, Layers, Loader2, RefreshCcw, X } from "lucide-react";
+import { Cpu, Layers, Loader2, RefreshCcw, X } from "lucide-react";
 import {
   Content as ContentType,
   ContentRefreshSchema,
@@ -56,13 +56,13 @@ function Buttons({
   disabled,
   loading,
 }: ButtonsProps) {
+  const className = "p-1 h-6 w-6";
   return (
     <>
       {!!onClickModel && (
         <SmallHoverButton message="Set this to model">
           <Button
-            className="p-1 h-6 w-6"
-            variant="default"
+            className={className}
             onClick={onClickModel}
             disabled={disabled}
             loading={loading}
@@ -74,7 +74,7 @@ function Buttons({
       {!!history && (
         <SmallHoverButton message="Detail">
           <HistoryDialog history={history}>
-            <Button className="p-1 h-6 w-6" variant="default">
+            <Button className={className}>
               <Layers />
             </Button>
           </HistoryDialog>
@@ -83,8 +83,7 @@ function Buttons({
       {isRefreshVisible && (
         <SmallHoverButton message="Regenerate">
           <Button
-            className="p-1 h-6 w-6"
-            variant="default"
+            className={className}
             onClick={onClickRefresh}
             disabled={disabled}
             loading={loading}
@@ -96,12 +95,13 @@ function Buttons({
       {isDeleteVisible && (
         <SmallHoverButton message="Delete">
           <Button
-            className="p-1 h-6 w-6"
+            className={className}
+            variant="destructive"
             onClick={onClickDelete}
             disabled={disabled}
             loading={loading}
           >
-            <CircleX />
+            <X />
           </Button>
         </SmallHoverButton>
       )}

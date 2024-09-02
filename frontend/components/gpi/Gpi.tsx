@@ -128,43 +128,41 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
         )}
       </div>
       <div className={getTabContentClassName("gpi")}>
-        {!!gpi && (
-          <div>
-            <Contents
-              chat={gpi.chat}
-              gpiHashId={gpi.hashId}
-              ownerUserHashId={"non-editable-user"}
-              hideButtons
-            />
-            <div className="flex items-center mt-3">
-              <Badge variant="tag" className="h-6">
-                user
-              </Badge>
-            </div>
-            <div className="my-3 text-sm text-muted-foreground">
-              <form onSubmit={onSubmit}>
-                <div className="flex items-center gap-3">
-                  <div className="relative flex-1 items-start">
-                    <div className="whitespace-pre-wrap px-3 py-2 text-base invisible border">
-                      {content + "."}
-                    </div>
-                    <Textarea
-                      className="absolute max-h-none inset-0 z-10 text-base overflow-hidden resize-none"
-                      value={content}
-                      onChange={(e) => setContent(e.currentTarget.value)}
-                      placeholder="user message"
-                      disabled={loading}
-                      onKeyDown={onKeyDown}
-                    />
-                  </div>
-                  <Button type="submit" loading={loading}>
-                    <CornerDownLeft />
-                  </Button>
-                </div>
-              </form>
-            </div>
+        <div>
+          <Contents
+            chat={gpi.chat}
+            gpiHashId={gpi.hashId}
+            ownerUserHashId={"non-editable-user"}
+            hideButtons
+          />
+          <div className="flex items-center mt-3">
+            <Badge variant="tag" className="h-6">
+              user
+            </Badge>
           </div>
-        )}
+          <div className="my-3 text-sm text-muted-foreground">
+            <form onSubmit={onSubmit}>
+              <div className="flex items-center gap-3">
+                <div className="relative flex-1 items-start">
+                  <div className="whitespace-pre-wrap px-3 py-2 text-base invisible border">
+                    {content + "."}
+                  </div>
+                  <Textarea
+                    className="absolute max-h-none inset-0 z-10 text-base overflow-hidden resize-none"
+                    value={content}
+                    onChange={(e) => setContent(e.currentTarget.value)}
+                    placeholder="user message"
+                    disabled={loading}
+                    onKeyDown={onKeyDown}
+                  />
+                </div>
+                <Button type="submit" loading={loading}>
+                  <CornerDownLeft />
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
       <div className={getTabContentClassName("document")}>
         <Document gpi={gpi} className="px-0 md:pl-0" />

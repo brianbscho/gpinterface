@@ -15,7 +15,7 @@ import DeployButton from "../buttons/DeployButton";
 import ModelSheetButton from "../buttons/ModelSheetButton";
 import useProviderTypes from "@/hooks/useProviderTypes";
 
-function _Chats() {
+function Component() {
   const [chats, setChats] = useState<ChatsGetResponse["chats"]>();
   const [lastHashId, setLastHashId] = useState("");
   const [spinnerHidden, setSpinnerHidden] = useState(false);
@@ -121,7 +121,7 @@ function _Chats() {
 export default function Chats() {
   return (
     <Suspense>
-      <_Chats />
+      <Component />
     </Suspense>
   );
 }
