@@ -63,7 +63,7 @@ export default function NewChatButton({
         responsive
       />
       <LoginDialog
-        title="Please login to create new chat :)"
+        title="Please login to create more chats :)"
         useOpen={[open, setOpen]}
       />
     </div>

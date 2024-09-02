@@ -31,23 +31,21 @@ export default function Page({ params }: { params: { hashId: string } }) {
 
   useProviderTypes();
 
+  if (!chat) return null;
+
   return (
     <div className="w-full flex-1 grid grid-cols-[1fr_auto] overflow-hidden">
       <div className="h-full overflow-y-auto">
-        {!!chat && (
-          <div className="sticky top-0 md:top-3 px-3 md:h-0 py-3 md:py-0 w-full bg-background z-20 flex">
-            <DeployButton chatHashId={chat.hashId} />
-            <div className="flex-1"></div>
-            <ModelSheetButton className="md:hidden w-24" />
-          </div>
-        )}
-        {!!chat && (
-          <Contents
-            chat={chat}
-            ownerUserHashId={chat.userHashId}
-            className="pt-0 md:pt-3 px-3 pl-3 md:pl-[9.5rem] pb-3"
-          />
-        )}
+        <div className="sticky top-0 md:top-3 px-3 md:h-0 py-3 md:py-0 w-full bg-background z-20 flex">
+          <DeployButton chatHashId={chat.hashId} />
+          <div className="flex-1"></div>
+          <ModelSheetButton className="md:hidden w-24" />
+        </div>
+        <Contents
+          chat={chat}
+          ownerUserHashId={chat.userHashId}
+          className="pt-0 md:pt-3 px-3 pl-3 md:pl-[9.5rem] pb-3"
+        />
       </div>
       <ModelPanel>
         <ModelSelect />

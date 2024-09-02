@@ -1,12 +1,30 @@
 # gpinterface (Generative Prompt Interface)
 
-`gpinterface` is a powerful tool designed to streamline the testing and deployment of generative prompts across multiple large language models (LLMs). With an easy-to-use web interface, `gpinterface` enables rapid configuration and experimentation, making it an ideal solution for developers and researchers working with generative AI.
+**With `gpinterface`, you can create endpoint for your prompt.**
+
+> It is a powerful tool designed to streamline the testing and deployment of generative prompts across multiple large language models (LLMs). With an easy-to-use web interface, `gpinterface` enables rapid configuration and experimentation.
+
+<details>
+<summary>How does it work?</summary>
+
+`gpinterface` generates several endpoints at deploying your prompt:
+
+1. one-time chat interactions
+2. chat session creation
+3. ongoing conversations within a session
+4. conversation retrieval from a session
+
+You can use those endpoints to create your own use case.
+
+![text_correction_capture](./text_correction_capture.png)
+
+</details>
 
 ## Features
 
+- **Simple Deployment**: Deploy your configured prompts, creating accessible endpoints instantly.
 - **Easy Prompt Testing**: Utilize a web interface to test prompts with various configurations effortlessly.
 - **Support for Multiple LLMs**: Seamlessly integrate and use different Large Language Models to ensure your application is versatile and robust.
-- **Simple Deployment**: Deploy your configured prompts with just one click, creating accessible endpoints instantly.
 
 ## Supported LLMs
 
@@ -29,9 +47,9 @@ A live demo is available at [gpinterface.com](https://gpinterface.com).
 
 Here are some specific examples of what `gpinterface` can do:
 
-- Text Summarization: [Try it here](https://gpinterface.com/apis/bPqvQH-6qPKdOY5XHMYiN)
-- Translation: [Try it here](https://gpinterface.com/apis/S1WYvoKdOllFrvST0Okzn)
-- Text Correction: [Try it here](https://gpinterface.com/apis/i1WqU74CIYHGfURPcVnR5)
+- Text Summarization: [Try it here](https://gpinterface.com/gpis/bPqvQH-6qPKdOY5XHMYiN)
+- Translation: [Try it here](https://gpinterface.com/gpis/S1WYvoKdOllFrvST0Okzn)
+- Text Correction: [Try it here](https://gpinterface.com/gpis/i1WqU74CIYHGfURPcVnR5)
 
 ## Database
 

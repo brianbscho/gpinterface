@@ -38,9 +38,6 @@ export const createChatCompletion = async ({
   if (!gpi) {
     throw fastify.httpErrors.badRequest("gpi is not available.");
   }
-  if (gpi.chat.contents.some((c) => c.content === "")) {
-    throw fastify.httpErrors.badRequest("There is empty content in chat.");
-  }
 
   const { chat, config, model } = gpi;
   const { systemMessage, contents } = chat;

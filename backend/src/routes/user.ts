@@ -253,8 +253,6 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply) => {
       try {
         const { code, chatHashId } = request.body;
-        console.log("🚀 ~ chatHashId:", chatHashId);
-        console.log("🚀 ~ code:", code);
         const endpoint = `https://github.com/login/oauth/access_token`;
         const tokenResponse = await fetch(endpoint, {
           method: "POST",
@@ -326,7 +324,6 @@ export default async function (fastify: FastifyInstance) {
         });
         if (user) {
           if (chatHashId) {
-            console.log("🚀 ~ chatHashId:", chatHashId);
             await fastify.prisma.chat.update({
               where: { hashId: chatHashId, userHashId: null },
               data: { userHashId: user.hashId },

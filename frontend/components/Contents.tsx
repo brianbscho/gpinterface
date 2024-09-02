@@ -9,7 +9,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { CircleX, Cpu, Layers, Loader2, RefreshCcw, X } from "lucide-react";
+import { Cpu, Layers, Loader2, RefreshCcw, X } from "lucide-react";
 import {
   Content as ContentType,
   ContentRefreshSchema,
@@ -37,7 +37,7 @@ import { DeleteResponse, ParamSchema } from "gpinterface-shared/type";
 import { useRouter } from "next/navigation";
 
 type ButtonsProps = {
-  onClickModel: () => void;
+  onClickModel: (() => void) | undefined;
   history: ContentType["history"];
   isRefreshVisible: boolean;
   onClickRefresh: () => void;
@@ -56,13 +56,13 @@ function Buttons({
   disabled,
   loading,
 }: ButtonsProps) {
+  const className = "p-1 h-6 w-6";
   return (
     <>
       {!!onClickModel && (
         <SmallHoverButton message="Set this to model">
           <Button
-            className="p-1 h-6 w-6"
-            variant="default"
+            className={className}
             onClick={onClickModel}
             disabled={disabled}
             loading={loading}
@@ -74,7 +74,7 @@ function Buttons({
       {!!history && (
         <SmallHoverButton message="Detail">
           <HistoryDialog history={history}>
-            <Button className="p-1 h-6 w-6" variant="default">
+            <Button className={className}>
               <Layers />
             </Button>
           </HistoryDialog>
@@ -83,8 +83,7 @@ function Buttons({
       {isRefreshVisible && (
         <SmallHoverButton message="Regenerate">
           <Button
-            className="p-1 h-6 w-6"
-            variant="default"
+            className={className}
             onClick={onClickRefresh}
             disabled={disabled}
             loading={loading}
@@ -96,12 +95,13 @@ function Buttons({
       {isDeleteVisible && (
         <SmallHoverButton message="Delete">
           <Button
-            className="p-1 h-6 w-6"
+            className={className}
+            variant="destructive"
             onClick={onClickDelete}
             disabled={disabled}
             loading={loading}
           >
-            <CircleX />
+            <X />
           </Button>
         </SmallHoverButton>
       )}
@@ -274,14 +274,18 @@ function Content({
         <div className="flex-1"></div>
         {!hideButtons && (
           <Buttons
-            onClickModel={() => {
-              if (content.model?.hashId) {
-                setModelHashId(content.model?.hashId);
-              }
-              if (content.config) {
-                setConfig(content.config);
-              }
-            }}
+            onClickModel={
+              !content.model?.hashId
+                ? undefined
+                : () => {
+                    if (content.model?.hashId) {
+                      setModelHashId(content.model?.hashId);
+                    }
+                    if (content.config) {
+                      setConfig(content.config);
+                    }
+                  }
+            }
             history={content.history}
             isRefreshVisible={isRefreshVisible === true}
             onClickRefresh={onClickRefresh}
@@ -469,15 +473,17 @@ export default function Contents({
           </Button>
         </div>
       )}
-      <Content
-        content={systemContent}
-        chatHashId={chat.hashId}
-        setContents={setContents}
-        useRefreshingHashId={[refreshingHashId, setRefreshingHashId]}
-        callUpdateContent={callUpdateSystemMessage}
-        editable={editable}
-        hideButtons={hideButtons}
-      />
+      {(editable || systemContent.content.length > 0) && (
+        <Content
+          content={systemContent}
+          chatHashId={chat.hashId}
+          setContents={setContents}
+          useRefreshingHashId={[refreshingHashId, setRefreshingHashId]}
+          callUpdateContent={callUpdateSystemMessage}
+          editable={editable}
+          hideButtons={hideButtons}
+        />
+      )}
       {contents.map((c, i) => {
         let hashIds: string[] = [];
         if (c.role === "user") {

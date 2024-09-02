@@ -25,6 +25,10 @@ export async function getTextResponse(body: {
   messages: Message[];
 }) {
   const { model, systemMessage, messages, config } = body;
+  if (messages.some((m) => m.content === "")) {
+    throw "There is empty content in chat.";
+  }
+
   const { provider, name, inputPricePerMillion, outputPricePerMillion } = model;
   const typedMessages = messages.map((m) => ({
     role: m.role === "user" ? ("user" as const) : ("assistant" as const),

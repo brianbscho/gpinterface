@@ -3,7 +3,7 @@
 import { GpiGetResponse } from "gpinterface-shared/type/gpi";
 import { FormEvent, KeyboardEvent, useCallback, useState } from "react";
 import IconTextButton from "../buttons/IconTextButton";
-import { CornerDownLeft, FileCode, FileText } from "lucide-react";
+import { CornerDownLeft, FileCode, FileCog, FileText } from "lucide-react";
 import ModelSheetButton from "../buttons/ModelSheetButton";
 import useUserStore from "@/store/user";
 import Contents from "../Contents";
@@ -16,15 +16,9 @@ import {
 } from "gpinterface-shared/type/chat";
 import { Static } from "@sinclair/typebox";
 import GpiCopyButton from "../buttons/GpiCopyButton";
+import { TestDataType } from "../dialogs/GpiTestDialog";
+import Link from "next/link";
 
-export type TestDataType =
-  | {
-      gpiHashId: string;
-      userContent: string;
-      content: string;
-      sessionHashId: string;
-    }
-  | undefined;
 type Props = {
   gpi: GpiGetResponse;
   setTestData: (testData: TestDataType) => void;
@@ -63,6 +57,9 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
       });
       if (response) {
         setTestData({ userContent: content, ...body, ...response });
+      } else {
+        setTestData(undefined);
+        setTestOpen(false);
       }
       setContent("");
       setLoading(false);
@@ -85,7 +82,7 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
       className="w-full border border-theme rounded-md pt-3"
     >
       <div className="whitespace-pre-wrap px-3 pb-3">{gpi.description}</div>
-      <div className="sticky top-0 rounded-md w-full px-3 py-3 grid grid-cols-2 md:flex gap-3 bg-background z-30">
+      <div className="sticky top-0 rounded-md w-full px-3 py-3 grid grid-cols-3 md:flex gap-3 bg-background z-30">
         <div className="flex-1 md:flex-initial md:w-32">
           <IconTextButton
             onClick={() => setTab("gpi")}
@@ -117,45 +114,55 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
             modelHashId={gpi.modelHashId}
           />
         </div>
-      </div>
-      <div className={getTabContentClassName("gpi")}>
-        {!!gpi && (
-          <div>
-            <Contents
-              chat={gpi.chat}
-              gpiHashId={gpi.hashId}
-              ownerUserHashId={"non-editable-user"}
-              hideButtons
-            />
-            <div className="flex items-center mt-3">
-              <Badge variant="tag" className="h-6">
-                user
-              </Badge>
-            </div>
-            <div className="my-3 text-sm text-muted-foreground">
-              <form onSubmit={onSubmit}>
-                <div className="flex items-center gap-3">
-                  <div className="relative flex-1 items-start">
-                    <div className="whitespace-pre-wrap px-3 py-2 text-base invisible border">
-                      {content + "."}
-                    </div>
-                    <Textarea
-                      className="absolute max-h-none inset-0 z-10 text-base overflow-hidden resize-none"
-                      value={content}
-                      onChange={(e) => setContent(e.currentTarget.value)}
-                      placeholder="user message"
-                      disabled={loading}
-                      onKeyDown={onKeyDown}
-                    />
-                  </div>
-                  <Button type="submit" loading={loading}>
-                    <CornerDownLeft />
-                  </Button>
-                </div>
-              </form>
-            </div>
+        {gpi.userHashId === userHashId && (
+          <div className="flex-1 md:flex-initial md:w-32">
+            <Link href={`/gpis/${gpi.hashId}/edit`}>
+              <IconTextButton
+                className="w-full md:w-32"
+                Icon={FileCog}
+                text="Edit"
+                responsive
+              />
+            </Link>
           </div>
         )}
+      </div>
+      <div className={getTabContentClassName("gpi")}>
+        <div>
+          <Contents
+            chat={gpi.chat}
+            gpiHashId={gpi.hashId}
+            ownerUserHashId={"non-editable-user"}
+            hideButtons
+          />
+          <div className="flex items-center mt-3">
+            <Badge variant="tag" className="h-6">
+              user
+            </Badge>
+          </div>
+          <div className="my-3 text-sm text-muted-foreground">
+            <form onSubmit={onSubmit}>
+              <div className="flex items-center gap-3">
+                <div className="relative flex-1 items-start">
+                  <div className="whitespace-pre-wrap px-3 py-2 text-base invisible border">
+                    {content + "."}
+                  </div>
+                  <Textarea
+                    className="absolute max-h-none inset-0 z-10 text-base overflow-hidden resize-none"
+                    value={content}
+                    onChange={(e) => setContent(e.currentTarget.value)}
+                    placeholder="user message"
+                    disabled={loading}
+                    onKeyDown={onKeyDown}
+                  />
+                </div>
+                <Button type="submit" loading={loading}>
+                  <CornerDownLeft />
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
       <div className={getTabContentClassName("document")}>
         <Document gpi={gpi} className="px-0 md:pl-0" />
