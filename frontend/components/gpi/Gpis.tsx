@@ -23,6 +23,7 @@ export default function Gpis({ baseUrl, emptyMessage }: GpisProps) {
   const callGpisApi = useCallback(async () => {
     const response = await callApi<GpisGetResponse>({
       endpoint: `${baseUrl}&lastHashId=${lastHashId}`,
+      showError: true,
     });
     if (response) {
       setGpis((prev) => [...(prev ?? []), ...response.gpis]);
