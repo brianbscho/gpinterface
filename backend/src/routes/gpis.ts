@@ -90,7 +90,6 @@ export default async function (fastify: FastifyInstance) {
           lastHashId
         );
         const search = keyword.split(" ").join(" | ");
-        console.log("🚀 ~ search:", search);
 
         const gpis = await fastify.prisma.gpi.findMany({
           where: {
