@@ -37,7 +37,7 @@ import { DeleteResponse, ParamSchema } from "gpinterface-shared/type";
 import { useRouter } from "next/navigation";
 
 type ButtonsProps = {
-  onClickModel: () => void;
+  onClickModel: (() => void) | undefined;
   history: ContentType["history"];
   isRefreshVisible: boolean;
   onClickRefresh: () => void;
@@ -274,14 +274,18 @@ function Content({
         <div className="flex-1"></div>
         {!hideButtons && (
           <Buttons
-            onClickModel={() => {
-              if (content.model?.hashId) {
-                setModelHashId(content.model?.hashId);
-              }
-              if (content.config) {
-                setConfig(content.config);
-              }
-            }}
+            onClickModel={
+              !content.model?.hashId
+                ? undefined
+                : () => {
+                    if (content.model?.hashId) {
+                      setModelHashId(content.model?.hashId);
+                    }
+                    if (content.config) {
+                      setConfig(content.config);
+                    }
+                  }
+            }
             history={content.history}
             isRefreshVisible={isRefreshVisible === true}
             onClickRefresh={onClickRefresh}
