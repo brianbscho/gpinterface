@@ -1,11 +1,13 @@
 # gpinterface (Generative Prompt Interface)
 
+## What is gpinterface?
+
 **With `gpinterface`, you can create endpoint for your prompt.**
 
-> It is a powerful tool designed to streamline the testing and deployment of generative prompts across multiple large language models (LLMs). With an easy-to-use web interface, `gpinterface` enables rapid configuration and experimentation.
+## How does it work?
 
 <details>
-<summary>How does it work?</summary>
+<summary>Show me how it works</summary>
 
 `gpinterface` generates several endpoints at deploying your prompt:
 
@@ -21,6 +23,8 @@ You can use those endpoints to create your own use case.
 </details>
 
 ## Features
+
+It is a powerful tool designed to streamline the testing and deployment of generative prompts across multiple large language models (LLMs). With an easy-to-use web interface, `gpinterface` enables rapid configuration and experimentation.
 
 - **Simple Deployment**: Deploy your configured prompts, creating accessible endpoints instantly.
 - **Easy Prompt Testing**: Utilize a web interface to test prompts with various configurations effortlessly.
@@ -51,7 +55,9 @@ Here are some specific examples of what `gpinterface` can do:
 - Translation: [Try it here](https://gpinterface.com/gpis/S1WYvoKdOllFrvST0Okzn)
 - Text Correction: [Try it here](https://gpinterface.com/gpis/i1WqU74CIYHGfURPcVnR5)
 
-## Database
+## Develop
+
+### Database
 
 The application requires a PostgreSQL database. Start the database using Docker:
 
@@ -77,7 +83,7 @@ ts-node prisma/seed/mistral.ts
 ts-node prisma/seed/openai.ts
 ```
 
-## Environment Variables
+### Environment Variables
 
 **Backend**
 
@@ -112,7 +118,7 @@ NEXT_PUBLIC_HOSTNAME="http://localhost:3003"
 
 These should be configured to match the endpoints where the backend services are available, ensuring the frontend can communicate with the backend properly.
 
-## Local Development
+### Local Development
 
 To run the application components separately for development purposes:
 
@@ -128,7 +134,7 @@ To run the application components separately for development purposes:
   cd frontend && npm run dev
 ```
 
-## Build
+### Build
 
 To build all components for production deployment, follow these steps sequentially
 
@@ -141,7 +147,7 @@ cd ../frontend
 npm run build
 ```
 
-## Running the Server
+### Running the Server
 
 To start the server
 
