@@ -10,10 +10,7 @@ import {
   getIdByHashId,
   getTypedContents,
 } from "../util/prisma";
-import {
-  GpisGetResponse,
-  GpisUserGetResponse,
-} from "gpinterface-shared/type/gpi";
+import { GpisGetResponse } from "gpinterface-shared/type/gpi";
 
 export default async function (fastify: FastifyInstance) {
   fastify.get<{ Querystring: Static<typeof QueryParamSchema> }>(
@@ -158,7 +155,7 @@ export default async function (fastify: FastifyInstance) {
   }>(
     "/user",
     { schema: { querystring: QueryParamSchema } },
-    async (request, reply): Promise<GpisUserGetResponse> => {
+    async (request, reply): Promise<GpisGetResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
         const { lastHashId } = request.query;
@@ -172,31 +169,40 @@ export default async function (fastify: FastifyInstance) {
           where: { ...(id > 0 && { id: { lt: id } }), userHashId: user.hashId },
           select: {
             hashId: true,
+            userHashId: true,
             description: true,
             chat: {
               select: {
+                hashId: true,
                 systemMessage: true,
                 contents: {
-                  select: { hashId: true, role: true, content: true },
-                  orderBy: { id: "asc" },
-                  take: 2,
+                  select: {
+                    hashId: true,
+                    role: true,
+                    content: true,
+                    config: true,
+                    model: { select: { hashId: true, name: true } },
+                    histories: { select: ContentHistorySelect },
+                    isModified: true,
+                  },
                 },
               },
             },
-            createdAt: true,
+            config: true,
+            modelHashId: true,
+            isPublic: true,
           },
           orderBy: { id: "desc" },
-          take: 20,
+          take: 5,
         });
 
         return {
           gpis: gpis.map((gpi) => {
-            const { chat, createdAt, ...rest } = gpi;
+            const { chat, config, ...rest } = gpi;
             return {
               ...rest,
-              systemMessage: chat.systemMessage,
-              messages: chat.contents,
-              createdAt: getDateString(createdAt),
+              config: config as any,
+              chat: { ...chat, contents: getTypedContents(chat.contents) },
             };
           }),
         };

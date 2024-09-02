@@ -20,17 +20,6 @@ export type GpiGetResponse = {
   isPublic: boolean;
 };
 
-type GpiResponse = {
-  hashId: string;
-  description: string;
-
-  systemMessage: string;
-  messages: { hashId: string; role: string; content: string }[];
-  createdAt: string;
-};
-export type GpisUserGetResponse = {
-  gpis: GpiResponse[];
-};
 export type GpisGetResponse = {
   gpis: GpiGetResponse[];
 };
