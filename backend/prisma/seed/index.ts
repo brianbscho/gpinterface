@@ -5,6 +5,7 @@ import cohereSeed from "./cohere";
 import metaSeed from "./meta";
 import mistralSeed from "./mistral";
 import openaiSeed from "./openai";
+import geminiSeed from "./gemini";
 
 const prisma = new PrismaClient();
 
@@ -12,6 +13,7 @@ async function main() {
   await ai21LabsSeed();
   await anthropicSeed();
   await cohereSeed();
+  await geminiSeed();
   await metaSeed();
   await mistralSeed();
   await openaiSeed();
