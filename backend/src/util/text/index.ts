@@ -5,6 +5,7 @@ import { callCommand } from "./cohere";
 import { callJamba } from "./ai21_labs";
 import { callBedrock } from "./bedrock";
 import { providers } from "../provider";
+import { callGemini } from "./google";
 
 const MILLION = 1000000;
 
@@ -38,6 +39,11 @@ export async function getTextResponse(body: {
     systemMessage.length > 0
       ? [{ role: "system" as const, content: systemMessage }, ...typedMessages]
       : typedMessages;
+  const history = [...messages];
+  const message = history.pop();
+  if (!message) {
+    throw "No message to process";
+  }
 
   const response = await (async function () {
     switch (provider.name) {
@@ -62,18 +68,26 @@ export async function getTextResponse(body: {
           ...config,
         });
       case providers.Cohere:
-        const message = messages[messages.length - 1].content;
-        const chatHistory = messages.slice(0, -1).map((m) => ({
+        const chatHistory = history.map((m) => ({
           role: m.role !== "user" ? ("CHATBOT" as const) : ("USER" as const),
           message: m.content,
         }));
         return callCommand({
           model: name,
-          message,
+          message: message.content,
           chatHistory,
           ...(systemMessage.length > 0 && { preamble: systemMessage }),
           ...config,
         });
+      case providers.Gemini:
+        return callGemini(
+          { model: name, systemInstruction: systemMessage, ...config },
+          messages.map((m) => ({
+            role: m.role !== "user" ? "model" : "user",
+            parts: [{ text: m.content }],
+          })),
+          message.content
+        );
       case providers.AI21Labs:
         return callJamba({
           model: name,
