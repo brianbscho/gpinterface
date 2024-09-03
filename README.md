@@ -2,23 +2,46 @@
 
 ## What is gpinterface?
 
-**With `gpinterface`, you can create endpoint for your prompt.**
+**With `gpinterface`, you can easily create API for your prompts.**
+
+## Demo
+
+A live demo is available at [gpinterface.com](https://gpinterface.com).
+
+![demo](./images/demo.png)
+
+Here are some specific examples of what `gpinterface` can do:
+
+- [Text Summarization](https://gpinterface.com/gpis/bPqvQH-6qPKdOY5XHMYiN)
+- [Translation](https://gpinterface.com/gpis/S1WYvoKdOllFrvST0Okzn)
+- [Text Correction](https://gpinterface.com/gpis/i1WqU74CIYHGfURPcVnR5)
 
 ## How does it work?
 
-<details>
-<summary>Show me how it works</summary>
-
 `gpinterface` generates several endpoints at deploying your prompt:
 
-1. one-time chat interactions
-2. chat session creation
-3. ongoing conversations within a session
-4. conversation retrieval from a session
+<details>
+<summary>1. one-time chat interactions</summary>
 
-You can use those endpoints to create your own use case.
+![chat_completion](./images/chat_completion.png)
 
-![text_correction_capture](./text_correction_capture.png)
+</details>
+<details>
+<summary>2. chat session creation</summary>
+
+![session_creation](./images/session_creation.png)
+
+</details>
+<details>
+<summary>3. ongoing conversations within a session</summary>
+
+![session_completion](./images/session_completion.png)
+
+</details>
+<details>
+<summary>4. conversation retrieval from a session</summary>
+
+![session_get](./images/session_get.png)
 
 </details>
 
@@ -37,6 +60,7 @@ It is a powerful tool designed to streamline the testing and deployment of gener
 - AI21 Jamba
 - Anthropic Claude
 - Cohere Command
+- Google Gemini
 - Meta Llama
 - Mistral AI Mistral
 - OpenAI ChatGPT
@@ -44,16 +68,6 @@ It is a powerful tool designed to streamline the testing and deployment of gener
 This diverse support allows you to choose the best model for your specific needs and requirements.
 
 Don't see your favorite model? Feel free to open [PR](https://github.com/brianbscho/gpinterface/pulls) or [contact me](mailto:brianbscho@gmail.com)!
-
-## Demo
-
-A live demo is available at [gpinterface.com](https://gpinterface.com).
-
-Here are some specific examples of what `gpinterface` can do:
-
-- Text Summarization: [Try it here](https://gpinterface.com/gpis/bPqvQH-6qPKdOY5XHMYiN)
-- Translation: [Try it here](https://gpinterface.com/gpis/S1WYvoKdOllFrvST0Okzn)
-- Text Correction: [Try it here](https://gpinterface.com/gpis/i1WqU74CIYHGfURPcVnR5)
 
 ## Develop
 
@@ -95,6 +109,7 @@ DATABASE_URL="postgresql://postgres:postgres@127.0.0.1:5432/postgres" # can be r
 AI21_API_KEY="YOUR_AI21_API_KEY"
 ANTHROPIC_API_KEY="YOUR_ANTHROPIC_API_KEY"
 COHERE_API_KEY="YOUR_COHERE_API_KEY"
+GOOGLE_API_KEY="YOUR_GOOGLE_API_KEY"
 MISTRAL_API_KEY="YOUR_MISTRAL_API_KEY"
 OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
 AWS_ACCESS_KEY_ID="AWS_ACCESS_KEY" # for Bedrock, Meta Llama
@@ -102,6 +117,8 @@ AWS_SECRET_ACCESS_KEY="AWS_SECRET_KEY" # for Bedrock, Meta Llama
 JWT_SECRET="SECURE_RANDOM_STRING"
 COOKIE_SECRET="SECURE_RANDOM_STRING"
 NODE_ENV="development" # for development logging
+GITHUB_OAUTH_CLIENT_ID=""
+GITHUB_OAUTH_SECRET=""
 ```
 
 Ensure these variables are set in a `.env` file in the backend directory before starting the application.
@@ -114,6 +131,8 @@ The frontend application requires the following environment variables:
 NEXT_PUBLIC_API_ENDPOINT="http://localhost:3000"
 NEXT_PUBLIC_SERVICE_ENDPOINT="http://localhost:3000"
 NEXT_PUBLIC_HOSTNAME="http://localhost:3003"
+NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_KEY=""
+NEXT_PUBLIC_GITHUB_OAUTH_CLIENT_ID=""
 ```
 
 These should be configured to match the endpoints where the backend services are available, ensuring the frontend can communicate with the backend properly.
