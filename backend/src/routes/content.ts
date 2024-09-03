@@ -235,11 +235,11 @@ export default async function (fastify: FastifyInstance) {
           messages,
         });
 
-        await createEntity(fastify.prisma.history.create, {
+        const history = await createEntity(fastify.prisma.history.create, {
           data: {
             userHashId: user.hashId || null,
             chatHashId,
-            contentHashId: hashId,
+            chatContentHashId: hashId,
             provider: model.provider.name,
             model: model.name,
             config,
@@ -251,9 +251,19 @@ export default async function (fastify: FastifyInstance) {
             ...response,
           },
         });
+        await fastify.prisma.chatContent.update({
+          where: { hashId },
+          data: { histories: { set: [] } },
+        });
         const newContent = await fastify.prisma.chatContent.update({
           where: { hashId },
-          data: { content, config, modelHashId, isModified: false },
+          data: {
+            content,
+            config,
+            modelHashId,
+            isModified: false,
+            histories: { connect: { hashId: history.hashId } },
+          },
           select: {
             hashId: true,
             model: { select: { hashId: true, name: true } },
@@ -264,7 +274,10 @@ export default async function (fastify: FastifyInstance) {
           },
         });
 
-        return getTypedContent(newContent);
+        return getTypedContent({
+          history: getTypedHistory(history),
+          ...newContent,
+        });
       } catch (ex) {
         console.error(
           "path: /content/refresh/:hashId, method: put, error:",
