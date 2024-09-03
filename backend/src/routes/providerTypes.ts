@@ -45,6 +45,7 @@ export default async function (fastify: FastifyInstance) {
                       },
                     },
                   },
+                  orderBy: { name: "asc" },
                 },
               },
               orderBy: { name: "asc" },
