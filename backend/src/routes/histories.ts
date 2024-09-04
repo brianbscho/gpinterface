@@ -31,8 +31,6 @@ export default async function (fastify: FastifyInstance) {
             hashId: true,
             ...ContentHistorySelect,
             paid: true,
-            chatHashId: true,
-            gpiHashId: true,
           },
           orderBy: { id: "desc" },
           take: 20,

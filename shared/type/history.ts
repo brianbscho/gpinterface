@@ -11,9 +11,6 @@ interface History {
   inputTokens: number;
   outputTokens: number;
   createdAt: string;
-
-  gpiHashId?: string | null;
-  chatHashId?: string | null;
 }
 
 export type HistoriesGetResponse = { histories: History[] };

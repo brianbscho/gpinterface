@@ -4,9 +4,8 @@ import List from "@/components/List";
 import callApi from "@/utils/callApi";
 import { HistoriesGetResponse } from "gpinterface-shared/type/history";
 import { Fragment, useCallback, useMemo, useState } from "react";
-import Link from "next/link";
 import IconTextButton from "@/components/buttons/IconTextButton";
-import { FileCode, Layers, MessageCircle } from "lucide-react";
+import { Layers } from "lucide-react";
 import { Badge } from "@/components/ui";
 import HistoryDialog from "@/components/dialogs/HistoryDialog";
 
@@ -58,7 +57,7 @@ export default function Page() {
       useLastHashId={[lastHashId, setLastHashId]}
     >
       <div className="w-full flex-1  overflow-y-auto">
-        <div className="grid grid-cols-5 gap-y-3 items-center">
+        <div className="grid grid-cols-4 gap-y-3 items-center">
           <div className="z-10 sticky top-0 self-start h-16 md:h-12 py-3 pl-3 bg-background font-bold">
             Date
           </div>
@@ -66,10 +65,7 @@ export default function Page() {
             Model
           </div>
           <div className="z-10 sticky top-0 self-start h-16 md:h-12 py-3 bg-background font-bold">
-            Input tokens
-          </div>
-          <div className="z-10 sticky top-0 self-start h-16 md:h-12 py-3 bg-background font-bold">
-            Output tokens
+            Detail
           </div>
           <div className="z-10 sticky top-0 self-start h-16 md:h-12 py-3 bg-background font-bold">
             Price
@@ -79,13 +75,15 @@ export default function Page() {
               {history.histories.map((h) => (
                 <Fragment key={h.hashId}>
                   <div></div>
-                  <div className="flex flex-wrap flex-col gap-3 pr-3">
+                  <div className="pr-3">
                     <Badge
                       variant="tag"
                       className="self-start w-full md:w-auto"
                     >
                       <div className="w-full truncate">{h.model}</div>
                     </Badge>
+                  </div>
+                  <div>
                     <HistoryDialog history={h}>
                       <IconTextButton
                         className="w-16 md:w-24"
@@ -94,47 +92,27 @@ export default function Page() {
                         responsive
                       />
                     </HistoryDialog>
-                    {(!!h.gpiHashId || !!h.chatHashId) && (
-                      <div>
-                        <Link
-                          href={
-                            h.gpiHashId
-                              ? `/gpis/${h.gpiHashId}`
-                              : `/chats/${h.chatHashId}`
-                          }
-                        >
-                          <IconTextButton
-                            Icon={h.gpiHashId ? FileCode : MessageCircle}
-                            text={h.gpiHashId ? "Gpi" : "Chat"}
-                            className="w-16 md:w-24"
-                            responsive
-                          />
-                        </Link>
-                      </div>
-                    )}
                   </div>
-                  <div className="self-start text-sm">{h.inputTokens}</div>
-                  <div className="self-start text-sm">{h.outputTokens}</div>
                   <div
                     className={`self-start text-sm${
-                      h.paid === 0 ? " line-through" : ""
+                      h.paid === 0 ? " line-through text-neutral-700" : ""
                     }`}
                   >
                     ${h.price.toFixed(5)}
                   </div>
-                  <div className="col-span-2"></div>
+                  <div></div>
                   <div className="col-span-3 border-b border-theme border-dashed"></div>
                 </Fragment>
               ))}
               {(spinnerHidden || index < groupedTextHistories.length) && (
                 <Fragment>
-                  <div className="col-span-4 font-bold text-lg w-28 pl-3">
+                  <div className="col-span-3 font-bold text-lg w-28 pl-3">
                     {date}
                   </div>
                   <div className="leading-7 pr-3">
                     ${history.priceSum.toFixed(5)}
                   </div>
-                  <div className="col-span-5 border-b border-theme"></div>
+                  <div className="col-span-4 border-b border-theme"></div>
                 </Fragment>
               )}
             </Fragment>
