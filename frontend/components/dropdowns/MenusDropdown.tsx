@@ -86,7 +86,7 @@ export default function MenusDropdown() {
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => push(`/gpis`)}>
             <FileCode />
-            <span className="ml-3">Gpi</span>
+            <span className="ml-3">My gpis</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => push("/settings")}>
             <Settings />
