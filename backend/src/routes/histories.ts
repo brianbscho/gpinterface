@@ -36,9 +36,7 @@ export default async function (fastify: FastifyInstance) {
           take: 20,
         });
 
-        return {
-          histories: histories.map((h) => getTypedHistory(h)),
-        };
+        return histories.map((h) => getTypedHistory(h));
       } catch (ex) {
         console.error("path: /histories?lastHashId, method: get, error:", ex);
         throw ex;

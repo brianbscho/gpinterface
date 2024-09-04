@@ -9,9 +9,8 @@ import { Layers } from "lucide-react";
 import { Badge } from "@/components/ui";
 import HistoryDialog from "@/components/dialogs/HistoryDialog";
 
-type HistoriesType = HistoriesGetResponse["histories"];
 export default function Page() {
-  const [histories, setHistories] = useState<HistoriesType>();
+  const [histories, setHistories] = useState<HistoriesGetResponse>();
   const [lastHashId, setLastHashId] = useState("");
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 
@@ -21,8 +20,8 @@ export default function Page() {
       redirectToMain: true,
     });
     if (response) {
-      setHistories((prev) => [...(prev ?? []), ...response.histories]);
-      if (response.histories.length === 0) {
+      setHistories((prev) => [...(prev ?? []), ...response]);
+      if (response.length === 0) {
         setSpinnerHidden(true);
       }
     }
@@ -30,7 +29,7 @@ export default function Page() {
 
   const groupedTextHistories = useMemo(() => {
     type HistoryWithPriceSum = {
-      [date: string]: { priceSum: number; histories: HistoriesType };
+      [date: string]: { priceSum: number; histories: HistoriesGetResponse };
     };
     const grouped = histories?.reduce((acc: HistoryWithPriceSum, curr) => {
       const date = curr.createdAt.split(" ")[0];

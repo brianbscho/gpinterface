@@ -13,4 +13,4 @@ interface History {
   createdAt: string;
 }
 
-export type HistoriesGetResponse = { histories: History[] };
+export type HistoriesGetResponse = History[];

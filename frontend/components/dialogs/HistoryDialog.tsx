@@ -13,7 +13,7 @@ import { ReactNode } from "react";
 
 type Props = {
   history:
-    | HistoriesGetResponse["histories"][0]
+    | HistoriesGetResponse[0]
     | Exclude<Content["history"], undefined | null>;
   children: ReactNode;
 };
