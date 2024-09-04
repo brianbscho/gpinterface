@@ -120,15 +120,13 @@ export default async function (fastify: FastifyInstance) {
           select: { ...ContentHistorySelect, hashId: true },
         });
 
-        return {
-          contents: [
-            userChatContent,
-            {
-              ...getTypedContent(assistantChatContent),
-              history: getTypedHistory(history),
-            },
-          ],
-        };
+        return [
+          userChatContent,
+          {
+            ...getTypedContent(assistantChatContent),
+            history: getTypedHistory(history),
+          },
+        ];
       } catch (ex) {
         console.error("path: /content, method: post, error:", ex);
         throw ex;

@@ -34,7 +34,7 @@ export default function AnswerYourselfButton({
       showError: true,
     });
     if (response) {
-      setContents((prev) => prev.concat(response.contents));
+      setContents((prev) => prev.concat(response));
     }
     setLoading(false);
   }, [chat.hashId, setContents]);

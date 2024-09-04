@@ -84,7 +84,7 @@ export default async function (fastify: FastifyInstance) {
           }
         );
 
-        return { contents: getTypedContents(contents) };
+        return getTypedContents(contents);
       } catch (ex) {
         console.error("path: /contents, method: post, error:", ex);
         throw ex;

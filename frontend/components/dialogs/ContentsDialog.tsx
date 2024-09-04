@@ -9,7 +9,7 @@ import {
 } from "../ui";
 import { ContentsCreateResponse } from "gpinterface-shared/type/content";
 
-type ContentType = ContentsCreateResponse["contents"][0];
+type ContentType = ContentsCreateResponse[0];
 type Props = {
   useContents: [ContentType[], (contents: ContentType[]) => void];
 };

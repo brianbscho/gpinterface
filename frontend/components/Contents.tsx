@@ -415,7 +415,7 @@ export default function Contents({
         showError: true,
       });
       if (response) {
-        setContents((prev) => [...prev, ...response.contents]);
+        setContents((prev) => [...prev, ...response]);
       }
       setRefreshingHashId(undefined);
     },
