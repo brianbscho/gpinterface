@@ -86,7 +86,7 @@ export default function Page() {
         showError: true,
       });
       if (response) {
-        setUser(response.user);
+        setUser(response);
       } else {
         setLoading(false);
       }
@@ -107,7 +107,7 @@ export default function Page() {
         showError: true,
       });
       if (response) {
-        setUser(response.user);
+        setUser(response);
       } else {
         setLoading(false);
       }

@@ -16,6 +16,10 @@ export const UserCreateSchema = Type.Object({
   name: Type.String(),
   password: Type.String(),
 });
+export const UserGoogleSchema = Type.Object({
+  access_token: Type.String(),
+});
+
 export const UserUpdateSchema = Type.Object({
   name: Type.String(),
 });
@@ -29,8 +33,4 @@ export const UserUpdatePasswordSchema = Type.Object({
   newPasswordRepeat: Type.String(),
 });
 
-export type UserGetMeResponse = { user: UserMe };
-
-export const UserGoogleSchema = Type.Object({
-  access_token: Type.String(),
-});
+export type UserGetMeResponse = UserMe;

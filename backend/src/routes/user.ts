@@ -32,16 +32,15 @@ function getAccessToken(
 function cookieReply(
   reply: FastifyReply,
   accessToken: string,
-  user: UserGetMeResponse["user"]
+  user: UserGetMeResponse
 ) {
-  const response: UserGetMeResponse = { user };
   return reply
     .setCookie("access_token", accessToken, {
       path: "/",
       httpOnly: true,
       secure: true,
     })
-    .send(response);
+    .send(user);
 }
 export default async function (fastify: FastifyInstance) {
   const { httpErrors } = fastify;
@@ -239,7 +238,7 @@ export default async function (fastify: FastifyInstance) {
           select: { hashId: true, email: true, name: true },
         });
 
-        return { user: updatedUser };
+        return updatedUser;
       } catch (ex) {
         console.error("path: /user, method: put, error: ", ex);
         throw ex;

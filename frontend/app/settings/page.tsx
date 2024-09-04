@@ -55,7 +55,7 @@ export default function Page() {
       Static<typeof UserUpdateSchema>
     >({ endpoint: "/user", method: "PUT", body: { name }, showError: true });
     if (response) {
-      setUser(response.user);
+      setUser(response);
       setSaveButtonText("Saved!");
       setTimeout(() => {
         setSaveButtonText("Save");
