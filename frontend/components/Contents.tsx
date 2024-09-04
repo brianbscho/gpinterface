@@ -431,34 +431,16 @@ export default function Contents({
     );
     if (!yes) return;
 
-    if (gpiHashId) {
-      const response = await callApi<
-        DeleteResponse,
-        Static<typeof ParamSchema>
-      >({
-        endpoint: `/gpi`,
-        method: "DELETE",
-        body: { hashId: gpiHashId },
-        showError: true,
-      });
-      if (response?.success) {
-        router.push("/gpis/user");
-      }
-    } else {
-      const response = await callApi<
-        DeleteResponse,
-        Static<typeof ParamSchema>
-      >({
-        endpoint: `/chat`,
-        method: "DELETE",
-        body: { hashId: chat.hashId },
-        showError: true,
-      });
-      if (response?.success) {
-        location.pathname = "/gpis/user";
-      }
+    const response = await callApi<DeleteResponse, Static<typeof ParamSchema>>({
+      endpoint: `/chat`,
+      method: "DELETE",
+      body: { hashId: chat.hashId },
+      showError: true,
+    });
+    if (response?.success) {
+      location.pathname = "/gpis/user";
     }
-  }, [editable, gpiHashId, chat.hashId, router]);
+  }, [editable, chat.hashId]);
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>

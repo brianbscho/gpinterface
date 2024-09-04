@@ -149,13 +149,14 @@ export default async function (fastify: FastifyInstance) {
         const { hashId } = request.body;
 
         const chat = await fastify.prisma.chat.findFirst({
-          where: { hashId, userHashId: user.hashId, gpis: { none: {} } },
+          where: { hashId, userHashId: user.hashId },
           select: { hashId: true },
         });
         if (!chat) {
           throw fastify.httpErrors.badRequest("chat is not available.");
         }
 
+        await fastify.prisma.gpi.deleteMany({ where: { chatHashId: hashId } });
         await fastify.prisma.chat.delete({ where: { hashId } });
 
         return { success: true };
