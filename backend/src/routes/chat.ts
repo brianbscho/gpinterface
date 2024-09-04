@@ -28,7 +28,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { params: ParamSchema } },
     async (request, reply): Promise<ChatsGetResponse["chats"][0]> => {
       try {
-        const { user } = await fastify.getUser(request, reply, true);
+        const { user } = await fastify.getUser(request, reply);
         const userHashId = user.hashId || null;
         const { hashId } = request.params;
 
@@ -73,7 +73,7 @@ export default async function (fastify: FastifyInstance) {
   );
   fastify.post("/", async (request, reply): Promise<ChatCreateResponse> => {
     try {
-      const { user } = await fastify.getUser(request, reply, true);
+      const { user } = await fastify.getUser(request, reply);
       const userHashId = user.hashId || null;
 
       const chat = await createEntity(
@@ -102,7 +102,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { params: ParamSchema, body: ChatUpdateSchema } },
     async (request, reply): Promise<ChatUpdateResponse> => {
       try {
-        const { user } = await fastify.getUser(request, reply, true);
+        const { user } = await fastify.getUser(request, reply);
         const { hashId } = request.params;
         const { body } = request;
 

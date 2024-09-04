@@ -14,7 +14,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: ContentsDeleteSchema } },
     async (request, reply): Promise<DeleteResponse> => {
       try {
-        const { user } = await fastify.getUser(request, reply, true);
+        const { user } = await fastify.getUser(request, reply);
         const { hashIds } = request.body;
 
         const oldContents = await fastify.prisma.chatContent.findMany({
@@ -49,7 +49,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: ContentsCreateSchema } },
     async (request, reply): Promise<ContentsCreateResponse> => {
       try {
-        const { user } = await fastify.getUser(request, reply, true);
+        const { user } = await fastify.getUser(request, reply);
         const { chatHashId } = request.body;
 
         const chat = await fastify.prisma.chat.findFirst({

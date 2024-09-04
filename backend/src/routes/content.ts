@@ -26,7 +26,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: ContentCreateSchema } },
     async (request, reply): Promise<ContentsCreateResponse> => {
       try {
-        const { user } = await fastify.getUser(request, reply, true);
+        const { user } = await fastify.getUser(request, reply);
         const { content: userContent, gpiHashId, ...body } = request.body;
 
         const model = await fastify.prisma.model.findFirst({
@@ -143,7 +143,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { params: ParamSchema, body: ContentUpdateSchema } },
     async (request, reply): Promise<ContentUpdateResponse> => {
       try {
-        const { user } = await fastify.getUser(request, reply, true);
+        const { user } = await fastify.getUser(request, reply);
         const { hashId } = request.params;
         const { content } = request.body;
 
@@ -185,7 +185,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { params: ParamSchema, body: ContentRefreshSchema } },
     async (request, reply): Promise<Content> => {
       try {
-        const { user } = await fastify.getUser(request, reply, true);
+        const { user } = await fastify.getUser(request, reply);
         const { hashId } = request.params;
         const { chatHashId, modelHashId, config } = request.body;
 
