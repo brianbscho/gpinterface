@@ -8,9 +8,16 @@ interface Chat {
   systemMessage: string;
   contents: Content[];
   createdAt: string;
+  gpis: {
+    hashId: string;
+    description: string;
+    config: object;
+    modelHashId: string;
+    isPublic: boolean;
+  }[];
 }
-
-export type ChatsGetResponse = { chats: Chat[] };
+export type ChatGetResponse = Chat;
+export type ChatsGetResponse = Chat[];
 
 export type ChatUpdateResponse = {
   systemMessage: string;

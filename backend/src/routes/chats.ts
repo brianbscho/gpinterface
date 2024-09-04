@@ -45,22 +45,30 @@ export default async function (fastify: FastifyInstance) {
               },
               orderBy: { id: "asc" },
             },
+            gpis: {
+              select: {
+                hashId: true,
+                description: true,
+                config: true,
+                modelHashId: true,
+                isPublic: true,
+              },
+            },
             createdAt: true,
           },
           orderBy: { id: "desc" },
           take: 5,
         });
 
-        return {
-          chats: chats.map((c) => {
-            const { createdAt, contents, ...chat } = c;
-            return {
-              ...chat,
-              contents: getTypedContents(contents),
-              createdAt: getDateString(createdAt),
-            };
-          }),
-        };
+        return chats.map((c) => {
+          const { createdAt, contents, gpis, ...chat } = c;
+          return {
+            ...chat,
+            gpis: gpis.map((gpi) => ({ ...gpi, config: gpi.config as any })),
+            contents: getTypedContents(contents),
+            createdAt: getDateString(createdAt),
+          };
+        });
       } catch (ex) {
         console.error("path: /chats, method: get, error:", ex);
         throw ex;

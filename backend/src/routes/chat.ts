@@ -8,10 +8,10 @@ import {
   ChatCreateResponse,
   ChatUpdateSchema,
   ChatUpdateResponse,
-  ChatsGetResponse,
   ChatCompletionSchema,
   ChatCompletionResponse,
   ChatCompletionSampleResponse,
+  ChatGetResponse,
 } from "gpinterface-shared/type/chat";
 import { Static } from "@sinclair/typebox";
 import { DeleteResponse, ParamSchema } from "gpinterface-shared/type";
@@ -26,7 +26,7 @@ export default async function (fastify: FastifyInstance) {
   fastify.get<{ Params: Static<typeof ParamSchema> }>(
     "/:hashId",
     { schema: { params: ParamSchema } },
-    async (request, reply): Promise<ChatsGetResponse["chats"][0]> => {
+    async (request, reply): Promise<ChatGetResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
         const userHashId = user.hashId || null;
@@ -50,6 +50,15 @@ export default async function (fastify: FastifyInstance) {
               },
               orderBy: { id: "asc" },
             },
+            gpis: {
+              select: {
+                hashId: true,
+                description: true,
+                config: true,
+                modelHashId: true,
+                isPublic: true,
+              },
+            },
             createdAt: true,
           },
           orderBy: { id: "desc" },
@@ -59,9 +68,10 @@ export default async function (fastify: FastifyInstance) {
           throw fastify.httpErrors.badRequest("chat is not available.");
         }
 
-        const { createdAt, contents, ...rest } = chat;
+        const { createdAt, contents, gpis, ...rest } = chat;
         return {
           ...rest,
+          gpis: gpis.map((gpi) => ({ ...gpi, config: gpi.config as any })),
           contents: getTypedContents(contents),
           createdAt: getDateString(createdAt),
         };
@@ -86,6 +96,7 @@ export default async function (fastify: FastifyInstance) {
         hashId: chat.hashId,
         userHashId,
         systemMessage: "",
+        gpis: [],
         contents: [],
         createdAt: getDateString(chat.createdAt),
       };
