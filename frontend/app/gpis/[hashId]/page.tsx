@@ -30,7 +30,6 @@ export default function Page({ params }: { params: { hashId: string } }) {
   useProviderTypes();
 
   if (!gpi) return null;
-
   return (
     <div className="w-full flex-1 flex flex-col gap-3 overflow-hidden">
       <div className="h-full w-full overflow-y-auto">

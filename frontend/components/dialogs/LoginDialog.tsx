@@ -22,7 +22,7 @@ export default function LoginDialog({
         <DialogTitle>{title}</DialogTitle>
         <div className="w-full flex justify-end">
           <DialogClose>
-            <Button asChild>
+            <Button asChild onClick={() => setOpen(false)}>
               <Link href="/login">Login</Link>
             </Button>
           </DialogClose>

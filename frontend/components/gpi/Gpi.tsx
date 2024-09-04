@@ -3,7 +3,13 @@
 import { GpiGetResponse } from "gpinterface-shared/type/gpi";
 import { FormEvent, KeyboardEvent, useCallback, useState } from "react";
 import IconTextButton from "../buttons/IconTextButton";
-import { CornerDownLeft, FileCode, FileCog, FileText } from "lucide-react";
+import {
+  CircleX,
+  CornerDownLeft,
+  FileCode,
+  FileCog,
+  FileText,
+} from "lucide-react";
 import useUserStore from "@/store/user";
 import Document from "./Document";
 import { Badge, Button, CardContent, CardDescription, Textarea } from "../ui";
@@ -160,6 +166,17 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
                 responsive
               />
             </Link>
+          </div>
+        )}
+        {gpi.userHashId === userHashId && (
+          <div className="flex-1 md:flex-initial md:w-32">
+            <IconTextButton
+              className="w-full md:w-32"
+              Icon={CircleX}
+              variant="icon_destructive"
+              text="Delete"
+              responsive
+            />
           </div>
         )}
       </div>

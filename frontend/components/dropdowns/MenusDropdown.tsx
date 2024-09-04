@@ -7,7 +7,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { UserGetMeResponse } from "gpinterface-shared/type/user";
 import {
   LogOut,
-  MessageCircle,
   ReceiptText,
   Settings,
   FileCode,
@@ -80,10 +79,6 @@ export default function MenusDropdown() {
         <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => push(`/chats`)}>
-            <MessageCircle />
-            <span className="ml-3">Chat</span>
-          </DropdownMenuItem>
           <DropdownMenuItem onClick={() => push(`/gpis/user`)}>
             <FileCode />
             <span className="ml-3">My gpis</span>
