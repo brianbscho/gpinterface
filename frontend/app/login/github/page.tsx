@@ -4,6 +4,7 @@ import IconTextButton from "@/components/buttons/IconTextButton";
 import { Checkbox } from "@/components/ui";
 import useUserStore from "@/store/user";
 import callApi from "@/utils/callApi";
+import { cn } from "@/utils/css";
 import { Static } from "@sinclair/typebox";
 import {
   UserGetMeResponse,
@@ -20,30 +21,28 @@ function Component() {
   const [agree, setAgree] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const onClickSignup = useCallback(() => {
+  const onClickSignup = useCallback(async () => {
     const code = searchParams.get("code");
     if (!code) {
       return;
     }
 
     setLoading(true);
-    const callGithubSigninApi = async () => {
-      const response = await callApi<
-        UserGetMeResponse,
-        Static<typeof UserGithubSchema>
-      >({
-        endpoint: "/user/github",
-        method: "POST",
-        body: { code },
-        showError: true,
-      });
-      if (response) {
-        setUser(response.user);
-      } else {
-        router.push("/login");
-      }
-    };
-    callGithubSigninApi();
+
+    const response = await callApi<
+      UserGetMeResponse,
+      Static<typeof UserGithubSchema>
+    >({
+      endpoint: "/user/github",
+      method: "POST",
+      body: { code },
+      showError: true,
+    });
+    if (response) {
+      setUser(response.user);
+    } else {
+      router.push("/login");
+    }
   }, [router, searchParams, setUser]);
   useEffect(() => {
     const code = searchParams.get("code");
@@ -69,7 +68,12 @@ function Component() {
     <div className="w-full flex-1">
       <div className="w-full h-full flex items-center justify-center">
         <div>
-          <div className="flex items-center gap-3 mt-12">
+          <div
+            className={cn(
+              "flex items-center gap-3",
+              loading ? "invisible" : ""
+            )}
+          >
             <Checkbox
               id="agree"
               className="w-4 h-4"
@@ -96,11 +100,11 @@ function Component() {
           </div>
           <div className="mt-3"></div>
           <IconTextButton
-            className="w-48"
-            disabled={loading}
+            className="w-96"
+            disabled={!agree || loading}
             type="submit"
             loading={loading}
-            text="Agree"
+            text={loading ? "Loading..." : "Agree"}
             Icon={UserRoundPlus}
             size="large"
             onClick={onClickSignup}
