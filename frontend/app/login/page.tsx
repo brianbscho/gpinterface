@@ -245,7 +245,7 @@ function Login() {
                 <label htmlFor="agree" className="text-xs">
                   I agree to the&nbsp;
                   <a
-                    href="https://www.termsfeed.com/live/83ff1e0b-62b1-47f1-9b34-8d8630a71da0"
+                    href="https://www.termsfeed.com/live/0ce4dbce-17c2-4551-89c9-eb14fe206b71"
                     target="_blank"
                     className="underline"
                   >
