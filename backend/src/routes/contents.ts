@@ -86,7 +86,7 @@ export default async function (fastify: FastifyInstance) {
 
         return { contents: getTypedContents(contents) };
       } catch (ex) {
-        console.error("path: /chats, method: post, error:", ex);
+        console.error("path: /contents, method: post, error:", ex);
         throw ex;
       }
     }
