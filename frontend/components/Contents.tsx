@@ -32,7 +32,7 @@ import {
 import ContentInput from "./inputs/ContentInput";
 import { cn } from "@/utils/css";
 import useUserStore from "@/store/user";
-import AnswerYourselfButton from "./buttons/AnswerYourselfButton";
+import ContentsCreateButton from "./buttons/ContentsCreateButton";
 import { DeleteResponse, ParamSchema } from "gpinterface-shared/type";
 import { useRouter } from "next/navigation";
 
@@ -509,7 +509,7 @@ export default function Contents({
       {editable && (
         <ContentInput onSubmit={onSubmit}>
           {!hideButtons && (
-            <AnswerYourselfButton chat={chat} setContents={setContents} />
+            <ContentsCreateButton chat={chat} setContents={setContents} />
           )}
         </ContentInput>
       )}

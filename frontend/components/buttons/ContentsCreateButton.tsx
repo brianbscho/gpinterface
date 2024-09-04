@@ -17,7 +17,7 @@ type ContentsProps = {
   chat: ChatType;
   setContents: Dispatch<SetStateAction<ContentType[]>>;
 };
-export default function AnswerYourselfButton({
+export default function ContentsCreateButton({
   chat,
   setContents,
 }: ContentsProps) {
