@@ -442,7 +442,7 @@ export default function Contents({
         showError: true,
       });
       if (response?.success) {
-        router.push("/gpis");
+        router.push("/gpis/user");
       }
     } else {
       const response = await callApi<
@@ -455,7 +455,7 @@ export default function Contents({
         showError: true,
       });
       if (response?.success) {
-        location.pathname = "/chats";
+        location.pathname = "/gpis/user";
       }
     }
   }, [editable, gpiHashId, chat.hashId, router]);

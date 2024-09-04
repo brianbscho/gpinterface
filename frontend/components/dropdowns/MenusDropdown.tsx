@@ -84,7 +84,7 @@ export default function MenusDropdown() {
             <MessageCircle />
             <span className="ml-3">Chat</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => push(`/gpis`)}>
+          <DropdownMenuItem onClick={() => push(`/gpis/user`)}>
             <FileCode />
             <span className="ml-3">My gpis</span>
           </DropdownMenuItem>

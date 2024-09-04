@@ -52,7 +52,7 @@ export default function DeployButton({ chatHashId }: { chatHashId: string }) {
       });
 
       if (response) {
-        router.push(`/gpis/${response.hashId}`);
+        router.push("/gpis/user");
       } else {
         setLoading(false);
       }

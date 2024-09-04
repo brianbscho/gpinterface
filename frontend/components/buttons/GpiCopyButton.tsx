@@ -24,7 +24,7 @@ export default function GpiCopyButton({ gpiHashId }: { gpiHashId: string }) {
       showError: true,
     });
     if (response) {
-      router.push(`/gpis/${response.hashId}`);
+      router.push("/gpis/user");
     } else {
       setLoading(false);
     }
