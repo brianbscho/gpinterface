@@ -171,7 +171,7 @@ export default function DocumentTry({ method, path, body }: Props) {
             className="w-20 md:w-24"
             responsive
             disabled={
-              (keys.length > 0 && keys.some((key) => !data[key])) ||
+              keys.some((key) => !data[key].value) ||
               (paramRequired && param === "") ||
               loading
             }
