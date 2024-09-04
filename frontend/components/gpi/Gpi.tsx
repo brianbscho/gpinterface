@@ -25,7 +25,7 @@ import Link from "next/link";
 import useModelStore from "@/store/model";
 import { getApiConfig } from "@/utils/model";
 import { stringify } from "@/utils/string";
-import ContentStatic from "../ContentStatic";
+import ContentStatic from "@/components/content/ContentStatic";
 
 type Props = {
   gpi: GpiGetResponse;

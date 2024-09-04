@@ -1,4 +1,4 @@
-import { Badge, CardContent, CardDescription } from "./ui";
+import { Badge, CardContent, CardDescription } from "../../components/ui";
 
 type ContentStaticProps = {
   role: string;

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import callApi from "@/utils/callApi";
 import useUserStore from "@/store/user";
-import Contents from "@/components/Contents";
+import Contents from "@/components/content/Contents";
 import ModelSelect from "@/components/selects/ModelSelect";
 import ModelResetButton from "@/components/buttons/ModelResetButton";
 import ModelSheetButton from "@/components/buttons/ModelSheetButton";

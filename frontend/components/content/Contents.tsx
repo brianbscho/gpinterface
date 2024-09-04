@@ -1,6 +1,12 @@
 "use client";
 
-import { Badge, Button, CardContent, CardDescription, Textarea } from "./ui";
+import {
+  Badge,
+  Button,
+  CardContent,
+  CardDescription,
+  Textarea,
+} from "../../components/ui";
 import {
   Dispatch,
   SetStateAction,
@@ -22,16 +28,16 @@ import {
 import { Static } from "@sinclair/typebox";
 import callApi from "@/utils/callApi";
 import { getApiConfig } from "@/utils/model";
-import SmallHoverButton from "./buttons/SmallHoverButton";
-import HistoryDialog from "./dialogs/HistoryDialog";
+import SmallHoverButton from "../../components/buttons/SmallHoverButton";
+import HistoryDialog from "../../components/dialogs/HistoryDialog";
 import useModelStore from "@/store/model";
 import {
   ChatUpdateResponse,
   ChatUpdateSchema,
 } from "gpinterface-shared/type/chat";
-import ContentInput from "./inputs/ContentInput";
+import ContentInput from "../../components/inputs/ContentInput";
 import { cn } from "@/utils/css";
-import ContentsCreateButton from "./buttons/ContentsCreateButton";
+import ContentsCreateButton from "../../components/buttons/ContentsCreateButton";
 import { DeleteResponse, ParamSchema } from "gpinterface-shared/type";
 
 type ButtonsProps = {
