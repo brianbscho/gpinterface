@@ -9,8 +9,6 @@ import { HttpError } from "@fastify/sensible";
 import {
   UserCreateSchema,
   UserGetMeResponse,
-  UserGetResponse,
-  UserGetSchema,
   UserGoogleSchema,
   UserLoginSchema,
   UserUpdatePasswordSchema,
@@ -224,28 +222,6 @@ export default async function (fastify: FastifyInstance) {
         return cookieReply(reply, accessToken, me);
       } catch (ex) {
         console.error("path: /user/google, method: post, error: ", ex);
-        throw ex;
-      }
-    }
-  );
-  fastify.get<{ Params: Static<typeof UserGetSchema> }>(
-    "/:hashId",
-    { schema: { params: UserGetSchema } },
-    async (request, reply): Promise<UserGetResponse> => {
-      try {
-        const { hashId } = request.params;
-
-        const user = await fastify.prisma.user.findFirst({
-          where: { hashId },
-          select: { name: true, hashId: true },
-        });
-        if (!user) {
-          throw httpErrors.unauthorized("User isn't available");
-        }
-
-        return { user };
-      } catch (ex) {
-        console.error("path: /user/:hashId, method: get, error:", ex);
         throw ex;
       }
     }

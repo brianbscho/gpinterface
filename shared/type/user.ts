@@ -1,10 +1,5 @@
 import { Type } from "@sinclair/typebox";
 
-type UserInfo = {
-  hashId: string;
-  name: string;
-};
-
 type UserMe = {
   hashId: string;
   email: string;
@@ -21,9 +16,6 @@ export const UserCreateSchema = Type.Object({
   name: Type.String(),
   password: Type.String(),
 });
-export const UserGetSchema = Type.Object({
-  hashId: Type.String(),
-});
 export const UserUpdateSchema = Type.Object({
   name: Type.String(),
 });
@@ -37,7 +29,6 @@ export const UserUpdatePasswordSchema = Type.Object({
   newPasswordRepeat: Type.String(),
 });
 
-export type UserGetResponse = { user: UserInfo };
 export type UserGetMeResponse = { user: UserMe };
 
 export const UserGoogleSchema = Type.Object({

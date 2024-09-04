@@ -17,7 +17,6 @@ type Chat = {
   }[];
 };
 export type ChatGetResponse = Chat;
-export type ChatsGetResponse = Chat[];
 
 export type ChatUpdateResponse = {
   systemMessage: string;
