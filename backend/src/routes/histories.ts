@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
-import { QueryParamSchema } from "gpinterface-shared/type";
+import { ListParamSchema } from "gpinterface-shared/type";
 import {
   ContentHistorySelect,
   getIdByHashId,
@@ -9,9 +9,9 @@ import {
 import { HistoriesGetResponse } from "gpinterface-shared/type/history";
 
 export default async function (fastify: FastifyInstance) {
-  fastify.get<{ Querystring: Static<typeof QueryParamSchema> }>(
+  fastify.get<{ Querystring: Static<typeof ListParamSchema> }>(
     "/",
-    { schema: { querystring: QueryParamSchema } },
+    { schema: { querystring: ListParamSchema } },
     async (request, reply): Promise<HistoriesGetResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);

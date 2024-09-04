@@ -1,8 +1,6 @@
 import { Type } from "@sinclair/typebox";
 
-export const SessionCreateSchema = Type.Object({
-  gpiHashId: Type.String(),
-});
+export const SessionCreateSchema = Type.Object({ gpiHashId: Type.String() });
 export type SessionCreateResponse = { hashId: string };
 
 export const SessionCompletionSchema = Type.Object({

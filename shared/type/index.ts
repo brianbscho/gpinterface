@@ -1,6 +1,6 @@
 import { Type } from "@sinclair/typebox";
 
-export const QueryParamSchema = Type.Object({
+export const ListParamSchema = Type.Object({
   lastHashId: Type.Optional(Type.String()),
 });
 export const ParamSchema = Type.Object({

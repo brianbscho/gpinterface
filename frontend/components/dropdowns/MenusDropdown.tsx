@@ -37,7 +37,7 @@ export default function MenusDropdown() {
   useEffect(() => {
     const callUserApi = async () => {
       const response = await callApi<UserGetMeResponse>({ endpoint: "/user" });
-      setUser(response?.user);
+      setUser(response);
       if (!response && logoutRedirectPaths.some((p) => pathname.includes(p))) {
         push("/");
       }

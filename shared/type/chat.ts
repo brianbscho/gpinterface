@@ -17,21 +17,15 @@ type Chat = {
   }[];
 };
 export type ChatGetResponse = Chat;
-
-export type ChatUpdateResponse = {
-  systemMessage: string;
-};
-export const ChatUpdateSchema = Type.Object({
-  systemMessage: Type.String(),
-});
-
 export type ChatCreateResponse = Chat;
+
+export const ChatUpdateSchema = Type.Object({ systemMessage: Type.String() });
+export type ChatUpdateResponse = { systemMessage: string };
 
 export const ChatCompletionSchema = Type.Object({
   gpiHashId: Type.String(),
   content: Type.String(),
 });
-
 export type ChatCompletionResponse = { content: string };
 export type ChatCompletionSampleResponse = {
   content: string;

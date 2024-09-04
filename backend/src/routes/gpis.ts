@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
 import {
-  QueryParamSchema,
+  ListParamSchema,
   SearchQueryParamSchema,
 } from "gpinterface-shared/type";
 import {
@@ -12,9 +12,9 @@ import {
 import { GpisGetResponse } from "gpinterface-shared/type/gpi";
 
 export default async function (fastify: FastifyInstance) {
-  fastify.get<{ Querystring: Static<typeof QueryParamSchema> }>(
+  fastify.get<{ Querystring: Static<typeof ListParamSchema> }>(
     "/",
-    { schema: { querystring: QueryParamSchema } },
+    { schema: { querystring: ListParamSchema } },
     async (request, reply): Promise<GpisGetResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
@@ -146,10 +146,10 @@ export default async function (fastify: FastifyInstance) {
     }
   );
   fastify.get<{
-    Querystring: Static<typeof QueryParamSchema>;
+    Querystring: Static<typeof ListParamSchema>;
   }>(
     "/user",
-    { schema: { querystring: QueryParamSchema } },
+    { schema: { querystring: ListParamSchema } },
     async (request, reply): Promise<GpisGetResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);

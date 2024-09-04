@@ -8,11 +8,6 @@ type Config = {
   max?: number | null;
 };
 
-type ConfigOption = {
-  hashId: string;
-  value: string;
-};
-
 export type Model = {
   hashId: string;
   name: string;
@@ -21,17 +16,14 @@ export type Model = {
   isFree: boolean;
   isLoginRequired: boolean;
   isAvailable: boolean;
-} & { configs: { config: Config & { options: ConfigOption[] } }[] };
-
-type Provider = {
-  hashId: string;
-  name: string;
+  configs: {
+    config: Config & { options: { hashId: string; value: string }[] };
+  }[];
 };
 
 type ProviderType = {
   hashId: string;
   type: string;
-  providers: (Provider & { models: Model[] })[];
+  providers: { hashId: string; name: string; models: Model[] }[];
 };
-
 export type ProviderTypesGetResponse = ProviderType[];
