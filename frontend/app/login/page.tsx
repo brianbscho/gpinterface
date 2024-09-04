@@ -128,7 +128,7 @@ export default function Page() {
   }, []);
 
   return (
-    <div className="w-full max-w-xl px-3">
+    <div className="w-full max-w-sm px-3">
       <div className="mt-20 w-full">
         <GoogleLoginButton onClick={onClickGoogleLogin} />
       </div>

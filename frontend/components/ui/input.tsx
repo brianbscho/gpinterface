@@ -36,7 +36,7 @@ function Input({
     <div className="relative w-full">
       <ShadcnInput
         {...props}
-        className={cn(props.className, !Icon ? "" : "pl-10")}
+        className={cn(props.className, !Icon ? "" : "pl-8")}
       />
       {!!Icon && (
         <span className="absolute start-0 inset-y-0 flex items-center justify-center px-2">

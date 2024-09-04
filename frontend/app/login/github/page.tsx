@@ -96,7 +96,7 @@ function Component() {
           </div>
           <div className="mt-3"></div>
           <IconTextButton
-            className="w-full"
+            className="w-48"
             disabled={loading}
             type="submit"
             loading={loading}

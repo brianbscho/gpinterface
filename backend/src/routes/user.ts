@@ -380,11 +380,11 @@ export default async function (fastify: FastifyInstance) {
             primary: boolean;
           }[];
           email = emailAddress.find((e) => e.primary)?.email;
-          if (!email) {
-            throw httpErrors.unauthorized(
-              "Github login failed. Please try again."
-            );
-          }
+        }
+        if (!email) {
+          throw httpErrors.unauthorized(
+            "Github login failed. Please try again."
+          );
         }
 
         name = name.replace(/\s+/g, "");
