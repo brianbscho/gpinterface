@@ -4,7 +4,7 @@ import Gpis from "@/components/gpi/Gpis";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useMemo } from "react";
 
-function Search() {
+function Component() {
   const searchParams = useSearchParams();
   const keyword = useMemo(() => searchParams.get("keyword"), [searchParams]);
 
@@ -21,7 +21,7 @@ function Search() {
 export default function Page() {
   return (
     <Suspense>
-      <Search />
+      <Component />
     </Suspense>
   );
 }

@@ -13,7 +13,7 @@ function _SearchInput() {
       e.preventDefault();
       if (!keyword) return;
 
-      router.push(`/search?keyword=${keyword}`);
+      router.push(`/gpis/search?keyword=${keyword}`);
     },
     [keyword, router]
   );
