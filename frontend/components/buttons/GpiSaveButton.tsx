@@ -6,16 +6,16 @@ import useModelStore from "@/store/model";
 import callApi from "@/utils/callApi";
 import { getApiConfig } from "@/utils/model";
 import { Static } from "@sinclair/typebox";
+import { ChatGetResponse } from "gpinterface-shared/type/chat";
 import {
-  GpiCreateResponse,
-  GpiGetResponse,
+  GpiUpdateResponse,
   GpiUpdateSchema,
 } from "gpinterface-shared/type/gpi";
 import { Save } from "lucide-react";
-import { Dispatch, SetStateAction, useCallback } from "react";
+import { useCallback } from "react";
 
-type GpiType = GpiGetResponse | undefined;
-type Props = { useGpi: [gpi: GpiType, Dispatch<SetStateAction<GpiType>>] };
+type GpiType = ChatGetResponse["gpis"][0] | undefined;
+type Props = { useGpi: [GpiType, (gpi: GpiType) => void] };
 export default function GpiSaveButton({ useGpi }: Props) {
   const [gpi, setGpi] = useGpi;
 
@@ -25,7 +25,7 @@ export default function GpiSaveButton({ useGpi }: Props) {
     if (!model || !gpi?.hashId) return;
 
     const response = await callApi<
-      GpiCreateResponse,
+      GpiUpdateResponse,
       Static<typeof GpiUpdateSchema>
     >({
       endpoint: `/gpi/${gpi.hashId}`,
@@ -35,9 +35,7 @@ export default function GpiSaveButton({ useGpi }: Props) {
     });
     if (response) {
       toast({ title: "Saved!", duration: 1000 });
-      setGpi((prev) =>
-        !prev ? prev : { ...prev, modelHashId: model.hashId, config }
-      );
+      setGpi(response);
     }
   }, [gpi?.hashId, model, config, toast, setGpi]);
 

@@ -148,6 +148,7 @@ export default async function (fastify: FastifyInstance) {
             ...(isIsPublicBoolean && { isPublic }),
           },
           select: {
+            hashId: true,
             description: true,
             config: true,
             modelHashId: true,

@@ -29,6 +29,7 @@ export const GpiUpdateSchema = Type.Object({
   isPublic: Type.Optional(Type.Boolean()),
 });
 export type GpiUpdateResponse = {
+  hashId: string;
   description: string;
   config: object;
   modelHashId: string;
