@@ -53,7 +53,7 @@ export default async function (fastify: FastifyInstance) {
           },
         });
 
-        return { providerTypes };
+        return providerTypes;
       } catch (ex) {
         console.error("path: /provider/types, method: get, error:", ex);
         throw ex;

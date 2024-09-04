@@ -1,4 +1,4 @@
-interface Config {
+type Config = {
   hashId: string;
   name: string;
   type: string;
@@ -6,12 +6,12 @@ interface Config {
   default?: string | null;
   min?: number | null;
   max?: number | null;
-}
+};
 
-interface ConfigOption {
+type ConfigOption = {
   hashId: string;
   value: string;
-}
+};
 
 export type Model = {
   hashId: string;
@@ -23,10 +23,10 @@ export type Model = {
   isAvailable: boolean;
 } & { configs: { config: Config & { options: ConfigOption[] } }[] };
 
-interface Provider {
+type Provider = {
   hashId: string;
   name: string;
-}
+};
 
 type ProviderType = {
   hashId: string;
@@ -34,4 +34,4 @@ type ProviderType = {
   providers: (Provider & { models: Model[] })[];
 };
 
-export type ProviderTypesGetResponse = { providerTypes: ProviderType[] };
+export type ProviderTypesGetResponse = ProviderType[];

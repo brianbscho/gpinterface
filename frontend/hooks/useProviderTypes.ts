@@ -22,9 +22,9 @@ export default function useProviderTypes() {
         showError: true,
       });
       if (response) {
-        setProviderTypes(response.providerTypes);
+        setProviderTypes(response);
 
-        const models = response.providerTypes
+        const models = response
           .flatMap((type) => type.providers)
           .flatMap((provider) => provider.models);
         const index = models.findIndex(
