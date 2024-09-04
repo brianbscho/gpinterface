@@ -119,7 +119,6 @@ type ContentProps = {
   callUpdateContent: (content: string) => Promise<string | undefined>;
   hashIds?: string[];
   editable?: boolean;
-  hideButtons?: boolean;
 };
 
 function Content({
@@ -130,7 +129,6 @@ function Content({
   callUpdateContent,
   hashIds,
   editable,
-  hideButtons,
 }: ContentProps) {
   const [newContent, setNewContent] = useState(content.content);
   const [oldContent, setOldContent] = useState(content.content);
@@ -272,29 +270,27 @@ function Content({
           <div className="ml-1 text-xs self-start">*answer modified</div>
         )}
         <div className="flex-1"></div>
-        {!hideButtons && (
-          <Buttons
-            onClickModel={
-              !content.model?.hashId
-                ? undefined
-                : () => {
-                    if (content.model?.hashId) {
-                      setModelHashId(content.model?.hashId);
-                    }
-                    if (content.config) {
-                      setConfig(content.config);
-                    }
+        <Buttons
+          onClickModel={
+            !content.model?.hashId
+              ? undefined
+              : () => {
+                  if (content.model?.hashId) {
+                    setModelHashId(content.model?.hashId);
                   }
-            }
-            history={content.history}
-            isRefreshVisible={isRefreshVisible === true}
-            onClickRefresh={onClickRefresh}
-            isDeleteVisible={isDeleteVisible === true}
-            onClickDelete={onClickDelete}
-            disabled={disabled}
-            loading={loading}
-          />
-        )}
+                  if (content.config) {
+                    setConfig(content.config);
+                  }
+                }
+          }
+          history={content.history}
+          isRefreshVisible={isRefreshVisible === true}
+          onClickRefresh={onClickRefresh}
+          isDeleteVisible={isDeleteVisible === true}
+          onClickDelete={onClickDelete}
+          disabled={disabled}
+          loading={loading}
+        />
       </div>
       <CardDescription>
         <div className="relative">
@@ -330,13 +326,11 @@ type ContentsProps = {
   chat: ChatType;
   ownerUserHashId: string | null | undefined;
   className?: string;
-  hideButtons?: boolean;
 };
 export default function Contents({
   chat,
   ownerUserHashId,
   className,
-  hideButtons,
 }: ContentsProps) {
   const [contents, setContents] = useState(chat.contents);
   const userHashId = useUserStore((state) => state.user?.hashId);
@@ -441,7 +435,7 @@ export default function Contents({
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>
-      {editable && !hideButtons && (
+      {editable && (
         <div className="self-end">
           <Button
             variant="destructive"
@@ -460,7 +454,6 @@ export default function Contents({
           useRefreshingHashId={[refreshingHashId, setRefreshingHashId]}
           callUpdateContent={callUpdateSystemMessage}
           editable={editable}
-          hideButtons={hideButtons}
         />
       )}
       {contents.map((c, i) => {
@@ -481,15 +474,12 @@ export default function Contents({
             callUpdateContent={callUpdateContent(c.hashId)}
             hashIds={hashIds}
             editable={editable}
-            hideButtons={hideButtons}
           />
         );
       })}
       {editable && (
         <ContentInput onSubmit={onSubmit}>
-          {!hideButtons && (
-            <ContentsCreateButton chat={chat} setContents={setContents} />
-          )}
+          <ContentsCreateButton chat={chat} setContents={setContents} />
         </ContentInput>
       )}
     </div>
