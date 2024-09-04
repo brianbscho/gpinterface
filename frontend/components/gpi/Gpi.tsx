@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import useUserStore from "@/store/user";
 import Document from "./Document";
-import { Badge, Button, CardContent, CardDescription, Textarea } from "../ui";
+import { Badge, Button, Textarea } from "../ui";
 import callApi from "@/utils/callApi";
 import {
   ChatCompletionSampleResponse,
@@ -25,36 +25,7 @@ import Link from "next/link";
 import useModelStore from "@/store/model";
 import { getApiConfig } from "@/utils/model";
 import { stringify } from "@/utils/string";
-
-type StaticContentProps = {
-  role: string;
-  content: string;
-  model?: { name: string } | null;
-  isModified?: boolean;
-};
-function StaticContent({ ...props }: StaticContentProps) {
-  const { role, model, isModified, content } = props;
-  return (
-    <CardContent className="p-0">
-      <div className="flex items-center gap-1">
-        {role !== "assistant" && <Badge variant="tag">{role}</Badge>}
-        {role === "assistant" && (
-          <Badge variant="tag">{!model ? "assistant" : model.name}</Badge>
-        )}
-        {isModified === true && (
-          <div className="ml-1 text-xs self-start">*answer modified</div>
-        )}
-      </div>
-      <CardDescription>
-        <div className="relative mt-3">
-          <div className="whitespace-pre-wrap px-3 py-2 text-base border rounded-md">
-            <div className="min-h-6">{content}</div>
-          </div>
-        </div>
-      </CardDescription>
-    </CardContent>
-  );
-}
+import ContentStatic from "../ContentStatic";
 
 type Props = {
   gpi: GpiGetResponse;
@@ -183,10 +154,10 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
       <div className={getTabContentClassName("gpi")}>
         <div className="flex flex-col gap-3 mb-3">
           {gpi.chat.systemMessage.length > 0 && (
-            <StaticContent role="system" content={gpi.chat.systemMessage} />
+            <ContentStatic role="system" content={gpi.chat.systemMessage} />
           )}
           {gpi.chat.contents.map((content) => (
-            <StaticContent key={content.hashId} {...content} />
+            <ContentStatic key={content.hashId} {...content} />
           ))}
           <div>
             <Badge variant="tag">user</Badge>
