@@ -29,11 +29,10 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<ChatGetResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
-        const userHashId = user.hashId || null;
         const { hashId } = request.params;
 
         const chat = await fastify.prisma.chat.findFirst({
-          where: { hashId, userHashId, gpis: { none: {} } },
+          where: { hashId, userHashId: user.hashId },
           select: {
             hashId: true,
             userHashId: true,
@@ -118,13 +117,7 @@ export default async function (fastify: FastifyInstance) {
         const { body } = request;
 
         const chat = await fastify.prisma.chat.findFirst({
-          where: {
-            hashId,
-            OR: [
-              { userHashId: user.hashId },
-              { userHashId: null, gpis: { none: {} } },
-            ],
-          },
+          where: { hashId, userHashId: user.hashId },
           select: { userHashId: true },
         });
         if (!chat) {

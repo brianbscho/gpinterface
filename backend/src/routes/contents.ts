@@ -18,15 +18,7 @@ export default async function (fastify: FastifyInstance) {
         const { hashIds } = request.body;
 
         const oldContents = await fastify.prisma.chatContent.findMany({
-          where: {
-            hashId: { in: hashIds },
-            chat: {
-              OR: [
-                { userHashId: user.hashId },
-                { userHashId: null, gpis: { none: {} } },
-              ],
-            },
-          },
+          where: { hashId: { in: hashIds }, chat: { userHashId: user.hashId } },
           select: { hashId: true },
         });
         if (oldContents.length !== hashIds.length) {
@@ -53,13 +45,7 @@ export default async function (fastify: FastifyInstance) {
         const { chatHashId } = request.body;
 
         const chat = await fastify.prisma.chat.findFirst({
-          where: {
-            OR: [
-              { userHashId: user.hashId },
-              { userHashId: null, gpis: { none: {} } },
-            ],
-            hashId: chatHashId,
-          },
+          where: { userHashId: user.hashId },
           select: { hashId: true },
         });
         if (!chat) {

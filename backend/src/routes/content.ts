@@ -43,13 +43,7 @@ export default async function (fastify: FastifyInstance) {
         }
 
         const chat = await fastify.prisma.chat.findFirst({
-          where: {
-            hashId: body.chatHashId,
-            OR: [
-              { userHashId: user.hashId },
-              { userHashId: null, gpis: { none: {} } },
-            ],
-          },
+          where: { hashId: body.chatHashId, userHashId: user.hashId },
           select: {
             systemMessage: true,
             contents: ChatCompletionContentsQuery,
@@ -145,15 +139,7 @@ export default async function (fastify: FastifyInstance) {
         const { content } = request.body;
 
         const oldContent = await fastify.prisma.chatContent.findFirst({
-          where: {
-            hashId,
-            chat: {
-              OR: [
-                { userHashId: user.hashId },
-                { userHashId: null, gpis: { none: {} } },
-              ],
-            },
-          },
+          where: { hashId, chat: { userHashId: user.hashId } },
           select: { hashId: true, role: true, modelHashId: true },
         });
         if (!oldContent) {
@@ -199,13 +185,7 @@ export default async function (fastify: FastifyInstance) {
           throw fastify.httpErrors.badRequest("model is not available.");
         }
         const chat = await fastify.prisma.chat.findFirst({
-          where: {
-            hashId: chatHashId,
-            OR: [
-              { userHashId: user.hashId },
-              { userHashId: null, gpis: { none: {} } },
-            ],
-          },
+          where: { hashId: chatHashId, userHashId: user.hashId },
           select: { systemMessage: true },
         });
         if (!chat) {
