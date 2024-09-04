@@ -7,7 +7,7 @@ import {
   GpiUpdateSchema,
 } from "gpinterface-shared/type/gpi";
 import { DeleteResponse, ParamSchema } from "gpinterface-shared/type";
-import { copyGpi, createGpi } from "../controllers/gpi";
+import { copyGpiEntry, createGpiEntry } from "../controllers/gpi";
 import { ContentHistorySelect, getTypedContents } from "../util/prisma";
 
 export default async function (fastify: FastifyInstance) {
@@ -102,7 +102,7 @@ export default async function (fastify: FastifyInstance) {
           throw httpErrors.badRequest("There is empty content in chat.");
         }
 
-        const newGpi = await createGpi(fastify.prisma.gpi, {
+        const newGpi = await createGpiEntry(fastify.prisma.gpi, {
           ...body,
           description,
           isPublic,
@@ -165,7 +165,7 @@ export default async function (fastify: FastifyInstance) {
         const { user } = await fastify.getUser(request, reply);
         const { hashId } = request.body;
 
-        const gpi = await copyGpi(fastify.prisma, hashId, user.hashId);
+        const gpi = await copyGpiEntry(fastify.prisma, hashId, user.hashId);
         return gpi;
       } catch (ex) {
         console.error("path: /gpi/copy, method: post, error:", ex);
