@@ -43,6 +43,3 @@ export type UserGetMeResponse = { user: UserMe };
 export const UserGoogleSchema = Type.Object({
   access_token: Type.String(),
 });
-export const UserGithubSchema = Type.Object({
-  code: Type.String(),
-});

@@ -117,8 +117,6 @@ AWS_SECRET_ACCESS_KEY="AWS_SECRET_KEY" # for Bedrock, Meta Llama
 JWT_SECRET="SECURE_RANDOM_STRING"
 COOKIE_SECRET="SECURE_RANDOM_STRING"
 NODE_ENV="development" # for development logging
-GITHUB_OAUTH_CLIENT_ID=""
-GITHUB_OAUTH_SECRET=""
 ```
 
 Ensure these variables are set in a `.env` file in the backend directory before starting the application.
@@ -132,7 +130,6 @@ NEXT_PUBLIC_API_ENDPOINT="http://localhost:3000"
 NEXT_PUBLIC_SERVICE_ENDPOINT="http://localhost:3000"
 NEXT_PUBLIC_HOSTNAME="http://localhost:3003"
 NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_KEY=""
-NEXT_PUBLIC_GITHUB_OAUTH_CLIENT_ID=""
 ```
 
 These should be configured to match the endpoints where the backend services are available, ensuring the frontend can communicate with the backend properly.
