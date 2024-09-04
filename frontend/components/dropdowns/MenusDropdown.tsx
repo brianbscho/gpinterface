@@ -1,9 +1,9 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import callApi from "@/utils/callApi";
 import useUserStore from "@/store/user";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { UserGetMeResponse } from "gpinterface-shared/type/user";
 import {
   LogOut,
@@ -28,7 +28,7 @@ import Link from "next/link";
 const loginRedirectPaths = ["login"];
 const logoutRedirectPaths = ["bills", "settings"];
 
-function _Menus() {
+export default function MenusDropdown() {
   const { user, setUser } = useUserStore();
   const pathname = usePathname();
   const router = useRouter();
@@ -45,16 +45,11 @@ function _Menus() {
     callUserApi();
   }, [setUser, push, pathname]);
 
-  const searchParams = useSearchParams();
   useEffect(() => {
     if (user && loginRedirectPaths.some((p) => pathname.includes(p))) {
-      if (searchParams.has("chatHashId")) {
-        push("/chats");
-      } else {
-        push("/");
-      }
+      push("/");
     }
-  }, [user, push, pathname, searchParams]);
+  }, [user, push, pathname]);
 
   const onClickLogout = useCallback(async () => {
     setOpen(false);
@@ -63,20 +58,12 @@ function _Menus() {
     location.reload();
   }, [setUser]);
 
-  const param = useMemo(() => {
-    let params = "?";
-    searchParams.forEach((value, key) => {
-      params += `${key}=${value}`;
-    });
-    return params;
-  }, [searchParams]);
-
   const [open, setOpen] = useState(false);
 
   if (!user) {
     return (
       <ShadcnButton asChild className="h-6 w-6 p-0 md:h-8 md:w-8">
-        <Link href={`/login${param}`}>
+        <Link href="/login">
           <UserRound className="h-4 w-4 md:h-5 md:w-5" />
         </Link>
       </ShadcnButton>
@@ -116,13 +103,5 @@ function _Menus() {
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
-}
-
-export default function Menus() {
-  return (
-    <Suspense>
-      <_Menus />
-    </Suspense>
   );
 }

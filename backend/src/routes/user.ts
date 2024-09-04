@@ -140,7 +140,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: UserCreateSchema } },
     async (request, reply) => {
       try {
-        const { email, password, name, chatHashId } = request.body;
+        const { email, password, name } = request.body;
         if (!validateEmail(email)) {
           throw httpErrors.badRequest("Please check the email and try again");
         }
@@ -164,12 +164,6 @@ export default async function (fastify: FastifyInstance) {
           data: { email, password: hashedPassword, name },
           select: { hashId: true },
         });
-        if (chatHashId) {
-          await fastify.prisma.chat.update({
-            where: { hashId: chatHashId, userHashId: null },
-            data: { userHashId: user.hashId },
-          });
-        }
 
         const accessToken = getAccessToken(httpErrors.internalServerError, {
           user: { hashId: user.hashId, name },
@@ -187,7 +181,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: UserGoogleSchema } },
     async (request, reply) => {
       try {
-        const { access_token, chatHashId } = request.body;
+        const { access_token } = request.body;
         const endpoint = `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${access_token}`;
         const response = await fetch(endpoint);
         if (!response.ok) {
@@ -212,12 +206,6 @@ export default async function (fastify: FastifyInstance) {
           select: { hashId: true, email: true, name: true },
         });
         if (user) {
-          if (chatHashId) {
-            await fastify.prisma.chat.update({
-              where: { hashId: chatHashId, userHashId: null },
-              data: { userHashId: user.hashId },
-            });
-          }
           const accessToken = getAccessToken(httpErrors.internalServerError, {
             user: { hashId: user.hashId, name: user.name },
           });
@@ -229,12 +217,6 @@ export default async function (fastify: FastifyInstance) {
           data: { email, name },
           select: { hashId: true },
         });
-        if (chatHashId) {
-          await fastify.prisma.chat.update({
-            where: { hashId: chatHashId, userHashId: null },
-            data: { userHashId: newUser.hashId },
-          });
-        }
 
         const accessToken = getAccessToken(httpErrors.internalServerError, {
           user: { hashId: newUser.hashId, name },
@@ -252,7 +234,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { body: UserGithubSchema } },
     async (request, reply) => {
       try {
-        const { code, chatHashId } = request.body;
+        const { code } = request.body;
         const endpoint = `https://github.com/login/oauth/access_token`;
         const tokenResponse = await fetch(endpoint, {
           method: "POST",
@@ -323,12 +305,6 @@ export default async function (fastify: FastifyInstance) {
           select: { hashId: true, email: true, name: true },
         });
         if (user) {
-          if (chatHashId) {
-            await fastify.prisma.chat.update({
-              where: { hashId: chatHashId, userHashId: null },
-              data: { userHashId: user.hashId },
-            });
-          }
           const accessToken = getAccessToken(httpErrors.internalServerError, {
             user: { hashId: user.hashId, name: user.name },
           });
@@ -340,12 +316,6 @@ export default async function (fastify: FastifyInstance) {
           data: { email, name },
           select: { hashId: true },
         });
-        if (chatHashId) {
-          await fastify.prisma.chat.update({
-            where: { hashId: chatHashId, userHashId: null },
-            data: { userHashId: newUser.hashId },
-          });
-        }
 
         const accessToken = getAccessToken(httpErrors.internalServerError, {
           user: { hashId: newUser.hashId, name },

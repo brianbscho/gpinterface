@@ -22,7 +22,6 @@ function Component() {
 
   const onClickSignup = useCallback(() => {
     const code = searchParams.get("code");
-    const chatHashId = searchParams.get("chatHashId");
     if (!code) {
       return;
     }
@@ -35,7 +34,7 @@ function Component() {
       >({
         endpoint: "/user/github",
         method: "POST",
-        body: { code, chatHashId },
+        body: { code },
         showError: true,
       });
       if (response) {

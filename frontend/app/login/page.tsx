@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  FormEvent,
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { validateEmail, validatePassword } from "gpinterface-shared/string";
 import callApi from "@/utils/callApi";
 import useUserStore from "@/store/user";
@@ -33,19 +26,12 @@ import {
   UserRoundPlus,
 } from "lucide-react";
 import { Checkbox } from "@/components/ui";
-import { useSearchParams } from "next/navigation";
 import IconTextButton from "@/components/buttons/IconTextButton";
 import GoogleLoginButton from "./GoogleLoginButton";
 import { useGoogleLogin } from "@react-oauth/google";
 import GithubLoginButton from "./GithubLoginButton";
 
-function Login() {
-  const searchParams = useSearchParams();
-  const chatHashId = useMemo(
-    () => searchParams.get("chatHashId"),
-    [searchParams]
-  );
-
+export default function Page() {
   const [isLogin, setIsLogin] = useState(true);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -97,7 +83,7 @@ function Login() {
       >({
         endpoint,
         method: "POST",
-        body: { email, password, name, chatHashId },
+        body: { email, password, name },
         showError: true,
       });
       if (response) {
@@ -106,7 +92,7 @@ function Login() {
         setLoading(false);
       }
     },
-    [email, name, password, isLogin, setUser, chatHashId]
+    [email, name, password, isLogin, setUser]
   );
   const onClickGoogleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -118,7 +104,7 @@ function Login() {
       >({
         endpoint: "/user/google",
         method: "POST",
-        body: { access_token, chatHashId },
+        body: { access_token },
         showError: true,
       });
       if (response) {
@@ -130,18 +116,16 @@ function Login() {
   });
 
   const githubOauthEndpoint = useMemo(() => {
-    const clientId = encodeURI(
+    const clientId = encodeURIComponent(
       process.env.NEXT_PUBLIC_GITHUB_OAUTH_CLIENT_ID ?? ""
     );
-    const redirectUri = encodeURI(
-      `${process.env.NEXT_PUBLIC_HOSTNAME}/login/github?chatHashId=${
-        chatHashId ?? ""
-      }`
+    const redirectUri = encodeURIComponent(
+      `${process.env.NEXT_PUBLIC_HOSTNAME}/login/github`
     );
-    const scope = encodeURI("scope=read:user,user:email");
+    const scope = encodeURIComponent("scope=read:user,user:email");
 
     return `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`;
-  }, [chatHashId]);
+  }, []);
 
   return (
     <div className="w-full max-w-xl px-3">
@@ -272,13 +256,5 @@ function Login() {
         </form>
       </Tabs>
     </div>
-  );
-}
-
-export default function Page() {
-  return (
-    <Suspense>
-      <Login />
-    </Suspense>
   );
 }
