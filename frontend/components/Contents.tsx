@@ -31,10 +31,8 @@ import {
 } from "gpinterface-shared/type/chat";
 import ContentInput from "./inputs/ContentInput";
 import { cn } from "@/utils/css";
-import useUserStore from "@/store/user";
 import ContentsCreateButton from "./buttons/ContentsCreateButton";
 import { DeleteResponse, ParamSchema } from "gpinterface-shared/type";
-import { useRouter } from "next/navigation";
 
 type ButtonsProps = {
   onClickModel: (() => void) | undefined;
@@ -118,7 +116,6 @@ type ContentProps = {
   useRefreshingHashId: [RefreshingHashId, (hashId: RefreshingHashId) => void];
   callUpdateContent: (content: string) => Promise<string | undefined>;
   hashIds?: string[];
-  editable?: boolean;
 };
 
 function Content({
@@ -128,7 +125,6 @@ function Content({
   useRefreshingHashId,
   callUpdateContent,
   hashIds,
-  editable,
 }: ContentProps) {
   const [newContent, setNewContent] = useState(content.content);
   const [oldContent, setOldContent] = useState(content.content);
@@ -178,7 +174,7 @@ function Content({
   );
 
   const onClickRefresh = useCallback(async () => {
-    if (!model || !editable) return;
+    if (!model) return;
 
     setRefreshingHashId(content.hashId);
     const response = await callApi<
@@ -206,26 +202,15 @@ function Content({
       );
     }
     setRefreshingHashId(undefined);
-  }, [
-    editable,
-    chatHashId,
-    content,
-    model,
-    config,
-    setRefreshingHashId,
-    setContents,
-  ]);
+  }, [chatHashId, content, model, config, setRefreshingHashId, setContents]);
 
-  const isDeleteVisible = useMemo(
-    () => hashIds?.length === 2 && editable,
-    [hashIds, editable]
-  );
+  const isDeleteVisible = useMemo(() => hashIds?.length === 2, [hashIds]);
   const isRefreshVisible = useMemo(
-    () => content.role === "assistant" && editable,
-    [, content.role, editable]
+    () => content.role === "assistant",
+    [, content.role]
   );
   const onClickDelete = useCallback(async () => {
-    if (!hashIds || !editable) return;
+    if (!hashIds) return;
 
     let message = `This action will also delete the ${
       content.role === "user" ? "next assistant" : "previous user"
@@ -245,7 +230,7 @@ function Content({
     if (response?.success) {
       setContents((prev) => prev.filter((p) => !hashIds.includes(p.hashId)));
     }
-  }, [hashIds, editable, content.role, setContents]);
+  }, [hashIds, content.role, setContents]);
 
   return (
     <CardContent className="p-0">
@@ -295,17 +280,15 @@ function Content({
       <CardDescription>
         <div className="relative">
           <div className="whitespace-pre-wrap px-3 py-2 text-base border rounded-md">
-            <div className="min-h-6">{newContent + (editable ? "." : "")}</div>
+            <div className="min-h-6">{newContent + "."}</div>
           </div>
-          {editable && (
-            <Textarea
-              className="absolute max-h-none inset-0 z-10 text-base overflow-hidden resize-none"
-              value={newContent}
-              onChange={(e) => setNewContent(e.currentTarget.value)}
-              placeholder={`${content.role} message`}
-              disabled={disabled}
-            />
-          )}
+          <Textarea
+            className="absolute max-h-none inset-0 z-10 text-base overflow-hidden resize-none"
+            value={newContent}
+            onChange={(e) => setNewContent(e.currentTarget.value)}
+            placeholder={`${content.role} message`}
+            disabled={disabled}
+          />
           {loading && (
             <div className="absolute inset-0 border z-20 flex items-center justify-center rounded-md">
               Refreshing answer...
@@ -322,22 +305,9 @@ type ChatType = {
   systemMessage: string;
   contents: ContentType[];
 };
-type ContentsProps = {
-  chat: ChatType;
-  ownerUserHashId: string | null | undefined;
-  className?: string;
-};
-export default function Contents({
-  chat,
-  ownerUserHashId,
-  className,
-}: ContentsProps) {
+type ContentsProps = { chat: ChatType; className?: string };
+export default function Contents({ chat, className }: ContentsProps) {
   const [contents, setContents] = useState(chat.contents);
-  const userHashId = useUserStore((state) => state.user?.hashId);
-  const editable = useMemo(
-    () => !ownerUserHashId || ownerUserHashId === userHashId,
-    [ownerUserHashId, userHashId]
-  );
   const [refreshingHashId, setRefreshingHashId] = useState<string>();
 
   const systemContent = useMemo(
@@ -347,8 +317,6 @@ export default function Contents({
 
   const callUpdateSystemMessage = useCallback(
     async (systemMessage: string) => {
-      if (!editable) return;
-
       const response = await callApi<
         ChatUpdateResponse,
         Static<typeof ChatUpdateSchema>
@@ -359,12 +327,10 @@ export default function Contents({
       });
       return response?.systemMessage;
     },
-    [editable, chat.hashId]
+    [chat.hashId]
   );
   const callUpdateContent = useCallback(
     (hashId: string) => async (content: string) => {
-      if (!editable) return;
-
       const response = await callApi<
         ContentUpdateResponse,
         Static<typeof ContentUpdateSchema>
@@ -382,13 +348,13 @@ export default function Contents({
       }
       return response?.content;
     },
-    [editable]
+    []
   );
 
   const [config, model] = useModelStore((state) => [state.config, state.model]);
   const onSubmit = useCallback(
     async (content: string) => {
-      if (!model || !editable) return;
+      if (!model) return;
 
       setRefreshingHashId("");
       const response = await callApi<
@@ -410,13 +376,10 @@ export default function Contents({
       }
       setRefreshingHashId(undefined);
     },
-    [editable, chat.hashId, model, config]
+    [chat.hashId, model, config]
   );
 
-  const router = useRouter();
   const onClickDelete = useCallback(async () => {
-    if (!editable) return;
-
     const yes = confirm(
       "Are you sure you want to delete this? This action cannot be undone."
     );
@@ -431,29 +394,26 @@ export default function Contents({
     if (response?.success) {
       location.pathname = "/gpis/user";
     }
-  }, [editable, chat.hashId]);
+  }, [chat.hashId]);
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>
-      {editable && (
-        <div className="self-end">
-          <Button
-            variant="destructive"
-            className="h-6 w-6 p-0"
-            onClick={onClickDelete}
-          >
-            <X />
-          </Button>
-        </div>
-      )}
-      {(editable || systemContent.content.length > 0) && (
+      <div className="self-end">
+        <Button
+          variant="destructive"
+          className="h-6 w-6 p-0"
+          onClick={onClickDelete}
+        >
+          <X />
+        </Button>
+      </div>
+      {systemContent.content.length > 0 && (
         <Content
           content={systemContent}
           chatHashId={chat.hashId}
           setContents={setContents}
           useRefreshingHashId={[refreshingHashId, setRefreshingHashId]}
           callUpdateContent={callUpdateSystemMessage}
-          editable={editable}
         />
       )}
       {contents.map((c, i) => {
@@ -473,15 +433,12 @@ export default function Contents({
             useRefreshingHashId={[refreshingHashId, setRefreshingHashId]}
             callUpdateContent={callUpdateContent(c.hashId)}
             hashIds={hashIds}
-            editable={editable}
           />
         );
       })}
-      {editable && (
-        <ContentInput onSubmit={onSubmit}>
-          <ContentsCreateButton chat={chat} setContents={setContents} />
-        </ContentInput>
-      )}
+      <ContentInput onSubmit={onSubmit}>
+        <ContentsCreateButton chat={chat} setContents={setContents} />
+      </ContentInput>
     </div>
   );
 }
