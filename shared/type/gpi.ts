@@ -10,7 +10,7 @@ export const GpiCreateSchema = Type.Object({
 });
 export type GpiCreateResponse = { hashId: string };
 
-export type GpiGetResponse = {
+type Gpi = {
   hashId: string;
   userHashId: string | null;
   description: string;
@@ -19,10 +19,8 @@ export type GpiGetResponse = {
   modelHashId: string;
   isPublic: boolean;
 };
-
-export type GpisGetResponse = {
-  gpis: GpiGetResponse[];
-};
+export type GpiGetResponse = Gpi;
+export type GpisGetResponse = Gpi[];
 
 export const GpiUpdateSchema = Type.Object({
   description: Type.Optional(Type.String()),

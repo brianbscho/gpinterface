@@ -10,7 +10,7 @@ import GpiTestDialog, { TestDataType } from "../dialogs/GpiTestDialog";
 
 type GpisProps = { baseUrl: string; emptyMessage?: string };
 export default function Gpis({ baseUrl, emptyMessage }: GpisProps) {
-  const [gpis, setGpis] = useState<GpisGetResponse["gpis"]>();
+  const [gpis, setGpis] = useState<GpisGetResponse>();
   const [lastHashId, setLastHashId] = useState("");
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 
@@ -26,8 +26,8 @@ export default function Gpis({ baseUrl, emptyMessage }: GpisProps) {
       showError: true,
     });
     if (response) {
-      setGpis((prev) => [...(prev ?? []), ...response.gpis]);
-      if (response.gpis.length === 0) {
+      setGpis((prev) => [...(prev ?? []), ...response]);
+      if (response.length === 0) {
         setSpinnerHidden(true);
       }
     }

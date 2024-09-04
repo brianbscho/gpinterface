@@ -1,6 +1,5 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
-import { getDateString } from "../util/string";
 import {
   QueryParamSchema,
   SearchQueryParamSchema,
@@ -59,16 +58,14 @@ export default async function (fastify: FastifyInstance) {
           take: 5,
         });
 
-        return {
-          gpis: gpis.map((gpi) => {
-            const { chat, config, ...rest } = gpi;
-            return {
-              ...rest,
-              config: config as any,
-              chat: { ...chat, contents: getTypedContents(chat.contents) },
-            };
-          }),
-        };
+        return gpis.map((gpi) => {
+          const { chat, config, ...rest } = gpi;
+          return {
+            ...rest,
+            config: config as any,
+            chat: { ...chat, contents: getTypedContents(chat.contents) },
+          };
+        });
       } catch (ex) {
         console.error("path: /gpis?lastHashId, method: get, error:", ex);
         throw ex;
@@ -131,16 +128,14 @@ export default async function (fastify: FastifyInstance) {
           take: 5,
         });
 
-        return {
-          gpis: gpis.map((gpi) => {
-            const { chat, config, ...rest } = gpi;
-            return {
-              ...rest,
-              config: config as any,
-              chat: { ...chat, contents: getTypedContents(chat.contents) },
-            };
-          }),
-        };
+        return gpis.map((gpi) => {
+          const { chat, config, ...rest } = gpi;
+          return {
+            ...rest,
+            config: config as any,
+            chat: { ...chat, contents: getTypedContents(chat.contents) },
+          };
+        });
       } catch (ex) {
         console.error(
           "path: /gpis/search?keyword&lastHashId, method: get, error:",
@@ -196,16 +191,14 @@ export default async function (fastify: FastifyInstance) {
           take: 5,
         });
 
-        return {
-          gpis: gpis.map((gpi) => {
-            const { chat, config, ...rest } = gpi;
-            return {
-              ...rest,
-              config: config as any,
-              chat: { ...chat, contents: getTypedContents(chat.contents) },
-            };
-          }),
-        };
+        return gpis.map((gpi) => {
+          const { chat, config, ...rest } = gpi;
+          return {
+            ...rest,
+            config: config as any,
+            chat: { ...chat, contents: getTypedContents(chat.contents) },
+          };
+        });
       } catch (ex) {
         console.error("path: /gpis/user?lastHashId, method: get, error:", ex);
         throw ex;
