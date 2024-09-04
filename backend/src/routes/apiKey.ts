@@ -32,7 +32,7 @@ export default async function (fastify: FastifyInstance) {
 
       const newApiKey = await createApiKey(fastify.prisma.apiKey, user.hashId);
 
-      return { apiKey: newApiKey };
+      return newApiKey;
     } catch (ex) {
       console.error("path: /api/key, method: post, error:", ex);
       throw ex;

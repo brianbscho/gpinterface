@@ -33,7 +33,7 @@ export default function Page() {
   const { user, setUser } = useUserStore();
 
   const [name, setName] = useState("");
-  const [apiKeys, setApiKeys] = useState<ApiKeysGetResponse["apiKeys"]>([]);
+  const [apiKeys, setApiKeys] = useState<ApiKeysGetResponse>([]);
 
   const [saveButtonText, setSaveButtonText] = useState("Save");
   useEffect(() => {
@@ -85,7 +85,7 @@ export default function Page() {
         endpoint: "/api/keys",
       });
       if (response) {
-        setApiKeys(response.apiKeys);
+        setApiKeys(response);
       }
     };
     callApiKeysApi();
@@ -99,13 +99,12 @@ export default function Page() {
       showError: true,
     });
     if (response) {
-      const { apiKey } = response;
-      setNewKey(apiKey.key);
+      setNewKey(response.key);
       setApiKeys((prev) => [
         ...prev,
         {
-          hashId: apiKey.hashId,
-          key: `${apiKey.key.slice(0, 2)}...${apiKey.key.slice(-4)}`,
+          hashId: response.hashId,
+          key: `${response.key.slice(0, 2)}...${response.key.slice(-4)}`,
         },
       ]);
     }

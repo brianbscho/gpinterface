@@ -11,12 +11,10 @@ export default async function (fastify: FastifyInstance) {
         select: { hashId: true, key: true },
       });
 
-      return {
-        apiKeys: apiKeys.map((a) => ({
-          hashId: a.hashId,
-          key: `${a.key.slice(0, 2)}${".".repeat(20)}${a.key.slice(-4)}`,
-        })),
-      };
+      return apiKeys.map((a) => ({
+        hashId: a.hashId,
+        key: `${a.key.slice(0, 2)}${".".repeat(20)}${a.key.slice(-4)}`,
+      }));
     } catch (ex) {
       console.error("path: /api/keys, method: get, error:", ex);
       throw ex;

@@ -60,12 +60,12 @@ export default async function (fastify: FastifyInstance) {
         const userHashId = await getApiKey(fastify, request);
         const { sessionHashId } = request.params;
 
-        const session = await getSessionMessages({
+        const messages = await getSessionMessages({
           fastify,
           userHashId,
           sessionHashId,
         });
-        return session;
+        return messages;
       } catch (ex) {
         console.error(
           "path: /session/:sessionHashId/messages, method: get, error:",

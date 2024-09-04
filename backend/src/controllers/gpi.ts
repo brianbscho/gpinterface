@@ -1,7 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { getDataWithHashId, getTypedContent } from "../util/prisma";
 
-export async function createGpi(
+export async function createGpiEntry(
   gpiDelegate: Prisma.GpiDelegate,
   gpis: {
     config: Prisma.JsonValue;
@@ -34,7 +34,7 @@ export async function createGpi(
   throw "Too many collision and failed to create entity";
 }
 
-export async function copyGpi(
+export async function copyGpiEntry(
   prisma: PrismaClient,
   hashId: string,
   userHashId: string
@@ -84,7 +84,7 @@ export async function copyGpi(
     ),
     select: { hashId: true },
   });
-  const newGpi = await createGpi(prisma.gpi, {
+  const newGpi = await createGpiEntry(prisma.gpi, {
     ...rest,
     config: rest.config,
     userHashId,
