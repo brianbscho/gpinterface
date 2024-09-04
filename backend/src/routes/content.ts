@@ -27,7 +27,7 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<ContentsCreateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
-        const { content: userContent, gpiHashId, ...body } = request.body;
+        const { content: userContent, ...body } = request.body;
 
         const model = await fastify.prisma.model.findFirst({
           where: {
@@ -105,7 +105,6 @@ export default async function (fastify: FastifyInstance) {
           data: {
             userHashId: user.hashId || null,
             chatHashId: body.chatHashId,
-            gpiHashId,
             chatContentHashId: assistantChatContent.hashId,
             provider: model.provider.name,
             model: model.name,

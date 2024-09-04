@@ -328,14 +328,12 @@ type ChatType = {
 };
 type ContentsProps = {
   chat: ChatType;
-  gpiHashId?: string;
   ownerUserHashId: string | null | undefined;
   className?: string;
   hideButtons?: boolean;
 };
 export default function Contents({
   chat,
-  gpiHashId,
   ownerUserHashId,
   className,
   hideButtons,
@@ -407,7 +405,6 @@ export default function Contents({
         method: "POST",
         body: {
           chatHashId: chat.hashId,
-          gpiHashId,
           modelHashId: model.hashId,
           content,
           config: getApiConfig(model, config),
@@ -419,7 +416,7 @@ export default function Contents({
       }
       setRefreshingHashId(undefined);
     },
-    [editable, chat.hashId, gpiHashId, model, config]
+    [editable, chat.hashId, model, config]
   );
 
   const router = useRouter();
