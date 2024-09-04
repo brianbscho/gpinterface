@@ -4,6 +4,7 @@ import {
   GpiCreateResponse,
   GpiCreateSchema,
   GpiGetResponse,
+  GpiUpdateResponse,
   GpiUpdateSchema,
 } from "gpinterface-shared/type/gpi";
 import { ParamSchema } from "gpinterface-shared/type";
@@ -123,7 +124,7 @@ export default async function (fastify: FastifyInstance) {
   }>(
     "/:hashId",
     { schema: { params: ParamSchema, body: GpiUpdateSchema } },
-    async (request, reply): Promise<GpiCreateResponse> => {
+    async (request, reply): Promise<GpiUpdateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
         const { hashId } = request.params;
@@ -138,19 +139,23 @@ export default async function (fastify: FastifyInstance) {
         }
 
         const isIsPublicBoolean = typeof isPublic === "boolean";
-        if (description || config || modelHashId || isIsPublicBoolean) {
-          await fastify.prisma.gpi.update({
-            where: { hashId },
-            data: {
-              ...(!!description && { description }),
-              ...(!!config && { config }),
-              ...(!!modelHashId && { modelHashId }),
-              ...(isIsPublicBoolean && { isPublic }),
-            },
-          });
-        }
+        const updatedGpi = await fastify.prisma.gpi.update({
+          where: { hashId },
+          data: {
+            ...(!!description && { description }),
+            ...(!!config && { config }),
+            ...(!!modelHashId && { modelHashId }),
+            ...(isIsPublicBoolean && { isPublic }),
+          },
+          select: {
+            description: true,
+            config: true,
+            modelHashId: true,
+            isPublic: true,
+          },
+        });
 
-        return { hashId };
+        return { ...updatedGpi, config: updatedGpi.config as any };
       } catch (ex) {
         console.error("path: /gpi/:hashId, method: put, error:", ex);
         throw ex;

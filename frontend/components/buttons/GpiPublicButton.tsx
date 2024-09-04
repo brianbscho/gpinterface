@@ -5,8 +5,8 @@ import { useToast } from "@/components/ui";
 import callApi from "@/utils/callApi";
 import { Static } from "@sinclair/typebox";
 import {
-  GpiCreateResponse,
   GpiGetResponse,
+  GpiUpdateResponse,
   GpiUpdateSchema,
 } from "gpinterface-shared/type/gpi";
 import { CircleCheck, Circle } from "lucide-react";
@@ -23,7 +23,7 @@ export default function GpiPublicButton({ useGpi }: Props) {
 
     const isPublic = !gpi?.isPublic;
     const response = await callApi<
-      GpiCreateResponse,
+      GpiUpdateResponse,
       Static<typeof GpiUpdateSchema>
     >({
       endpoint: `/gpi/${gpi.hashId}`,
