@@ -158,7 +158,7 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
         </div>
         {gpi.userHashId === userHashId && (
           <div className="flex-1 md:flex-initial md:w-32">
-            <Link href={`/gpis/${gpi.hashId}/edit`}>
+            <Link href={`/chats/${gpi.chat.hashId}`}>
               <IconTextButton
                 className="w-full md:w-32"
                 Icon={FileCog}
