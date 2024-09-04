@@ -1,10 +1,7 @@
 import CopyButton from "@/components/buttons/CopyButton";
 import DocumentTry, { BodyType } from "./DocumentTry";
 import { Badge } from "@/components/ui";
-import useModelStore from "@/store/model";
 import { cn } from "@/utils/css";
-import { getApiConfig } from "@/utils/model";
-import { stringify } from "@/utils/string";
 import { GpiGetResponse } from "gpinterface-shared/type/gpi";
 import { Fragment, ReactNode } from "react";
 import { CircleAlert } from "lucide-react";
@@ -33,8 +30,6 @@ function Element({ title, children }: ElementProps) {
 
 type DocumentProps = { gpi?: GpiGetResponse; className?: string };
 export default function Document({ gpi, className }: DocumentProps) {
-  const models = useModelStore((state) => state.models);
-  const model = models.find((m) => m.hashId === gpi?.modelHashId);
   const documents: {
     title: string;
     description: string;
@@ -81,8 +76,8 @@ export default function Document({ gpi, className }: DocumentProps) {
       body: {},
     },
   ];
-  if (!gpi || !model) return null;
 
+  if (!gpi) return null;
   return (
     <div
       className={cn(
@@ -92,13 +87,7 @@ export default function Document({ gpi, className }: DocumentProps) {
     >
       <div>
         <Badge variant="tag">Info</Badge>
-        <div className="font-bold">{model.name}</div>
       </div>
-      <Element title="Model config">
-        {Object.keys(gpi.config).length === 0
-          ? "Default"
-          : stringify(getApiConfig(model, gpi.config))}
-      </Element>
       <Element title={gpi.isPublic ? "Public" : "Private"}>
         {gpi.isPublic
           ? "Accessible by anyone for testing and calling. Only the owner has editing privileges."

@@ -4,11 +4,9 @@ import { GpiGetResponse } from "gpinterface-shared/type/gpi";
 import { FormEvent, KeyboardEvent, useCallback, useState } from "react";
 import IconTextButton from "../buttons/IconTextButton";
 import { CornerDownLeft, FileCode, FileCog, FileText } from "lucide-react";
-import ModelSheetButton from "../buttons/ModelSheetButton";
 import useUserStore from "@/store/user";
-import Contents from "../Contents";
 import Document from "./Document";
-import { Badge, Button, Textarea } from "../ui";
+import { Badge, Button, CardContent, CardDescription, Textarea } from "../ui";
 import callApi from "@/utils/callApi";
 import {
   ChatCompletionSampleResponse,
@@ -18,6 +16,39 @@ import { Static } from "@sinclair/typebox";
 import GpiCopyButton from "../buttons/GpiCopyButton";
 import { TestDataType } from "../dialogs/GpiTestDialog";
 import Link from "next/link";
+import useModelStore from "@/store/model";
+import { getApiConfig } from "@/utils/model";
+import { stringify } from "@/utils/string";
+
+type StaticContentProps = {
+  role: string;
+  content: string;
+  model?: { name: string } | null;
+  isModified?: boolean;
+};
+function StaticContent({ ...props }: StaticContentProps) {
+  const { role, model, isModified, content } = props;
+  return (
+    <CardContent className="p-0">
+      <div className="flex items-center gap-1">
+        {role !== "assistant" && <Badge variant="tag">{role}</Badge>}
+        {role === "assistant" && (
+          <Badge variant="tag">{!model ? "assistant" : model.name}</Badge>
+        )}
+        {isModified === true && (
+          <div className="ml-1 text-xs self-start">*answer modified</div>
+        )}
+      </div>
+      <CardDescription>
+        <div className="relative mt-3">
+          <div className="whitespace-pre-wrap px-3 py-2 text-base border rounded-md">
+            <div className="min-h-6">{content}</div>
+          </div>
+        </div>
+      </CardDescription>
+    </CardContent>
+  );
+}
 
 type Props = {
   gpi: GpiGetResponse;
@@ -28,7 +59,7 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
   const [tab, setTab] = useState<"gpi" | "document">("gpi");
   const getTabContentClassName = useCallback(
     (_tab: string) => {
-      const className = "w-full h-full px-3 pt-9 md:pt-0 overflow-hidden";
+      const className = "w-full h-full px-3 overflow-hidden";
       if (tab === _tab) return className;
       return className + " hidden";
     },
@@ -76,12 +107,25 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
     [onSubmit]
   );
 
+  const models = useModelStore((state) => state.models);
+  const model = models.find((m) => m.hashId === gpi?.modelHashId);
+
   return (
     <div
       key={gpi.hashId}
       className="w-full border border-theme rounded-md pt-3"
     >
-      <div className="whitespace-pre-wrap px-3 pb-3">{gpi.description}</div>
+      <div className="whitespace-pre-wrap px-3 pb-3">
+        <div>{gpi.description}</div>
+        <Badge variant="tag" className="mt-2">
+          {model?.name ?? ""}
+        </Badge>
+        {!!model && Object.keys(gpi.config).length > 0 && (
+          <div className="text-sm text-neutral-400 text-wrap mt-1">
+            {stringify(getApiConfig(model, gpi.config))}
+          </div>
+        )}
+      </div>
       <div className="sticky top-0 rounded-md w-full px-3 py-3 grid grid-cols-3 md:flex gap-3 bg-background z-30">
         <div className="flex-1 md:flex-initial md:w-32">
           <IconTextButton
@@ -106,14 +150,6 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
         <div className="flex-1 md:flex-initial md:w-32">
           <GpiCopyButton gpiHashId={gpi.hashId} />
         </div>
-        <div className="flex-1 md:flex-initial md:w-32">
-          <ModelSheetButton
-            className="w-full"
-            editable={gpi.userHashId === userHashId}
-            disabled
-            modelHashId={gpi.modelHashId}
-          />
-        </div>
         {gpi.userHashId === userHashId && (
           <div className="flex-1 md:flex-initial md:w-32">
             <Link href={`/gpis/${gpi.hashId}/edit`}>
@@ -128,19 +164,17 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
         )}
       </div>
       <div className={getTabContentClassName("gpi")}>
-        <div>
-          <Contents
-            chat={gpi.chat}
-            gpiHashId={gpi.hashId}
-            ownerUserHashId={"non-editable-user"}
-            hideButtons
-          />
-          <div className="flex items-center mt-3">
-            <Badge variant="tag" className="h-6">
-              user
-            </Badge>
+        <div className="flex flex-col gap-3 mb-3">
+          {gpi.chat.systemMessage.length > 0 && (
+            <StaticContent role="system" content={gpi.chat.systemMessage} />
+          )}
+          {gpi.chat.contents.map((content) => (
+            <StaticContent key={content.hashId} {...content} />
+          ))}
+          <div>
+            <Badge variant="tag">user</Badge>
           </div>
-          <div className="my-3 text-sm text-muted-foreground">
+          <div className="text-sm text-muted-foreground">
             <form onSubmit={onSubmit}>
               <div className="flex items-center gap-3">
                 <div className="relative flex-1 items-start">
