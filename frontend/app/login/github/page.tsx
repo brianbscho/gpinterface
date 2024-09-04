@@ -1,6 +1,7 @@
 "use client";
 
 import IconTextButton from "@/components/buttons/IconTextButton";
+import { Checkbox } from "@/components/ui";
 import useUserStore from "@/store/user";
 import callApi from "@/utils/callApi";
 import { Static } from "@sinclair/typebox";
@@ -8,23 +9,25 @@ import {
   UserGetMeResponse,
   UserGithubSchema,
 } from "gpinterface-shared/type/user";
-import { Loader2 } from "lucide-react";
+import { UserRoundPlus } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useEffect } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
 function Component() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const setUser = useUserStore((state) => state.setUser);
+  const [agree, setAgree] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const onClickSignup = useCallback(() => {
     const code = searchParams.get("code");
     const chatHashId = searchParams.get("chatHashId");
     if (!code) {
-      router.push("/login");
       return;
     }
 
+    setLoading(true);
     const callGithubSigninApi = async () => {
       const response = await callApi<
         UserGetMeResponse,
@@ -42,18 +45,57 @@ function Component() {
       }
     };
     callGithubSigninApi();
-  }, [searchParams, router, setUser]);
+  }, [router, searchParams, setUser]);
+  useEffect(() => {
+    const code = searchParams.get("code");
+    if (!code) {
+      router.push("/login");
+      return;
+    }
+    setLoading(false);
+  }, [searchParams, router]);
 
   return (
     <div className="w-full flex-1">
       <div className="w-full h-full flex items-center justify-center">
-        <IconTextButton
-          className="w-32 md:w-40"
-          Icon={Loader2}
-          text="Please wait..."
-          loading
-          responsive
-        />
+        <div>
+          <div className="flex items-center gap-3 mt-12">
+            <Checkbox
+              id="agree"
+              className="w-4 h-4"
+              checked={agree}
+              onCheckedChange={(c) =>
+                typeof c === "boolean" ? setAgree(c) : undefined
+              }
+              disabled={loading}
+            />
+            <label htmlFor="agree" className="text-xs">
+              I agree to the&nbsp;
+              <a
+                href="https://www.termsfeed.com/live/0ce4dbce-17c2-4551-89c9-eb14fe206b71"
+                target="_blank"
+                className="underline"
+              >
+                privacy policy
+              </a>
+              &nbsp;and&nbsp;
+              <a href="/terms" target="_blank" className="underline">
+                terms and conditions
+              </a>
+            </label>
+          </div>
+          <div className="mt-3"></div>
+          <IconTextButton
+            className="w-full"
+            disabled={loading}
+            type="submit"
+            loading={loading}
+            text="Agree"
+            Icon={UserRoundPlus}
+            size="large"
+            onClick={onClickSignup}
+          />
+        </div>
       </div>
     </div>
   );
