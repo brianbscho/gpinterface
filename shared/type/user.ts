@@ -1,20 +1,20 @@
 import { Type } from "@sinclair/typebox";
 
-interface UserInfo {
+type UserInfo = {
   hashId: string;
   name: string;
-}
+};
 
-interface UserMe {
+type UserMe = {
   hashId: string;
   email: string;
   name: string;
-}
+};
 
-export interface User {
+export type User = {
   hashId: string;
   name: string;
-}
+};
 
 export const UserCreateSchema = Type.Object({
   email: Type.String(),

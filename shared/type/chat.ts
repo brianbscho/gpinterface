@@ -1,7 +1,7 @@
 import { Type } from "@sinclair/typebox";
 import { Content } from "./content";
 
-interface Chat {
+type Chat = {
   hashId: string;
   userHashId: string | null;
 
@@ -15,7 +15,7 @@ interface Chat {
     modelHashId: string;
     isPublic: boolean;
   }[];
-}
+};
 export type ChatGetResponse = Chat;
 export type ChatsGetResponse = Chat[];
 

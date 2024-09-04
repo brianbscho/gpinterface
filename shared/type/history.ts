@@ -1,4 +1,4 @@
-interface History {
+type History = {
   hashId: string;
   provider: string;
   model: string;
@@ -11,6 +11,6 @@ interface History {
   inputTokens: number;
   outputTokens: number;
   createdAt: string;
-}
+};
 
 export type HistoriesGetResponse = History[];
