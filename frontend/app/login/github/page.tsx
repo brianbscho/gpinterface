@@ -51,8 +51,19 @@ function Component() {
       router.push("/login");
       return;
     }
-    setLoading(false);
-  }, [searchParams, router]);
+
+    const getUser = async () => {
+      const response = await callApi<UserGetMeResponse>({
+        endpoint: `/user/github?code=${code}`,
+      });
+      if (response) {
+        setUser(response.user);
+      } else {
+        setLoading(false);
+      }
+    };
+    getUser();
+  }, [searchParams, router, setUser]);
 
   return (
     <div className="w-full flex-1">

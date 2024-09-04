@@ -229,6 +229,94 @@ export default async function (fastify: FastifyInstance) {
       }
     }
   );
+  fastify.get<{ Querystring: Static<typeof UserGithubSchema> }>(
+    "/github",
+    { schema: { querystring: UserGithubSchema } },
+    async (request, reply) => {
+      try {
+        const { code } = request.query;
+        const endpoint = `https://github.com/login/oauth/access_token`;
+        const tokenResponse = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            client_id: process.env.GITHUB_OAUTH_CLIENT_ID,
+            client_secret: process.env.GITHUB_OAUTH_SECRET,
+            code,
+          }),
+        });
+        if (!tokenResponse.ok) {
+          throw httpErrors.unauthorized(
+            "Github login failed. Please try again."
+          );
+        }
+        const token = (await tokenResponse.json()) as {
+          access_token: string;
+        };
+
+        const userResponse = await fetch("https://api.github.com/user", {
+          headers: { Authorization: `Bearer ${token.access_token}` },
+        });
+        if (!userResponse.ok) {
+          throw httpErrors.unauthorized(
+            "Github login failed. Please try again."
+          );
+        }
+        const identity = (await userResponse.json()) as {
+          login: string;
+          email: string | null | undefined;
+        };
+        let email = identity.email;
+        if (!email) {
+          const emailResponse = await fetch(
+            "https://api.github.com/user/emails",
+            {
+              headers: {
+                Accept: "application/vnd.github+json",
+                Authorization: `Bearer ${token.access_token}`,
+                "X-GitHub-Api-Version": "2022-11-28",
+              },
+            }
+          );
+          if (!emailResponse.ok) {
+            throw httpErrors.unauthorized(
+              "Github login failed. Please try again."
+            );
+          }
+          const emailAddress = (await emailResponse.json()) as {
+            email: string;
+            primary: boolean;
+          }[];
+          email = emailAddress.find((e) => e.primary)?.email;
+        }
+        if (!email) {
+          throw httpErrors.unauthorized(
+            "Github login failed. Please try again."
+          );
+        }
+
+        let user = await fastify.prisma.user.findFirst({
+          where: { email },
+          select: { hashId: true, email: true, name: true },
+        });
+        if (user) {
+          const accessToken = getAccessToken(httpErrors.internalServerError, {
+            user: { hashId: user.hashId, name: user.name },
+          });
+          const me = user;
+          return cookieReply(reply, accessToken, me);
+        }
+
+        throw httpErrors.unauthorized("Github login failed. Please try again.");
+      } catch (ex) {
+        console.error("path: /user/github, method: get, error: ", ex);
+        throw ex;
+      }
+    }
+  );
   fastify.post<{ Body: Static<typeof UserGithubSchema> }>(
     "/github",
     { schema: { body: UserGithubSchema } },
