@@ -66,9 +66,9 @@ export default function Page({ params }: { params: { hashId: string } }) {
 
   if (!chat) return null;
   return (
-    <div className="w-full flex-1 flex flex-col gap-3 pt-3 overflow-hidden">
+    <div className="w-full flex-1 flex flex-col gap-3 overflow-hidden">
       <div className="flex-1 grid grid-cols-[1fr_auto] overflow-hidden relative">
-        <div className="flex-1 w-full px-3 overflow-y-auto">
+        <div className="flex-1 w-full pt-3 px-3 overflow-y-auto">
           <div className="w-full md:w-auto grid grid-cols-2 md:flex md:flex-col gap-3 mb-3">
             {chat.gpis.length > 0 && (
               <GpiPublicButton
