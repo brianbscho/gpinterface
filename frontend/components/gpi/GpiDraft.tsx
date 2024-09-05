@@ -7,8 +7,8 @@ import { ChatGetResponse } from "gpinterface-shared/type/chat";
 type Props = { chat: ChatGetResponse };
 export default function GpiDraft({ chat }: Props) {
   return (
-    <div className="w-full border border-theme rounded-md pt-3">
-      <div className="sticky top-0 rounded-md w-full px-3 py-3 grid grid-cols-3 md:flex gap-3 bg-background z-30">
+    <div className="w-full border border-theme rounded-md px-3 pt-3">
+      <div className="sticky top-0 rounded-md w-full py-3 grid grid-cols-3 md:flex gap-3 bg-background z-30">
         <div className="flex-1 md:flex-initial md:w-32">
           <Link href={`/chats/${chat.hashId}`}>
             <IconTextButton
@@ -29,7 +29,7 @@ export default function GpiDraft({ chat }: Props) {
           />
         </div>
       </div>
-      <div className="w-full px-3">
+      <div className="w-full">
         <div className="flex flex-col gap-3 mb-3">
           {chat.systemMessage.length > 0 && (
             <ContentStatic role="system" content={chat.systemMessage} />

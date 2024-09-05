@@ -103,17 +103,15 @@ export default function Page() {
                   <div className="col-span-3 border-b border-theme border-dashed"></div>
                 </Fragment>
               ))}
-              {(spinnerHidden || index < groupedTextHistories.length) && (
-                <Fragment>
-                  <div className="col-span-3 font-bold text-lg w-28 pl-3">
-                    {date}
-                  </div>
-                  <div className="leading-7 pr-3">
-                    ${history.priceSum.toFixed(5)}
-                  </div>
-                  <div className="col-span-4 border-b border-theme"></div>
-                </Fragment>
-              )}
+              <Fragment>
+                <div className="col-span-3 font-bold text-lg w-28 pl-3">
+                  {date}
+                </div>
+                <div className="leading-7 pr-3">
+                  ${history.priceSum.toFixed(5)}
+                </div>
+                <div className="col-span-4 border-b border-theme"></div>
+              </Fragment>
             </Fragment>
           ))}
         </div>

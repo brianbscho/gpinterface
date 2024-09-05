@@ -81,13 +81,11 @@ export default function Document({ gpi, className }: DocumentProps) {
   return (
     <div
       className={cn(
-        "md:pl-[9.5rem] px-3 pb-3 w-full h-full overflow-y-auto flex flex-col gap-7",
+        "md:pl-[9.5rem] px-3 w-full h-full overflow-y-auto flex flex-col gap-7",
         className
       )}
     >
-      <div>
-        <Badge variant="tag">Info</Badge>
-      </div>
+      <Badge variant="tag">Info</Badge>
       <Element title={gpi.isPublic ? "Public" : "Private"}>
         {gpi.isPublic
           ? "Accessible by anyone for testing and calling. Only the owner has editing privileges."
