@@ -227,9 +227,11 @@ export default function Page() {
                   not be able to see it again.
                 </span>
               </div>
-              <Card className="mt-3 p-0 pl-3">
-                <CopyButton text={newKey} />
-              </Card>
+              <div className="mt-3 w-full flex">
+                <Card className="mx-auto p-0 pl-3">
+                  <CopyButton text={newKey} />
+                </Card>
+              </div>
             </div>
           </AlertDialogDescription>
           <AlertDialogFooter>

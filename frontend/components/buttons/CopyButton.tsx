@@ -1,8 +1,7 @@
 "use client";
 
 import { Copy } from "lucide-react";
-import { useToast } from "../ui";
-import IconTextButton from "./IconTextButton";
+import { Button, useToast } from "../ui";
 import { useCallback } from "react";
 
 type Props = { text: string };
@@ -15,14 +14,10 @@ export default function CopyButton({ text }: Props) {
 
   return (
     <div className="flex items-center gap-3 cursor-pointer" onClick={onClick}>
-      <div className="text-sm flex-1 truncate">{text}</div>
-      <IconTextButton
-        Icon={Copy}
-        text="Copy"
-        onClick={() => navigator.clipboard.writeText(text)}
-        className="w-20"
-        size="small"
-      />
+      <div className="text-sm truncate">{text}</div>
+      <Button className="h-6 w-6 p-1">
+        <Copy className="w-4 h-4" />
+      </Button>
     </div>
   );
 }
