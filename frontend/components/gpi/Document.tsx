@@ -1,9 +1,8 @@
-import CopyButton from "@/components/buttons/CopyButton";
 import DocumentTry, { BodyType } from "./DocumentTry";
 import { Badge } from "@/components/ui";
 import { cn } from "@/utils/css";
 import { GpiGetResponse } from "gpinterface-shared/type/gpi";
-import { Fragment, ReactNode } from "react";
+import { Fragment } from "react";
 import { CircleAlert } from "lucide-react";
 
 type TitleProps = { title: string; description: string };
@@ -14,16 +13,6 @@ function Title({ title, description }: TitleProps) {
         <Badge variant="tag">{title}</Badge>
       </div>
       <div className="text-neutral-400">{description}</div>
-    </div>
-  );
-}
-
-type ElementProps = { title: string; children: ReactNode };
-function Element({ title, children }: ElementProps) {
-  return (
-    <div>
-      <div className="font-bold text-neutral-100">{title}</div>
-      <div className="text-sm text-neutral-400 text-wrap">{children}</div>
     </div>
   );
 }
@@ -85,19 +74,8 @@ export default function Document({ gpi, className }: DocumentProps) {
         className
       )}
     >
-      <Badge variant="tag">Info</Badge>
-      <Element title={gpi.isPublic ? "Public" : "Private"}>
-        {gpi.isPublic
-          ? "Accessible by anyone for testing and calling. Only the owner has editing privileges."
-          : "Only the owner can access, test, edit, and call this GPI."}
-      </Element>
-      <Element title="Share">
-        <CopyButton
-          text={`${process.env.NEXT_PUBLIC_HOSTNAME}/gpis/${gpi.hashId}`}
-        />
-      </Element>
       <div className="flex items-center bg-destructive rounded-md px-1 py-2 gap-3">
-        <CircleAlert className="text-primary w-5 h-5" />
+        <CircleAlert className="text-primary w-5 h-5 shrink-0" />
         <div className="text-primary text-xs">
           This may become unavailable or have its functionality modified by the
           author at any time. To ensure secure access, please make a copy.

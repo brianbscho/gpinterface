@@ -1,191 +1,120 @@
 "use client";
 
 import { GpiGetResponse } from "gpinterface-shared/type/gpi";
-import { FormEvent, KeyboardEvent, useCallback, useState } from "react";
+import { useCallback } from "react";
 import IconTextButton from "../buttons/IconTextButton";
-import {
-  CircleX,
-  CornerDownLeft,
-  FileCode,
-  FileCog,
-  FileText,
-} from "lucide-react";
+import { CircleX, FileCog, Info, LinkIcon } from "lucide-react";
 import useUserStore from "@/store/user";
 import Document from "./Document";
-import { Badge, Button, Textarea } from "../ui";
-import callApi from "@/utils/callApi";
-import {
-  ChatCompletionSampleResponse,
-  ChatCompletionSchema,
-} from "gpinterface-shared/type/chat";
-import { Static } from "@sinclair/typebox";
+import { Badge, Button, useToast } from "../ui";
 import GpiCopyButton from "../buttons/GpiCopyButton";
-import { TestDataType } from "../dialogs/GpiTestDialog";
 import Link from "next/link";
 import useModelStore from "@/store/model";
 import { getApiConfig } from "@/utils/model";
 import { stringify } from "@/utils/string";
 import ContentStatic from "@/components/content/ContentStatic";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 
-type Props = {
-  gpi: GpiGetResponse;
-  setTestData: (testData: TestDataType) => void;
-  setTestOpen: (open: boolean) => void;
-};
-export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
-  const [tab, setTab] = useState<"gpi" | "document">("gpi");
-  const getTabContentClassName = useCallback(
-    (_tab: string) => {
-      const className = "w-full px-3";
-      if (tab === _tab) return className;
-      return className + " hidden";
-    },
-    [tab]
-  );
+type Props = { gpi: GpiGetResponse };
+export default function Gpi({ gpi }: Props) {
   const userHashId = useUserStore((state) => state.user?.hashId);
 
-  const [content, setContent] = useState("");
-  const [loading, setLoading] = useState(false);
-  const onSubmit = useCallback(
-    async (e: FormEvent) => {
-      e.preventDefault();
-
-      setLoading(true);
-      setTestOpen(true);
-      const body = { gpiHashId: gpi.hashId, content };
-
-      const response = await callApi<
-        ChatCompletionSampleResponse,
-        Static<typeof ChatCompletionSchema>
-      >({
-        endpoint: "/chat/completion/sample",
-        method: "POST",
-        body,
-        showError: true,
-      });
-      if (response) {
-        setTestData({ userContent: content, ...body, ...response });
-      } else {
-        setTestData(undefined);
-        setTestOpen(false);
-      }
-      setContent("");
-      setLoading(false);
-    },
-    [gpi.hashId, content, setTestData, setTestOpen]
-  );
-  const onKeyDown = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        onSubmit(e);
-      }
-    },
-    [onSubmit]
-  );
+  const { toast } = useToast();
+  const onClickShare = useCallback(() => {
+    navigator.clipboard.writeText(
+      `${process.env.NEXT_PUBLIC_HOSTNAME}/gpis/${gpi.hashId}`
+    );
+    toast({ title: "Copied!", duration: 1000 });
+  }, [gpi.hashId, toast]);
 
   const models = useModelStore((state) => state.models);
   const model = models.find((m) => m.hashId === gpi?.modelHashId);
 
   return (
-    <div className="w-full border border-theme rounded-md pt-3">
-      <div className="whitespace-pre-wrap px-3 pb-3">
-        <div>{gpi.description}</div>
-        <Badge variant="tag" className="mt-2">
-          {model?.name ?? ""}
-        </Badge>
-        {!!model && Object.keys(gpi.config).length > 0 && (
-          <div className="text-sm text-neutral-400 text-wrap mt-1">
-            {stringify(getApiConfig(model, gpi.config))}
-          </div>
-        )}
-      </div>
-      <div className="sticky top-0 rounded-md w-full px-3 py-3 grid grid-cols-3 md:flex gap-3 bg-background z-30">
-        <div className="flex-1 md:flex-initial md:w-32">
-          <IconTextButton
-            onClick={() => setTab("gpi")}
-            className="w-full md:w-32"
-            Icon={FileCode}
-            text="GPI"
-            selected={tab === "gpi"}
-            responsive
-          />
-        </div>
-        <div className="flex-1 md:flex-initial md:w-32">
-          <IconTextButton
-            onClick={() => setTab("document")}
-            className="w-full md:w-32"
-            Icon={FileText}
-            text="Document"
-            selected={tab === "document"}
-            responsive
-          />
-        </div>
-        <div className="flex-1 md:flex-initial md:w-32">
-          <GpiCopyButton gpiHashId={gpi.hashId} />
-        </div>
-        {gpi.userHashId === userHashId && (
-          <div className="flex-1 md:flex-initial md:w-32">
-            <Link href={`/chats/${gpi.chat.hashId}`}>
-              <IconTextButton
-                className="w-full md:w-32"
-                Icon={FileCog}
-                text="Edit"
-                responsive
-              />
-            </Link>
-          </div>
-        )}
-        {gpi.userHashId === userHashId && (
-          <div className="flex-1 md:flex-initial md:w-32">
-            <IconTextButton
-              className="w-full md:w-32"
-              Icon={CircleX}
-              variant="icon_destructive"
-              text="Delete"
-              responsive
-            />
-          </div>
-        )}
-      </div>
-      <div className={getTabContentClassName("gpi")}>
-        <div className="flex flex-col gap-3 mb-3">
-          {gpi.chat.systemMessage.length > 0 && (
-            <ContentStatic role="system" content={gpi.chat.systemMessage} />
-          )}
-          {gpi.chat.contents.map((content) => (
-            <ContentStatic key={content.hashId} {...content} />
-          ))}
-          <div>
-            <Badge variant="tag">user</Badge>
-          </div>
-          <div className="text-sm text-muted-foreground">
-            <form onSubmit={onSubmit}>
-              <div className="flex items-center gap-3">
-                <div className="relative flex-1 items-start">
-                  <div className="whitespace-pre-wrap px-3 py-2 text-base invisible border">
-                    {content + "."}
-                  </div>
-                  <Textarea
-                    className="absolute max-h-none inset-0 z-10 text-base overflow-hidden resize-none"
-                    value={content}
-                    onChange={(e) => setContent(e.currentTarget.value)}
-                    placeholder="user message"
-                    disabled={loading}
-                    onKeyDown={onKeyDown}
-                  />
-                </div>
-                <Button type="submit" loading={loading}>
-                  <CornerDownLeft />
+    <div className="w-full border border-theme rounded-md flex flex-col gap-3 p-3">
+      <div className="whitespace-pre-wrap">
+        <div className="flex items-start">
+          <Badge variant="tag">{model?.name ?? ""}</Badge>
+          <Popover>
+            <PopoverTrigger className="h-4">
+              <div className="flex items-center text-sm">
+                <Button className=" p-0 h-4 bg-background" variant="secondary">
+                  <Info className="h-4 w-4" />
                 </Button>
               </div>
-            </form>
+            </PopoverTrigger>
+            <PopoverContent>
+              {!!model && Object.keys(gpi.config).length > 0 && (
+                <div className="text-sm text-neutral-400 text-wrap mt-1">
+                  {stringify(getApiConfig(model, gpi.config))}
+                </div>
+              )}
+            </PopoverContent>
+          </Popover>
+          <div className="flex-1"></div>
+          <div>
+            <div className="hidden md:block">
+              <IconTextButton
+                className="w-32"
+                Icon={LinkIcon}
+                text="Share"
+                onClick={onClickShare}
+              />
+            </div>
+            <div className="block md:hidden h-6">
+              <Button className="p-1 h-6 w-6" onClick={onClickShare}>
+                <LinkIcon />
+              </Button>
+            </div>
           </div>
+          <div className="ml-3">
+            <GpiCopyButton gpiHashId={gpi.hashId} />
+          </div>
+          {gpi.userHashId === userHashId && (
+            <div className="ml-3">
+              <Link href={`/chats/${gpi.chat.hashId}`}>
+                <div className="hidden md:block">
+                  <IconTextButton className="w-32" Icon={FileCog} text="Edit" />
+                </div>
+                <div className="block md:hidden h-6">
+                  <Button className="p-1 h-6 w-6">
+                    <FileCog />
+                  </Button>
+                </div>
+              </Link>
+            </div>
+          )}
+          {gpi.userHashId === userHashId && (
+            <div className="ml-3">
+              <Link href={`/chats/${gpi.chat.hashId}`}>
+                <div className="hidden md:block">
+                  <IconTextButton
+                    className="w-32"
+                    Icon={CircleX}
+                    variant="icon_destructive"
+                    text="Delete"
+                  />
+                </div>
+                <div className="block md:hidden h-6">
+                  <Button className="p-1 h-6 w-6" variant="destructive">
+                    <CircleX />
+                  </Button>
+                </div>
+              </Link>
+            </div>
+          )}
         </div>
       </div>
-      <div className={getTabContentClassName("document")}>
-        <Document gpi={gpi} className="px-0 md:pl-0" />
+      <div>{gpi.description}</div>
+      <div className="flex flex-col gap-3">
+        {gpi.chat.systemMessage.length > 0 && (
+          <ContentStatic role="system" content={gpi.chat.systemMessage} />
+        )}
+        {gpi.chat.contents.map((content) => (
+          <ContentStatic key={content.hashId} {...content} />
+        ))}
       </div>
+      <Document gpi={gpi} className="px-0 md:pl-0" />
     </div>
   );
 }

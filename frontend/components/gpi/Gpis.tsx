@@ -6,7 +6,6 @@ import { GpisGetResponse } from "gpinterface-shared/type/gpi";
 import List from "../List";
 import Gpi from "./Gpi";
 import useProviderTypes from "@/hooks/useProviderTypes";
-import GpiTestDialog, { TestDataType } from "../dialogs/GpiTestDialog";
 
 type GpisProps = { baseUrl: string; emptyMessage?: string };
 export default function Gpis({ baseUrl, emptyMessage }: GpisProps) {
@@ -35,9 +34,6 @@ export default function Gpis({ baseUrl, emptyMessage }: GpisProps) {
 
   useProviderTypes();
 
-  const [testData, setTestData] = useState<TestDataType>();
-  const [testOpen, setTestOpen] = useState(false);
-
   return (
     <div className="w-full h-full overflow-hidden relative">
       <div className="h-full w-full overflow-y-auto">
@@ -50,20 +46,11 @@ export default function Gpis({ baseUrl, emptyMessage }: GpisProps) {
             useLastHashId={[lastHashId, setLastHashId]}
           >
             {gpis?.map((gpi) => (
-              <Gpi
-                key={gpi.hashId}
-                gpi={gpi}
-                setTestData={setTestData}
-                setTestOpen={setTestOpen}
-              />
+              <Gpi key={gpi.hashId} gpi={gpi} />
             ))}
           </List>
         </div>
       </div>
-      <GpiTestDialog
-        useTestData={[testData, setTestData]}
-        useTestOpen={[testOpen, setTestOpen]}
-      />
     </div>
   );
 }

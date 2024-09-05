@@ -1,8 +1,5 @@
 "use client";
 
-import GpiTestDialog, {
-  TestDataType,
-} from "@/components/dialogs/GpiTestDialog";
 import Gpi from "@/components/gpi/Gpi";
 import GpiDraft from "@/components/gpi/GpiDraft";
 import List from "@/components/List";
@@ -31,9 +28,6 @@ export default function Page() {
 
   useProviderTypes();
 
-  const [testData, setTestData] = useState<TestDataType>();
-  const [testOpen, setTestOpen] = useState(false);
-
   return (
     <div className="w-full h-full overflow-hidden relative">
       <div className="h-full w-full overflow-y-auto">
@@ -52,8 +46,6 @@ export default function Page() {
                   <Gpi
                     key={chat.hashId}
                     gpi={{ ...gpis[0], userHashId, chat: rest }}
-                    setTestData={setTestData}
-                    setTestOpen={setTestOpen}
                   />
                 );
               }
@@ -62,10 +54,6 @@ export default function Page() {
           </List>
         </div>
       </div>
-      <GpiTestDialog
-        useTestData={[testData, setTestData]}
-        useTestOpen={[testOpen, setTestOpen]}
-      />
     </div>
   );
 }

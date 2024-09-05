@@ -3,7 +3,7 @@
 import { CirclePlay } from "lucide-react";
 import IconTextButton from "../buttons/IconTextButton";
 import { Input } from "../ui";
-import { FormEvent, useCallback, useMemo, useState } from "react";
+import { FormEvent, Fragment, useCallback, useMemo, useState } from "react";
 import callApi from "@/utils/callApi";
 
 function handleSpecialCharacters(match: string, p1: string) {
@@ -84,23 +84,54 @@ export default function DocumentTry({ method, path, body }: Props) {
     <div className="whitespace-pre-wrap text-neutral-400 text-xs md:text-sm">
       <form onSubmit={onSubmit}>
         <div className="text-foreground font-bold">Request</div>
-        <div className="mt-3 flex flex-wrap items-center">
-          <div>{`curl -X ${method} `}</div>
-          <div>{`${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}`}</div>
-          {path.split(/({[^}]+})/).map((p) =>
-            p.includes("{") ? (
-              <div key={p}>
+        <div className="w-full grid grid-cols-[auto_1fr] items-center mb-3 gap-3">
+          {variableKeys.map((key, index) => (
+            <Fragment key={key}>
+              <div>{key}</div>
+              <Input
+                placeholder={key}
+                className="w-full pt-1 h-auto border-primary focus:border-transparent"
+                value={data[key].value}
+                onChange={(e) =>
+                  setData((prev) => {
+                    const _data = { ...prev };
+                    _data[key] = {
+                      value: e.target.value,
+                      type: "variable",
+                    };
+                    return _data;
+                  })
+                }
+              />
+            </Fragment>
+          ))}
+          {path
+            .split(/({[^}]+})/)
+            .filter((p) => p.includes("{"))
+            .map((p) => (
+              <Fragment key={p}>
+                <div>{p}</div>
                 <Input
                   className="w-36 py-0 h-6 border-primary focus:border-transparent"
                   placeholder={p}
                   value={param}
                   onChange={(e) => setParam(e.currentTarget.value)}
                 />
-              </div>
-            ) : (
-              <div key={p}>{p}</div>
-            )
-          )}
+              </Fragment>
+            ))}
+        </div>
+        <div className="mt-3 flex flex-wrap items-center">
+          <div>{`curl -X ${method} `}</div>
+          <div>{`${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}`}</div>
+          {path
+            .split(/({[^}]+})/)
+            .map((p) =>
+              p.includes("{") ? (
+                <div key={p}>{param || p}</div>
+              ) : (
+                <div key={p}>{p}</div>
+              )
+            )}
         </div>
         <div>
           {`\t-H "Authorization: Bearer `}
@@ -109,62 +140,11 @@ export default function DocumentTry({ method, path, body }: Props) {
         </div>
         <div>{`\t-H "Content-Type: application/json"`}</div>
         {keys.length > 0 && (
-          <>
-            <div className="flex flex-wrap items-start">
-              <div>{`\t-d `}</div>
-              {constKeys.length > 0 && (
-                <div>{`'{${constKeys.map(
-                  (key, index) =>
-                    `"${key}": "${data[key].value}"${
-                      index < constKeys.length - 1 ? ", " : ""
-                    }`
-                )}${variableKeys.length === 0 ? `}'` : ", "}`}</div>
-              )}
-            </div>
-            {variableKeys.length > 0 && (
-              <div className="w-full">
-                <div className="w-full">
-                  {variableKeys.map((key, index) => (
-                    <div
-                      key={key}
-                      className="w-full flex flex-wrap items-center mt-3 first:mt-0"
-                    >
-                      <div>{`\t\t\t"${key}": "`}</div>
-                      <div className="flex-1">
-                        <Input
-                          placeholder={key}
-                          className="w-full pt-1 h-auto border-primary focus:border-transparent"
-                          value={data[key].value}
-                          onChange={(e) =>
-                            setData((prev) => {
-                              const _data = { ...prev };
-                              _data[key] = {
-                                value: e.target.value,
-                                type: "variable",
-                              };
-                              return _data;
-                            })
-                          }
-                        />
-                      </div>
-                      &quot;{index < variableKeys.length - 1 ? ", " : ""}
-                    </div>
-                  ))}
-                  <div>{`\t\t}'`}</div>
-                </div>
-              </div>
-            )}
-          </>
+          <div>{`\t-d '{${keys
+            .map((key) => `"${key}": "${data[key].value}"`)
+            .join(", ")}}'`}</div>
         )}
-        {response.length > 0 && (
-          <div className="mt-7">
-            <div className="text-foreground font-bold">Response</div>
-            <div className="mt-3 whitespace-pre-wrap">
-              {response.replace(/\\(.)/g, handleSpecialCharacters)}
-            </div>
-          </div>
-        )}
-        <div className="mt-3 w-full flex justify-end gap-3">
+        <div className="w-full flex justify-end">
           <IconTextButton
             Icon={CirclePlay}
             text="Run"
@@ -179,6 +159,14 @@ export default function DocumentTry({ method, path, body }: Props) {
             loading={loading}
           />
         </div>
+        {response.length > 0 && (
+          <div className="mt-7">
+            <div className="text-foreground font-bold">Response</div>
+            <div className="mt-3 whitespace-pre-wrap">
+              {response.replace(/\\(.)/g, handleSpecialCharacters)}
+            </div>
+          </div>
+        )}
       </form>
     </div>
   );
