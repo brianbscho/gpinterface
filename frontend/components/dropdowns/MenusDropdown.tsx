@@ -25,7 +25,13 @@ import Link from "next/link";
 import IconButton from "../buttons/IconButton";
 
 const loginRedirectPaths = ["login"];
-const logoutRedirectPaths = ["bills", "chats", "gpis/user", "settings"];
+const logoutRedirectPaths = [
+  "bills",
+  "chats",
+  "gpis/user",
+  "/edit",
+  "settings",
+];
 
 export default function MenusDropdown() {
   const { user, setUser } = useUserStore();
@@ -71,25 +77,28 @@ export default function MenusDropdown() {
       <DropdownMenuTrigger>
         <IconButton responsive Icon={UserRound} />
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent className="w-auto px-1">
         <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => push(`/gpis/user`)}>
-            <FileCode />
-            <span className="ml-3">My gpis</span>
+          <DropdownMenuItem
+            className="gap-3"
+            onClick={() => push(`/gpis/user`)}
+          >
+            <FileCode className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="text-xs md:text-sm">My gpis</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => push("/settings")}>
-            <Settings />
-            <span className="ml-3">Settings</span>
+          <DropdownMenuItem className="gap-3" onClick={() => push("/settings")}>
+            <Settings className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="text-xs md:text-sm">Settings</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => push("/bills")}>
-            <ReceiptText />
-            <span className="ml-3">Bills</span>
+          <DropdownMenuItem className="gap-3" onClick={() => push("/bills")}>
+            <ReceiptText className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="text-xs md:text-sm">Bills</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={onClickLogout}>
-            <LogOut />
-            <span className="ml-3">Logout</span>
+          <DropdownMenuItem className="gap-3" onClick={onClickLogout}>
+            <LogOut className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="text-xs md:text-sm">Logout</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
