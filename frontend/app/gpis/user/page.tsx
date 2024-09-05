@@ -5,21 +5,21 @@ import GpiDraft from "@/components/gpi/GpiDraft";
 import List from "@/components/List";
 import useProviderTypes from "@/hooks/useProviderTypes";
 import callApi from "@/utils/callApi";
-import { ChatsGetResponse } from "gpinterface-shared/type/chat";
+import { GpisGetResponse } from "gpinterface-shared/type/gpi";
 import { useCallback, useState } from "react";
 
 export default function Page() {
-  const [chats, setChats] = useState<ChatsGetResponse>();
+  const [gpis, setGpis] = useState<GpisGetResponse>();
   const [lastHashId, setLastHashId] = useState("");
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 
   const callChatsApi = useCallback(async () => {
-    const response = await callApi<ChatsGetResponse>({
-      endpoint: `/chats/user?lastHashId=${lastHashId}`,
+    const response = await callApi<GpisGetResponse>({
+      endpoint: `/gpis/user?lastHashId=${lastHashId}`,
       showError: true,
     });
     if (response) {
-      setChats((prev) => [...(prev ?? []), ...response]);
+      setGpis((prev) => [...(prev ?? []), ...response]);
       if (response.length === 0) {
         setSpinnerHidden(true);
       }
@@ -34,21 +34,15 @@ export default function Page() {
         <List
           callApi={callChatsApi}
           emptyMessage={"Start your chat!"}
-          elements={chats}
+          elements={gpis}
           spinnerHidden={spinnerHidden}
           useLastHashId={[lastHashId, setLastHashId]}
         >
-          {chats?.map((chat) => {
-            const { gpis, userHashId, ...rest } = chat;
+          {gpis?.map((gpi) => {
             if (gpis.length > 0) {
-              return (
-                <Gpi
-                  key={chat.hashId}
-                  gpi={{ ...gpis[0], userHashId, chat: rest }}
-                />
-              );
+              return <Gpi key={gpi.hashId} gpi={gpi} />;
             }
-            return <GpiDraft key={chat.hashId} chat={chat} />;
+            return <GpiDraft key={gpi.hashId} gpi={gpi} />;
           })}
         </List>
       </div>

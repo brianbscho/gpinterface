@@ -32,7 +32,7 @@ export default function ChatCreateButton({
       showError: true,
     });
     if (response) {
-      router.push(`/chats/${response.hashId}`);
+      router.push(`/gpis/${response.hashId}/edit`);
     }
     setLoading(false);
   }, [isLoggedOut, router]);
