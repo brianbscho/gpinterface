@@ -36,7 +36,7 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
   const [tab, setTab] = useState<"gpi" | "document">("gpi");
   const getTabContentClassName = useCallback(
     (_tab: string) => {
-      const className = "w-full h-full px-3 overflow-hidden";
+      const className = "w-full px-3";
       if (tab === _tab) return className;
       return className + " hidden";
     },
@@ -88,10 +88,7 @@ export default function Gpi({ gpi, setTestData, setTestOpen }: Props) {
   const model = models.find((m) => m.hashId === gpi?.modelHashId);
 
   return (
-    <div
-      key={gpi.hashId}
-      className="w-full border border-theme rounded-md pt-3"
-    >
+    <div className="w-full border border-theme rounded-md pt-3">
       <div className="whitespace-pre-wrap px-3 pb-3">
         <div>{gpi.description}</div>
         <Badge variant="tag" className="mt-2">
