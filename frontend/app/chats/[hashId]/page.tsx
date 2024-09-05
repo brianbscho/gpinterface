@@ -66,31 +66,29 @@ export default function Page({ params }: { params: { hashId: string } }) {
 
   if (!chat) return null;
   return (
-    <div className="w-full flex-1 flex flex-col gap-3 overflow-hidden">
-      <div className="flex-1 grid grid-cols-[1fr_auto] overflow-hidden relative">
-        <div className="flex-1 w-full pt-3 px-3 overflow-y-auto">
-          <div className="w-full md:w-auto grid grid-cols-2 md:flex md:flex-col gap-3 mb-3">
-            {chat.gpis.length > 0 && (
-              <GpiPublicButton
-                gpiHashId={chat.gpis[0].hashId}
-                usePublic={[chat.gpis[0].isPublic, setIsPublic]}
-              />
-            )}
-            <ModelSheetButton
-              className="md:hidden w-full h-6"
-              useGpi={[chat.gpis[0], setGpi]}
+    <div className="flex-1 grid grid-cols-[1fr_auto] overflow-hidden relative">
+      <div className="flex-1 w-full pt-3 px-3 overflow-y-auto">
+        <div className="w-full md:w-auto grid grid-cols-2 md:flex md:flex-col gap-3 mb-3">
+          {chat.gpis.length > 0 && (
+            <GpiPublicButton
+              gpiHashId={chat.gpis[0].hashId}
+              usePublic={[chat.gpis[0].isPublic, setIsPublic]}
             />
-          </div>
-          <div className="pb-3 w-full">
-            <Contents chat={chat} />
-          </div>
+          )}
+          <ModelSheetButton
+            className="md:hidden w-full h-6"
+            useGpi={[chat.gpis[0], setGpi]}
+          />
         </div>
-        <ModelPanel topPadding={false}>
-          <ModelSelect />
-          <ModelResetButton />
-          <GpiSaveButton useGpi={[chat.gpis[0], setGpi]} />
-        </ModelPanel>
+        <div className="pb-3 w-full">
+          <Contents chat={chat} />
+        </div>
       </div>
+      <ModelPanel topPadding={false}>
+        <ModelSelect />
+        <ModelResetButton />
+        <GpiSaveButton useGpi={[chat.gpis[0], setGpi]} />
+      </ModelPanel>
     </div>
   );
 }

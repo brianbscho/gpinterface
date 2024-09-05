@@ -9,12 +9,10 @@ function Component() {
   const keyword = useMemo(() => searchParams.get("keyword"), [searchParams]);
 
   return (
-    <div className="w-full flex-1 overflow-hidden">
-      <Gpis
-        baseUrl={`/gpis/search?keyword=${keyword}`}
-        emptyMessage="No results :("
-      />
-    </div>
+    <Gpis
+      baseUrl={`/gpis/search?keyword=${keyword}`}
+      emptyMessage="No results :("
+    />
   );
 }
 

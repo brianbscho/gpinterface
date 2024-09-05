@@ -44,7 +44,7 @@ export default function Body({
               </div>
             </div>
           </div>
-          {children}
+          <div className="w-full flex-1 overflow-hidden">{children}</div>
         </main>
         <Toaster />
       </ThemeProvider>

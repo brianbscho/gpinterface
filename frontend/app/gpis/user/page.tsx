@@ -29,30 +29,28 @@ export default function Page() {
   useProviderTypes();
 
   return (
-    <div className="w-full h-full overflow-hidden relative">
-      <div className="h-full w-full overflow-y-auto">
-        <div className="w-full max-w-4xl mx-auto flex flex-col gap-3 p-3">
-          <List
-            callApi={callChatsApi}
-            emptyMessage={"Start your chat!"}
-            elements={chats}
-            spinnerHidden={spinnerHidden}
-            useLastHashId={[lastHashId, setLastHashId]}
-          >
-            {chats?.map((chat) => {
-              const { gpis, userHashId, ...rest } = chat;
-              if (gpis.length > 0) {
-                return (
-                  <Gpi
-                    key={chat.hashId}
-                    gpi={{ ...gpis[0], userHashId, chat: rest }}
-                  />
-                );
-              }
-              return <GpiDraft key={chat.hashId} chat={chat} />;
-            })}
-          </List>
-        </div>
+    <div className="h-full w-full overflow-y-auto">
+      <div className="w-full max-w-4xl mx-auto flex flex-col gap-3 p-3">
+        <List
+          callApi={callChatsApi}
+          emptyMessage={"Start your chat!"}
+          elements={chats}
+          spinnerHidden={spinnerHidden}
+          useLastHashId={[lastHashId, setLastHashId]}
+        >
+          {chats?.map((chat) => {
+            const { gpis, userHashId, ...rest } = chat;
+            if (gpis.length > 0) {
+              return (
+                <Gpi
+                  key={chat.hashId}
+                  gpi={{ ...gpis[0], userHashId, chat: rest }}
+                />
+              );
+            }
+            return <GpiDraft key={chat.hashId} chat={chat} />;
+          })}
+        </List>
       </div>
     </div>
   );

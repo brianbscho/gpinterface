@@ -55,18 +55,18 @@ export default function Page() {
       spinnerHidden={spinnerHidden}
       useLastHashId={[lastHashId, setLastHashId]}
     >
-      <div className="w-full flex-1  overflow-y-auto">
+      <div className="w-full h-full overflow-y-auto">
         <div className="grid grid-cols-4 gap-y-3 items-center">
-          <div className="z-10 sticky top-0 self-start h-16 md:h-12 py-3 pl-3 bg-background font-bold">
+          <div className="z-10 sticky top-0 self-start h-16 md:h-12 py-3 pl-3 bg-background font-bold border-b">
             Date
           </div>
-          <div className="z-10 sticky top-0 self-start h-16 md:h-12 py-3 bg-background font-bold">
+          <div className="z-10 sticky top-0 self-start h-16 md:h-12 py-3 bg-background font-bold border-b">
             Model
           </div>
-          <div className="z-10 sticky top-0 self-start h-16 md:h-12 py-3 bg-background font-bold">
+          <div className="z-10 sticky top-0 self-start h-16 md:h-12 py-3 bg-background font-bold border-b">
             Detail
           </div>
-          <div className="z-10 sticky top-0 self-start h-16 md:h-12 py-3 bg-background font-bold">
+          <div className="z-10 sticky top-0 self-start h-16 md:h-12 py-3 bg-background font-bold border-b">
             Price
           </div>
           {groupedTextHistories?.map(([date, history], index) => (
@@ -75,10 +75,7 @@ export default function Page() {
                 <Fragment key={h.hashId}>
                   <div></div>
                   <div className="pr-3">
-                    <Badge
-                      variant="tag"
-                      className="self-start w-full md:w-auto"
-                    >
+                    <Badge variant="tag" className="w-full md:w-auto">
                       <div className="w-full truncate">{h.model}</div>
                     </Badge>
                   </div>
@@ -93,7 +90,7 @@ export default function Page() {
                     </HistoryDialog>
                   </div>
                   <div
-                    className={`self-start text-sm${
+                    className={`text-sm${
                       h.paid === 0 ? " line-through text-neutral-700" : ""
                     }`}
                   >
