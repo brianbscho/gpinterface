@@ -2,8 +2,9 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, Suspense, useCallback, useEffect, useState } from "react";
-import { Button, Input } from "../ui";
+import { Input } from "../ui";
 import { SearchIcon } from "lucide-react";
+import IconButton from "../buttons/IconButton";
 
 function _SearchInput() {
   const [keyword, setKeyword] = useState("");
@@ -35,12 +36,12 @@ function _SearchInput() {
           Icon={SearchIcon}
           className="h-6 md:h-8"
         />
-        <Button
+        <IconButton
           type="submit"
-          className="absolute right-0 top-0 h-6 w-6 md:h-8 md:w-8 p-0"
-        >
-          <SearchIcon className="h-5 w-5" />
-        </Button>
+          className="absolute right-0.5 top-0.5 md:right-0.5 md:top-0.5 h-5 w-5 md:h-7 md:w-7 p-0.5 md:p-1"
+          Icon={SearchIcon}
+          responsive
+        ></IconButton>
       </div>
     </form>
   );

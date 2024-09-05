@@ -13,7 +13,6 @@ import {
   UserRound,
 } from "lucide-react";
 import {
-  ShadcnButton,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -23,6 +22,7 @@ import {
   DropdownMenuGroup,
 } from "@/components/ui";
 import Link from "next/link";
+import IconButton from "../buttons/IconButton";
 
 const loginRedirectPaths = ["login"];
 const logoutRedirectPaths = ["bills", "chats", "gpis/user", "settings"];
@@ -61,19 +61,15 @@ export default function MenusDropdown() {
 
   if (!user) {
     return (
-      <ShadcnButton asChild className="h-6 w-6 p-0 md:h-8 md:w-8">
-        <Link href="/login">
-          <UserRound className="h-4 w-4 md:h-5 md:w-5" />
-        </Link>
-      </ShadcnButton>
+      <Link href="/login">
+        <IconButton responsive Icon={UserRound} />
+      </Link>
     );
   }
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
-      <DropdownMenuTrigger asChild>
-        <ShadcnButton className="h-6 w-6 p-0 md:h-8 md:w-8">
-          <UserRound className="h-4 w-4 md:h-5 md:w-5" />
-        </ShadcnButton>
+      <DropdownMenuTrigger>
+        <IconButton responsive Icon={UserRound} />
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuLabel>{user.name}</DropdownMenuLabel>

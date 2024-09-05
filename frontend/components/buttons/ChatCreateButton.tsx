@@ -1,13 +1,13 @@
 "use client";
 
-import { FormEvent, useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import callApi from "@/utils/callApi";
 import { ChatCreateResponse } from "gpinterface-shared/type/chat";
 import useUserStore from "@/store/user";
 import LoginDialog from "../dialogs/LoginDialog";
 import { CirclePlus } from "lucide-react";
-import IconTextButton from "./IconTextButton";
 import { useRouter } from "next/navigation";
+import IconButton from "./IconButton";
 
 export default function ChatCreateButton({
   className,
@@ -39,12 +39,10 @@ export default function ChatCreateButton({
 
   return (
     <div className={className}>
-      <IconTextButton
+      <IconButton
         Icon={CirclePlus}
-        text="Create"
         loading={loading}
         onClick={onClick}
-        className="w-20 md:w-28"
         responsive
       />
       <LoginDialog useOpen={[open, setOpen]} />

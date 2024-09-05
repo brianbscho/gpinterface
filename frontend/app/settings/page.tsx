@@ -16,7 +16,14 @@ import {
   ApiKeysGetResponse,
 } from "gpinterface-shared/type/apiKey";
 import { Static } from "@sinclair/typebox";
-import { Check, CircleX, KeyRound, Mail, Save, UserRound } from "lucide-react";
+import {
+  Check,
+  CircleX,
+  Mail,
+  PlusCircle,
+  Save,
+  UserRound,
+} from "lucide-react";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -28,6 +35,7 @@ import {
 } from "@/components/ui";
 import IconTextButton from "@/components/buttons/IconTextButton";
 import CopyButton from "@/components/buttons/CopyButton";
+import IconButton from "@/components/buttons/IconButton";
 
 export default function Page() {
   const { user, setUser } = useUserStore();
@@ -147,13 +155,11 @@ export default function Page() {
           ></Input>
         </div>
         <div>
-          <IconTextButton
+          <IconButton
             responsive
             onClick={onClickSave}
             disabled={name.length > 0 && !nameValid}
             Icon={Save}
-            text={saveButtonText}
-            className="w-32 md:w-44"
           />
         </div>
         <div></div>
@@ -165,29 +171,28 @@ export default function Page() {
             </div>
           )}
         </div>
-        <div className="font-bold">API Keys</div>
+        <div className="flex items-center gap-3">
+          <div className="font-bold">API Keys</div>
+          <IconButton
+            size="small"
+            onClick={onClickGetApiKey}
+            Icon={PlusCircle}
+          />
+        </div>
         {apiKeys.map((k) => (
           <Fragment key={k.hashId}>
-            <div className="text-neutral-400">{k.key}</div>
-            <IconTextButton
-              responsive
-              onClick={() => onClickApiKeyTrash(k.hashId)}
-              Icon={CircleX}
-              text="Delete"
-              className="w-32 md:w-44"
-            />
+            <div className="col-span-2 flex items-center gap-3">
+              <div className="text-neutral-400">{k.key}</div>
+              <IconButton
+                size="small"
+                onClick={() => onClickApiKeyTrash(k.hashId)}
+                Icon={CircleX}
+              />
+            </div>
             <div></div>
           </Fragment>
         ))}
-        <div className="col-span-2">
-          <IconTextButton
-            responsive
-            onClick={onClickGetApiKey}
-            Icon={KeyRound}
-            text="Create API Key"
-            className="w-32 md:w-44"
-          />
-        </div>
+        <div className="col-span-2"></div>
         <div className="font-bold">Customer support</div>
         <div className="text-neutral-400 flex items-center gap-1 underline col-span-2">
           <a href="mailto:brian.b.cho@bookquilt.com">
@@ -203,13 +208,12 @@ export default function Page() {
         <div className="col-span-2">
           <UpdatePasswordDialog />
         </div>
-        <div className="col-span-2"></div>
         <IconTextButton
           responsive
           Icon={CircleX}
           text="Delete account"
           onClick={onClickDelete}
-          className="w-32 md:w-44"
+          className="w-32 md:w-44 mt-12"
           variant="icon_destructive"
         />
       </div>
