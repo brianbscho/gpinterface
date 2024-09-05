@@ -8,18 +8,18 @@ const small = {
   height: "h-6",
   width: "w-6",
   paddingLeft: "pl-6",
-  padding: "p-1",
-  iconHeight: "h-4",
-  iconWidth: "w-4",
+  padding: "p-1.5",
+  iconHeight: "h-3",
+  iconWidth: "w-3",
   fontSize: "text-xs",
 };
 const medium = {
   height: "h-8",
   width: "w-8",
   paddingLeft: "pl-8",
-  padding: "p-1.5",
-  iconHeight: "h-5",
-  iconWidth: "w-5",
+  padding: "p-2",
+  iconHeight: "h-4",
+  iconWidth: "w-4",
   fontSize: "text-sm",
 };
 const large = {
@@ -35,9 +35,9 @@ const responsiveClass = {
   height: "h-6 md:h-8",
   width: "w-6 md:w-8",
   paddingLeft: "pl-6 md:pl-8",
-  padding: "p-1 md:p-1.5",
-  iconHeight: "h-4 md:h-5",
-  iconWidth: "w-4 md:w-5",
+  padding: "p-1.5 md:p-2",
+  iconHeight: "h-3 md:h-4",
+  iconWidth: "w-3 md:w-4",
   fontSize: "text-xs md:text-sm",
 };
 
@@ -64,9 +64,8 @@ export default function IconTextButton({
 }: ButtonProps) {
   const css =
     variant === "icon"
-      ? "bg-primary text-primary-foreground"
-      : "bg-destructive text-destructive-foreground";
-  const border = variant === "icon" ? "border-primary" : "border-destructive";
+      ? "hover:bg-neutral-400 hover:border-neutral-400 text-neutral-400 hover:text-primary-foreground"
+      : "hover:bg-destructive text-destructive-foreground border-destructive";
 
   const sizeClass = responsive
     ? responsiveClass
@@ -77,15 +76,15 @@ export default function IconTextButton({
       {...props}
       className={cn(
         `bg-background p-0 ${sizeClass.paddingLeft} ${sizeClass.height} border box-border relative`,
-        border,
-        className,
+        css,
+        className
       )}
       variant={variant}
+      disabled={props.disabled || loading}
     >
       <div
         className={cn(
-          `${sizeClass.height} ${sizeClass.width} ${sizeClass.padding} rounded-md absolute -top-px -left-px`,
-          css
+          `${sizeClass.height} ${sizeClass.width} ${sizeClass.padding} rounded-md absolute -top-px -left-px`
         )}
       >
         {loading === true ? (
@@ -96,7 +95,11 @@ export default function IconTextButton({
           <Icon className={`${sizeClass.iconHeight} ${sizeClass.iconWidth}`} />
         )}
       </div>
-      <div className={`w-full ${sizeClass.fontSize}`}>{text}</div>
+      <div
+        className={`w-full px-3 font-light md:font-normal ${sizeClass.fontSize}`}
+      >
+        {text}
+      </div>
     </Button>
   );
 }
