@@ -62,7 +62,7 @@ export default function IconButton({
 }: ButtonProps) {
   const css =
     variant === "icon"
-      ? "border-none bg-background hover:bg-neutral-400"
+      ? "border-none bg-background hover:bg-primary"
       : "border-destructive bg-background hover:bg-destructive";
 
   const sizeClass = responsive
@@ -74,7 +74,7 @@ export default function IconButton({
       {...props}
       disabled={props.disabled || loading}
       className={cn(
-        `text-neutral-400 ${sizeClass.width} ${sizeClass.height} ${sizeClass.padding} border`,
+        `text-primary ${sizeClass.width} ${sizeClass.height} ${sizeClass.padding}`,
         css,
         className
       )}

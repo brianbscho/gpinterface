@@ -37,7 +37,7 @@ export default function Gpis({ baseUrl, emptyMessage }: GpisProps) {
   return (
     <div className="w-full h-full overflow-hidden relative">
       <div className="h-full w-full overflow-y-auto">
-        <div className="w-full max-w-4xl mx-auto flex flex-col gap-12 p-3">
+        <div className="w-full max-w-7xl mx-auto flex flex-col gap-3 p-3">
           <List
             callApi={callGpisApi}
             emptyMessage={emptyMessage ?? "Start your chat!"}

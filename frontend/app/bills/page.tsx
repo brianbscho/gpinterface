@@ -97,7 +97,7 @@ export default function Page() {
                     ${h.price.toFixed(5)}
                   </div>
                   <div></div>
-                  <div className="col-span-3 border-b border-theme border-dashed"></div>
+                  <div className="col-span-3 border-b border-dashed"></div>
                 </Fragment>
               ))}
               <Fragment>

@@ -19,7 +19,7 @@ export default function Body({
         <main className="h-screen flex flex-col items-center min-h-0 overflow-hidden">
           <div className="sticky top-0 left-0 w-full z-20 shrink-0 bg-background">
             <div className="w-full border-b">
-              <div className="w-full p-3 flex gap-3 items-center">
+              <div className="w-full p-3 flex gap-1 items-center">
                 <Link href="/" className="font-bold text-lg">
                   <div>
                     <picture>
@@ -32,15 +32,10 @@ export default function Body({
                   </div>
                 </Link>
                 <div className="flex-1">
-                  <div className="hidden md:block w-full">
-                    <SearchInput />
-                  </div>
+                  <SearchInput />
                 </div>
                 <ChatCreateButton />
                 <MenusDropdown />
-              </div>
-              <div className="md:hidden px-3 pb-3">
-                <SearchInput />
               </div>
             </div>
           </div>

@@ -30,7 +30,7 @@ export default function Page() {
 
   return (
     <div className="h-full w-full overflow-y-auto">
-      <div className="w-full max-w-4xl mx-auto flex flex-col gap-3 p-3">
+      <div className="w-full max-w-7xl mx-auto flex flex-col gap-3 p-3">
         <List
           callApi={callChatsApi}
           emptyMessage={"Start your chat!"}
