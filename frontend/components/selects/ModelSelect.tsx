@@ -49,7 +49,6 @@ export default function ModelSelect() {
           className="w-full md:w-28"
           Icon={ChevronDown}
           text="Models"
-          selected={open}
           responsive
         />
       </SelectEmptyTrigger>

@@ -46,7 +46,6 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
     Omit<LucideProps, "ref"> & React.RefAttributes<SVGSVGElement>
   >;
   text: string;
-  selected?: boolean;
   loading?: boolean;
   size?: "small" | "medium" | "large";
   variant?: "icon" | "icon_destructive";
@@ -57,7 +56,6 @@ export default function IconTextButton({
   className,
   Icon,
   text,
-  selected,
   loading,
   variant = "icon",
   size = "medium",
@@ -81,7 +79,6 @@ export default function IconTextButton({
         `bg-background p-0 ${sizeClass.paddingLeft} ${sizeClass.height} border box-border relative`,
         border,
         className,
-        selected ? css : ""
       )}
       variant={variant}
     >
