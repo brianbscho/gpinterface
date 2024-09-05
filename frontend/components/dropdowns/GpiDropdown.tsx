@@ -24,7 +24,7 @@ export default function GpiDropdown({ gpiHashId }: { gpiHashId: string }) {
     navigator.clipboard.writeText(
       `${process.env.NEXT_PUBLIC_HOSTNAME}/gpis/${gpiHashId}`
     );
-    toast({ title: "Copied!", duration: 1000 });
+    toast({ title: "Link copied!", duration: 1000 });
   }, [gpiHashId, toast]);
 
   const router = useRouter();
