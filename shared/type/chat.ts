@@ -17,6 +17,7 @@ type Chat = {
   }[];
 };
 export type ChatGetResponse = Chat;
+export type ChatsGetResponse = Chat[];
 export type ChatCreateResponse = Chat;
 
 export const ChatUpdateSchema = Type.Object({ systemMessage: Type.String() });
