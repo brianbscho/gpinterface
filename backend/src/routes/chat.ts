@@ -58,21 +58,19 @@ export default async function (fastify: FastifyInstance) {
                 isPublic: true,
               },
             },
-            createdAt: true,
+            updatedAt: true,
           },
-          orderBy: { id: "desc" },
-          take: 5,
         });
         if (!chat) {
           throw fastify.httpErrors.badRequest("chat is not available.");
         }
 
-        const { createdAt, contents, gpis, ...rest } = chat;
+        const { updatedAt, contents, gpis, ...rest } = chat;
         return {
           ...rest,
           gpis: gpis.map((gpi) => ({ ...gpi, config: gpi.config as any })),
           contents: getTypedContents(contents),
-          createdAt: getDateString(createdAt),
+          updatedAt: getDateString(updatedAt),
         };
       } catch (ex) {
         console.error("path: /chat/:hashId, method: get, error:", ex);
@@ -87,7 +85,7 @@ export default async function (fastify: FastifyInstance) {
 
       const chat = await createEntity(
         fastify.prisma.chat.create,
-        { data: { userHashId }, select: { hashId: true, createdAt: true } },
+        { data: { userHashId }, select: { hashId: true, updatedAt: true } },
         32
       );
 
@@ -97,7 +95,7 @@ export default async function (fastify: FastifyInstance) {
         systemMessage: "",
         gpis: [],
         contents: [],
-        createdAt: getDateString(chat.createdAt),
+        updatedAt: getDateString(chat.updatedAt),
       };
     } catch (ex) {
       console.error("path: /chat, method: post, error:", ex);

@@ -7,7 +7,7 @@ type Chat = {
 
   systemMessage: string;
   contents: Content[];
-  createdAt: string;
+  updatedAt: string;
   gpis: {
     hashId: string;
     description: string;
