@@ -54,6 +54,8 @@ export default async function (fastify: FastifyInstance) {
             },
             updatedAt: true,
           },
+          orderBy: { id: "desc" },
+          take: 5,
         });
 
         return chats.map((chat) => {
