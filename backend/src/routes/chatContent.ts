@@ -54,6 +54,11 @@ export default async function (fastify: FastifyInstance) {
         if (!gpi) {
           throw fastify.httpErrors.badRequest("gpi is not available.");
         }
+        if (gpi.chatContents.some((c) => c.content === "")) {
+          throw fastify.httpErrors.badRequest(
+            "There is empty content in chat."
+          );
+        }
 
         const { systemMessage, chatContents } = gpi;
         const messages = [...chatContents];
@@ -72,6 +77,7 @@ export default async function (fastify: FastifyInstance) {
               gpiHashId: body.gpiHashId,
               role: "user",
               content: userContent,
+              isDeployed: false,
             },
             select: {
               hashId: true,
@@ -84,7 +90,7 @@ export default async function (fastify: FastifyInstance) {
         const assistantChatContent = await createEntity(
           fastify.prisma.chatContent.create,
           {
-            data: { ...body, role: "assistant", content },
+            data: { ...body, role: "assistant", content, isDeployed: false },
             select: {
               hashId: true,
               model: true,

@@ -56,8 +56,8 @@ export default async function (fastify: FastifyInstance) {
           fastify.prisma.chatContent.createManyAndReturn,
           {
             data: [
-              { gpiHashId, role: "user", content: "" },
-              { gpiHashId, role: "assistant", content: "" },
+              { gpiHashId, role: "user", content: "", isDeployed: false },
+              { gpiHashId, role: "assistant", content: "", isDeployed: false },
             ],
             select: {
               hashId: true,

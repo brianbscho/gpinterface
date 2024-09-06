@@ -64,12 +64,8 @@ export async function copyGpiEntry(
       isPublic: true,
       systemMessage: true,
       chatContents: {
-        select: {
-          role: true,
-          content: true,
-          config: true,
-          modelHashId: true,
-        },
+        select: { role: true, content: true, config: true, modelHashId: true },
+        where: { isDeployed: true },
       },
     },
   });

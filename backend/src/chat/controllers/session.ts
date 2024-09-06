@@ -59,7 +59,7 @@ export async function createSession({
     select: { hashId: true, chatContents: ChatCompletionContentsQuery },
   });
   if (!gpi) {
-    throw fastify.httpErrors.badRequest("no gpi");
+    throw fastify.httpErrors.badRequest("gpi is not available.");
   }
   if (gpi.chatContents.some((c) => c.content === "")) {
     throw fastify.httpErrors.badRequest("There is empty content in chat.");
