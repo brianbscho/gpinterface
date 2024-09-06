@@ -18,13 +18,13 @@ import {
 import { Cpu, Layers, Loader2, RefreshCcw, X } from "lucide-react";
 import {
   ChatContent,
-  ContentRefreshSchema,
-  ContentsDeleteSchema,
-  ContentUpdateResponse,
-  ContentUpdateSchema,
-  ContentsCreateResponse,
-  ContentCreateSchema,
-} from "gpinterface-shared/type/content";
+  ChatContentRefreshSchema,
+  ChatContentsDeleteSchema,
+  ChatContentUpdateResponse,
+  ChatContentUpdateSchema,
+  ChatContentsCreateResponse,
+  ChatContentCreateSchema,
+} from "gpinterface-shared/type/chatContent";
 import { Static } from "@sinclair/typebox";
 import callApi from "@/utils/callApi";
 import { getApiConfig } from "@/utils/model";
@@ -186,7 +186,7 @@ function Content({
     setRefreshingHashId(chatContent.hashId);
     const response = await callApi<
       ChatContent,
-      Static<typeof ContentRefreshSchema>
+      Static<typeof ChatContentRefreshSchema>
     >({
       endpoint: `/content/refresh/${chatContent.hashId}`,
       method: "PUT",
@@ -234,7 +234,7 @@ function Content({
 
     const response = await callApi<
       DeleteResponse,
-      Static<typeof ContentsDeleteSchema>
+      Static<typeof ChatContentsDeleteSchema>
     >({
       endpoint: "/contents",
       method: "DELETE",
@@ -343,8 +343,8 @@ export default function Contents({ gpi, className }: ContentsProps) {
   const callUpdateContent = useCallback(
     (hashId: string) => async (content: string) => {
       const response = await callApi<
-        ContentUpdateResponse,
-        Static<typeof ContentUpdateSchema>
+        ChatContentUpdateResponse,
+        Static<typeof ChatContentUpdateSchema>
       >({
         endpoint: `/content/${hashId}`,
         method: "PUT",
@@ -369,8 +369,8 @@ export default function Contents({ gpi, className }: ContentsProps) {
 
       setRefreshingHashId("");
       const response = await callApi<
-        ContentsCreateResponse,
-        Static<typeof ContentCreateSchema>
+        ChatContentsCreateResponse,
+        Static<typeof ChatContentCreateSchema>
       >({
         endpoint: `/content`,
         method: "POST",

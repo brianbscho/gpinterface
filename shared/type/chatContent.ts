@@ -22,33 +22,33 @@ export type ChatContent = {
   isModified: boolean;
 };
 
-export const ContentCreateSchema = Type.Object({
+export const ChatContentCreateSchema = Type.Object({
   gpiHashId: Type.String(),
   modelHashId: Type.String(),
   content: Type.String(),
   config: Type.Any(),
 });
 
-export const ContentUpdateSchema = Type.Object({
+export const ChatContentUpdateSchema = Type.Object({
   content: Type.String(),
 });
-export type ContentUpdateResponse = {
+export type ChatContentUpdateResponse = {
   hashId: string;
   content: string;
   isModified: boolean;
 };
 
-export const ContentsDeleteSchema = Type.Object({
+export const ChatContentsDeleteSchema = Type.Object({
   hashIds: Type.Array(Type.String()),
 });
 
-export const ContentRefreshSchema = Type.Object({
+export const ChatContentRefreshSchema = Type.Object({
   gpiHashId: Type.String(),
   modelHashId: Type.String(),
   config: Type.Any(),
 });
 
-export const ContentsCreateSchema = Type.Object({
+export const ChatContentsCreateSchema = Type.Object({
   gpiHashId: Type.String(),
 });
-export type ContentsCreateResponse = ChatContent[];
+export type ChatContentsCreateResponse = ChatContent[];

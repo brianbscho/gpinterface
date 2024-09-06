@@ -5,9 +5,9 @@ import { Dispatch, SetStateAction, useCallback, useState } from "react";
 import { FilePen } from "lucide-react";
 import {
   ChatContent,
-  ContentsCreateResponse,
-  ContentsCreateSchema,
-} from "gpinterface-shared/type/content";
+  ChatContentsCreateResponse,
+  ChatContentsCreateSchema,
+} from "gpinterface-shared/type/chatContent";
 import { Static } from "@sinclair/typebox";
 import callApi from "@/utils/callApi";
 import SmallHoverButton from "./SmallHoverButton";
@@ -25,8 +25,8 @@ export default function ContentsCreateButton({
   const onClickAnswerYourself = useCallback(async () => {
     setLoading(true);
     const response = await callApi<
-      ContentsCreateResponse,
-      Static<typeof ContentsCreateSchema>
+      ChatContentsCreateResponse,
+      Static<typeof ChatContentsCreateSchema>
     >({
       method: "POST",
       endpoint: "/contents",

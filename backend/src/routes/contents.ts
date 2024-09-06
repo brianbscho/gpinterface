@@ -2,16 +2,16 @@ import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
 import { createManyEntities, getTypedContents } from "../util/prisma";
 import {
-  ContentsCreateResponse,
-  ContentsCreateSchema,
-  ContentsDeleteSchema,
-} from "gpinterface-shared/type/content";
+  ChatContentsCreateResponse,
+  ChatContentsCreateSchema,
+  ChatContentsDeleteSchema,
+} from "gpinterface-shared/type/chatContent";
 import { DeleteResponse } from "gpinterface-shared/type";
 
 export default async function (fastify: FastifyInstance) {
-  fastify.delete<{ Body: Static<typeof ContentsDeleteSchema> }>(
+  fastify.delete<{ Body: Static<typeof ChatContentsDeleteSchema> }>(
     "/",
-    { schema: { body: ContentsDeleteSchema } },
+    { schema: { body: ChatContentsDeleteSchema } },
     async (request, reply): Promise<DeleteResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
@@ -36,10 +36,10 @@ export default async function (fastify: FastifyInstance) {
       }
     }
   );
-  fastify.post<{ Body: Static<typeof ContentsCreateSchema> }>(
+  fastify.post<{ Body: Static<typeof ChatContentsCreateSchema> }>(
     "/",
-    { schema: { body: ContentsCreateSchema } },
-    async (request, reply): Promise<ContentsCreateResponse> => {
+    { schema: { body: ChatContentsCreateSchema } },
+    async (request, reply): Promise<ChatContentsCreateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
         const { gpiHashId } = request.body;

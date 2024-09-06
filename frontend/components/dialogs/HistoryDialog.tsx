@@ -8,7 +8,7 @@ import {
   DialogTrigger,
 } from "@/components/ui";
 import { HistoriesGetResponse } from "gpinterface-shared/type/history";
-import { ChatContent } from "gpinterface-shared/type/content";
+import { ChatContent } from "gpinterface-shared/type/chatContent";
 import { ReactNode } from "react";
 
 type Props = {

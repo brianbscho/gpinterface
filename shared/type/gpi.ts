@@ -1,5 +1,5 @@
 import { Type } from "@sinclair/typebox";
-import { ChatContent } from "./content";
+import { ChatContent } from "./chatContent";
 
 export const GpiCreateSchema = Type.Object({
   modelHashId: Type.String(),

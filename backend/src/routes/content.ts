@@ -10,21 +10,21 @@ import {
 } from "../util/prisma";
 import {
   ChatContent,
-  ContentCreateSchema,
-  ContentRefreshSchema,
-  ContentsCreateResponse,
-  ContentUpdateResponse,
-  ContentUpdateSchema,
-} from "gpinterface-shared/type/content";
+  ChatContentCreateSchema,
+  ChatContentRefreshSchema,
+  ChatContentsCreateResponse,
+  ChatContentUpdateResponse,
+  ChatContentUpdateSchema,
+} from "gpinterface-shared/type/chatContent";
 import { Static } from "@sinclair/typebox";
 import { getTextResponse } from "../util/text";
 import { ParamSchema } from "gpinterface-shared/type";
 
 export default async function (fastify: FastifyInstance) {
-  fastify.post<{ Body: Static<typeof ContentCreateSchema> }>(
+  fastify.post<{ Body: Static<typeof ChatContentCreateSchema> }>(
     "/",
-    { schema: { body: ContentCreateSchema } },
-    async (request, reply): Promise<ContentsCreateResponse> => {
+    { schema: { body: ChatContentCreateSchema } },
+    async (request, reply): Promise<ChatContentsCreateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
         const { content: userContent, ...body } = request.body;
@@ -128,11 +128,11 @@ export default async function (fastify: FastifyInstance) {
   );
   fastify.put<{
     Params: Static<typeof ParamSchema>;
-    Body: Static<typeof ContentUpdateSchema>;
+    Body: Static<typeof ChatContentUpdateSchema>;
   }>(
     "/:hashId",
-    { schema: { params: ParamSchema, body: ContentUpdateSchema } },
-    async (request, reply): Promise<ContentUpdateResponse> => {
+    { schema: { params: ParamSchema, body: ChatContentUpdateSchema } },
+    async (request, reply): Promise<ChatContentUpdateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
         const { hashId } = request.params;
@@ -162,10 +162,10 @@ export default async function (fastify: FastifyInstance) {
   );
   fastify.put<{
     Params: Static<typeof ParamSchema>;
-    Body: Static<typeof ContentRefreshSchema>;
+    Body: Static<typeof ChatContentRefreshSchema>;
   }>(
     "/refresh/:hashId",
-    { schema: { params: ParamSchema, body: ContentRefreshSchema } },
+    { schema: { params: ParamSchema, body: ChatContentRefreshSchema } },
     async (request, reply): Promise<ChatContent> => {
       try {
         const { user } = await fastify.getUser(request, reply);
