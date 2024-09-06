@@ -12,7 +12,6 @@ import {
 import {
   ApiKeyCreateResponse,
   ApiKeyDeleteResponse,
-  ApiKeyDeleteSchema,
   ApiKeysGetResponse,
 } from "gpinterface-shared/type/apiKey";
 import { Static } from "@sinclair/typebox";
@@ -101,7 +100,7 @@ export default function Page() {
   const [newKey, setNewKey] = useState("");
   const onClickGetApiKey = useCallback(async () => {
     const response = await callApi<ApiKeyCreateResponse>({
-      endpoint: "/api/key",
+      endpoint: "/api/keys",
       method: "POST",
       body: {},
       showError: true,
@@ -112,7 +111,9 @@ export default function Page() {
         ...prev,
         {
           hashId: response.hashId,
-          key: `${response.key.slice(0, 2)}...${response.key.slice(-4)}`,
+          key: `${response.key.slice(0, 2)}${".".repeat(
+            20
+          )}${response.key.slice(-4)}`,
         },
       ]);
     }
@@ -124,13 +125,9 @@ export default function Page() {
     );
     if (!_confirm) return;
 
-    const response = await callApi<
-      ApiKeyDeleteResponse,
-      Static<typeof ApiKeyDeleteSchema>
-    >({
-      endpoint: "/api/key",
+    const response = await callApi<ApiKeyDeleteResponse>({
+      endpoint: `/api/keys/${hashId}`,
       method: "DELETE",
-      body: { hashId },
       showError: true,
     });
     if (response) {
