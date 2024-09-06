@@ -14,10 +14,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// * * * * * * * * * * * *
-// Gpi
-// 
-
 model Gpi {
   id        Int      @id @default(autoincrement())
   hashId    String   @unique @map("hash_id")
@@ -27,6 +23,7 @@ model Gpi {
   config        Json
   description   String
   isPublic      Boolean @default(false) @map("is_public")
+  isDeployed    Boolean @default(false) @map("is_deployed")
   systemMessage String  @default("") @map("system_message")
 
   contents  ChatContent[]
@@ -142,6 +139,7 @@ model ChatContent {
   content    String
   config     Json?
   isModified Boolean @default(false) @map("is_modified")
+  isDeployed Boolean @default(false) @map("is_deployed")
 
   gpiHashId   String  @map("gpi_hash_id")
   gpi         Gpi     @relation(fields: [gpiHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
