@@ -25,7 +25,7 @@ export default function GpiPublicButton({ gpiHashId, usePublic }: Props) {
       Static<typeof GpiUpdateSchema>
     >({
       endpoint: `/gpis/${gpiHashId}`,
-      method: "PUT",
+      method: "PATCH",
       body: { isPublic },
       showError: true,
     });

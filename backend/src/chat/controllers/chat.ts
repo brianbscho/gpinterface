@@ -9,14 +9,15 @@ import { Prisma } from "@prisma/client";
 
 export const createChatCompletion = async ({
   fastify,
-  body,
+  gpiHashId,
+  userContent,
   userHashId,
 }: {
   fastify: FastifyInstance;
-  body: { gpiHashId: string; content: string };
+  gpiHashId: string;
+  userContent: string;
   userHashId: string | null;
 }) => {
-  const { gpiHashId, content: userContent } = body;
   const gpi = await fastify.prisma.gpi.findFirst({
     where: {
       hashId: gpiHashId,
@@ -63,5 +64,5 @@ export const createChatCompletion = async ({
     },
   });
 
-  return content;
+  return { content };
 };

@@ -60,7 +60,7 @@ export default function UpdatePassword() {
         Static<typeof UserUpdatePasswordSchema>
       >({
         endpoint: "/users/password",
-        method: "PUT",
+        method: "PATCH",
         body: { oldPassword, newPassword, newPasswordRepeat },
         showError: true,
       });

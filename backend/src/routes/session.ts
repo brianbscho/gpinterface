@@ -1,74 +1,80 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
 import {
-  SessionCompletionResponse,
-  SessionCompletionSchema,
   SessionCreateResponse,
-  SessionCreateSchema,
   SessionMessagesGetResponse,
-  SessionMessagesGetSchema,
 } from "gpinterface-shared/type/session";
 import {
   createSession,
   createSessionCompletion,
   getSessionMessages,
 } from "../chat/controllers/session";
+import {
+  ChatCompletionResponse,
+  ChatCompletionSchema,
+} from "gpinterface-shared/type/chat";
+import { GpiHashIdParam, SessionHashIdParam } from "gpinterface-shared/type";
 
 export default async function (fastify: FastifyInstance) {
-  fastify.post<{ Body: Static<typeof SessionCreateSchema> }>(
+  fastify.post<{ Body: Static<typeof GpiHashIdParam> }>(
     "/",
-    { schema: { body: SessionCreateSchema } },
+    { schema: { body: GpiHashIdParam } },
     async (request, reply): Promise<SessionCreateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
         const { gpiHashId } = request.body;
 
-        const session = await createSession({
+        return createSession({
           fastify,
           userHashId: user.hashId || null,
           gpiHashId,
         });
-        return session;
       } catch (ex) {
         console.error("path: /session, method: post, error:", ex);
         throw ex;
       }
     }
   );
-  fastify.post<{ Body: Static<typeof SessionCompletionSchema> }>(
-    "/completion",
-    { schema: { body: SessionCompletionSchema } },
-    async (request, reply): Promise<SessionCompletionResponse> => {
+  fastify.post<{
+    Params: Static<typeof SessionHashIdParam>;
+    Body: Static<typeof ChatCompletionSchema>;
+  }>(
+    "/:sessionHashId/completion",
+    { schema: { params: SessionHashIdParam, body: ChatCompletionSchema } },
+    async (request, reply): Promise<ChatCompletionResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
-        const { body } = request;
+        const { sessionHashId } = request.params;
+        const { content } = request.body;
 
-        const content = await createSessionCompletion({
+        return createSessionCompletion({
           fastify,
           userHashId: user.hashId || null,
-          body,
+          sessionHashId,
+          userContent: content,
         });
-        return { content };
       } catch (ex) {
-        console.error("path: /session/completion, method: post, error:", ex);
+        console.error(
+          "path: /session/:sessionHashId/completion, method: post, error:",
+          ex
+        );
         throw ex;
       }
     }
   );
-  fastify.get<{ Params: Static<typeof SessionMessagesGetSchema> }>(
+  fastify.get<{ Params: Static<typeof SessionHashIdParam> }>(
     "/:sessionHashId/messages",
-    { schema: { params: SessionMessagesGetSchema } },
+    { schema: { params: SessionHashIdParam } },
     async (request, reply): Promise<SessionMessagesGetResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
         const { sessionHashId } = request.params;
 
-        const session = await getSessionMessages({
+        return getSessionMessages({
           fastify,
           userHashId: user.hashId || null,
           sessionHashId,
         });
-        return session;
       } catch (ex) {
         console.error(
           "path: /session/:sessionHashId/messages, method: get, error:",

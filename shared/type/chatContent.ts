@@ -28,9 +28,6 @@ export const ChatContentCreateSchema = Type.Object({
   config: Type.Any(),
 });
 
-export const ChatContentUpdateSchema = Type.Object({
-  content: Type.String(),
-});
 export type ChatContentUpdateResponse = {
   hashId: string;
   content: string;
@@ -46,7 +43,4 @@ export const ChatContentRefreshSchema = Type.Object({
   config: Type.Any(),
 });
 
-export const ChatContentsCreateSchema = Type.Object({
-  gpiHashId: Type.String(),
-});
 export type ChatContentsCreateResponse = ChatContent[];

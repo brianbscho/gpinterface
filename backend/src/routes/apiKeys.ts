@@ -2,11 +2,10 @@ import { Static } from "@sinclair/typebox";
 import { FastifyInstance } from "fastify";
 import {
   ApiKeyCreateResponse,
-  ApiKeyDeleteResponse,
   ApiKeysGetResponse,
 } from "gpinterface-shared/type/apiKey";
 import { createApiKey } from "../controllers/apiKey";
-import { ParamSchema } from "gpinterface-shared/type";
+import { DeleteResponse, ParamSchema } from "gpinterface-shared/type";
 
 export default async function (fastify: FastifyInstance) {
   fastify.get("/", async (request, reply): Promise<ApiKeysGetResponse> => {
@@ -30,7 +29,7 @@ export default async function (fastify: FastifyInstance) {
   fastify.delete<{ Params: Static<typeof ParamSchema> }>(
     "/:hashId",
     { schema: { params: ParamSchema } },
-    async (request, reply): Promise<ApiKeyDeleteResponse> => {
+    async (request, reply): Promise<DeleteResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
         const { hashId } = request.params;
@@ -38,7 +37,7 @@ export default async function (fastify: FastifyInstance) {
         await fastify.prisma.apiKey.delete({
           where: { hashId, userHashId: user.hashId },
         });
-        return { hashId };
+        return { hashIds: [hashId] };
       } catch (ex) {
         console.error("path: /api/keys/:hashId, method: delete, error:", ex);
         throw ex;

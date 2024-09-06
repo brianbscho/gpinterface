@@ -11,7 +11,6 @@ import {
 } from "gpinterface-shared/type/user";
 import {
   ApiKeyCreateResponse,
-  ApiKeyDeleteResponse,
   ApiKeysGetResponse,
 } from "gpinterface-shared/type/apiKey";
 import { Static } from "@sinclair/typebox";
@@ -35,6 +34,7 @@ import {
 import IconTextButton from "@/components/buttons/IconTextButton";
 import CopyButton from "@/components/buttons/CopyButton";
 import IconButton from "@/components/buttons/IconButton";
+import { DeleteResponse } from "gpinterface-shared/type";
 
 export default function Page() {
   const { user, setUser } = useUserStore();
@@ -60,7 +60,7 @@ export default function Page() {
     const response = await callApi<
       UserGetMeResponse,
       Static<typeof UserUpdateSchema>
-    >({ endpoint: "/users", method: "PUT", body: { name }, showError: true });
+    >({ endpoint: "/users", method: "PATCH", body: { name }, showError: true });
     if (response) {
       setUser(response);
       setSaveButtonText("Saved!");
@@ -121,13 +121,15 @@ export default function Page() {
     );
     if (!_confirm) return;
 
-    const response = await callApi<ApiKeyDeleteResponse>({
+    const response = await callApi<DeleteResponse>({
       endpoint: `/api/keys/${hashId}`,
       method: "DELETE",
       showError: true,
     });
     if (response) {
-      setApiKeys((prev) => prev.filter((p) => p.hashId !== response.hashId));
+      setApiKeys((prev) =>
+        prev.filter((p) => !response.hashIds.includes(p.hashId))
+      );
     }
   }, []);
 

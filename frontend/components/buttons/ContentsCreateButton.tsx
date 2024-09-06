@@ -6,11 +6,11 @@ import { FilePen } from "lucide-react";
 import {
   ChatContent,
   ChatContentsCreateResponse,
-  ChatContentsCreateSchema,
 } from "gpinterface-shared/type/chatContent";
 import { Static } from "@sinclair/typebox";
 import callApi from "@/utils/callApi";
 import SmallHoverButton from "./SmallHoverButton";
+import { GpiHashIdParam } from "gpinterface-shared/type";
 
 type GpiType = { hashId: string; systemMessage: string };
 type ContentsProps = {
@@ -26,7 +26,7 @@ export default function ContentsCreateButton({
     setLoading(true);
     const response = await callApi<
       ChatContentsCreateResponse,
-      Static<typeof ChatContentsCreateSchema>
+      Static<typeof GpiHashIdParam>
     >({
       method: "POST",
       endpoint: "/chat/contents",

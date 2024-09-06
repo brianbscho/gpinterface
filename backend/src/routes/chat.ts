@@ -5,25 +5,32 @@ import {
 } from "gpinterface-shared/type/chat";
 import { Static } from "@sinclair/typebox";
 import { createChatCompletion } from "../chat/controllers/chat";
+import { GpiHashIdParam } from "gpinterface-shared/type";
 
 export default async function (fastify: FastifyInstance) {
-  fastify.post<{ Body: Static<typeof ChatCompletionSchema> }>(
-    "/completion",
-    { schema: { body: ChatCompletionSchema } },
+  fastify.post<{
+    Params: Static<typeof GpiHashIdParam>;
+    Body: Static<typeof ChatCompletionSchema>;
+  }>(
+    "/:gpiHashId/completion",
+    { schema: { params: GpiHashIdParam, body: ChatCompletionSchema } },
     async (request, reply): Promise<ChatCompletionResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
-        const { body } = request;
+        const { gpiHashId } = request.params;
+        const { content } = request.body;
 
-        const content = await createChatCompletion({
+        return createChatCompletion({
           fastify,
-          body,
+          gpiHashId,
+          userContent: content,
           userHashId: user.hashId || null,
         });
-
-        return { content };
       } catch (ex) {
-        console.error("path: /chat/completion, method: post, error:", ex);
+        console.error(
+          "path: /chat/:gpiHashId/completion, method: post, error:",
+          ex
+        );
         throw ex;
       }
     }

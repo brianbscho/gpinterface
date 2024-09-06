@@ -14,10 +14,10 @@ import {
   ChatContent,
   ChatContentRefreshSchema,
   ChatContentUpdateResponse,
-  ChatContentUpdateSchema,
 } from "gpinterface-shared/type/chatContent";
 import { getTextResponse } from "../util/text";
 import { ParamSchema } from "gpinterface-shared/type";
+import { ChatCompletionSchema } from "gpinterface-shared/type/chat";
 
 export default async function (fastify: FastifyInstance) {
   fastify.delete<{ Body: Static<typeof ChatContentsDeleteSchema> }>(
@@ -40,19 +40,19 @@ export default async function (fastify: FastifyInstance) {
           where: { hashId: { in: hashIds } },
         });
 
-        return { success: true };
+        return { hashIds };
       } catch (ex) {
         console.error("path: /chat/contents, method: delete, error:", ex);
         throw ex;
       }
     }
   );
-  fastify.put<{
+  fastify.patch<{
     Params: Static<typeof ParamSchema>;
-    Body: Static<typeof ChatContentUpdateSchema>;
+    Body: Static<typeof ChatCompletionSchema>;
   }>(
     "/:hashId",
-    { schema: { params: ParamSchema, body: ChatContentUpdateSchema } },
+    { schema: { params: ParamSchema, body: ChatCompletionSchema } },
     async (request, reply): Promise<ChatContentUpdateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
@@ -81,7 +81,7 @@ export default async function (fastify: FastifyInstance) {
       }
     }
   );
-  fastify.put<{
+  fastify.patch<{
     Params: Static<typeof ParamSchema>;
     Body: Static<typeof ChatContentRefreshSchema>;
   }>(

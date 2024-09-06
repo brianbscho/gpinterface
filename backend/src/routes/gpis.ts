@@ -234,7 +234,7 @@ export default async function (fastify: FastifyInstance) {
       }
     }
   );
-  fastify.put<{
+  fastify.patch<{
     Params: Static<typeof ParamSchema>;
     Body: Static<typeof GpiUpdateSchema>;
   }>(
@@ -316,7 +316,7 @@ export default async function (fastify: FastifyInstance) {
 
         await fastify.prisma.gpi.deleteMany({ where: { hashId } });
 
-        return { success: true };
+        return { hashIds: [hashId] };
       } catch (ex) {
         console.error("path: /gpi/:hashId, method: put, error:", ex);
         throw ex;
@@ -327,7 +327,7 @@ export default async function (fastify: FastifyInstance) {
     Params: Static<typeof ParamSchema>;
     Body: Static<typeof ChatContentCreateSchema>;
   }>(
-    "/:hashId/chat/contents/completions",
+    "/:hashId/chat/contents/completion",
     { schema: { params: ParamSchema, body: ChatContentCreateSchema } },
     async (request, reply): Promise<ChatContentsCreateResponse> => {
       try {
@@ -440,7 +440,7 @@ export default async function (fastify: FastifyInstance) {
         ];
       } catch (ex) {
         console.error(
-          "path: /gpis/:hashId/chat/contents/comopletions, method: post, error:",
+          "path: /gpis/:hashId/chat/contents/completion, method: post, error:",
           ex
         );
         throw ex;
@@ -449,7 +449,7 @@ export default async function (fastify: FastifyInstance) {
   );
   fastify.post<{ Params: Static<typeof ParamSchema> }>(
     "/:hashId/chat/contents",
-    { schema: { body: ParamSchema } },
+    { schema: { params: ParamSchema } },
     async (request, reply): Promise<ChatContentsCreateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);

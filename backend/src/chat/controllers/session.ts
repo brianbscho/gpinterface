@@ -76,14 +76,14 @@ export async function createSession({
 export async function createSessionCompletion({
   fastify,
   userHashId,
-  body,
+  sessionHashId,
+  userContent,
 }: {
   fastify: FastifyInstance;
   userHashId: string | null;
-  body: { sessionHashId: string; content: string };
+  sessionHashId: string;
+  userContent: string;
 }) {
-  const { sessionHashId, content: userContent } = body;
-
   const session = await fastify.prisma.session.findFirst({
     where: {
       hashId: sessionHashId,
@@ -142,7 +142,7 @@ export async function createSessionCompletion({
     },
   });
 
-  return content;
+  return { content };
 }
 
 export async function getSessionMessages({

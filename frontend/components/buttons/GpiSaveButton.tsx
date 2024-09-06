@@ -29,7 +29,7 @@ export default function GpiSaveButton({ useGpi }: Props) {
       Static<typeof GpiUpdateSchema>
     >({
       endpoint: `/gpis/${gpi.hashId}`,
-      method: "PUT",
+      method: "PATCH",
       body: { modelHashId: model.hashId, config: getApiConfig(model, config) },
       showError: true,
     });

@@ -232,7 +232,7 @@ export default async function (fastify: FastifyInstance) {
       }
     }
   );
-  fastify.put<{ Body: Static<typeof UserUpdateSchema> }>(
+  fastify.patch<{ Body: Static<typeof UserUpdateSchema> }>(
     "/",
     { schema: { body: UserUpdateSchema } },
     async (request, reply): Promise<UserGetMeResponse> => {
@@ -252,7 +252,7 @@ export default async function (fastify: FastifyInstance) {
       }
     }
   );
-  fastify.put<{ Body: Static<typeof UserUpdatePasswordSchema> }>(
+  fastify.patch<{ Body: Static<typeof UserUpdatePasswordSchema> }>(
     "/password",
     { schema: { body: UserUpdatePasswordSchema } },
     async (request, reply) => {

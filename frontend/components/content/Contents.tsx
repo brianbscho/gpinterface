@@ -21,7 +21,6 @@ import {
   ChatContentRefreshSchema,
   ChatContentsDeleteSchema,
   ChatContentUpdateResponse,
-  ChatContentUpdateSchema,
   ChatContentsCreateResponse,
   ChatContentCreateSchema,
 } from "gpinterface-shared/type/chatContent";
@@ -34,7 +33,8 @@ import useModelStore from "@/store/model";
 import ContentInput from "../../components/inputs/ContentInput";
 import { cn } from "@/utils/css";
 import ContentsCreateButton from "../../components/buttons/ContentsCreateButton";
-import { DeleteResponse, ParamSchema } from "gpinterface-shared/type";
+import { DeleteResponse } from "gpinterface-shared/type";
+import { ChatCompletionSchema } from "gpinterface-shared/type/chat";
 import {
   GpiGetResponse,
   GpiUpdateResponse,
@@ -189,7 +189,7 @@ function Content({
       Static<typeof ChatContentRefreshSchema>
     >({
       endpoint: `/chat/contents/${chatContent.hashId}/refresh`,
-      method: "PUT",
+      method: "PATCH",
       body: { config: getApiConfig(model, config), modelHashId: model.hashId },
       showError: true,
     });
@@ -230,9 +230,9 @@ function Content({
       body: { hashIds },
       showError: true,
     });
-    if (response?.success) {
+    if (response) {
       setChatContents((prev) =>
-        prev.filter((p) => !hashIds.includes(p.hashId))
+        prev.filter((p) => !response.hashIds.includes(p.hashId))
       );
     }
   }, [hashIds, chatContent.role, setChatContents]);
@@ -322,7 +322,7 @@ export default function Contents({ gpi, className }: ContentsProps) {
         Static<typeof GpiUpdateSchema>
       >({
         endpoint: `/gpis/${gpi.hashId}`,
-        method: "PUT",
+        method: "PATCH",
         body: { systemMessage },
       });
       return response?.systemMessage;
@@ -333,10 +333,10 @@ export default function Contents({ gpi, className }: ContentsProps) {
     (hashId: string) => async (content: string) => {
       const response = await callApi<
         ChatContentUpdateResponse,
-        Static<typeof ChatContentUpdateSchema>
+        Static<typeof ChatCompletionSchema>
       >({
         endpoint: `/chat/contents/${hashId}`,
-        method: "PUT",
+        method: "PATCH",
         body: { content },
       });
       if (response) {
@@ -389,7 +389,7 @@ export default function Contents({ gpi, className }: ContentsProps) {
       method: "DELETE",
       showError: true,
     });
-    if (response?.success) {
+    if (response) {
       location.pathname = "/gpis/user";
     }
   }, [gpi.hashId]);
