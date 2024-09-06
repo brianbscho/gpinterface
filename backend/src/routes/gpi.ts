@@ -12,8 +12,6 @@ import { copyGpiEntry, createGpiEntry } from "../controllers/gpi";
 import { ContentHistorySelect, getTypedContents } from "../util/prisma";
 
 export default async function (fastify: FastifyInstance) {
-  const { httpErrors } = fastify;
-
   fastify.get<{ Params: Static<typeof ParamSchema> }>(
     "/:hashId",
     { schema: { params: ParamSchema } },
@@ -32,7 +30,7 @@ export default async function (fastify: FastifyInstance) {
             userHashId: true,
             description: true,
             systemMessage: true,
-            contents: {
+            chatContents: {
               select: {
                 hashId: true,
                 role: true,
@@ -52,11 +50,11 @@ export default async function (fastify: FastifyInstance) {
           throw fastify.httpErrors.badRequest("The gpi is not available.");
         }
 
-        const { config, contents, ...rest } = gpi;
+        const { config, chatContents, ...rest } = gpi;
         return {
           ...rest,
           config: config as any,
-          contents: getTypedContents(contents),
+          chatContents: getTypedContents(chatContents),
         };
       } catch (ex) {
         console.error("path: /gpi/:hashId, method: get, error:", ex);
@@ -79,7 +77,7 @@ export default async function (fastify: FastifyInstance) {
           description: "",
           isPublic: false,
           systemMessage: "",
-          contents: [],
+          chatContents: [],
         });
 
         return { hashId: newGpi.hashId };

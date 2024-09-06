@@ -52,7 +52,7 @@ export default async function (fastify: FastifyInstance) {
           throw fastify.httpErrors.badRequest("gpi not found");
         }
 
-        const contents = await createManyEntities(
+        const chatContents = await createManyEntities(
           fastify.prisma.chatContent.createManyAndReturn,
           {
             data: [
@@ -70,7 +70,7 @@ export default async function (fastify: FastifyInstance) {
           }
         );
 
-        return getTypedContents(contents);
+        return getTypedContents(chatContents);
       } catch (ex) {
         console.error("path: /contents, method: post, error:", ex);
         throw ex;

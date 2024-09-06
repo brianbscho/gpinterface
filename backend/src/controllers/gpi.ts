@@ -10,7 +10,7 @@ export async function createGpiEntry(
     isPublic: boolean;
     systemMessage: string;
     modelHashId: string;
-    contents: {
+    chatContents: {
       config: Prisma.JsonValue;
       modelHashId: string | null;
       role: string;
@@ -27,9 +27,9 @@ export async function createGpiEntry(
           {
             ...gpi,
             config: gpi.config ?? Prisma.JsonNull,
-            contents: {
+            chatContents: {
               createMany: {
-                data: gpi.contents.map((c) =>
+                data: gpi.chatContents.map((c) =>
                   getDataWithHashId(getTypedContent(c))
                 ),
               },
@@ -63,7 +63,7 @@ export async function copyGpiEntry(
       modelHashId: true,
       isPublic: true,
       systemMessage: true,
-      contents: {
+      chatContents: {
         select: {
           role: true,
           content: true,

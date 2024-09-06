@@ -56,10 +56,10 @@ export default function Gpi({ gpi }: Props) {
         {gpi.systemMessage.length > 0 && (
           <ContentStatic role="system" content={gpi.systemMessage} />
         )}
-        {gpi.contents.map((content) => (
-          <ContentStatic key={content.hashId} {...content} />
+        {gpi.chatContents.map((c) => (
+          <ContentStatic key={c.hashId} {...c} />
         ))}
-        {gpi.systemMessage.length === 0 && gpi.contents.length === 0 && (
+        {gpi.systemMessage.length === 0 && gpi.chatContents.length === 0 && (
           <div className="text-neutral-300 text-sm font-light">
             No chat history
           </div>

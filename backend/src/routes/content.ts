@@ -9,7 +9,7 @@ import {
   ContentHistorySelect,
 } from "../util/prisma";
 import {
-  Content,
+  ChatContent,
   ContentCreateSchema,
   ContentRefreshSchema,
   ContentsCreateResponse,
@@ -46,7 +46,7 @@ export default async function (fastify: FastifyInstance) {
           where: { hashId: body.gpiHashId, userHashId: user.hashId },
           select: {
             systemMessage: true,
-            contents: ChatCompletionContentsQuery,
+            chatContents: ChatCompletionContentsQuery,
             userHashId: true,
           },
         });
@@ -54,8 +54,8 @@ export default async function (fastify: FastifyInstance) {
           throw fastify.httpErrors.badRequest("gpi is not available.");
         }
 
-        const { systemMessage, contents } = gpi;
-        const messages = [...contents];
+        const { systemMessage, chatContents } = gpi;
+        const messages = [...chatContents];
         messages.push({ role: "user", content: userContent });
         let { content, ...response } = await getTextResponse({
           model,
@@ -166,7 +166,7 @@ export default async function (fastify: FastifyInstance) {
   }>(
     "/refresh/:hashId",
     { schema: { params: ParamSchema, body: ContentRefreshSchema } },
-    async (request, reply): Promise<Content> => {
+    async (request, reply): Promise<ChatContent> => {
       try {
         const { user } = await fastify.getUser(request, reply);
         const { hashId } = request.params;

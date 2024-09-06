@@ -104,12 +104,14 @@ export async function getUpdatedAtByHashId(
   return prompt.updatedAt;
 }
 
-export function getTypedContent<T>(content: T & { config: Prisma.JsonValue }) {
-  return { ...content, config: content.config as any };
+export function getTypedContent<T>(
+  chatContent: T & { config: Prisma.JsonValue }
+) {
+  return { ...chatContent, config: chatContent.config as any };
 }
 
 export function getTypedContents<T, H>(
-  contents: (T & {
+  chatContents: (T & {
     config: Prisma.JsonValue;
     histories?: (H & {
       response: Prisma.JsonValue;
@@ -119,12 +121,12 @@ export function getTypedContents<T, H>(
     })[];
   })[]
 ) {
-  return contents.map((c) => {
+  return chatContents.map((c) => {
     const { histories, ...rest } = c;
-    const content = getTypedContent(rest);
-    if (!histories || histories.length === 0) return content;
+    const chatContent = getTypedContent(rest);
+    if (!histories || histories.length === 0) return chatContent;
 
-    return { history: getTypedHistory(histories[0]), ...content };
+    return { history: getTypedHistory(histories[0]), ...chatContent };
   });
 }
 

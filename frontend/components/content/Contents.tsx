@@ -17,7 +17,7 @@ import {
 } from "react";
 import { Cpu, Layers, Loader2, RefreshCcw, X } from "lucide-react";
 import {
-  Content as ContentType,
+  ChatContent,
   ContentRefreshSchema,
   ContentsDeleteSchema,
   ContentUpdateResponse,
@@ -43,7 +43,7 @@ import {
 
 type ButtonsProps = {
   onClickModel: (() => void) | undefined;
-  history: ContentType["history"];
+  history: ChatContent["history"];
   isRefreshVisible: boolean;
   onClickRefresh: () => void;
   isDeleteVisible: boolean;
@@ -117,9 +117,9 @@ function Buttons({
 type RefreshingHashId = string | undefined;
 type ContentProps = {
   gpiHashId: string;
-  content: Omit<ContentType, "hashId" | "isModified"> &
-    Partial<Pick<ContentType, "hashId" | "isModified">>;
-  setContents: Dispatch<SetStateAction<ContentType[]>>;
+  chatContent: Omit<ChatContent, "hashId" | "isModified"> &
+    Partial<Pick<ChatContent, "hashId" | "isModified">>;
+  setChatContents: Dispatch<SetStateAction<ChatContent[]>>;
   useRefreshingHashId: [RefreshingHashId, (hashId: RefreshingHashId) => void];
   callUpdateContent: (content: string) => Promise<string | undefined>;
   hashIds?: string[];
@@ -127,14 +127,14 @@ type ContentProps = {
 
 function Content({
   gpiHashId,
-  content,
-  setContents,
+  chatContent,
+  setChatContents,
   useRefreshingHashId,
   callUpdateContent,
   hashIds,
 }: ContentProps) {
-  const [newContent, setNewContent] = useState(content.content);
-  const [oldContent, setOldContent] = useState(content.content);
+  const [newContent, setNewContent] = useState(chatContent.content);
+  const [oldContent, setOldContent] = useState(chatContent.content);
   const [refreshingHashId, setRefreshingHashId] = useRefreshingHashId;
   const [model, config, setModelHashId, setConfig] = useModelStore((state) => [
     state.model,
@@ -144,9 +144,9 @@ function Content({
   ]);
 
   useEffect(() => {
-    setNewContent(content.content);
-    setOldContent(content.content);
-  }, [content.content]);
+    setNewContent(chatContent.content);
+    setOldContent(chatContent.content);
+  }, [chatContent.content]);
   const [isSaving, setIsSaving] = useState(false);
   useEffect(() => {
     if (oldContent === newContent) {
@@ -176,19 +176,19 @@ function Content({
   const loading = useMemo(
     () =>
       typeof refreshingHashId === "string" &&
-      refreshingHashId === content.hashId,
-    [refreshingHashId, content.hashId]
+      refreshingHashId === chatContent.hashId,
+    [refreshingHashId, chatContent.hashId]
   );
 
   const onClickRefresh = useCallback(async () => {
     if (!model) return;
 
-    setRefreshingHashId(content.hashId);
+    setRefreshingHashId(chatContent.hashId);
     const response = await callApi<
-      ContentType,
+      ChatContent,
       Static<typeof ContentRefreshSchema>
     >({
-      endpoint: `/content/refresh/${content.hashId}`,
+      endpoint: `/content/refresh/${chatContent.hashId}`,
       method: "PUT",
       body: {
         config: getApiConfig(model, config),
@@ -198,7 +198,7 @@ function Content({
       showError: true,
     });
     if (response) {
-      setContents((prev) =>
+      setChatContents((prev) =>
         prev.map((p) => {
           if (p.hashId === response.hashId) {
             return response;
@@ -209,18 +209,25 @@ function Content({
       );
     }
     setRefreshingHashId(undefined);
-  }, [gpiHashId, content, model, config, setRefreshingHashId, setContents]);
+  }, [
+    gpiHashId,
+    chatContent.hashId,
+    model,
+    config,
+    setRefreshingHashId,
+    setChatContents,
+  ]);
 
   const isDeleteVisible = useMemo(() => hashIds?.length === 2, [hashIds]);
   const isRefreshVisible = useMemo(
-    () => content.role === "assistant",
-    [, content.role]
+    () => chatContent.role === "assistant",
+    [, chatContent.role]
   );
   const onClickDelete = useCallback(async () => {
     if (!hashIds) return;
 
     let message = `This action will also delete the ${
-      content.role === "user" ? "next assistant" : "previous user"
+      chatContent.role === "user" ? "next assistant" : "previous user"
     } message. Do you want to proceed?`;
     const yes = confirm(message);
     if (!yes) return;
@@ -235,21 +242,23 @@ function Content({
       showError: true,
     });
     if (response?.success) {
-      setContents((prev) => prev.filter((p) => !hashIds.includes(p.hashId)));
+      setChatContents((prev) =>
+        prev.filter((p) => !hashIds.includes(p.hashId))
+      );
     }
-  }, [hashIds, content.role, setContents]);
+  }, [hashIds, chatContent.role, setChatContents]);
 
   return (
     <CardContent className="p-0">
       <div className="flex items-center gap-1 mb-3">
-        {content.role !== "assistant" && (
+        {chatContent.role !== "assistant" && (
           <Badge className="h-6" variant="tag">
-            {content.role}
+            {chatContent.role}
           </Badge>
         )}
-        {content.role === "assistant" && (
+        {chatContent.role === "assistant" && (
           <Badge className="h-6" variant="tag">
-            {!content.model ? "assistant" : content.model.name}
+            {!chatContent.model ? "assistant" : chatContent.model.name}
           </Badge>
         )}
         {isSaving && (
@@ -258,24 +267,24 @@ function Content({
             <div className="text-xs">saving...</div>
           </>
         )}
-        {content.isModified === true && !isSaving && (
+        {chatContent.isModified === true && !isSaving && (
           <div className="ml-1 text-xs self-start">*answer modified</div>
         )}
         <div className="flex-1"></div>
         <Buttons
           onClickModel={
-            !content.model?.hashId
+            !chatContent.model?.hashId
               ? undefined
               : () => {
-                  if (content.model?.hashId) {
-                    setModelHashId(content.model?.hashId);
+                  if (chatContent.model?.hashId) {
+                    setModelHashId(chatContent.model?.hashId);
                   }
-                  if (content.config) {
-                    setConfig(content.config);
+                  if (chatContent.config) {
+                    setConfig(chatContent.config);
                   }
                 }
           }
-          history={content.history}
+          history={chatContent.history}
           isRefreshVisible={isRefreshVisible === true}
           onClickRefresh={onClickRefresh}
           isDeleteVisible={isDeleteVisible === true}
@@ -293,7 +302,7 @@ function Content({
             className="absolute max-h-none inset-0 z-10 text-base overflow-hidden resize-none"
             value={newContent}
             onChange={(e) => setNewContent(e.currentTarget.value)}
-            placeholder={`${content.role} message`}
+            placeholder={`${chatContent.role} message`}
             disabled={disabled}
           />
           {loading && (
@@ -309,7 +318,7 @@ function Content({
 
 type ContentsProps = { gpi: GpiGetResponse; className?: string };
 export default function Contents({ gpi, className }: ContentsProps) {
-  const [contents, setContents] = useState(gpi.contents);
+  const [chatContents, setChatContents] = useState(gpi.chatContents);
   const [refreshingHashId, setRefreshingHashId] = useState<string>();
 
   const systemContent = useMemo(
@@ -342,7 +351,7 @@ export default function Contents({ gpi, className }: ContentsProps) {
         body: { content },
       });
       if (response) {
-        setContents((prev) =>
+        setChatContents((prev) =>
           prev.map((c) =>
             c.hashId === hashId ? { ...c, isModified: response.isModified } : c
           )
@@ -374,7 +383,7 @@ export default function Contents({ gpi, className }: ContentsProps) {
         showError: true,
       });
       if (response) {
-        setContents((prev) => [...prev, ...response]);
+        setChatContents((prev) => [...prev, ...response]);
       }
       setRefreshingHashId(undefined);
     },
@@ -411,27 +420,27 @@ export default function Contents({ gpi, className }: ContentsProps) {
       </div>
       {systemContent.content.length > 0 && (
         <Content
-          content={systemContent}
+          chatContent={systemContent}
           gpiHashId={gpi.hashId}
-          setContents={setContents}
+          setChatContents={setChatContents}
           useRefreshingHashId={[refreshingHashId, setRefreshingHashId]}
           callUpdateContent={callUpdateSystemMessage}
         />
       )}
-      {contents.map((c, i) => {
+      {chatContents.map((c, i) => {
         let hashIds: string[] = [];
         if (c.role === "user") {
-          hashIds = contents.slice(i, i + 2).map((_c) => _c.hashId);
+          hashIds = chatContents.slice(i, i + 2).map((_c) => _c.hashId);
         } else {
-          hashIds = contents.slice(i - 1, i + 1).map((_c) => _c.hashId);
+          hashIds = chatContents.slice(i - 1, i + 1).map((_c) => _c.hashId);
         }
 
         return (
           <Content
             key={c.hashId}
-            content={c}
+            chatContent={c}
             gpiHashId={gpi.hashId}
-            setContents={setContents}
+            setChatContents={setChatContents}
             useRefreshingHashId={[refreshingHashId, setRefreshingHashId]}
             callUpdateContent={callUpdateContent(c.hashId)}
             hashIds={hashIds}
@@ -439,7 +448,7 @@ export default function Contents({ gpi, className }: ContentsProps) {
         );
       })}
       <ContentInput onSubmit={onSubmit}>
-        <ContentsCreateButton gpi={gpi} setContents={setContents} />
+        <ContentsCreateButton gpi={gpi} setChatContents={setChatContents} />
       </ContentInput>
     </div>
   );

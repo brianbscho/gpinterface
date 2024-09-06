@@ -8,13 +8,13 @@ import {
   DialogTrigger,
 } from "@/components/ui";
 import { HistoriesGetResponse } from "gpinterface-shared/type/history";
-import { Content } from "gpinterface-shared/type/content";
+import { ChatContent } from "gpinterface-shared/type/content";
 import { ReactNode } from "react";
 
 type Props = {
   history:
     | HistoriesGetResponse[0]
-    | Exclude<Content["history"], undefined | null>;
+    | Exclude<ChatContent["history"], undefined | null>;
   children: ReactNode;
 };
 export default function History({ history, children }: Props) {

@@ -34,7 +34,7 @@ export default async function (fastify: FastifyInstance) {
             userHashId: true,
             description: true,
             systemMessage: true,
-            contents: {
+            chatContents: {
               select: {
                 hashId: true,
                 role: true,
@@ -54,11 +54,11 @@ export default async function (fastify: FastifyInstance) {
         });
 
         return gpis.map((gpi) => {
-          const { config, contents, ...rest } = gpi;
+          const { config, chatContents, ...rest } = gpi;
           return {
             ...rest,
             config: config as any,
-            contents: getTypedContents(contents),
+            chatContents: getTypedContents(chatContents),
           };
         });
       } catch (ex) {
@@ -89,7 +89,7 @@ export default async function (fastify: FastifyInstance) {
                 OR: [
                   { description: { search } },
                   { systemMessage: { search } },
-                  { contents: { some: { content: { search } } } },
+                  { chatContents: { some: { content: { search } } } },
                 ],
               },
             ],
@@ -99,7 +99,7 @@ export default async function (fastify: FastifyInstance) {
             userHashId: true,
             description: true,
             systemMessage: true,
-            contents: {
+            chatContents: {
               select: {
                 hashId: true,
                 role: true,
@@ -119,11 +119,11 @@ export default async function (fastify: FastifyInstance) {
         });
 
         return gpis.map((gpi) => {
-          const { contents, config, ...rest } = gpi;
+          const { chatContents, config, ...rest } = gpi;
           return {
             ...rest,
             config: config as any,
-            contents: getTypedContents(contents),
+            chatContents: getTypedContents(chatContents),
           };
         });
       } catch (ex) {
@@ -157,7 +157,7 @@ export default async function (fastify: FastifyInstance) {
             userHashId: true,
             description: true,
             systemMessage: true,
-            contents: {
+            chatContents: {
               select: {
                 hashId: true,
                 role: true,
@@ -177,11 +177,11 @@ export default async function (fastify: FastifyInstance) {
         });
 
         return gpis.map((gpi) => {
-          const { contents, config, ...rest } = gpi;
+          const { chatContents, config, ...rest } = gpi;
           return {
             ...rest,
             config: config as any,
-            contents: getTypedContents(contents),
+            chatContents: getTypedContents(chatContents),
           };
         });
       } catch (ex) {

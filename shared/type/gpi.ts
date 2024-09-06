@@ -1,5 +1,5 @@
 import { Type } from "@sinclair/typebox";
-import { Content } from "./content";
+import { ChatContent } from "./content";
 
 export const GpiCreateSchema = Type.Object({
   modelHashId: Type.String(),
@@ -12,7 +12,7 @@ type Gpi = {
   userHashId: string | null;
   description: string;
   systemMessage: string;
-  contents: Content[];
+  chatContents: ChatContent[];
   config: object;
   modelHashId: string;
   isPublic: boolean;

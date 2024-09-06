@@ -36,8 +36,8 @@ export default function GpiDraft({ gpi }: Props) {
           {gpi.systemMessage.length > 0 && (
             <ContentStatic role="system" content={gpi.systemMessage} />
           )}
-          {gpi.contents.map((content) => (
-            <ContentStatic key={content.hashId} {...content} />
+          {gpi.chatContents.map((c) => (
+            <ContentStatic key={c.hashId} {...c} />
           ))}
         </div>
       </div>

@@ -55,18 +55,18 @@ export async function createSession({
 }) {
   const gpi = await fastify.prisma.gpi.findFirst({
     where: { hashId: gpiHashId, OR: [{ userHashId }, { isPublic: true }] },
-    select: { hashId: true, contents: ChatCompletionContentsQuery },
+    select: { hashId: true, chatContents: ChatCompletionContentsQuery },
   });
   if (!gpi) {
     throw fastify.httpErrors.badRequest("no gpi");
   }
-  if (gpi.contents.some((c) => c.content === "")) {
+  if (gpi.chatContents.some((c) => c.content === "")) {
     throw fastify.httpErrors.badRequest("There is empty content in chat.");
   }
 
   const session = await createSessionEntry(fastify.prisma.session, {
     gpiHashId,
-    messages: gpi.contents,
+    messages: gpi.chatContents,
   });
 
   return session;

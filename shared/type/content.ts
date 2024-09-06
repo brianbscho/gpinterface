@@ -1,6 +1,6 @@
 import { Type } from "@sinclair/typebox";
 
-export type Content = {
+export type ChatContent = {
   hashId: string;
 
   model?: { hashId: string | undefined; name: string } | null;
@@ -51,4 +51,4 @@ export const ContentRefreshSchema = Type.Object({
 export const ContentsCreateSchema = Type.Object({
   gpiHashId: Type.String(),
 });
-export type ContentsCreateResponse = Content[];
+export type ContentsCreateResponse = ChatContent[];
