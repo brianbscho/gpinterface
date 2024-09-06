@@ -31,14 +31,15 @@ import { getApiConfig } from "@/utils/model";
 import SmallHoverButton from "../../components/buttons/SmallHoverButton";
 import HistoryDialog from "../../components/dialogs/HistoryDialog";
 import useModelStore from "@/store/model";
-import {
-  ChatUpdateResponse,
-  ChatUpdateSchema,
-} from "gpinterface-shared/type/chat";
 import ContentInput from "../../components/inputs/ContentInput";
 import { cn } from "@/utils/css";
 import ContentsCreateButton from "../../components/buttons/ContentsCreateButton";
 import { DeleteResponse, ParamSchema } from "gpinterface-shared/type";
+import {
+  GpiGetResponse,
+  GpiUpdateResponse,
+  GpiUpdateSchema,
+} from "gpinterface-shared/type/gpi";
 
 type ButtonsProps = {
   onClickModel: (() => void) | undefined;
@@ -115,7 +116,7 @@ function Buttons({
 
 type RefreshingHashId = string | undefined;
 type ContentProps = {
-  chatHashId: string;
+  gpiHashId: string;
   content: Omit<ContentType, "hashId" | "isModified"> &
     Partial<Pick<ContentType, "hashId" | "isModified">>;
   setContents: Dispatch<SetStateAction<ContentType[]>>;
@@ -125,7 +126,7 @@ type ContentProps = {
 };
 
 function Content({
-  chatHashId,
+  gpiHashId,
   content,
   setContents,
   useRefreshingHashId,
@@ -192,7 +193,7 @@ function Content({
       body: {
         config: getApiConfig(model, config),
         modelHashId: model.hashId,
-        chatHashId,
+        gpiHashId,
       },
       showError: true,
     });
@@ -208,7 +209,7 @@ function Content({
       );
     }
     setRefreshingHashId(undefined);
-  }, [chatHashId, content, model, config, setRefreshingHashId, setContents]);
+  }, [gpiHashId, content, model, config, setRefreshingHashId, setContents]);
 
   const isDeleteVisible = useMemo(() => hashIds?.length === 2, [hashIds]);
   const isRefreshVisible = useMemo(
@@ -306,34 +307,29 @@ function Content({
   );
 }
 
-type ChatType = {
-  hashId: string;
-  systemMessage: string;
-  contents: ContentType[];
-};
-type ContentsProps = { chat: ChatType; className?: string };
-export default function Contents({ chat, className }: ContentsProps) {
-  const [contents, setContents] = useState(chat.contents);
+type ContentsProps = { gpi: GpiGetResponse; className?: string };
+export default function Contents({ gpi, className }: ContentsProps) {
+  const [contents, setContents] = useState(gpi.contents);
   const [refreshingHashId, setRefreshingHashId] = useState<string>();
 
   const systemContent = useMemo(
-    () => ({ role: "system", content: chat.systemMessage }),
-    [chat.systemMessage]
+    () => ({ role: "system", content: gpi.systemMessage }),
+    [gpi.systemMessage]
   );
 
   const callUpdateSystemMessage = useCallback(
     async (systemMessage: string) => {
       const response = await callApi<
-        ChatUpdateResponse,
-        Static<typeof ChatUpdateSchema>
+        GpiUpdateResponse,
+        Static<typeof GpiUpdateSchema>
       >({
-        endpoint: `/chat/${chat.hashId}`,
+        endpoint: `/gpi/${gpi.hashId}`,
         method: "PUT",
         body: { systemMessage },
       });
       return response?.systemMessage;
     },
-    [chat.hashId]
+    [gpi.hashId]
   );
   const callUpdateContent = useCallback(
     (hashId: string) => async (content: string) => {
@@ -370,7 +366,7 @@ export default function Contents({ chat, className }: ContentsProps) {
         endpoint: `/content`,
         method: "POST",
         body: {
-          chatHashId: chat.hashId,
+          gpiHashId: gpi.hashId,
           modelHashId: model.hashId,
           content,
           config: getApiConfig(model, config),
@@ -382,7 +378,7 @@ export default function Contents({ chat, className }: ContentsProps) {
       }
       setRefreshingHashId(undefined);
     },
-    [chat.hashId, model, config]
+    [gpi.hashId, model, config]
   );
 
   const onClickDelete = useCallback(async () => {
@@ -392,15 +388,15 @@ export default function Contents({ chat, className }: ContentsProps) {
     if (!yes) return;
 
     const response = await callApi<DeleteResponse, Static<typeof ParamSchema>>({
-      endpoint: `/chat`,
+      endpoint: `/gpi`,
       method: "DELETE",
-      body: { hashId: chat.hashId },
+      body: { hashId: gpi.hashId },
       showError: true,
     });
     if (response?.success) {
       location.pathname = "/gpis/user";
     }
-  }, [chat.hashId]);
+  }, [gpi.hashId]);
 
   return (
     <div className={cn("flex flex-col gap-3", className)}>
@@ -416,7 +412,7 @@ export default function Contents({ chat, className }: ContentsProps) {
       {systemContent.content.length > 0 && (
         <Content
           content={systemContent}
-          chatHashId={chat.hashId}
+          gpiHashId={gpi.hashId}
           setContents={setContents}
           useRefreshingHashId={[refreshingHashId, setRefreshingHashId]}
           callUpdateContent={callUpdateSystemMessage}
@@ -434,7 +430,7 @@ export default function Contents({ chat, className }: ContentsProps) {
           <Content
             key={c.hashId}
             content={c}
-            chatHashId={chat.hashId}
+            gpiHashId={gpi.hashId}
             setContents={setContents}
             useRefreshingHashId={[refreshingHashId, setRefreshingHashId]}
             callUpdateContent={callUpdateContent(c.hashId)}
@@ -443,7 +439,7 @@ export default function Contents({ chat, className }: ContentsProps) {
         );
       })}
       <ContentInput onSubmit={onSubmit}>
-        <ContentsCreateButton chat={chat} setContents={setContents} />
+        <ContentsCreateButton gpi={gpi} setContents={setContents} />
       </ContentInput>
     </div>
   );

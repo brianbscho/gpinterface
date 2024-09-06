@@ -53,18 +53,17 @@ export default function Gpi({ gpi }: Props) {
         Chat history
       </div>
       <div className="grid md:grid-cols-[auto_1fr] gap-3 items-start mb-12 border-neutral-500">
-        {gpi.chat.systemMessage.length > 0 && (
-          <ContentStatic role="system" content={gpi.chat.systemMessage} />
+        {gpi.systemMessage.length > 0 && (
+          <ContentStatic role="system" content={gpi.systemMessage} />
         )}
-        {gpi.chat.contents.map((content) => (
+        {gpi.contents.map((content) => (
           <ContentStatic key={content.hashId} {...content} />
         ))}
-        {gpi.chat.systemMessage.length === 0 &&
-          gpi.chat.contents.length === 0 && (
-            <div className="text-neutral-300 text-sm font-light">
-              No chat history
-            </div>
-          )}
+        {gpi.systemMessage.length === 0 && gpi.contents.length === 0 && (
+          <div className="text-neutral-300 text-sm font-light">
+            No chat history
+          </div>
+        )}
       </div>
       <Document gpi={gpi} showWarning={gpi.userHashId !== userHashId} />
     </div>

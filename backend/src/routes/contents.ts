@@ -18,7 +18,7 @@ export default async function (fastify: FastifyInstance) {
         const { hashIds } = request.body;
 
         const oldContents = await fastify.prisma.chatContent.findMany({
-          where: { hashId: { in: hashIds }, chat: { userHashId: user.hashId } },
+          where: { hashId: { in: hashIds }, gpi: { userHashId: user.hashId } },
           select: { hashId: true },
         });
         if (oldContents.length !== hashIds.length) {
@@ -42,22 +42,22 @@ export default async function (fastify: FastifyInstance) {
     async (request, reply): Promise<ContentsCreateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
-        const { chatHashId } = request.body;
+        const { gpiHashId } = request.body;
 
-        const chat = await fastify.prisma.chat.findFirst({
+        const gpi = await fastify.prisma.gpi.findFirst({
           where: { userHashId: user.hashId },
           select: { hashId: true },
         });
-        if (!chat) {
-          throw fastify.httpErrors.badRequest("chat not found");
+        if (!gpi) {
+          throw fastify.httpErrors.badRequest("gpi not found");
         }
 
         const contents = await createManyEntities(
           fastify.prisma.chatContent.createManyAndReturn,
           {
             data: [
-              { chatHashId, role: "user", content: "" },
-              { chatHashId, role: "assistant", content: "" },
+              { gpiHashId, role: "user", content: "" },
+              { gpiHashId, role: "assistant", content: "" },
             ],
             select: {
               hashId: true,

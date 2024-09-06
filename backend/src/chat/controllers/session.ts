@@ -54,25 +54,19 @@ export async function createSession({
   gpiHashId: string;
 }) {
   const gpi = await fastify.prisma.gpi.findFirst({
-    where: {
-      hashId: gpiHashId,
-      OR: [{ userHashId }, { isPublic: true }],
-    },
-    select: {
-      hashId: true,
-      chat: { select: { contents: ChatCompletionContentsQuery } },
-    },
+    where: { hashId: gpiHashId, OR: [{ userHashId }, { isPublic: true }] },
+    select: { hashId: true, contents: ChatCompletionContentsQuery },
   });
   if (!gpi) {
     throw fastify.httpErrors.badRequest("no gpi");
   }
-  if (gpi.chat.contents.some((c) => c.content === "")) {
+  if (gpi.contents.some((c) => c.content === "")) {
     throw fastify.httpErrors.badRequest("There is empty content in chat.");
   }
 
   const session = await createSessionEntry(fastify.prisma.session, {
     gpiHashId,
-    messages: gpi.chat.contents,
+    messages: gpi.contents,
   });
 
   return session;
@@ -101,9 +95,9 @@ export async function createSessionCompletion({
       gpi: {
         select: {
           hashId: true,
+          systemMessage: true,
           config: true,
           model: { select: ChatCompletionModelSelect },
-          chat: { select: { systemMessage: true } },
         },
       },
       messages: ChatCompletionContentsQuery,
@@ -115,8 +109,7 @@ export async function createSessionCompletion({
   }
 
   const { messages, gpi } = session;
-  const { chat, config, model } = gpi;
-  const { systemMessage } = chat;
+  const { systemMessage, config, model } = gpi;
   messages.push({ role: "user", content: userContent });
   const { content, ...response } = await getTextResponse({
     model,

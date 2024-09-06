@@ -33,10 +33,10 @@ export default function GpiDraft({ gpi }: Props) {
       </div>
       <div className="w-full">
         <div className="flex flex-col gap-3 mb-3">
-          {gpi.chat.systemMessage.length > 0 && (
-            <ContentStatic role="system" content={gpi.chat.systemMessage} />
+          {gpi.systemMessage.length > 0 && (
+            <ContentStatic role="system" content={gpi.systemMessage} />
           )}
-          {gpi.chat.contents.map((content) => (
+          {gpi.contents.map((content) => (
             <ContentStatic key={content.hashId} {...content} />
           ))}
         </div>

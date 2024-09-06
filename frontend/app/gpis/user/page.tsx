@@ -13,7 +13,7 @@ export default function Page() {
   const [lastHashId, setLastHashId] = useState("");
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 
-  const callChatsApi = useCallback(async () => {
+  const callGpisApi = useCallback(async () => {
     const response = await callApi<GpisGetResponse>({
       endpoint: `/gpis/user?lastHashId=${lastHashId}`,
       showError: true,
@@ -32,7 +32,7 @@ export default function Page() {
     <div className="h-full w-full overflow-y-auto">
       <div className="w-full max-w-7xl mx-auto flex flex-col gap-3 p-3">
         <List
-          callApi={callChatsApi}
+          callApi={callGpisApi}
           emptyMessage={"Start your chat!"}
           elements={gpis}
           spinnerHidden={spinnerHidden}

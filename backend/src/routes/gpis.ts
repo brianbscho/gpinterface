@@ -33,21 +33,16 @@ export default async function (fastify: FastifyInstance) {
             hashId: true,
             userHashId: true,
             description: true,
-            chat: {
+            systemMessage: true,
+            contents: {
               select: {
                 hashId: true,
-                systemMessage: true,
-                contents: {
-                  select: {
-                    hashId: true,
-                    role: true,
-                    content: true,
-                    config: true,
-                    model: { select: { hashId: true, name: true } },
-                    histories: { select: ContentHistorySelect },
-                    isModified: true,
-                  },
-                },
+                role: true,
+                content: true,
+                config: true,
+                model: { select: { hashId: true, name: true } },
+                histories: { select: ContentHistorySelect },
+                isModified: true,
               },
             },
             config: true,
@@ -59,11 +54,11 @@ export default async function (fastify: FastifyInstance) {
         });
 
         return gpis.map((gpi) => {
-          const { chat, config, ...rest } = gpi;
+          const { config, contents, ...rest } = gpi;
           return {
             ...rest,
             config: config as any,
-            chat: { ...chat, contents: getTypedContents(chat.contents) },
+            contents: getTypedContents(contents),
           };
         });
       } catch (ex) {
@@ -93,8 +88,8 @@ export default async function (fastify: FastifyInstance) {
               {
                 OR: [
                   { description: { search } },
-                  { chat: { systemMessage: { search } } },
-                  { chat: { contents: { some: { content: { search } } } } },
+                  { systemMessage: { search } },
+                  { contents: { some: { content: { search } } } },
                 ],
               },
             ],
@@ -103,21 +98,16 @@ export default async function (fastify: FastifyInstance) {
             hashId: true,
             userHashId: true,
             description: true,
-            chat: {
+            systemMessage: true,
+            contents: {
               select: {
                 hashId: true,
-                systemMessage: true,
-                contents: {
-                  select: {
-                    hashId: true,
-                    role: true,
-                    content: true,
-                    config: true,
-                    model: { select: { hashId: true, name: true } },
-                    histories: { select: ContentHistorySelect },
-                    isModified: true,
-                  },
-                },
+                role: true,
+                content: true,
+                config: true,
+                model: { select: { hashId: true, name: true } },
+                histories: { select: ContentHistorySelect },
+                isModified: true,
               },
             },
             config: true,
@@ -129,11 +119,11 @@ export default async function (fastify: FastifyInstance) {
         });
 
         return gpis.map((gpi) => {
-          const { chat, config, ...rest } = gpi;
+          const { contents, config, ...rest } = gpi;
           return {
             ...rest,
             config: config as any,
-            chat: { ...chat, contents: getTypedContents(chat.contents) },
+            contents: getTypedContents(contents),
           };
         });
       } catch (ex) {
@@ -166,21 +156,16 @@ export default async function (fastify: FastifyInstance) {
             hashId: true,
             userHashId: true,
             description: true,
-            chat: {
+            systemMessage: true,
+            contents: {
               select: {
                 hashId: true,
-                systemMessage: true,
-                contents: {
-                  select: {
-                    hashId: true,
-                    role: true,
-                    content: true,
-                    config: true,
-                    model: { select: { hashId: true, name: true } },
-                    histories: { select: ContentHistorySelect },
-                    isModified: true,
-                  },
-                },
+                role: true,
+                content: true,
+                config: true,
+                model: { select: { hashId: true, name: true } },
+                histories: { select: ContentHistorySelect },
+                isModified: true,
               },
             },
             config: true,
@@ -192,11 +177,11 @@ export default async function (fastify: FastifyInstance) {
         });
 
         return gpis.map((gpi) => {
-          const { chat, config, ...rest } = gpi;
+          const { contents, config, ...rest } = gpi;
           return {
             ...rest,
             config: config as any,
-            chat: { ...chat, contents: getTypedContents(chat.contents) },
+            contents: getTypedContents(contents),
           };
         });
       } catch (ex) {

@@ -24,15 +24,15 @@ model Gpi {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
 
-  config      Json
-  description String
-  isPublic    Boolean @default(false) @map("is_public")
+  config        Json
+  description   String
+  isPublic      Boolean @default(false) @map("is_public")
+  systemMessage String  @default("") @map("system_message")
 
+  contents  ChatContent[]
   histories History[]
   sessions  Session[]
 
-  chatHashId  String  @map("chat_hash_id")
-  chat        Chat    @relation(fields: [chatHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
   modelHashId String  @map("model_hash_id")
   model       Model   @relation(fields: [modelHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
   userHashId  String? @map("user_hash_id")
@@ -83,28 +83,6 @@ model SessionMessage {
   session       Session @relation(fields: [sessionHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
   @@map("session_messages")
-}
-
-// * * * * * * * * * * * *
-// Chat
-// 
-
-model Chat {
-  id        Int      @id @default(autoincrement())
-  hashId    String   @unique @map("hash_id")
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
-
-  systemMessage String @default("") @map("system_message")
-
-  userHashId String? @map("user_hash_id")
-  user       User?   @relation(fields: [userHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
-
-  contents  ChatContent[]
-  gpis      Gpi[]
-  histories History[]
-
-  @@map("chats")
 }
 
 model Config {
@@ -165,8 +143,8 @@ model ChatContent {
   config     Json?
   isModified Boolean @default(false) @map("is_modified")
 
-  chatHashId  String  @map("chat_hash_id")
-  chat        Chat    @relation(fields: [chatHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
+  gpiHashId   String  @map("gpi_hash_id")
+  gpi         Gpi     @relation(fields: [gpiHashId], references: [hashId], onDelete: Cascade, onUpdate: Cascade)
   modelHashId String? @map("model_hash_id")
   model       Model?  @relation(fields: [modelHashId], references: [hashId], onDelete: Restrict, onUpdate: Cascade)
 
@@ -266,8 +244,6 @@ model History {
   gpi               Gpi?         @relation(fields: [gpiHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
   sessionHashId     String?      @map("session_hash_id")
   session           Session?     @relation(fields: [sessionHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
-  chatHashId        String?      @map("chat_hash_id")
-  chat              Chat?        @relation(fields: [chatHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
   chatContentHashId String?      @map("chat_content_hash_id")
   chatContent       ChatContent? @relation(fields: [chatContentHashId], references: [hashId], onDelete: SetNull, onUpdate: Cascade)
   userHashId        String?      @map("user_hash_id")
@@ -289,7 +265,6 @@ model User {
   apiKeys   ApiKey[]
   deposits  Deposit[]
   gpis      Gpi[]
-  chats     Chat[]
   histories History[]
 
   @@map("users")

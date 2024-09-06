@@ -25,13 +25,7 @@ import Link from "next/link";
 import IconButton from "../buttons/IconButton";
 
 const loginRedirectPaths = ["login"];
-const logoutRedirectPaths = [
-  "bills",
-  "chats",
-  "gpis/user",
-  "/edit",
-  "settings",
-];
+const logoutRedirectPaths = ["bills", "gpis/user", "/edit", "settings"];
 
 export default function MenusDropdown() {
   const { user, setUser } = useUserStore();

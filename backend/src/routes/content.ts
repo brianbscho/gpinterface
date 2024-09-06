@@ -42,19 +42,19 @@ export default async function (fastify: FastifyInstance) {
           throw fastify.httpErrors.badRequest("model is not available.");
         }
 
-        const chat = await fastify.prisma.chat.findFirst({
-          where: { hashId: body.chatHashId, userHashId: user.hashId },
+        const gpi = await fastify.prisma.gpi.findFirst({
+          where: { hashId: body.gpiHashId, userHashId: user.hashId },
           select: {
             systemMessage: true,
             contents: ChatCompletionContentsQuery,
             userHashId: true,
           },
         });
-        if (!chat) {
-          throw fastify.httpErrors.badRequest("chat is not available.");
+        if (!gpi) {
+          throw fastify.httpErrors.badRequest("gpi is not available.");
         }
 
-        const { systemMessage, contents } = chat;
+        const { systemMessage, contents } = gpi;
         const messages = [...contents];
         messages.push({ role: "user", content: userContent });
         let { content, ...response } = await getTextResponse({
@@ -68,7 +68,7 @@ export default async function (fastify: FastifyInstance) {
           fastify.prisma.chatContent.create,
           {
             data: {
-              chatHashId: body.chatHashId,
+              gpiHashId: body.gpiHashId,
               role: "user",
               content: userContent,
             },
@@ -98,7 +98,7 @@ export default async function (fastify: FastifyInstance) {
         const history = await createEntity(fastify.prisma.history.create, {
           data: {
             userHashId: user.hashId || null,
-            chatHashId: body.chatHashId,
+            gpiHashId: body.gpiHashId,
             chatContentHashId: assistantChatContent.hashId,
             provider: model.provider.name,
             model: model.name,
@@ -139,7 +139,7 @@ export default async function (fastify: FastifyInstance) {
         const { content } = request.body;
 
         const oldContent = await fastify.prisma.chatContent.findFirst({
-          where: { hashId, chat: { userHashId: user.hashId } },
+          where: { hashId, gpi: { userHashId: user.hashId } },
           select: { hashId: true, role: true, modelHashId: true },
         });
         if (!oldContent) {
@@ -170,7 +170,7 @@ export default async function (fastify: FastifyInstance) {
       try {
         const { user } = await fastify.getUser(request, reply);
         const { hashId } = request.params;
-        const { chatHashId, modelHashId, config } = request.body;
+        const { gpiHashId, modelHashId, config } = request.body;
 
         const model = await fastify.prisma.model.findFirst({
           where: {
@@ -184,12 +184,12 @@ export default async function (fastify: FastifyInstance) {
         if (!model) {
           throw fastify.httpErrors.badRequest("model is not available.");
         }
-        const chat = await fastify.prisma.chat.findFirst({
-          where: { hashId: chatHashId, userHashId: user.hashId },
+        const gpi = await fastify.prisma.gpi.findFirst({
+          where: { hashId: gpiHashId, userHashId: user.hashId },
           select: { systemMessage: true },
         });
-        if (!chat) {
-          throw fastify.httpErrors.badRequest("chat is not available.");
+        if (!gpi) {
+          throw fastify.httpErrors.badRequest("gpi is not available.");
         }
 
         const id = await getIdByHashId(
@@ -200,11 +200,11 @@ export default async function (fastify: FastifyInstance) {
           throw fastify.httpErrors.badRequest("content is not available.");
         }
         const messages = await fastify.prisma.chatContent.findMany({
-          where: { chatHashId, id: { lt: id } },
+          where: { gpiHashId, id: { lt: id } },
           ...ChatCompletionContentsQuery,
         });
 
-        const { systemMessage } = chat;
+        const { systemMessage } = gpi;
         let { content, ...response } = await getTextResponse({
           model,
           systemMessage,
@@ -215,7 +215,7 @@ export default async function (fastify: FastifyInstance) {
         const history = await createEntity(fastify.prisma.history.create, {
           data: {
             userHashId: user.hashId || null,
-            chatHashId,
+            gpiHashId,
             chatContentHashId: hashId,
             provider: model.provider.name,
             model: model.name,

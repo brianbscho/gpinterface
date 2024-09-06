@@ -26,12 +26,8 @@ export const createChatCompletion = async ({
     select: {
       config: true,
       model: { select: ChatCompletionModelSelect },
-      chat: {
-        select: {
-          systemMessage: true,
-          contents: ChatCompletionContentsQuery,
-        },
-      },
+      systemMessage: true,
+      contents: ChatCompletionContentsQuery,
     },
   });
 
@@ -39,12 +35,8 @@ export const createChatCompletion = async ({
     throw fastify.httpErrors.badRequest("gpi is not available.");
   }
 
-  const { chat, config, model } = gpi;
-  const { systemMessage, contents } = chat;
-  const messages = contents.concat({
-    role: "user",
-    content: userContent,
-  });
+  const { systemMessage, contents, config, model } = gpi;
+  const messages = contents.concat({ role: "user", content: userContent });
   const { content, ...response } = await getTextResponse({
     model,
     systemMessage,

@@ -5,13 +5,14 @@ import ModelSelect from "../selects/ModelSelect";
 import ModelResetButton from "./ModelResetButton";
 import Model from "../Model";
 import GpiSaveButton from "./GpiSaveButton";
-import { ChatGetResponse } from "gpinterface-shared/type/chat";
+import { GpiGetResponse } from "gpinterface-shared/type/gpi";
+import { Dispatch, SetStateAction } from "react";
 
-type GpiType = ChatGetResponse["gpis"][0] | undefined;
+type GpiType = GpiGetResponse | undefined;
 type Props = {
   className?: string;
   disabled?: boolean;
-  useGpi: [GpiType, (gpi: GpiType) => void];
+  useGpi: [GpiType, Dispatch<SetStateAction<GpiType>>];
 };
 export default function ModelSheetButton({
   className,

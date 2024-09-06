@@ -12,12 +12,12 @@ import GpiSaveButton from "@/components/buttons/GpiSaveButton";
 import GpiPublicButton from "@/components/buttons/GpiPublicButton";
 import useProviderTypes from "@/hooks/useProviderTypes";
 import { useRouter } from "next/navigation";
-import { ChatGetResponse } from "gpinterface-shared/type/chat";
 import useModelStore from "@/store/model";
+import { GpiGetResponse } from "gpinterface-shared/type/gpi";
 
 export default function Page({ params }: { params: { hashId: string } }) {
   const { hashId } = params;
-  const [chat, setChat] = useState<ChatGetResponse>();
+  const [gpi, setGpi] = useState<GpiGetResponse>();
   const userHashId = useUserStore((state) => state.user?.hashId);
 
   const [setConfig, setModelHashId] = useModelStore((state) => [
@@ -27,19 +27,17 @@ export default function Page({ params }: { params: { hashId: string } }) {
   const router = useRouter();
   useEffect(() => {
     const callApiApi = async () => {
-      const response = await callApi<ChatGetResponse>({
-        endpoint: `/chat/${hashId}`,
+      const response = await callApi<GpiGetResponse>({
+        endpoint: `/gpi/${hashId}`,
         showError: true,
         redirectToMain: true,
       });
       if (response) {
-        setChat(response);
-        if (response.gpis.length > 0) {
-          setConfig(response.gpis[0].config);
-          setModelHashId(response.gpis[0].modelHashId);
-        }
+        setGpi(response);
+        setConfig(response.config);
+        setModelHashId(response.modelHashId);
         if (response.userHashId !== userHashId) {
-          alert("You are not allowed to edit this chat.");
+          alert("You are not allowed to edit this gpi.");
           router.push("/");
         }
       }
@@ -49,45 +47,34 @@ export default function Page({ params }: { params: { hashId: string } }) {
 
   const setIsPublic = useCallback(
     (isPublic: boolean) =>
-      setChat((prev) =>
-        !prev
-          ? undefined
-          : { ...prev, gpis: prev.gpis.map((gpi) => ({ ...gpi, isPublic })) }
-      ),
+      setGpi((prev) => (!prev ? undefined : { ...prev, isPublic })),
     []
   );
-  const setGpi = useCallback((gpi: ChatGetResponse["gpis"][0] | undefined) => {
-    if (!gpi) return;
-
-    setChat((prev) => (!prev ? undefined : { ...prev, gpis: [gpi] }));
-  }, []);
 
   useProviderTypes();
 
-  if (!chat) return null;
+  if (!gpi) return null;
   return (
     <div className="flex-1 grid grid-cols-[1fr_auto] overflow-hidden relative">
       <div className="flex-1 w-full pt-3 px-3 overflow-y-auto">
         <div className="w-full md:w-auto grid grid-cols-2 md:flex md:flex-col gap-3 mb-3">
-          {chat.gpis.length > 0 && (
-            <GpiPublicButton
-              gpiHashId={chat.gpis[0].hashId}
-              usePublic={[chat.gpis[0].isPublic, setIsPublic]}
-            />
-          )}
+          <GpiPublicButton
+            gpiHashId={gpi.hashId}
+            usePublic={[gpi.isPublic, setIsPublic]}
+          />
           <ModelSheetButton
             className="md:hidden w-full h-6"
-            useGpi={[chat.gpis[0], setGpi]}
+            useGpi={[gpi, setGpi]}
           />
         </div>
         <div className="pb-3 w-full">
-          <Contents chat={chat} />
+          <Contents gpi={gpi} />
         </div>
       </div>
       <ModelPanel topPadding={false}>
         <ModelSelect />
         <ModelResetButton />
-        <GpiSaveButton useGpi={[chat.gpis[0], setGpi]} />
+        <GpiSaveButton useGpi={[gpi, setGpi]} />
       </ModelPanel>
     </div>
   );

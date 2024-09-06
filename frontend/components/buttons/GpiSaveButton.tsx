@@ -6,16 +6,16 @@ import useModelStore from "@/store/model";
 import callApi from "@/utils/callApi";
 import { getApiConfig } from "@/utils/model";
 import { Static } from "@sinclair/typebox";
-import { ChatGetResponse } from "gpinterface-shared/type/chat";
 import {
+  GpiGetResponse,
   GpiUpdateResponse,
   GpiUpdateSchema,
 } from "gpinterface-shared/type/gpi";
 import { Save } from "lucide-react";
-import { useCallback } from "react";
+import { Dispatch, SetStateAction, useCallback } from "react";
 
-type GpiType = ChatGetResponse["gpis"][0] | undefined;
-type Props = { useGpi: [GpiType, (gpi: GpiType) => void] };
+type GpiType = GpiGetResponse | undefined;
+type Props = { useGpi: [GpiType, Dispatch<SetStateAction<GpiType>>] };
 export default function GpiSaveButton({ useGpi }: Props) {
   const [gpi, setGpi] = useGpi;
 
@@ -35,7 +35,7 @@ export default function GpiSaveButton({ useGpi }: Props) {
     });
     if (response) {
       toast({ title: "Saved!", duration: 1000 });
-      setGpi(response);
+      setGpi((prev) => (!prev ? prev : { ...prev, ...response }));
     }
   }, [gpi?.hashId, model, config, toast, setGpi]);
 

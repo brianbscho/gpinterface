@@ -23,7 +23,7 @@ export type Content = {
 };
 
 export const ContentCreateSchema = Type.Object({
-  chatHashId: Type.String(),
+  gpiHashId: Type.String(),
   modelHashId: Type.String(),
   content: Type.String(),
   config: Type.Any(),
@@ -43,12 +43,12 @@ export const ContentsDeleteSchema = Type.Object({
 });
 
 export const ContentRefreshSchema = Type.Object({
-  chatHashId: Type.String(),
+  gpiHashId: Type.String(),
   modelHashId: Type.String(),
   config: Type.Any(),
 });
 
 export const ContentsCreateSchema = Type.Object({
-  chatHashId: Type.String(),
+  gpiHashId: Type.String(),
 });
 export type ContentsCreateResponse = Content[];

@@ -12,13 +12,13 @@ import { Static } from "@sinclair/typebox";
 import callApi from "@/utils/callApi";
 import SmallHoverButton from "./SmallHoverButton";
 
-type ChatType = { hashId: string; systemMessage: string };
+type GpiType = { hashId: string; systemMessage: string };
 type ContentsProps = {
-  chat: ChatType;
+  gpi: GpiType;
   setContents: Dispatch<SetStateAction<ContentType[]>>;
 };
 export default function ContentsCreateButton({
-  chat,
+  gpi,
   setContents,
 }: ContentsProps) {
   const [loading, setLoading] = useState(false);
@@ -30,14 +30,14 @@ export default function ContentsCreateButton({
     >({
       method: "POST",
       endpoint: "/contents",
-      body: { chatHashId: chat.hashId },
+      body: { gpiHashId: gpi.hashId },
       showError: true,
     });
     if (response) {
       setContents((prev) => prev.concat(response));
     }
     setLoading(false);
-  }, [chat.hashId, setContents]);
+  }, [gpi.hashId, setContents]);
 
   return (
     <SmallHoverButton message="Answer yourself">

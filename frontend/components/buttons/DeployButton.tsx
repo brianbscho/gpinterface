@@ -42,11 +42,8 @@ export default function DeployButton({ chatHashId }: { chatHashId: string }) {
         endpoint: "/gpi",
         method: "POST",
         body: {
-          description,
-          chatHashId,
           modelHashId: model.hashId,
           config: getApiConfig(model, config),
-          isPublic,
         },
         showError: true,
       });
@@ -57,7 +54,7 @@ export default function DeployButton({ chatHashId }: { chatHashId: string }) {
         setLoading(false);
       }
     },
-    [config, description, model, chatHashId, router, isPublic]
+    [config, model, router]
   );
 
   return (

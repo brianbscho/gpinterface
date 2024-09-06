@@ -3,13 +3,19 @@ import { getDataWithHashId, getTypedContent } from "../util/prisma";
 
 export async function createGpiEntry(
   gpiDelegate: Prisma.GpiDelegate,
-  gpis: {
+  gpi: {
+    userHashId: string;
     config: Prisma.JsonValue;
     description: string;
     isPublic: boolean;
-    chatHashId: string;
+    systemMessage: string;
     modelHashId: string;
-    userHashId: string;
+    contents: {
+      config: Prisma.JsonValue;
+      modelHashId: string | null;
+      role: string;
+      content: string;
+    }[];
   }
 ) {
   let retries = 0;
@@ -18,7 +24,17 @@ export async function createGpiEntry(
     try {
       const newGpi = await gpiDelegate.create({
         data: getDataWithHashId(
-          { ...gpis, config: gpis.config ?? Prisma.JsonNull },
+          {
+            ...gpi,
+            config: gpi.config ?? Prisma.JsonNull,
+            contents: {
+              createMany: {
+                data: gpi.contents.map((c) =>
+                  getDataWithHashId(getTypedContent(c))
+                ),
+              },
+            },
+          },
           32
         ),
         select: { hashId: true },
@@ -46,17 +62,13 @@ export async function copyGpiEntry(
       description: true,
       modelHashId: true,
       isPublic: true,
-      chat: {
+      systemMessage: true,
+      contents: {
         select: {
-          systemMessage: true,
-          contents: {
-            select: {
-              role: true,
-              content: true,
-              config: true,
-              modelHashId: true,
-            },
-          },
+          role: true,
+          content: true,
+          config: true,
+          modelHashId: true,
         },
       },
     },
@@ -66,30 +78,7 @@ export async function copyGpiEntry(
     throw "no gpi";
   }
 
-  const { chat, ...rest } = gpi;
-  const newChat = await prisma.chat.create({
-    data: getDataWithHashId(
-      {
-        ...chat,
-        userHashId,
-        contents: {
-          createMany: {
-            data: chat.contents.map((c) =>
-              getDataWithHashId(getTypedContent(c))
-            ),
-          },
-        },
-      },
-      32
-    ),
-    select: { hashId: true },
-  });
-  const newGpi = await createGpiEntry(prisma.gpi, {
-    ...rest,
-    config: rest.config,
-    userHashId,
-    chatHashId: newChat.hashId,
-  });
+  const newGpi = await createGpiEntry(prisma.gpi, { userHashId, ...gpi });
 
   return newGpi;
 }

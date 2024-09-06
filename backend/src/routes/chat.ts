@@ -1,21 +1,10 @@
 import { FastifyInstance } from "fastify";
 import {
-  createEntity,
-  ContentHistorySelect,
-  getTypedContents,
-} from "../util/prisma";
-import {
-  ChatCreateResponse,
-  ChatUpdateSchema,
-  ChatUpdateResponse,
   ChatCompletionSchema,
   ChatCompletionResponse,
   ChatCompletionSampleResponse,
-  ChatGetResponse,
 } from "gpinterface-shared/type/chat";
 import { Static } from "@sinclair/typebox";
-import { DeleteResponse, ParamSchema } from "gpinterface-shared/type";
-import { getDateString } from "../util/string";
 import { createChatCompletion } from "../chat/controllers/chat";
 import {
   createSession,
@@ -23,140 +12,6 @@ import {
 } from "../chat/controllers/session";
 
 export default async function (fastify: FastifyInstance) {
-  fastify.get<{ Params: Static<typeof ParamSchema> }>(
-    "/:hashId",
-    { schema: { params: ParamSchema } },
-    async (request, reply): Promise<ChatGetResponse> => {
-      try {
-        const { user } = await fastify.getUser(request, reply);
-        const { hashId } = request.params;
-
-        const chat = await fastify.prisma.chat.findFirst({
-          where: { hashId, userHashId: user.hashId },
-          select: {
-            hashId: true,
-            userHashId: true,
-            systemMessage: true,
-            contents: {
-              select: {
-                hashId: true,
-                model: { select: { hashId: true, name: true } },
-                role: true,
-                content: true,
-                config: true,
-                histories: { select: ContentHistorySelect },
-                isModified: true,
-              },
-              orderBy: { id: "asc" },
-            },
-            gpis: {
-              select: {
-                hashId: true,
-                description: true,
-                config: true,
-                modelHashId: true,
-                isPublic: true,
-              },
-            },
-            updatedAt: true,
-          },
-        });
-        if (!chat) {
-          throw fastify.httpErrors.badRequest("chat is not available.");
-        }
-
-        const { updatedAt, contents, gpis, ...rest } = chat;
-        return {
-          ...rest,
-          gpis: gpis.map((gpi) => ({ ...gpi, config: gpi.config as any })),
-          contents: getTypedContents(contents),
-          updatedAt: getDateString(updatedAt),
-        };
-      } catch (ex) {
-        console.error("path: /chat/:hashId, method: get, error:", ex);
-        throw ex;
-      }
-    }
-  );
-  fastify.post("/", async (request, reply): Promise<ChatCreateResponse> => {
-    try {
-      const { user } = await fastify.getUser(request, reply);
-      const userHashId = user.hashId || null;
-
-      const chat = await createEntity(
-        fastify.prisma.chat.create,
-        { data: { userHashId }, select: { hashId: true, updatedAt: true } },
-        32
-      );
-
-      return {
-        hashId: chat.hashId,
-        userHashId,
-        systemMessage: "",
-        gpis: [],
-        contents: [],
-        updatedAt: getDateString(chat.updatedAt),
-      };
-    } catch (ex) {
-      console.error("path: /chat, method: post, error:", ex);
-      throw ex;
-    }
-  });
-  fastify.put<{
-    Params: Static<typeof ParamSchema>;
-    Body: Static<typeof ChatUpdateSchema>;
-  }>(
-    "/:hashId",
-    { schema: { params: ParamSchema, body: ChatUpdateSchema } },
-    async (request, reply): Promise<ChatUpdateResponse> => {
-      try {
-        const { user } = await fastify.getUser(request, reply);
-        const { hashId } = request.params;
-        const { body } = request;
-
-        const chat = await fastify.prisma.chat.findFirst({
-          where: { hashId, userHashId: user.hashId },
-          select: { userHashId: true },
-        });
-        if (!chat) {
-          throw fastify.httpErrors.badRequest("chat is not available.");
-        }
-
-        await fastify.prisma.chat.update({ where: { hashId }, data: body });
-
-        return body;
-      } catch (ex) {
-        console.error("path: /chat/:hashId, method: put, error:", ex);
-        throw ex;
-      }
-    }
-  );
-  fastify.delete<{ Body: Static<typeof ParamSchema> }>(
-    "/",
-    { schema: { body: ParamSchema } },
-    async (request, reply): Promise<DeleteResponse> => {
-      try {
-        const { user } = await fastify.getUser(request, reply);
-        const { hashId } = request.body;
-
-        const chat = await fastify.prisma.chat.findFirst({
-          where: { hashId, userHashId: user.hashId },
-          select: { hashId: true },
-        });
-        if (!chat) {
-          throw fastify.httpErrors.badRequest("chat is not available.");
-        }
-
-        await fastify.prisma.gpi.deleteMany({ where: { chatHashId: hashId } });
-        await fastify.prisma.chat.delete({ where: { hashId } });
-
-        return { success: true };
-      } catch (ex) {
-        console.error("path: /chat/:hashId, method: put, error:", ex);
-        throw ex;
-      }
-    }
-  );
   fastify.post<{ Body: Static<typeof ChatCompletionSchema> }>(
     "/completion",
     { schema: { body: ChatCompletionSchema } },
