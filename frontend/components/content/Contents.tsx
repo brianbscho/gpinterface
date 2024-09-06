@@ -321,7 +321,7 @@ export default function Contents({ gpi, className }: ContentsProps) {
         GpiUpdateResponse,
         Static<typeof GpiUpdateSchema>
       >({
-        endpoint: `/gpi/${gpi.hashId}`,
+        endpoint: `/gpis/${gpi.hashId}`,
         method: "PUT",
         body: { systemMessage },
       });
@@ -384,10 +384,9 @@ export default function Contents({ gpi, className }: ContentsProps) {
     );
     if (!yes) return;
 
-    const response = await callApi<DeleteResponse, Static<typeof ParamSchema>>({
-      endpoint: `/gpi`,
+    const response = await callApi<DeleteResponse>({
+      endpoint: `/gpis/${gpi.hashId}`,
       method: "DELETE",
-      body: { hashId: gpi.hashId },
       showError: true,
     });
     if (response?.success) {

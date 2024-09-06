@@ -8,7 +8,6 @@ import prismaPlugin from "./plugins/prisma";
 
 import user from "./routes/user";
 import apiKeys from "./routes/apiKeys";
-import gpi from "./routes/gpi";
 import gpis from "./routes/gpis";
 import chat from "./routes/chat";
 import chatContents from "./routes/chatContents";
@@ -46,7 +45,6 @@ fastify.get("/health", () => true);
 fastify.register(apiKeys, { prefix: "/api/keys" });
 fastify.register(chat, { prefix: "/chat" });
 fastify.register(chatContents, { prefix: "/chat/contents" });
-fastify.register(gpi, { prefix: "/gpi" });
 fastify.register(gpis, { prefix: "/gpis" });
 fastify.register(histories, { prefix: "/histories" });
 fastify.register(providerTypes, { prefix: "/provider/types" });

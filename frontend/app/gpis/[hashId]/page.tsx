@@ -12,7 +12,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
   useEffect(() => {
     const callApiApi = async () => {
       const response = await callApi<GpiGetResponse>({
-        endpoint: `/gpi/${hashId}`,
+        endpoint: `/gpis/${hashId}`,
         showError: true,
         redirectToMain: true,
       });

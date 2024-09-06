@@ -31,13 +31,9 @@ export default function GpiDropdown({ gpiHashId }: { gpiHashId: string }) {
   const [loading, setLoading] = useState(false);
   const onClickCopy = useCallback(async () => {
     setLoading(true);
-    const response = await callApi<
-      GpiCreateResponse,
-      Static<typeof ParamSchema>
-    >({
-      endpoint: `/gpi/copy`,
+    const response = await callApi<GpiCreateResponse>({
+      endpoint: `/gpis/${gpiHashId}/copy`,
       method: "POST",
-      body: { hashId: gpiHashId },
       showError: true,
     });
     if (response) {

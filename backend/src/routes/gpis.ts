@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
 import {
+  DeleteResponse,
   ListParamSchema,
   ParamSchema,
   SearchQueryParamSchema,
@@ -16,14 +17,73 @@ import {
   getTypedContents,
   getTypedHistory,
 } from "../util/prisma";
-import { GpisGetResponse } from "gpinterface-shared/type/gpi";
+import {
+  GpiCreateResponse,
+  GpiCreateSchema,
+  GpiGetResponse,
+  GpisGetResponse,
+  GpiUpdateResponse,
+  GpiUpdateSchema,
+} from "gpinterface-shared/type/gpi";
 import {
   ChatContentCreateSchema,
   ChatContentsCreateResponse,
 } from "gpinterface-shared/type/chatContent";
 import { getTextResponse } from "../util/text";
+import { copyGpiEntry, createGpiEntry } from "../controllers/gpi";
 
 export default async function (fastify: FastifyInstance) {
+  fastify.get<{ Params: Static<typeof ParamSchema> }>(
+    "/:hashId",
+    { schema: { params: ParamSchema } },
+    async (request, reply): Promise<GpiGetResponse> => {
+      try {
+        const { user } = await fastify.getUser(request, reply, true);
+        const { hashId } = request.params;
+
+        const gpi = await fastify.prisma.gpi.findFirst({
+          where: {
+            hashId,
+            OR: [{ userHashId: user.hashId }, { isPublic: true }],
+          },
+          select: {
+            hashId: true,
+            userHashId: true,
+            description: true,
+            systemMessage: true,
+            chatContents: {
+              select: {
+                hashId: true,
+                role: true,
+                content: true,
+                config: true,
+                model: { select: { hashId: true, name: true } },
+                histories: { select: ContentHistorySelect },
+                isModified: true,
+              },
+              where: { isDeployed: true },
+            },
+            config: true,
+            modelHashId: true,
+            isPublic: true,
+          },
+        });
+        if (!gpi) {
+          throw fastify.httpErrors.badRequest("The gpi is not available.");
+        }
+
+        const { config, chatContents, ...rest } = gpi;
+        return {
+          ...rest,
+          config: config as any,
+          chatContents: getTypedContents(chatContents),
+        };
+      } catch (ex) {
+        console.error("path: /gpis/:hashId, method: get, error:", ex);
+        throw ex;
+      }
+    }
+  );
   fastify.get<{ Querystring: Static<typeof ListParamSchema> }>(
     "/",
     { schema: { querystring: ListParamSchema } },
@@ -149,58 +209,116 @@ export default async function (fastify: FastifyInstance) {
       }
     }
   );
-  fastify.get<{
-    Querystring: Static<typeof ListParamSchema>;
-  }>(
-    "/user",
-    { schema: { querystring: ListParamSchema } },
-    async (request, reply): Promise<GpisGetResponse> => {
+  fastify.post<{ Body: Static<typeof GpiCreateSchema> }>(
+    "/",
+    { schema: { body: GpiCreateSchema } },
+    async (request, reply): Promise<GpiCreateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
-        const { lastHashId } = request.query;
+        const { modelHashId, config } = request.body;
 
-        const id = await getIdByHashId(
-          fastify.prisma.gpi.findFirst,
-          lastHashId
-        );
+        const newGpi = await createGpiEntry(fastify.prisma.gpi, {
+          userHashId: user.hashId,
+          modelHashId,
+          config,
+          description: "",
+          isPublic: false,
+          systemMessage: "",
+          chatContents: [],
+        });
 
-        const gpis = await fastify.prisma.gpi.findMany({
-          where: { ...(id > 0 && { id: { lt: id } }), userHashId: user.hashId },
+        return { hashId: newGpi.hashId };
+      } catch (ex) {
+        console.error("path: /gpi, method: post, error:", ex);
+        throw ex;
+      }
+    }
+  );
+  fastify.put<{
+    Params: Static<typeof ParamSchema>;
+    Body: Static<typeof GpiUpdateSchema>;
+  }>(
+    "/:hashId",
+    { schema: { params: ParamSchema, body: GpiUpdateSchema } },
+    async (request, reply): Promise<GpiUpdateResponse> => {
+      try {
+        const { user } = await fastify.getUser(request, reply);
+        const { hashId } = request.params;
+        const { description, systemMessage, config, modelHashId, isPublic } =
+          request.body;
+
+        const oldGpi = await fastify.prisma.gpi.findFirst({
+          where: { hashId, userHashId: user.hashId },
+          select: { hashId: true },
+        });
+        if (!oldGpi) {
+          throw fastify.httpErrors.unauthorized("Gpi not found.");
+        }
+
+        const isIsPublicBoolean = typeof isPublic === "boolean";
+        const updatedGpi = await fastify.prisma.gpi.update({
+          where: { hashId },
+          data: {
+            ...(!!description && { description }),
+            ...(!!systemMessage && { systemMessage }),
+            ...(!!config && { config }),
+            ...(!!modelHashId && { modelHashId }),
+            ...(isIsPublicBoolean && { isPublic }),
+          },
           select: {
             hashId: true,
-            userHashId: true,
             description: true,
             systemMessage: true,
-            chatContents: {
-              select: {
-                hashId: true,
-                role: true,
-                content: true,
-                config: true,
-                model: { select: { hashId: true, name: true } },
-                histories: { select: ContentHistorySelect },
-                isModified: true,
-              },
-              where: { isDeployed: true },
-            },
             config: true,
             modelHashId: true,
             isPublic: true,
           },
-          orderBy: { id: "desc" },
-          take: 5,
         });
 
-        return gpis.map((gpi) => {
-          const { chatContents, config, ...rest } = gpi;
-          return {
-            ...rest,
-            config: config as any,
-            chatContents: getTypedContents(chatContents),
-          };
-        });
+        return { ...updatedGpi, config: updatedGpi.config as any };
       } catch (ex) {
-        console.error("path: /gpis/user?lastHashId, method: get, error:", ex);
+        console.error("path: /gpis/:hashId, method: put, error:", ex);
+        throw ex;
+      }
+    }
+  );
+  fastify.post<{ Params: Static<typeof ParamSchema> }>(
+    "/:hashId/copy",
+    { schema: { params: ParamSchema } },
+    async (request, reply): Promise<GpiCreateResponse> => {
+      try {
+        const { user } = await fastify.getUser(request, reply);
+        const { hashId } = request.params;
+
+        const gpi = await copyGpiEntry(fastify.prisma, hashId, user.hashId);
+        return gpi;
+      } catch (ex) {
+        console.error("path: /gpis/:hashId/copy, method: post, error:", ex);
+        throw ex;
+      }
+    }
+  );
+  fastify.delete<{ Params: Static<typeof ParamSchema> }>(
+    "/:hashId",
+    { schema: { params: ParamSchema } },
+    async (request, reply): Promise<DeleteResponse> => {
+      try {
+        const { user } = await fastify.getUser(request, reply);
+        const { hashId } = request.params;
+
+        const gpi = await fastify.prisma.gpi.findFirst({
+          where: { hashId, userHashId: user.hashId },
+          select: { hashId: true },
+        });
+        if (!gpi) {
+          throw fastify.httpErrors.badRequest("gpi is not available.");
+        }
+
+        await fastify.prisma.gpi.deleteMany({ where: { hashId } });
+
+        return { success: true };
+      } catch (ex) {
+        console.error("path: /gpi/:hashId, method: put, error:", ex);
         throw ex;
       }
     }

@@ -39,7 +39,7 @@ export default function DeployButton({ chatHashId }: { chatHashId: string }) {
         GpiCreateResponse,
         Static<typeof GpiCreateSchema>
       >({
-        endpoint: "/gpi",
+        endpoint: "/gpis",
         method: "POST",
         body: {
           modelHashId: model.hashId,
