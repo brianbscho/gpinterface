@@ -75,7 +75,7 @@ export default function Page() {
         return;
       }
       setLoading(true);
-      const endpoint = `/user/${isLogin ? "login" : "signup"}`;
+      const endpoint = `/users/${isLogin ? "signin" : "signup"}`;
       const response = await callApi<
         UserGetMeResponse,
         Static<typeof UserCreateSchema>
@@ -101,7 +101,7 @@ export default function Page() {
         UserGetMeResponse,
         Static<typeof UserGoogleSchema>
       >({
-        endpoint: "/user/google",
+        endpoint: "/users/google",
         method: "POST",
         body: { access_token },
         showError: true,

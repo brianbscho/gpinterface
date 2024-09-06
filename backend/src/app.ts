@@ -6,7 +6,7 @@ import httpErrorsPlugin from "./plugins/httpErrors";
 import jwtPlugin from "./plugins/jwt";
 import prismaPlugin from "./plugins/prisma";
 
-import user from "./routes/user";
+import users from "./routes/users";
 import apiKeys from "./routes/apiKeys";
 import gpis from "./routes/gpis";
 import chat from "./routes/chat";
@@ -49,7 +49,7 @@ fastify.register(gpis, { prefix: "/gpis" });
 fastify.register(histories, { prefix: "/histories" });
 fastify.register(providerTypes, { prefix: "/provider/types" });
 fastify.register(session, { prefix: "/session" });
-fastify.register(user, { prefix: "/user" });
+fastify.register(users, { prefix: "/users" });
 
 const start = async () => {
   try {

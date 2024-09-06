@@ -60,7 +60,7 @@ export default function Page() {
     const response = await callApi<
       UserGetMeResponse,
       Static<typeof UserUpdateSchema>
-    >({ endpoint: "/user", method: "PUT", body: { name }, showError: true });
+    >({ endpoint: "/users", method: "PUT", body: { name }, showError: true });
     if (response) {
       setUser(response);
       setSaveButtonText("Saved!");
@@ -77,11 +77,7 @@ export default function Page() {
     );
     if (!_confirm) return;
 
-    await callApi({
-      endpoint: "/user",
-      method: "DELETE",
-      showError: true,
-    });
+    await callApi({ endpoint: "/users", method: "DELETE", showError: true });
     setUser(undefined);
     router.push("/");
   }, [router, setUser]);

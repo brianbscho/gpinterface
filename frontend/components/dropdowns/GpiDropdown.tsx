@@ -13,8 +13,6 @@ import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import callApi from "@/utils/callApi";
 import { GpiCreateResponse } from "gpinterface-shared/type/gpi";
-import { Static } from "@sinclair/typebox";
-import { ParamSchema } from "gpinterface-shared/type";
 import useUserStore from "@/store/user";
 import Link from "next/link";
 

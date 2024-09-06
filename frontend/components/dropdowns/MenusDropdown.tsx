@@ -35,7 +35,7 @@ export default function MenusDropdown() {
 
   useEffect(() => {
     const callUserApi = async () => {
-      const response = await callApi<UserGetMeResponse>({ endpoint: "/user" });
+      const response = await callApi<UserGetMeResponse>({ endpoint: "/users" });
       setUser(response);
       if (!response && logoutRedirectPaths.some((p) => pathname.includes(p))) {
         push("/");
@@ -52,7 +52,7 @@ export default function MenusDropdown() {
 
   const onClickLogout = useCallback(async () => {
     setOpen(false);
-    await callApi({ endpoint: "/user/logout" });
+    await callApi({ endpoint: "/users/logout" });
     setUser(undefined);
     location.reload();
   }, [setUser]);

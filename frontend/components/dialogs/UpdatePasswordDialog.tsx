@@ -59,7 +59,7 @@ export default function UpdatePassword() {
         UserGetMeResponse,
         Static<typeof UserUpdatePasswordSchema>
       >({
-        endpoint: "/user/password",
+        endpoint: "/users/password",
         method: "PUT",
         body: { oldPassword, newPassword, newPasswordRepeat },
         showError: true,

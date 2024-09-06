@@ -71,7 +71,7 @@ export default async function (fastify: FastifyInstance) {
       });
       return cookieReply(reply, accessToken, user);
     } catch (ex) {
-      console.error("path: /user, method: get, error:", ex);
+      console.error("path: /users, method: get, error:", ex);
       throw ex;
     }
   });
@@ -97,12 +97,12 @@ export default async function (fastify: FastifyInstance) {
       await fastify.prisma.user.delete({ where: { hashId } });
       return reply.clearCookie("access_token").send({});
     } catch (ex) {
-      console.error("path: /user, method: delete, error:", ex);
+      console.error("path: /users, method: delete, error:", ex);
       throw ex;
     }
   });
   fastify.post<{ Body: Static<typeof UserLoginSchema> }>(
-    "/login",
+    "/signin",
     { schema: { body: UserLoginSchema } },
     async (request, reply) => {
       try {
@@ -133,7 +133,7 @@ export default async function (fastify: FastifyInstance) {
         });
         return cookieReply(reply, accessToken, { hashId, name, email });
       } catch (ex) {
-        console.error("path: /user/login, method: post, error: ", ex);
+        console.error("path: /users/signin, method: post, error: ", ex);
         throw ex;
       }
     }
@@ -174,7 +174,7 @@ export default async function (fastify: FastifyInstance) {
         const me = { ...user, email, name };
         return cookieReply(reply, accessToken, me);
       } catch (ex) {
-        console.error("path: /user/signup, method: post, error: ", ex);
+        console.error("path: /users/signup, method: post, error: ", ex);
         throw ex;
       }
     }
@@ -227,7 +227,7 @@ export default async function (fastify: FastifyInstance) {
         const me = { hashId: newUser.hashId, email, name };
         return cookieReply(reply, accessToken, me);
       } catch (ex) {
-        console.error("path: /user/google, method: post, error: ", ex);
+        console.error("path: /users/google, method: post, error: ", ex);
         throw ex;
       }
     }
@@ -247,7 +247,7 @@ export default async function (fastify: FastifyInstance) {
 
         return updatedUser;
       } catch (ex) {
-        console.error("path: /user, method: put, error: ", ex);
+        console.error("path: /users, method: put, error: ", ex);
         throw ex;
       }
     }
@@ -295,7 +295,7 @@ export default async function (fastify: FastifyInstance) {
 
         return { success: true };
       } catch (ex) {
-        console.error("path: /user/password, method: put, error: ", ex);
+        console.error("path: /users/password, method: put, error: ", ex);
         throw ex;
       }
     }
@@ -349,7 +349,7 @@ export default async function (fastify: FastifyInstance) {
           };
         });
       } catch (ex) {
-        console.error("path: /user/gpis?lastHashId, method: get, error:", ex);
+        console.error("path: /users/gpis?lastHashId, method: get, error:", ex);
         throw ex;
       }
     }
@@ -397,7 +397,7 @@ export default async function (fastify: FastifyInstance) {
           chatContents: getTypedContents(chatContents),
         };
       } catch (ex) {
-        console.error("path: /user/gpis/:hashId, method: get, error:", ex);
+        console.error("path: /users/gpis/:hashId, method: get, error:", ex);
         throw ex;
       }
     }
