@@ -5,7 +5,3 @@ export const ChatCompletionSchema = Type.Object({
   content: Type.String(),
 });
 export type ChatCompletionResponse = { content: string };
-export type ChatCompletionSampleResponse = {
-  content: string;
-  sessionHashId: string;
-};
