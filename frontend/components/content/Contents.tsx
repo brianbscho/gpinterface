@@ -188,13 +188,9 @@ function Content({
       ChatContent,
       Static<typeof ChatContentRefreshSchema>
     >({
-      endpoint: `/chat/content/refresh/${chatContent.hashId}`,
+      endpoint: `/chat/contents/${chatContent.hashId}/refresh`,
       method: "PUT",
-      body: {
-        config: getApiConfig(model, config),
-        modelHashId: model.hashId,
-        gpiHashId,
-      },
+      body: { config: getApiConfig(model, config), modelHashId: model.hashId },
       showError: true,
     });
     if (response) {
@@ -209,14 +205,7 @@ function Content({
       );
     }
     setRefreshingHashId(undefined);
-  }, [
-    gpiHashId,
-    chatContent.hashId,
-    model,
-    config,
-    setRefreshingHashId,
-    setChatContents,
-  ]);
+  }, [chatContent.hashId, model, config, setRefreshingHashId, setChatContents]);
 
   const isDeleteVisible = useMemo(() => hashIds?.length === 2, [hashIds]);
   const isRefreshVisible = useMemo(
@@ -346,7 +335,7 @@ export default function Contents({ gpi, className }: ContentsProps) {
         ChatContentUpdateResponse,
         Static<typeof ChatContentUpdateSchema>
       >({
-        endpoint: `/chat/content/${hashId}`,
+        endpoint: `/chat/contents/${hashId}`,
         method: "PUT",
         body: { content },
       });
@@ -372,10 +361,9 @@ export default function Contents({ gpi, className }: ContentsProps) {
         ChatContentsCreateResponse,
         Static<typeof ChatContentCreateSchema>
       >({
-        endpoint: `/chat/content`,
+        endpoint: `/gpis/${gpi.hashId}/chat/contents/completions`,
         method: "POST",
         body: {
-          gpiHashId: gpi.hashId,
           modelHashId: model.hashId,
           content,
           config: getApiConfig(model, config),
