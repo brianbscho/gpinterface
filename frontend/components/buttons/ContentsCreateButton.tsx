@@ -29,7 +29,7 @@ export default function ContentsCreateButton({
       Static<typeof ChatContentsCreateSchema>
     >({
       method: "POST",
-      endpoint: "/contents",
+      endpoint: "/chat/contents",
       body: { gpiHashId: gpi.hashId },
       showError: true,
     });

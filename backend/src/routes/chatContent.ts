@@ -121,7 +121,7 @@ export default async function (fastify: FastifyInstance) {
           },
         ];
       } catch (ex) {
-        console.error("path: /content, method: post, error:", ex);
+        console.error("path: /chat/content, method: post, error:", ex);
         throw ex;
       }
     }
@@ -155,7 +155,7 @@ export default async function (fastify: FastifyInstance) {
 
         return { hashId, content, isModified };
       } catch (ex) {
-        console.error("path: /content/:hashId, method: put, error:", ex);
+        console.error("path: /chat/content/:hashId, method: put, error:", ex);
         throw ex;
       }
     }
@@ -257,7 +257,7 @@ export default async function (fastify: FastifyInstance) {
         });
       } catch (ex) {
         console.error(
-          "path: /content/refresh/:hashId, method: put, error:",
+          "path: /chat/content/refresh/:hashId, method: put, error:",
           ex
         );
         throw ex;

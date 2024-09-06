@@ -188,7 +188,7 @@ function Content({
       ChatContent,
       Static<typeof ChatContentRefreshSchema>
     >({
-      endpoint: `/content/refresh/${chatContent.hashId}`,
+      endpoint: `/chat/content/refresh/${chatContent.hashId}`,
       method: "PUT",
       body: {
         config: getApiConfig(model, config),
@@ -236,7 +236,7 @@ function Content({
       DeleteResponse,
       Static<typeof ChatContentsDeleteSchema>
     >({
-      endpoint: "/contents",
+      endpoint: "/chat/contents",
       method: "DELETE",
       body: { hashIds },
       showError: true,
@@ -346,7 +346,7 @@ export default function Contents({ gpi, className }: ContentsProps) {
         ChatContentUpdateResponse,
         Static<typeof ChatContentUpdateSchema>
       >({
-        endpoint: `/content/${hashId}`,
+        endpoint: `/chat/content/${hashId}`,
         method: "PUT",
         body: { content },
       });
@@ -372,7 +372,7 @@ export default function Contents({ gpi, className }: ContentsProps) {
         ChatContentsCreateResponse,
         Static<typeof ChatContentCreateSchema>
       >({
-        endpoint: `/content`,
+        endpoint: `/chat/content`,
         method: "POST",
         body: {
           gpiHashId: gpi.hashId,

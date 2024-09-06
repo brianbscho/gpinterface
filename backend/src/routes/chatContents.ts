@@ -31,7 +31,7 @@ export default async function (fastify: FastifyInstance) {
 
         return { success: true };
       } catch (ex) {
-        console.error("path: /contents, method: delete, error:", ex);
+        console.error("path: /chat/contents, method: delete, error:", ex);
         throw ex;
       }
     }
@@ -72,7 +72,7 @@ export default async function (fastify: FastifyInstance) {
 
         return getTypedContents(chatContents);
       } catch (ex) {
-        console.error("path: /contents, method: post, error:", ex);
+        console.error("path: /chat/contents, method: post, error:", ex);
         throw ex;
       }
     }
