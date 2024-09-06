@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import {
   ChatCompletionContentsQuery,
+  MessageCompletionContentsQuery,
   ChatCompletionModelSelect,
   createEntity,
   createManyEntities,
@@ -100,7 +101,7 @@ export async function createSessionCompletion({
           model: { select: ChatCompletionModelSelect },
         },
       },
-      messages: ChatCompletionContentsQuery,
+      messages: MessageCompletionContentsQuery,
     },
   });
 
@@ -158,7 +159,7 @@ export async function getSessionMessages({
       hashId: sessionHashId,
       gpi: { OR: [{ userHashId }, { isPublic: true }] },
     },
-    select: { messages: ChatCompletionContentsQuery },
+    select: { messages: MessageCompletionContentsQuery },
   });
 
   if (!session) {

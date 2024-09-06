@@ -159,6 +159,9 @@ export const ChatCompletionModelSelect = {
 export const ChatCompletionContentsQuery = {
   select: { role: true, content: true },
   orderBy: { id: "asc" as const },
+export const MessageCompletionContentsQuery = {
+  select: { role: true, content: true },
+  orderBy: { id: "asc" as const },
 };
 
 export const ContentHistorySelect = {

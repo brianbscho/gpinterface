@@ -7,6 +7,7 @@ import {
   ChatCompletionModelSelect,
   ChatCompletionContentsQuery,
   ContentHistorySelect,
+  MessageCompletionContentsQuery,
 } from "../util/prisma";
 import {
   ChatContent,
@@ -201,7 +202,7 @@ export default async function (fastify: FastifyInstance) {
         }
         const messages = await fastify.prisma.chatContent.findMany({
           where: { gpiHashId, id: { lt: id } },
-          ...ChatCompletionContentsQuery,
+          ...MessageCompletionContentsQuery,
         });
 
         const { systemMessage } = gpi;
