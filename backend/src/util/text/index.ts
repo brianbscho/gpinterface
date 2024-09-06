@@ -4,7 +4,7 @@ import { callMistral } from "./mistral";
 import { callCommand } from "./cohere";
 import { callJamba } from "./ai21_labs";
 import { callBedrock } from "./bedrock";
-import { providers } from "../provider";
+import { Provider } from "../provider";
 import { callGemini } from "./google";
 
 const MILLION = 1000000;
@@ -47,13 +47,13 @@ export async function getTextResponse(body: {
 
   const response = await (async function () {
     switch (provider.name) {
-      case providers.OpenAI:
+      case Provider.OpenAI:
         return callOpenai({
           model: name,
           messages: systemMergedMessages,
           ...config,
         });
-      case providers.Anthropic:
+      case Provider.Anthropic:
         return callClaude({
           model: name,
           messages: typedMessages,
@@ -61,13 +61,13 @@ export async function getTextResponse(body: {
           max_tokens: 4096,
           ...config,
         });
-      case providers.MistralAI:
+      case Provider.MistralAI:
         return callMistral({
           model: name,
           messages: systemMergedMessages,
           ...config,
         });
-      case providers.Cohere:
+      case Provider.Cohere:
         const chatHistory = history.map((m) => ({
           role: m.role !== "user" ? ("CHATBOT" as const) : ("USER" as const),
           message: m.content,
@@ -79,7 +79,7 @@ export async function getTextResponse(body: {
           ...(systemMessage.length > 0 && { preamble: systemMessage }),
           ...config,
         });
-      case providers.Gemini:
+      case Provider.Gemini:
         return callGemini(
           { model: name, systemInstruction: systemMessage, ...config },
           messages.map((m) => ({
@@ -88,13 +88,13 @@ export async function getTextResponse(body: {
           })),
           message.content
         );
-      case providers.AI21Labs:
+      case Provider.AI21Labs:
         return callJamba({
           model: name,
           messages: systemMergedMessages,
           ...config,
         });
-      case providers.Meta:
+      case Provider.Meta:
         return callBedrock({
           modelId: name,
           messages: typedMessages.map(({ role, content }) => ({
