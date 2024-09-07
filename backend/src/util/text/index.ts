@@ -2,7 +2,7 @@ import { callOpenai } from "./openai";
 import { callClaude } from "./anthropic";
 import { callMistral } from "./mistral";
 import { callCommand } from "./cohere";
-import { callJamba } from "./ai21_labs";
+import { callJamba } from "./ai21-labs";
 import { callBedrock } from "./bedrock";
 import { Provider } from "../provider";
 import { callGemini } from "./google";

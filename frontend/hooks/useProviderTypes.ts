@@ -2,7 +2,7 @@
 
 import callApi from "@/utils/callApi";
 import { useEffect } from "react";
-import { ProviderTypesGetResponse } from "gpinterface-shared/type/providerType";
+import { ProviderTypesGetResponse } from "gpinterface-shared/type/provider-type";
 import useModelStore from "@/store/model";
 
 export default function useProviderTypes() {

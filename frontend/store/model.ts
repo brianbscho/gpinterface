@@ -1,7 +1,7 @@
 import {
   Model,
   ProviderTypesGetResponse,
-} from "gpinterface-shared/type/providerType";
+} from "gpinterface-shared/type/provider-type";
 import { create } from "zustand";
 
 export type ConfigType<T extends object = { [key: string]: any }> = T;

@@ -1,5 +1,5 @@
 import { FastifyInstance } from "fastify";
-import { ProviderTypesGetResponse } from "gpinterface-shared/type/providerType";
+import { ProviderTypesGetResponse } from "gpinterface-shared/type/provider-type";
 
 export default async function (fastify: FastifyInstance) {
   fastify.get(

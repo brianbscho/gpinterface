@@ -1,7 +1,7 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 
-import httpErrorsPlugin from "./plugins/httpErrors";
+import httpErrorsPlugin from "./plugins/http-errors";
 import prismaPlugin from "./plugins/prisma";
 import chat from "./routes/chat/chat";
 import session from "./routes/chat/session";

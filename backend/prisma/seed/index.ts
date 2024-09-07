@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import ai21LabsSeed from "./ai21_labs";
+import ai21LabsSeed from "./ai21-labs";
 import anthropicSeed from "./anthropic";
 import cohereSeed from "./cohere";
 import metaSeed from "./meta";

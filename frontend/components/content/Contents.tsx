@@ -23,7 +23,7 @@ import {
   ChatContentUpdateResponse,
   ChatContentsCreateResponse,
   ChatContentCreateSchema,
-} from "gpinterface-shared/type/chatContent";
+} from "gpinterface-shared/type/chat-content";
 import { Static } from "@sinclair/typebox";
 import callApi from "@/utils/callApi";
 import { getApiConfig } from "@/utils/model";

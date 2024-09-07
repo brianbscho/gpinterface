@@ -12,7 +12,7 @@ import {
 import {
   ApiKeyCreateResponse,
   ApiKeysGetResponse,
-} from "gpinterface-shared/type/apiKey";
+} from "gpinterface-shared/type/api-key";
 import { Static } from "@sinclair/typebox";
 import {
   Check,

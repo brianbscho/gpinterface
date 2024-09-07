@@ -2,18 +2,18 @@ import Fastify from "fastify";
 import cors from "@fastify/cors";
 
 import cookiePlugin from "./plugins/cookie";
-import httpErrorsPlugin from "./plugins/httpErrors";
+import httpErrorsPlugin from "./plugins/http-errors";
 import jwtPlugin from "./plugins/jwt";
 import prismaPlugin from "./plugins/prisma";
 
 import users from "./routes/private/users";
-import apiKeys from "./routes/private/apiKeys";
+import apiKeys from "./routes/private/api-keys";
 import privateGpis from "./routes/private/gpis";
 import publicGpis from "./routes/public/gpis";
 import chat from "./routes/public/chat";
-import chatContents from "./routes/private/chatContents";
+import chatContents from "./routes/private/chat-contents";
 import histories from "./routes/private/histories";
-import providerTypes from "./routes/public/providerTypes";
+import providerTypes from "./routes/public/provider-types";
 import session from "./routes/public/session";
 
 const fastify = Fastify({

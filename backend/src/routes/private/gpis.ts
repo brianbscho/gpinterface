@@ -27,7 +27,7 @@ import {
 import {
   ChatContentCreateSchema,
   ChatContentsCreateResponse,
-} from "gpinterface-shared/type/chatContent";
+} from "gpinterface-shared/type/chat-content";
 import { getTextResponse } from "../../util/text";
 import { copyGpiEntry, createGpiEntry } from "../../controllers/gpi";
 

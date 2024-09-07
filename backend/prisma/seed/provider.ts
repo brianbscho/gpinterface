@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { nanoid } from "nanoid";
-import { getProviderTypeHashId } from "./providerType";
+import { getProviderTypeHashId } from "./provider-type";
 
 const prisma = new PrismaClient();
 

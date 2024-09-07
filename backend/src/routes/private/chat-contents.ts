@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
-import { ChatContentsDeleteSchema } from "gpinterface-shared/type/chatContent";
+import { ChatContentsDeleteSchema } from "gpinterface-shared/type/chat-content";
 import { DeleteResponse } from "gpinterface-shared/type";
 import {
   getTypedContent,
@@ -14,7 +14,7 @@ import {
   ChatContent,
   ChatContentRefreshSchema,
   ChatContentUpdateResponse,
-} from "gpinterface-shared/type/chatContent";
+} from "gpinterface-shared/type/chat-content";
 import { getTextResponse } from "../../util/text";
 import { HashIdParam } from "gpinterface-shared/type";
 import { ChatCompletionSchema } from "gpinterface-shared/type/chat";

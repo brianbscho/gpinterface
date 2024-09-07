@@ -6,7 +6,7 @@ import { FilePen } from "lucide-react";
 import {
   ChatContent,
   ChatContentsCreateResponse,
-} from "gpinterface-shared/type/chatContent";
+} from "gpinterface-shared/type/chat-content";
 import { Static } from "@sinclair/typebox";
 import callApi from "@/utils/callApi";
 import SmallHoverButton from "./SmallHoverButton";
