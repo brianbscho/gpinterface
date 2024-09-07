@@ -5,7 +5,7 @@ import {
   ApiKeysGetResponse,
 } from "gpinterface-shared/type/apiKey";
 import { createApiKey } from "../controllers/apiKey";
-import { DeleteResponse, ParamSchema } from "gpinterface-shared/type";
+import { DeleteResponse, HashIdParam } from "gpinterface-shared/type";
 
 export default async function (fastify: FastifyInstance) {
   fastify.get("/", async (request, reply): Promise<ApiKeysGetResponse> => {
@@ -26,9 +26,9 @@ export default async function (fastify: FastifyInstance) {
       throw ex;
     }
   });
-  fastify.delete<{ Params: Static<typeof ParamSchema> }>(
+  fastify.delete<{ Params: Static<typeof HashIdParam> }>(
     "/:hashId",
-    { schema: { params: ParamSchema } },
+    { schema: { params: HashIdParam } },
     async (request, reply): Promise<DeleteResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);

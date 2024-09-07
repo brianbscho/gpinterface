@@ -1,14 +1,14 @@
 import { Type } from "@sinclair/typebox";
 
+export const HashIdParam = Type.Object({ hashId: Type.String() });
 export const GpiHashIdParam = Type.Object({ gpiHashId: Type.String() });
 export const SessionHashIdParam = Type.Object({ sessionHashId: Type.String() });
 
-export const ListParamSchema = Type.Object({
+export const LastHashIdParam = Type.Object({
   lastHashId: Type.Optional(Type.String()),
 });
-export const ParamSchema = Type.Object({ hashId: Type.String() });
 
-export const SearchQueryParamSchema = Type.Object({
+export const SearchQueryHashIdParam = Type.Object({
   keyword: Type.String(),
   lastHashId: Type.Optional(Type.String()),
 });

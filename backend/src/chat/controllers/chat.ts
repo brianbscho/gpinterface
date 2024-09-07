@@ -10,12 +10,12 @@ import { Prisma } from "@prisma/client";
 export const createChatCompletion = async ({
   fastify,
   gpiHashId,
-  userContent,
+  content,
   userHashId,
 }: {
   fastify: FastifyInstance;
   gpiHashId: string;
-  userContent: string;
+  content: string;
   userHashId: string | null;
 }) => {
   const gpi = await fastify.prisma.gpi.findFirst({
@@ -40,8 +40,8 @@ export const createChatCompletion = async ({
   }
 
   const { systemMessage, chatContents, config, model } = gpi;
-  const messages = chatContents.concat({ role: "user", content: userContent });
-  const { content, ...response } = await getTextResponse({
+  const messages = chatContents.concat({ role: "user", content });
+  const response = await getTextResponse({
     model,
     systemMessage,
     config: config as any,
@@ -59,10 +59,9 @@ export const createChatCompletion = async ({
         ? [{ role: "system", content: systemMessage }]
         : []
       ).concat(messages),
-      content,
       ...response,
     },
   });
 
-  return { content };
+  return { content: response.content };
 };

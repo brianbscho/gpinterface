@@ -19,11 +19,14 @@ export default async function (fastify: FastifyInstance) {
         const { user } = await fastify.getUser(request, reply, true);
         const { gpiHashId } = request.params;
         const { content } = request.body;
+        if (content.trim() === "") {
+          throw fastify.httpErrors.badRequest("Empty content");
+        }
 
         return createChatCompletion({
           fastify,
           gpiHashId,
-          userContent: content,
+          content,
           userHashId: user.hashId || null,
         });
       } catch (ex) {

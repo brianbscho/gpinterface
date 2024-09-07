@@ -16,7 +16,7 @@ import {
   ChatContentUpdateResponse,
 } from "gpinterface-shared/type/chatContent";
 import { getTextResponse } from "../util/text";
-import { ParamSchema } from "gpinterface-shared/type";
+import { HashIdParam } from "gpinterface-shared/type";
 import { ChatCompletionSchema } from "gpinterface-shared/type/chat";
 
 export default async function (fastify: FastifyInstance) {
@@ -48,11 +48,11 @@ export default async function (fastify: FastifyInstance) {
     }
   );
   fastify.patch<{
-    Params: Static<typeof ParamSchema>;
+    Params: Static<typeof HashIdParam>;
     Body: Static<typeof ChatCompletionSchema>;
   }>(
     "/:hashId",
-    { schema: { params: ParamSchema, body: ChatCompletionSchema } },
+    { schema: { params: HashIdParam, body: ChatCompletionSchema } },
     async (request, reply): Promise<ChatContentUpdateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
@@ -82,11 +82,11 @@ export default async function (fastify: FastifyInstance) {
     }
   );
   fastify.patch<{
-    Params: Static<typeof ParamSchema>;
+    Params: Static<typeof HashIdParam>;
     Body: Static<typeof ChatContentRefreshSchema>;
   }>(
     "/:hashId/refresh",
-    { schema: { params: ParamSchema, body: ChatContentRefreshSchema } },
+    { schema: { params: HashIdParam, body: ChatContentRefreshSchema } },
     async (request, reply): Promise<ChatContent> => {
       try {
         const { user } = await fastify.getUser(request, reply);
@@ -94,12 +94,7 @@ export default async function (fastify: FastifyInstance) {
         const { modelHashId, config } = request.body;
 
         const model = await fastify.prisma.model.findFirst({
-          where: {
-            hashId: modelHashId,
-            isAvailable: true,
-            isFree: true,
-            ...(!user.hashId && { isLoginRequired: false }),
-          },
+          where: { hashId: modelHashId, isAvailable: true, isFree: true },
           select: ChatCompletionModelSelect,
         });
         if (!model) {
@@ -126,9 +121,14 @@ export default async function (fastify: FastifyInstance) {
           throw fastify.httpErrors.badRequest("content is not available.");
         }
         const messages = await fastify.prisma.chatContent.findMany({
-          where: { gpiHashId: gpi.hashId, id: { lt: id } },
+          where: { gpiHashId: gpi.hashId, isDeployed: false, id: { lt: id } },
           ...MessageCompletionContentsQuery,
         });
+        if (messages.some((m) => m.content === "")) {
+          throw fastify.httpErrors.badRequest(
+            "There is empty content in chat."
+          );
+        }
 
         const { systemMessage } = gpi;
         let { content, ...response } = await getTextResponse({

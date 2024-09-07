@@ -12,26 +12,14 @@ import { Prisma } from "@prisma/client";
 
 async function createSessionEntry(
   sessionDelegate: Prisma.SessionDelegate,
-  session: { gpiHashId: string; messages: { role: string; content: string }[] }
+  gpiHashId: string
 ) {
   let retries = 0;
 
   while (retries < 5) {
     try {
       const newSession = await sessionDelegate.create({
-        data: {
-          ...getDataWithHashId(
-            {
-              ...session,
-              messages: {
-                createMany: {
-                  data: session.messages.map((m) => getDataWithHashId(m)),
-                },
-              },
-            },
-            32
-          ),
-        },
+        data: getDataWithHashId({ gpiHashId }, 32),
         select: { hashId: true },
       });
 
@@ -65,24 +53,19 @@ export async function createSession({
     throw fastify.httpErrors.badRequest("There is empty content in chat.");
   }
 
-  const session = await createSessionEntry(fastify.prisma.session, {
-    gpiHashId,
-    messages: gpi.chatContents,
-  });
-
-  return session;
+  return createSessionEntry(fastify.prisma.session, gpiHashId);
 }
 
 export async function createSessionCompletion({
   fastify,
   userHashId,
   sessionHashId,
-  userContent,
+  content,
 }: {
   fastify: FastifyInstance;
   userHashId: string | null;
   sessionHashId: string;
-  userContent: string;
+  content: string;
 }) {
   const session = await fastify.prisma.session.findFirst({
     where: {
@@ -97,6 +80,7 @@ export async function createSessionCompletion({
         select: {
           hashId: true,
           systemMessage: true,
+          chatContents: ChatCompletionContentsQuery,
           config: true,
           model: { select: ChatCompletionModelSelect },
         },
@@ -108,11 +92,16 @@ export async function createSessionCompletion({
   if (!session || !session.gpi) {
     throw fastify.httpErrors.badRequest("session is not available.");
   }
+  if (session.gpi.chatContents.some((c) => c.content === "")) {
+    throw fastify.httpErrors.badRequest("There is empty content in chat.");
+  }
 
-  const { messages, gpi } = session;
+  const { gpi } = session;
   const { systemMessage, config, model } = gpi;
-  messages.push({ role: "user", content: userContent });
-  const { content, ...response } = await getTextResponse({
+  const messages = gpi.chatContents
+    .concat(session.messages)
+    .concat({ role: "user", content });
+  const response = await getTextResponse({
     model,
     systemMessage,
     config: config as any,
@@ -121,8 +110,8 @@ export async function createSessionCompletion({
 
   await createManyEntities(fastify.prisma.sessionMessage.createMany, {
     data: [
-      { sessionHashId, role: "user", content: userContent },
-      { sessionHashId, role: "assistant", content },
+      { sessionHashId, role: "user", content },
+      { sessionHashId, role: "assistant", content: response.content },
     ],
   });
   await createEntity(fastify.prisma.history.create, {
@@ -137,12 +126,11 @@ export async function createSessionCompletion({
         ? [{ role: "system", content: systemMessage }]
         : []
       ).concat(messages),
-      content,
       ...response,
     },
   });
 
-  return { content };
+  return { content: response.content };
 }
 
 export async function getSessionMessages({

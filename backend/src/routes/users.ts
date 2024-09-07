@@ -19,7 +19,7 @@ import {
   UserUpdatePasswordSchema,
   UserUpdateSchema,
 } from "gpinterface-shared/type/user";
-import { ListParamSchema, ParamSchema } from "gpinterface-shared/type";
+import { LastHashIdParam, HashIdParam } from "gpinterface-shared/type";
 import { GpiGetResponse, GpisGetResponse } from "gpinterface-shared/type/gpi";
 
 function getAccessToken(
@@ -127,7 +127,7 @@ export default async function (fastify: FastifyInstance) {
           );
         }
 
-        const { hashId, name, ...rest } = user;
+        const { hashId, name } = user;
         const accessToken = getAccessToken(httpErrors.internalServerError, {
           user: { hashId, name },
         });
@@ -300,9 +300,9 @@ export default async function (fastify: FastifyInstance) {
       }
     }
   );
-  fastify.get<{ Querystring: Static<typeof ListParamSchema> }>(
+  fastify.get<{ Querystring: Static<typeof LastHashIdParam> }>(
     "/gpis",
-    { schema: { querystring: ListParamSchema } },
+    { schema: { querystring: LastHashIdParam } },
     async (request, reply): Promise<GpisGetResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
@@ -354,9 +354,9 @@ export default async function (fastify: FastifyInstance) {
       }
     }
   );
-  fastify.get<{ Params: Static<typeof ParamSchema> }>(
+  fastify.get<{ Params: Static<typeof HashIdParam> }>(
     "/gpis/:hashId",
-    { schema: { params: ParamSchema } },
+    { schema: { params: HashIdParam } },
     async (request, reply): Promise<GpiGetResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);

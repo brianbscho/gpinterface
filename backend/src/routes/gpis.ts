@@ -2,9 +2,9 @@ import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
 import {
   DeleteResponse,
-  ListParamSchema,
-  ParamSchema,
-  SearchQueryParamSchema,
+  LastHashIdParam,
+  HashIdParam,
+  SearchQueryHashIdParam,
 } from "gpinterface-shared/type";
 import {
   ChatCompletionContentsQuery,
@@ -33,9 +33,9 @@ import { getTextResponse } from "../util/text";
 import { copyGpiEntry, createGpiEntry } from "../controllers/gpi";
 
 export default async function (fastify: FastifyInstance) {
-  fastify.get<{ Params: Static<typeof ParamSchema> }>(
+  fastify.get<{ Params: Static<typeof HashIdParam> }>(
     "/:hashId",
-    { schema: { params: ParamSchema } },
+    { schema: { params: HashIdParam } },
     async (request, reply): Promise<GpiGetResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
@@ -62,6 +62,7 @@ export default async function (fastify: FastifyInstance) {
                 isModified: true,
               },
               where: { isDeployed: true },
+              orderBy: { id: "asc" },
             },
             config: true,
             modelHashId: true,
@@ -84,9 +85,9 @@ export default async function (fastify: FastifyInstance) {
       }
     }
   );
-  fastify.get<{ Querystring: Static<typeof ListParamSchema> }>(
+  fastify.get<{ Querystring: Static<typeof LastHashIdParam> }>(
     "/",
-    { schema: { querystring: ListParamSchema } },
+    { schema: { querystring: LastHashIdParam } },
     async (request, reply): Promise<GpisGetResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
@@ -117,6 +118,7 @@ export default async function (fastify: FastifyInstance) {
                 isModified: true,
               },
               where: { isDeployed: true },
+              orderBy: { id: "asc" },
             },
             config: true,
             modelHashId: true,
@@ -140,9 +142,9 @@ export default async function (fastify: FastifyInstance) {
       }
     }
   );
-  fastify.get<{ Querystring: Static<typeof SearchQueryParamSchema> }>(
+  fastify.get<{ Querystring: Static<typeof SearchQueryHashIdParam> }>(
     "/search",
-    { schema: { querystring: SearchQueryParamSchema } },
+    { schema: { querystring: SearchQueryHashIdParam } },
     async (request, reply): Promise<GpisGetResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply, true);
@@ -183,6 +185,7 @@ export default async function (fastify: FastifyInstance) {
                 isModified: true,
               },
               where: { isDeployed: true },
+              orderBy: { id: "asc" },
             },
             config: true,
             modelHashId: true,
@@ -235,11 +238,11 @@ export default async function (fastify: FastifyInstance) {
     }
   );
   fastify.patch<{
-    Params: Static<typeof ParamSchema>;
+    Params: Static<typeof HashIdParam>;
     Body: Static<typeof GpiUpdateSchema>;
   }>(
     "/:hashId",
-    { schema: { params: ParamSchema, body: GpiUpdateSchema } },
+    { schema: { params: HashIdParam, body: GpiUpdateSchema } },
     async (request, reply): Promise<GpiUpdateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
@@ -282,9 +285,9 @@ export default async function (fastify: FastifyInstance) {
       }
     }
   );
-  fastify.post<{ Params: Static<typeof ParamSchema> }>(
+  fastify.post<{ Params: Static<typeof HashIdParam> }>(
     "/:hashId/copy",
-    { schema: { params: ParamSchema } },
+    { schema: { params: HashIdParam } },
     async (request, reply): Promise<GpiCreateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
@@ -298,9 +301,9 @@ export default async function (fastify: FastifyInstance) {
       }
     }
   );
-  fastify.delete<{ Params: Static<typeof ParamSchema> }>(
+  fastify.delete<{ Params: Static<typeof HashIdParam> }>(
     "/:hashId",
-    { schema: { params: ParamSchema } },
+    { schema: { params: HashIdParam } },
     async (request, reply): Promise<DeleteResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
@@ -324,16 +327,19 @@ export default async function (fastify: FastifyInstance) {
     }
   );
   fastify.post<{
-    Params: Static<typeof ParamSchema>;
+    Params: Static<typeof HashIdParam>;
     Body: Static<typeof ChatContentCreateSchema>;
   }>(
     "/:hashId/chat/contents/completion",
-    { schema: { params: ParamSchema, body: ChatContentCreateSchema } },
+    { schema: { params: HashIdParam, body: ChatContentCreateSchema } },
     async (request, reply): Promise<ChatContentsCreateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
         const { hashId } = request.params;
-        const { content: userContent, ...body } = request.body;
+        const { content, ...body } = request.body;
+        if (content.trim() === "") {
+          throw fastify.httpErrors.badRequest("Empty content");
+        }
 
         const model = await fastify.prisma.model.findFirst({
           where: {
@@ -366,9 +372,8 @@ export default async function (fastify: FastifyInstance) {
         }
 
         const { systemMessage, chatContents } = gpi;
-        const messages = [...chatContents];
-        messages.push({ role: "user", content: userContent });
-        let { content, ...response } = await getTextResponse({
+        const messages = chatContents.concat({ role: "user", content });
+        let response = await getTextResponse({
           model,
           systemMessage,
           config: body.config,
@@ -381,7 +386,7 @@ export default async function (fastify: FastifyInstance) {
             data: {
               gpiHashId: hashId,
               role: "user",
-              content: userContent,
+              content,
               isDeployed: false,
             },
             select: {
@@ -399,7 +404,7 @@ export default async function (fastify: FastifyInstance) {
               ...body,
               gpiHashId: hashId,
               role: "assistant",
-              content,
+              content: response.content,
               isDeployed: false,
             },
             select: {
@@ -425,7 +430,6 @@ export default async function (fastify: FastifyInstance) {
               ? [{ role: "system", content: systemMessage }]
               : []
             ).concat(messages),
-            content,
             ...response,
           },
           select: { ...ContentHistorySelect, hashId: true },
@@ -447,9 +451,9 @@ export default async function (fastify: FastifyInstance) {
       }
     }
   );
-  fastify.post<{ Params: Static<typeof ParamSchema> }>(
+  fastify.post<{ Params: Static<typeof HashIdParam> }>(
     "/:hashId/chat/contents",
-    { schema: { params: ParamSchema } },
+    { schema: { params: HashIdParam } },
     async (request, reply): Promise<ChatContentsCreateResponse> => {
       try {
         const { user } = await fastify.getUser(request, reply);
