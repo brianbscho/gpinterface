@@ -1,11 +1,11 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
-import { getApiKey } from "../controllers/apiKey";
+import { getApiKey } from "../../controllers/apiKey";
 import {
   ChatCompletionResponse,
   ChatCompletionSchema,
 } from "gpinterface-shared/type/chat";
-import { createChatCompletion } from "../controllers/chat";
+import { createChatCompletion } from "../../controllers/chat";
 import { GpiHashIdParam } from "gpinterface-shared/type";
 
 export default async function (fastify: FastifyInstance) {

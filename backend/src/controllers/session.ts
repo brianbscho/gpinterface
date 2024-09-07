@@ -6,8 +6,8 @@ import {
   createEntity,
   createManyEntities,
   getDataWithHashId,
-} from "../../util/prisma";
-import { getTextResponse } from "../../util/text";
+} from "../util/prisma";
+import { getTextResponse } from "../util/text";
 import { Prisma } from "@prisma/client";
 
 async function createSessionEntry(

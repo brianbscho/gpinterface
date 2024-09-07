@@ -3,8 +3,8 @@ import {
   ChatCompletionContentsQuery,
   ChatCompletionModelSelect,
   createEntity,
-} from "../../util/prisma";
-import { getTextResponse } from "../../util/text";
+} from "../util/prisma";
+import { getTextResponse } from "../util/text";
 import { Prisma } from "@prisma/client";
 
 export const createChatCompletion = async ({

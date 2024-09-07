@@ -1,10 +1,10 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 
-import httpErrorsPlugin from "../plugins/httpErrors";
-import prismaPlugin from "../plugins/prisma";
-import chat from "./routes/chat";
-import session from "./routes/session";
+import httpErrorsPlugin from "./plugins/httpErrors";
+import prismaPlugin from "./plugins/prisma";
+import chat from "./routes/chat/chat";
+import session from "./routes/chat/session";
 
 const fastify = Fastify({ logger: true });
 

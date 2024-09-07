@@ -1,6 +1,6 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
-import { getApiKey } from "../controllers/apiKey";
+import { getApiKey } from "../../controllers/apiKey";
 import {
   SessionCreateResponse,
   SessionMessagesGetResponse,
@@ -9,7 +9,7 @@ import {
   createSession,
   createSessionCompletion,
   getSessionMessages,
-} from "../controllers/session";
+} from "../../controllers/session";
 import {
   ChatCompletionResponse,
   ChatCompletionSchema,
