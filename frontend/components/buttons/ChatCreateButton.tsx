@@ -43,7 +43,7 @@ export default function ChatCreateButton({
       GpiCreateResponse,
       Static<typeof GpiCreateSchema>
     >({
-      endpoint: "/gpis",
+      endpoint: "/users/gpis",
       method: "POST",
       body: { modelHashId, config },
       showError: true,

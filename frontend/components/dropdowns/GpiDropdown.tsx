@@ -30,7 +30,7 @@ export default function GpiDropdown({ gpiHashId }: { gpiHashId: string }) {
   const onClickCopy = useCallback(async () => {
     setLoading(true);
     const response = await callApi<GpiCreateResponse>({
-      endpoint: `/gpis/${gpiHashId}/copy`,
+      endpoint: `/users/gpis/${gpiHashId}/copy`,
       method: "POST",
       showError: true,
     });

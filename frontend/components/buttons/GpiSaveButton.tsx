@@ -28,7 +28,7 @@ export default function GpiSaveButton({ useGpi }: Props) {
       GpiUpdateResponse,
       Static<typeof GpiUpdateSchema>
     >({
-      endpoint: `/gpis/${gpi.hashId}`,
+      endpoint: `/users/gpis/${gpi.hashId}`,
       method: "PATCH",
       body: { modelHashId: model.hashId, config: getApiConfig(model, config) },
       showError: true,

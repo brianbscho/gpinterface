@@ -34,11 +34,8 @@ export default function Document({
       description:
         "Send a message and receive an response for one-time chat interactions. Ideal for isolated queries without session persistence.",
       method: "POST",
-      path: "/chat/completion",
-      body: {
-        gpiHashId: { value: gpi?.hashId ?? "", type: "const" },
-        content: { value: "", type: "variable" },
-      },
+      path: `/chat/${gpi?.hashId ?? ""}/completion`,
+      body: { content: { value: "", type: "variable" } },
     },
     {
       title: "Create session",
@@ -53,11 +50,8 @@ export default function Document({
       description:
         "Submit query within an active session, where it will be appended to the end of existing messages, allowing ongoing dialogue.",
       method: "POST",
-      path: "/session/completion",
-      body: {
-        sessionHashId: { value: "", type: "variable" },
-        content: { value: "", type: "variable" },
-      },
+      path: "/session/{sessionHashId}/completion",
+      body: { content: { value: "", type: "variable" } },
     },
     {
       title: "Retrieve session messages",

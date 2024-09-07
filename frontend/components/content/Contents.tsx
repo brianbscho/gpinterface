@@ -321,7 +321,7 @@ export default function Contents({ gpi, className }: ContentsProps) {
         GpiUpdateResponse,
         Static<typeof GpiUpdateSchema>
       >({
-        endpoint: `/gpis/${gpi.hashId}`,
+        endpoint: `/users/gpis/${gpi.hashId}`,
         method: "PATCH",
         body: { systemMessage },
       });
@@ -361,7 +361,7 @@ export default function Contents({ gpi, className }: ContentsProps) {
         ChatContentsCreateResponse,
         Static<typeof ChatContentCreateSchema>
       >({
-        endpoint: `/gpis/${gpi.hashId}/chat/contents/completions`,
+        endpoint: `/users/gpis/${gpi.hashId}/chat/contents/completion`,
         method: "POST",
         body: {
           modelHashId: model.hashId,
@@ -385,7 +385,7 @@ export default function Contents({ gpi, className }: ContentsProps) {
     if (!yes) return;
 
     const response = await callApi<DeleteResponse>({
-      endpoint: `/gpis/${gpi.hashId}`,
+      endpoint: `/users/gpis/${gpi.hashId}`,
       method: "DELETE",
       showError: true,
     });

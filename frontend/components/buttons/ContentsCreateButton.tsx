@@ -7,10 +7,8 @@ import {
   ChatContent,
   ChatContentsCreateResponse,
 } from "gpinterface-shared/type/chat-content";
-import { Static } from "@sinclair/typebox";
 import callApi from "@/utils/callApi";
 import SmallHoverButton from "./SmallHoverButton";
-import { GpiHashIdParam } from "gpinterface-shared/type";
 
 type GpiType = { hashId: string; systemMessage: string };
 type ContentsProps = {
@@ -24,13 +22,9 @@ export default function ContentsCreateButton({
   const [loading, setLoading] = useState(false);
   const onClickAnswerYourself = useCallback(async () => {
     setLoading(true);
-    const response = await callApi<
-      ChatContentsCreateResponse,
-      Static<typeof GpiHashIdParam>
-    >({
+    const response = await callApi<ChatContentsCreateResponse>({
       method: "POST",
-      endpoint: "/chat/contents",
-      body: { gpiHashId: gpi.hashId },
+      endpoint: `users/gpis/${gpi.hashId}/chat/contents/completion`,
       showError: true,
     });
     if (response) {
