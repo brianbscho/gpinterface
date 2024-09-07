@@ -4,7 +4,7 @@ import {
   ApiKeyCreateResponse,
   ApiKeysGetResponse,
 } from "gpinterface-shared/type/apiKey";
-import { createApiKey } from "../controllers/apiKey";
+import { createApiKey } from "../../controllers/apiKey";
 import { DeleteResponse, HashIdParam } from "gpinterface-shared/type";
 
 export default async function (fastify: FastifyInstance) {

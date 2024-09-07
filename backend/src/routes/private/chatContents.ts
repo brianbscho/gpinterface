@@ -9,13 +9,13 @@ import {
   getTypedHistory,
   ChatCompletionModelSelect,
   MessageCompletionContentsQuery,
-} from "../util/prisma";
+} from "../../util/prisma";
 import {
   ChatContent,
   ChatContentRefreshSchema,
   ChatContentUpdateResponse,
 } from "gpinterface-shared/type/chatContent";
-import { getTextResponse } from "../util/text";
+import { getTextResponse } from "../../util/text";
 import { HashIdParam } from "gpinterface-shared/type";
 import { ChatCompletionSchema } from "gpinterface-shared/type/chat";
 

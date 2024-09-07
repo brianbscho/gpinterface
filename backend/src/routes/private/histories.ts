@@ -5,7 +5,7 @@ import {
   ContentHistorySelect,
   getIdByHashId,
   getTypedHistory,
-} from "../util/prisma";
+} from "../../util/prisma";
 import { HistoriesGetResponse } from "gpinterface-shared/type/history";
 
 export default async function (fastify: FastifyInstance) {

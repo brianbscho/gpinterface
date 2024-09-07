@@ -6,14 +6,15 @@ import httpErrorsPlugin from "./plugins/httpErrors";
 import jwtPlugin from "./plugins/jwt";
 import prismaPlugin from "./plugins/prisma";
 
-import users from "./routes/users";
-import apiKeys from "./routes/apiKeys";
-import gpis from "./routes/gpis";
-import chat from "./routes/chat";
-import chatContents from "./routes/chatContents";
-import histories from "./routes/histories";
-import providerTypes from "./routes/providerTypes";
-import session from "./routes/session";
+import users from "./routes/private/users";
+import apiKeys from "./routes/private/apiKeys";
+import privateGpis from "./routes/private/gpis";
+import publicGpis from "./routes/public/gpis";
+import chat from "./routes/public/chat";
+import chatContents from "./routes/private/chatContents";
+import histories from "./routes/private/histories";
+import providerTypes from "./routes/public/providerTypes";
+import session from "./routes/public/session";
 
 const fastify = Fastify({
   logger: {
@@ -45,7 +46,8 @@ fastify.get("/health", () => true);
 fastify.register(apiKeys, { prefix: "/api/keys" });
 fastify.register(chat, { prefix: "/chat" });
 fastify.register(chatContents, { prefix: "/chat/contents" });
-fastify.register(gpis, { prefix: "/gpis" });
+fastify.register(privateGpis, { prefix: "/users/gpis" });
+fastify.register(publicGpis, { prefix: "/gpis" });
 fastify.register(histories, { prefix: "/histories" });
 fastify.register(providerTypes, { prefix: "/provider/types" });
 fastify.register(session, { prefix: "/session" });

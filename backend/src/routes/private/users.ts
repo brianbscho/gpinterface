@@ -3,13 +3,8 @@ import * as bcrypt from "bcryptjs";
 import { validateEmail, validatePassword } from "gpinterface-shared/string";
 import { Static } from "@sinclair/typebox";
 import { sign } from "jsonwebtoken";
-import { Payload } from "../types/jwt";
-import {
-  ContentHistorySelect,
-  createEntity,
-  getIdByHashId,
-  getTypedContents,
-} from "../util/prisma";
+import { Payload } from "../../types/jwt";
+import { createEntity } from "../../util/prisma";
 import { HttpError } from "@fastify/sensible";
 import {
   UserCreateSchema,
@@ -19,8 +14,6 @@ import {
   UserUpdatePasswordSchema,
   UserUpdateSchema,
 } from "gpinterface-shared/type/user";
-import { LastHashIdParam, HashIdParam } from "gpinterface-shared/type";
-import { GpiGetResponse, GpisGetResponse } from "gpinterface-shared/type/gpi";
 
 function getAccessToken(
   internalServerError: (msg?: string | undefined) => HttpError,
@@ -296,108 +289,6 @@ export default async function (fastify: FastifyInstance) {
         return { success: true };
       } catch (ex) {
         console.error("path: /users/password, method: put, error: ", ex);
-        throw ex;
-      }
-    }
-  );
-  fastify.get<{ Querystring: Static<typeof LastHashIdParam> }>(
-    "/gpis",
-    { schema: { querystring: LastHashIdParam } },
-    async (request, reply): Promise<GpisGetResponse> => {
-      try {
-        const { user } = await fastify.getUser(request, reply);
-        const { lastHashId } = request.query;
-
-        const id = await getIdByHashId(
-          fastify.prisma.gpi.findFirst,
-          lastHashId
-        );
-
-        const gpis = await fastify.prisma.gpi.findMany({
-          where: { ...(id > 0 && { id: { lt: id } }), userHashId: user.hashId },
-          select: {
-            hashId: true,
-            userHashId: true,
-            description: true,
-            systemMessage: true,
-            chatContents: {
-              select: {
-                hashId: true,
-                role: true,
-                content: true,
-                config: true,
-                model: { select: { hashId: true, name: true } },
-                histories: { select: ContentHistorySelect },
-                isModified: true,
-              },
-              where: { isDeployed: true },
-            },
-            config: true,
-            modelHashId: true,
-            isPublic: true,
-          },
-          orderBy: { id: "desc" },
-          take: 5,
-        });
-
-        return gpis.map((gpi) => {
-          const { chatContents, config, ...rest } = gpi;
-          return {
-            ...rest,
-            config: config as any,
-            chatContents: getTypedContents(chatContents),
-          };
-        });
-      } catch (ex) {
-        console.error("path: /users/gpis?lastHashId, method: get, error:", ex);
-        throw ex;
-      }
-    }
-  );
-  fastify.get<{ Params: Static<typeof HashIdParam> }>(
-    "/gpis/:hashId",
-    { schema: { params: HashIdParam } },
-    async (request, reply): Promise<GpiGetResponse> => {
-      try {
-        const { user } = await fastify.getUser(request, reply);
-        const { hashId } = request.params;
-
-        const gpi = await fastify.prisma.gpi.findFirst({
-          where: { hashId, userHashId: user.hashId },
-          select: {
-            hashId: true,
-            userHashId: true,
-            description: true,
-            systemMessage: true,
-            chatContents: {
-              select: {
-                hashId: true,
-                role: true,
-                content: true,
-                config: true,
-                model: { select: { hashId: true, name: true } },
-                histories: { select: ContentHistorySelect },
-                isModified: true,
-              },
-              where: { isDeployed: false },
-            },
-            config: true,
-            modelHashId: true,
-            isPublic: true,
-          },
-        });
-        if (!gpi) {
-          throw fastify.httpErrors.badRequest("The gpi is not available.");
-        }
-
-        const { config, chatContents, ...rest } = gpi;
-        return {
-          ...rest,
-          config: config as any,
-          chatContents: getTypedContents(chatContents),
-        };
-      } catch (ex) {
-        console.error("path: /users/gpis/:hashId, method: get, error:", ex);
         throw ex;
       }
     }
