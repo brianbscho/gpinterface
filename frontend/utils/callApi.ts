@@ -7,7 +7,7 @@ export default async function callApi<T, BodyT = object>({
   redirectToMain = false,
 }: {
   endpoint: string;
-  method?: "GET" | "POST" | "PUT" | "DELETE";
+  method?: "GET" | "POST" | "PATCH" | "PUT" | "DELETE";
   headers?: HeadersInit;
   body?: BodyT;
   showError?: boolean;
