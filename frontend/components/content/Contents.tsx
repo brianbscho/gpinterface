@@ -107,17 +107,15 @@ function Buttons({
 
 type RefreshingHashId = string | undefined;
 type ContentProps = {
-  gpiHashId: string;
   chatContent: Omit<ChatContent, "hashId" | "isModified"> &
     Partial<Pick<ChatContent, "hashId" | "isModified">>;
-  setChatContents: Dispatch<SetStateAction<ChatContent[]>>;
+  setChatContents?: Dispatch<SetStateAction<ChatContent[]>>;
   useRefreshingHashId: [RefreshingHashId, (hashId: RefreshingHashId) => void];
   callUpdateContent: (content: string) => Promise<string | undefined>;
   hashIds?: string[];
 };
 
 function Content({
-  gpiHashId,
   chatContent,
   setChatContents,
   useRefreshingHashId,
@@ -125,7 +123,7 @@ function Content({
   hashIds,
 }: ContentProps) {
   const [newContent, setNewContent] = useState(chatContent.content);
-  const [oldContent, setOldContent] = useState(chatContent.content);
+  const oldContent = useMemo(() => chatContent.content, [chatContent.content]);
   const [refreshingHashId, setRefreshingHashId] = useRefreshingHashId;
   const [model, config, setModelHashId, setConfig] = useModelStore((state) => [
     state.model,
@@ -136,7 +134,6 @@ function Content({
 
   useEffect(() => {
     setNewContent(chatContent.content);
-    setOldContent(chatContent.content);
   }, [chatContent.content]);
   const [isSaving, setIsSaving] = useState(false);
   useEffect(() => {
@@ -149,8 +146,15 @@ function Content({
     const timer = setTimeout(async () => {
       try {
         const response = await callUpdateContent(newContent);
-        if (response) {
-          setOldContent(response);
+        if (response && setChatContents) {
+          setChatContents((prev) =>
+            prev.map((p) => {
+              if (p.hashId === chatContent.hashId) {
+                return { ...p, content: response };
+              }
+              return p;
+            })
+          );
         }
       } catch {}
 
@@ -158,7 +162,13 @@ function Content({
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [newContent, oldContent, callUpdateContent]);
+  }, [
+    newContent,
+    oldContent,
+    callUpdateContent,
+    chatContent.hashId,
+    setChatContents,
+  ]);
 
   const disabled = useMemo(
     () => typeof refreshingHashId === "string",
@@ -184,7 +194,7 @@ function Content({
       body: { config: getApiConfig(model, config), modelHashId: model.hashId },
       showError: true,
     });
-    if (response) {
+    if (response && setChatContents) {
       setChatContents((prev) =>
         prev.map((p) => {
           if (p.hashId === response.hashId) {
@@ -221,7 +231,7 @@ function Content({
       body: { hashIds },
       showError: true,
     });
-    if (response) {
+    if (response && setChatContents) {
       setChatContents((prev) =>
         prev.filter((p) => !response.hashIds.includes(p.hashId))
       );
@@ -230,16 +240,14 @@ function Content({
 
   return (
     <CardContent className="p-0">
-      <div className="flex items-center gap-1 mb-3">
+      <div className="flex items-end gap-1 mb-1">
         {chatContent.role !== "assistant" && (
-          <Badge className="h-6" variant="tag">
-            {chatContent.role}
-          </Badge>
+          <div className="text-sm">{chatContent.role}</div>
         )}
         {chatContent.role === "assistant" && (
-          <Badge className="h-6" variant="tag">
+          <div className="text-sm">
             {!chatContent.model ? "assistant" : chatContent.model.name}
-          </Badge>
+          </div>
         )}
         {isSaving && (
           <>
@@ -248,7 +256,7 @@ function Content({
           </>
         )}
         {chatContent.isModified === true && !isSaving && (
-          <div className="ml-1 text-xs self-start">*answer modified</div>
+          <div className="text-xs underline">*answer modified</div>
         )}
         <div className="flex-1"></div>
         <Buttons
@@ -296,18 +304,39 @@ function Content({
   );
 }
 
-type ContentsProps = { gpi: GpiGetResponse; className?: string };
-export default function Contents({ gpi, className }: ContentsProps) {
-  const [chatContents, setChatContents] = useState(gpi.chatContents);
+type GpiType = GpiGetResponse | undefined;
+type ContentsProps = {
+  useGpi: [GpiType, Dispatch<SetStateAction<GpiType>>];
+  className?: string;
+};
+export default function Contents({ useGpi, className }: ContentsProps) {
+  const [gpi, setGpi] = useGpi;
+  const setChatContents = useCallback(
+    (value: SetStateAction<GpiGetResponse["chatContents"]>) => {
+      setGpi((prev) => {
+        if (!prev) return prev;
+
+        if (typeof value === "function") {
+          return { ...prev, chatContents: value(prev.chatContents) };
+        }
+        return { ...prev, chatContents: value };
+      });
+    },
+    [setGpi]
+  );
+  const chatContents = useMemo(() => gpi?.chatContents, [gpi?.chatContents]);
+
   const [refreshingHashId, setRefreshingHashId] = useState<string>();
 
   const systemContent = useMemo(
-    () => ({ role: "system", content: gpi.systemMessage }),
-    [gpi.systemMessage]
+    () => ({ role: "system", content: gpi?.systemMessage ?? "" }),
+    [gpi?.systemMessage]
   );
 
   const callUpdateSystemMessage = useCallback(
     async (systemMessage: string) => {
+      if (!gpi) return;
+
       const response = await callApi<
         GpiUpdateResponse,
         Static<typeof GpiUpdateSchema>
@@ -318,7 +347,7 @@ export default function Contents({ gpi, className }: ContentsProps) {
       });
       return response?.systemMessage;
     },
-    [gpi.hashId]
+    [gpi]
   );
   const callUpdateContent = useCallback(
     (hashId: string) => async (content: string) => {
@@ -339,13 +368,13 @@ export default function Contents({ gpi, className }: ContentsProps) {
       }
       return response?.content;
     },
-    []
+    [setChatContents]
   );
 
   const [config, model] = useModelStore((state) => [state.config, state.model]);
   const onSubmit = useCallback(
     async (content: string) => {
-      if (!model) return;
+      if (!gpi || !model) return;
 
       setRefreshingHashId("");
       const response = await callApi<
@@ -366,33 +395,29 @@ export default function Contents({ gpi, className }: ContentsProps) {
       }
       setRefreshingHashId(undefined);
     },
-    [gpi.hashId, model, config]
+    [gpi, model, config, setChatContents]
   );
 
+  if (!gpi) return null;
   return (
     <div className={cn("flex flex-col gap-3", className)}>
-      {systemContent.content.length > 0 && (
-        <Content
-          chatContent={systemContent}
-          gpiHashId={gpi.hashId}
-          setChatContents={setChatContents}
-          useRefreshingHashId={[refreshingHashId, setRefreshingHashId]}
-          callUpdateContent={callUpdateSystemMessage}
-        />
-      )}
-      {chatContents.map((c, i) => {
+      <Content
+        chatContent={systemContent}
+        useRefreshingHashId={[refreshingHashId, setRefreshingHashId]}
+        callUpdateContent={callUpdateSystemMessage}
+      />
+      {chatContents?.map((c, i) => {
         let hashIds: string[] = [];
         if (c.role === "user") {
-          hashIds = chatContents.slice(i, i + 2).map((_c) => _c.hashId);
+          hashIds = chatContents?.slice(i, i + 2).map((_c) => _c.hashId);
         } else {
-          hashIds = chatContents.slice(i - 1, i + 1).map((_c) => _c.hashId);
+          hashIds = chatContents?.slice(i - 1, i + 1).map((_c) => _c.hashId);
         }
 
         return (
           <Content
             key={c.hashId}
             chatContent={c}
-            gpiHashId={gpi.hashId}
             setChatContents={setChatContents}
             useRefreshingHashId={[refreshingHashId, setRefreshingHashId]}
             callUpdateContent={callUpdateContent(c.hashId)}
@@ -400,9 +425,14 @@ export default function Contents({ gpi, className }: ContentsProps) {
           />
         );
       })}
-      <ContentInput onSubmit={onSubmit}>
-        <ContentsCreateButton gpi={gpi} setChatContents={setChatContents} />
-      </ContentInput>
+      <div>
+        <div className="flex items-center">
+          <div className="text-sm">user</div>
+          <div className="flex-1"></div>
+          <ContentsCreateButton gpi={gpi} setChatContents={setChatContents} />
+        </div>
+        <ContentInput onSubmit={onSubmit}></ContentInput>
+      </div>
     </div>
   );
 }
