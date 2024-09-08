@@ -17,6 +17,7 @@ type Gpi = {
   modelHashId: string;
   isPublic: boolean;
   isDeployed: boolean;
+  isEditing: boolean;
 };
 export type GpiGetResponse = Gpi;
 export type GpisGetResponse = Gpi[];

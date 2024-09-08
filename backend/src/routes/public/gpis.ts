@@ -55,6 +55,7 @@ export default async function (fastify: FastifyInstance) {
         const { config, chatContents, ...rest } = gpi;
         return {
           ...rest,
+          isEditing: false,
           config: config as any,
           chatContents: getTypedContents(chatContents),
         };
@@ -122,6 +123,7 @@ export default async function (fastify: FastifyInstance) {
           const { chatContents, config, ...rest } = gpi;
           return {
             ...rest,
+            isEditing: false,
             config: config as any,
             chatContents: getTypedContents(chatContents),
           };

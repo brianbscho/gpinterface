@@ -39,7 +39,7 @@ export default function Page() {
           useLastHashId={[lastHashId, setLastHashId]}
         >
           {gpis?.map((gpi) => {
-            if (gpis.length > 0) {
+            if (gpi.isDeployed) {
               return <Gpi key={gpi.hashId} gpi={gpi} />;
             }
             return <GpiDraft key={gpi.hashId} gpi={gpi} />;

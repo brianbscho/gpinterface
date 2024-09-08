@@ -44,9 +44,7 @@ export default function Gpi({ gpi }: Props) {
           </Popover>
         )}
         <div className="flex-1 text-sm">
-          {gpi.chatContents.some((c) => !c.isDeployed)
-            ? "has unsaved change"
-            : ""}
+          {gpi.isEditing ? "unsaved changes" : ""}
         </div>
         <GpiDropdown gpiHashId={gpi.hashId} />
       </div>

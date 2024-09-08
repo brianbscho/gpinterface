@@ -356,11 +356,15 @@ export default async function (fastify: FastifyInstance) {
                 isModified: true,
               },
               where: { isDeployed: true },
+              orderBy: { id: "asc" },
             },
             config: true,
             modelHashId: true,
             isPublic: true,
             isDeployed: true,
+            _count: {
+              select: { chatContents: { where: { isDeployed: false } } },
+            },
           },
           orderBy: { id: "desc" },
           take: 5,
@@ -370,6 +374,7 @@ export default async function (fastify: FastifyInstance) {
           const { chatContents, config, ...rest } = gpi;
           return {
             ...rest,
+            isEditing: gpi._count.chatContents > 0,
             config: config as any,
             chatContents: getTypedContents(chatContents),
           };
@@ -406,11 +411,15 @@ export default async function (fastify: FastifyInstance) {
                 isModified: true,
               },
               where: { isDeployed: false },
+              orderBy: { id: "asc" },
             },
             config: true,
             modelHashId: true,
             isPublic: true,
             isDeployed: true,
+            _count: {
+              select: { chatContents: { where: { isDeployed: false } } },
+            },
           },
         });
         if (!gpi) {
@@ -420,6 +429,7 @@ export default async function (fastify: FastifyInstance) {
         const { config, chatContents, ...rest } = gpi;
         return {
           ...rest,
+          isEditing: gpi._count.chatContents > 0,
           config: config as any,
           chatContents: getTypedContents(chatContents),
         };
