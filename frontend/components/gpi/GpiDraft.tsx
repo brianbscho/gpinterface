@@ -1,45 +1,68 @@
-import IconTextButton from "../buttons/IconTextButton";
+"use client";
+
 import { CircleX, FileCog } from "lucide-react";
 import Link from "next/link";
 import ContentStatic from "@/components/content/ContentStatic";
 import { Badge } from "../ui";
 import { GpiGetResponse } from "gpinterface-shared/type/gpi";
+import IconButton from "../buttons/IconButton";
+import TooltipButton from "../buttons/TooltipButton";
+import { useCallback } from "react";
+import callApi from "@/utils/callApi";
+import { DeleteResponse } from "gpinterface-shared/type";
 
 type Props = { gpi: GpiGetResponse };
 export default function GpiDraft({ gpi }: Props) {
+  const onClickDelete = useCallback(async () => {
+    const yes = confirm(
+      "Are you sure you want to delete this? This action cannot be undone."
+    );
+    if (!yes) return;
+
+    const response = await callApi<DeleteResponse>({
+      endpoint: `/users/gpis/${gpi.hashId}`,
+      method: "DELETE",
+      showError: true,
+    });
+    if (response) {
+      location.pathname = "/gpis/user";
+    }
+  }, [gpi]);
+
   return (
-    <div className="w-full border border-theme rounded-md px-3 pt-3">
-      <Badge variant="tag">Draft</Badge>
-      <div className="sticky top-0 rounded-md w-full py-3 grid grid-cols-3 md:flex gap-3 bg-background z-30">
-        <div className="flex-1 md:flex-initial md:w-32">
-          <Link href={`/gpis/${gpi.hashId}/edit`}>
-            <IconTextButton
-              className="w-full md:w-32"
-              Icon={FileCog}
-              text="Edit"
-              responsive
-            />
+    <div className="w-full border border-neutral-500 rounded-md flex flex-col gap-3 p-3">
+      <div className="flex gap-1 items-start pb-1 border-b-2 border-theme">
+        <Badge variant="tag">Draft</Badge>
+        <div className="flex-1"></div>
+        <TooltipButton message="Edit">
+          <Link href={`/gpis/${gpi.hashId}/edit`} className="flex">
+            <IconButton Icon={FileCog} responsive />
           </Link>
-        </div>
-        <div className="flex-1 md:flex-initial md:w-32">
-          <IconTextButton
-            className="w-full md:w-32"
+        </TooltipButton>
+        <TooltipButton message="Delete">
+          <IconButton
             Icon={CircleX}
             variant="icon_destructive"
-            text="Delete"
             responsive
+            onClick={onClickDelete}
           />
-        </div>
+        </TooltipButton>
       </div>
-      <div className="w-full">
-        <div className="flex flex-col gap-3 mb-3">
-          {gpi.systemMessage.length > 0 && (
-            <ContentStatic role="system" content={gpi.systemMessage} />
-          )}
-          {gpi.chatContents.map((c) => (
-            <ContentStatic key={c.hashId} {...c} />
-          ))}
-        </div>
+      <div className="pb-1 border-b border-neutral-500 font-bold text-xl w-full">
+        Chat history
+      </div>
+      <div className="grid md:grid-cols-[auto_1fr] gap-3 items-start border-neutral-500">
+        {gpi.systemMessage.length > 0 && (
+          <ContentStatic role="system" content={gpi.systemMessage} />
+        )}
+        {gpi.chatContents.map((c) => (
+          <ContentStatic key={c.hashId} {...c} />
+        ))}
+        {gpi.systemMessage.length === 0 && gpi.chatContents.length === 0 && (
+          <div className="text-neutral-300 text-sm font-light">
+            No chat history
+          </div>
+        )}
       </div>
     </div>
   );
