@@ -53,7 +53,7 @@ export default async function (fastify: FastifyInstance) {
 
         return { hashId: newGpi.hashId };
       } catch (ex) {
-        console.error("path: /gpi, method: post, error:", ex);
+        console.error("path: /users/gpis, method: post, error:", ex);
         throw ex;
       }
     }
@@ -102,7 +102,7 @@ export default async function (fastify: FastifyInstance) {
 
         return { ...updatedGpi, config: updatedGpi.config as any };
       } catch (ex) {
-        console.error("path: /gpis/:hashId, method: put, error:", ex);
+        console.error("path: /users/gpis/:hashId, method: patch, error:", ex);
         throw ex;
       }
     }
@@ -163,7 +163,10 @@ export default async function (fastify: FastifyInstance) {
 
         return { hashId };
       } catch (ex) {
-        console.error("path: /gpis/:hashId/deploy, method: post, error:", ex);
+        console.error(
+          "path: /users/gpis/:hashId/deploy, method: post, error:",
+          ex
+        );
         throw ex;
       }
     }
@@ -179,7 +182,10 @@ export default async function (fastify: FastifyInstance) {
         const gpi = await copyGpiEntry(fastify.prisma, hashId, user.hashId);
         return gpi;
       } catch (ex) {
-        console.error("path: /gpis/:hashId/copy, method: post, error:", ex);
+        console.error(
+          "path: /users/gpis/:hashId/copy, method: post, error:",
+          ex
+        );
         throw ex;
       }
     }
@@ -204,7 +210,7 @@ export default async function (fastify: FastifyInstance) {
 
         return { hashIds: [hashId] };
       } catch (ex) {
-        console.error("path: /gpi/:hashId, method: put, error:", ex);
+        console.error("path: /users/gpis/:hashId, method: put, error:", ex);
         throw ex;
       }
     }
@@ -331,7 +337,7 @@ export default async function (fastify: FastifyInstance) {
         ];
       } catch (ex) {
         console.error(
-          "path: /gpis/:hashId/chat/contents/completion, method: post, error:",
+          "path: /users/gpis/:hashId/chat/contents/completion, method: post, error:",
           ex
         );
         throw ex;
@@ -389,7 +395,7 @@ export default async function (fastify: FastifyInstance) {
         return getTypedContents(chatContents);
       } catch (ex) {
         console.error(
-          "path: /gpis/:hashId/chat/contents, method: post, error:",
+          "path: /users/gpis/:hashId/chat/contents, method: post, error:",
           ex
         );
         throw ex;
