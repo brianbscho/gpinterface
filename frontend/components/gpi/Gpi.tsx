@@ -43,8 +43,8 @@ export default function Gpi({ gpi }: Props) {
             </PopoverContent>
           </Popover>
         )}
-        <div className="flex-1 text-xs underline">
-          {gpi.isEditing ? "unsaved changes" : ""}
+        <div className="flex-1 text-xs">
+          {gpi.isEditing ? "*unsaved changes" : ""}
         </div>
         <GpiDropdown gpiHashId={gpi.hashId} />
       </div>
@@ -52,7 +52,7 @@ export default function Gpi({ gpi }: Props) {
       <div className="pb-1 border-b border-neutral-500 font-bold text-xl w-full">
         Chat history
       </div>
-      <div className="grid md:grid-cols-[auto_1fr] gap-3 items-start mb-12 border-neutral-500">
+      <div className="grid md:grid-cols-[auto_1fr] gap-3 items-start mb-12">
         {gpi.systemMessage.length > 0 && (
           <ContentStatic role="system" content={gpi.systemMessage} />
         )}
