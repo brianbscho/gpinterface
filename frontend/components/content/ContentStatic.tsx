@@ -1,3 +1,5 @@
+import TooltipButton from "../buttons/TooltipButton";
+
 type ContentStaticProps = {
   role: string;
   content: string;
@@ -13,13 +15,13 @@ export default function ContentStatic({ ...props }: ContentStaticProps) {
           {role !== "assistant" ? role : !model ? "assistant" : model.name}
         </div>
         {isModified === true && (
-          <div className="ml-1 text-xs self-start">*answer modified</div>
+          <TooltipButton message="answer modified">
+            <div className="text-xs self-start">*</div>
+          </TooltipButton>
         )}
       </div>
-      <div className="relative">
-        <div className="whitespace-pre-wrap px-3 py-2 text-base border rounded-md bg-neutral-700">
-          <div className="min-h-6 text-neutral-300 text-sm">{content}</div>
-        </div>
+      <div className="whitespace-pre-wrap px-3 py-2 text-base border rounded-md bg-neutral-700">
+        <div className="min-h-6 text-neutral-300 text-sm">{content}</div>
       </div>
     </>
   );
