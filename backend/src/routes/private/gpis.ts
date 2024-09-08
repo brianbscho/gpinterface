@@ -360,6 +360,7 @@ export default async function (fastify: FastifyInstance) {
             config: true,
             modelHashId: true,
             isPublic: true,
+            isDeployed: true,
           },
           orderBy: { id: "desc" },
           take: 5,
@@ -409,6 +410,7 @@ export default async function (fastify: FastifyInstance) {
             config: true,
             modelHashId: true,
             isPublic: true,
+            isDeployed: true,
           },
         });
         if (!gpi) {

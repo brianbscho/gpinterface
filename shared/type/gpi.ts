@@ -16,6 +16,7 @@ type Gpi = {
   config: object;
   modelHashId: string;
   isPublic: boolean;
+  isDeployed: boolean;
 };
 export type GpiGetResponse = Gpi;
 export type GpisGetResponse = Gpi[];
