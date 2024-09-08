@@ -19,6 +19,7 @@ import {
 import {
   GpiCreateResponse,
   GpiCreateSchema,
+  GpiDeploySchema,
   GpiGetResponse,
   GpisGetResponse,
   GpiUpdateResponse,
@@ -101,6 +102,52 @@ export default async function (fastify: FastifyInstance) {
         return { ...updatedGpi, config: updatedGpi.config as any };
       } catch (ex) {
         console.error("path: /gpis/:hashId, method: put, error:", ex);
+        throw ex;
+      }
+    }
+  );
+  fastify.post<{
+    Params: Static<typeof HashIdParam>;
+    Body: Static<typeof GpiDeploySchema>;
+  }>(
+    "/:hashId/deploy",
+    { schema: { params: HashIdParam, body: GpiDeploySchema } },
+    async (request, reply): Promise<GpiCreateResponse> => {
+      try {
+        const { user } = await fastify.getUser(request, reply);
+        const { hashId } = request.params;
+
+        const gpi = await fastify.prisma.gpi.findFirst({
+          where: { hashId, userHashId: user.hashId },
+          select: {
+            isDeployed: true,
+            chatContents: { select: { content: true } },
+          },
+        });
+        if (!gpi) {
+          throw fastify.httpErrors.unauthorized("Gpi not found.");
+        }
+        if (gpi.isDeployed) {
+          throw fastify.httpErrors.unauthorized("Gpi is already deployed");
+        }
+        if (gpi.chatContents.some((c) => c.content === "")) {
+          throw fastify.httpErrors.badRequest(
+            "There is empty content in chat."
+          );
+        }
+
+        await fastify.prisma.gpi.update({
+          where: { hashId },
+          data: { ...request.body, isDeployed: true, updatedAt: new Date() },
+        });
+        await fastify.prisma.chatContent.updateMany({
+          where: { gpiHashId: hashId },
+          data: { isDeployed: true },
+        });
+
+        return { hashId };
+      } catch (ex) {
+        console.error("path: /gpis/:hashId/deploy, method: post, error:", ex);
         throw ex;
       }
     }

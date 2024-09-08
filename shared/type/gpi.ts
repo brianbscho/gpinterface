@@ -1,6 +1,13 @@
 import { Type } from "@sinclair/typebox";
 import { ChatContent } from "./chat-content";
 
+export const GpiDeploySchema = Type.Object({
+  description: Type.String(),
+  modelHashId: Type.String(),
+  config: Type.Any(),
+  isPublic: Type.Boolean(),
+});
+
 export const GpiCreateSchema = Type.Object({
   modelHashId: Type.String(),
   config: Type.Any(),
