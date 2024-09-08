@@ -10,10 +10,8 @@ import {
 } from "../ui";
 import IconButton from "../buttons/IconButton";
 import { useCallback, useState } from "react";
-import { useRouter } from "next/navigation";
 import callApi from "@/utils/callApi";
 import { GpiCreateResponse } from "gpinterface-shared/type/gpi";
-import useUserStore from "@/store/user";
 import Link from "next/link";
 
 export default function GpiDropdown({ gpiHashId }: { gpiHashId: string }) {
@@ -25,7 +23,6 @@ export default function GpiDropdown({ gpiHashId }: { gpiHashId: string }) {
     toast({ title: "Link copied!", duration: 1000 });
   }, [gpiHashId, toast]);
 
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const onClickCopy = useCallback(async () => {
     setLoading(true);
@@ -36,13 +33,11 @@ export default function GpiDropdown({ gpiHashId }: { gpiHashId: string }) {
       showError: true,
     });
     if (response) {
-      router.push("/gpis/user");
+      location.pathname = "/gpis/user";
     } else {
       setLoading(false);
     }
-  }, [gpiHashId, router]);
-
-  const userHashId = useUserStore((state) => state.user?.hashId);
+  }, [gpiHashId]);
 
   return (
     <DropdownMenu>
