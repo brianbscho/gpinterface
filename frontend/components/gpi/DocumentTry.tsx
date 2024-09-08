@@ -140,13 +140,13 @@ export default function DocumentTry({
           <div className="w-[26rem] max-w-full flex flex-col gap-3">
             <div className="text-foreground font-bold text-sm">Request</div>
             <div className="bg-neutral-700 rounded-md p-3">
-              <div className="flex flex-wrap items-center">
-                <div>{`curl -X ${method} ${
+              <div className="whitespace-pre-wrap break-all items-center">
+                {`curl -X ${method} ${
                   process.env.NEXT_PUBLIC_SERVICE_ENDPOINT
                 }${path
                   .split(/({[^}]+})/)
                   .map((p) => (p.includes("{") ? param || p : p))
-                  .join("")} \\`}</div>
+                  .join("")} \\`}
               </div>
               <div>
                 {`\t-H "Authorization: Bearer`}
