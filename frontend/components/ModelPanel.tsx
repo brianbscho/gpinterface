@@ -1,20 +1,17 @@
-import { ReactNode } from "react";
 import Model from "./Model";
+import ModelSelect from "./selects/ModelSelect";
+import ModelResetButton from "./buttons/ModelResetButton";
+import { cn } from "@/utils/css";
 
-type Props = { topPadding?: boolean; children: ReactNode };
-export default function ModelPanel({ topPadding = true, children }: Props) {
+type Props = { className?: string };
+export default function ModelPanel({ className }: Props) {
   return (
-    <div className="hidden md:block w-[32rem] h-full relative overflow-hidden">
-      <div
-        className={`absolute ${
-          topPadding ? "top-3" : "top-0"
-        } left-3 z-30 flex flex-col gap-3`}
-      >
-        {children}
+    <div className={cn("h-full w-full relative overflow-hidden", className)}>
+      <div className="w-full md:w-auto md:absolute top-0 left-0 p-3 z-30 grid grid-cols-2 md:flex md:flex-col gap-1 md:gap-3 bg-background">
+        <ModelSelect />
+        <ModelResetButton />
       </div>
-      <div className="h-full overflow-y-auto pr-3">
-        <Model className={topPadding ? "py-3" : "pb-3"} />
-      </div>
+      <Model className="p-3 pt-0 md:pt-3 h-full overflow-y-auto" />
     </div>
   );
 }
