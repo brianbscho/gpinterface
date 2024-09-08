@@ -9,6 +9,7 @@ import {
 } from "gpinterface-shared/type/chat-content";
 import callApi from "@/utils/callApi";
 import TooltipButton from "./TooltipButton";
+import IconButton from "./IconButton";
 
 type GpiType = { hashId: string; systemMessage: string };
 type ContentsProps = {
@@ -36,14 +37,12 @@ export default function ContentsCreateButton({
 
   return (
     <TooltipButton message="Answer yourself">
-      <Button
-        className="p-1 h-6 w-6"
-        variant="default"
+      <IconButton
         onClick={onClickAnswerYourself}
         loading={loading}
-      >
-        <FilePen />
-      </Button>
+        Icon={FilePen}
+        responsive
+      />
     </TooltipButton>
   );
 }
