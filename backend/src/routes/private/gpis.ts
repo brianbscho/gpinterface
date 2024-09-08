@@ -11,7 +11,6 @@ import {
   ContentHistorySelect,
   createEntity,
   createManyEntities,
-  getIdByHashId,
   getTypedContent,
   getTypedContents,
   getTypedHistory,
@@ -123,7 +122,15 @@ export default async function (fastify: FastifyInstance) {
           where: { hashId, userHashId: user.hashId },
           select: {
             isDeployed: true,
-            chatContents: { select: { content: true } },
+            chatContents: {
+              select: {
+                role: true,
+                content: true,
+                config: true,
+                modelHashId: true,
+              },
+              orderBy: { id: "asc" },
+            },
           },
         });
         if (!gpi) {
@@ -145,6 +152,13 @@ export default async function (fastify: FastifyInstance) {
         await fastify.prisma.chatContent.updateMany({
           where: { gpiHashId: hashId },
           data: { isDeployed: true },
+        });
+        await createManyEntities(fastify.prisma.chatContent.createMany, {
+          data: gpi.chatContents.map((c) => ({
+            ...c,
+            config: c.config as any,
+            gpiHashId: hashId,
+          })),
         });
 
         return { hashId };
