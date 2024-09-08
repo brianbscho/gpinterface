@@ -2,27 +2,23 @@
 
 import { useCallback, useEffect, useState } from "react";
 import callApi from "@/utils/callApi";
-import useUserStore from "@/store/user";
 import Contents from "@/components/content/Contents";
 import ModelSheetButton from "@/components/buttons/ModelSheetButton";
 import ModelPanel from "@/components/ModelPanel";
 import GpiSaveButton from "@/components/buttons/GpiSaveButton";
 import GpiPublicButton from "@/components/buttons/GpiPublicButton";
 import useProviderTypes from "@/hooks/useProviderTypes";
-import { useRouter } from "next/navigation";
 import useModelStore from "@/store/model";
 import { GpiGetResponse } from "gpinterface-shared/type/gpi";
 
 export default function Page({ params }: { params: { hashId: string } }) {
   const { hashId } = params;
   const [gpi, setGpi] = useState<GpiGetResponse>();
-  const userHashId = useUserStore((state) => state.user?.hashId);
 
   const [setConfig, setModelHashId] = useModelStore((state) => [
     state.setConfig,
     state.setModelHashId,
   ]);
-  const router = useRouter();
   useEffect(() => {
     const callApiApi = async () => {
       const response = await callApi<GpiGetResponse>({
@@ -34,14 +30,10 @@ export default function Page({ params }: { params: { hashId: string } }) {
         setGpi(response);
         setConfig(response.config);
         setModelHashId(response.modelHashId);
-        if (response.userHashId !== userHashId) {
-          alert("You are not allowed to edit this gpi.");
-          router.push("/");
-        }
       }
     };
     callApiApi();
-  }, [hashId, userHashId, router, setConfig, setModelHashId]);
+  }, [hashId, setConfig, setModelHashId]);
 
   const setIsPublic = useCallback(
     (isPublic: boolean) =>
