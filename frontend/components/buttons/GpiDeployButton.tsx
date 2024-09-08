@@ -1,27 +1,24 @@
 "use client";
 
-import { CircleCheck, Circle, CornerDownLeft, StepForward } from "lucide-react";
-import {
-  Badge,
-  Button,
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-  Input,
-} from "../ui";
+import { CircleCheck, Circle, StepForward } from "lucide-react";
+import { Badge, Dialog, DialogContent, DialogTrigger, Input } from "../ui";
 import { FormEvent, useCallback, useState } from "react";
 import callApi from "@/utils/callApi";
 import { Static } from "@sinclair/typebox";
 import {
   GpiCreateResponse,
-  GpiCreateSchema,
+  GpiDeploySchema,
 } from "gpinterface-shared/type/gpi";
 import { useRouter } from "next/navigation";
 import { getApiConfig } from "@/utils/model";
 import IconTextButton from "./IconTextButton";
 import useModelStore from "@/store/model";
+import { stringify } from "@/utils/string";
+import ContentStatic from "../content/ContentStatic";
+import { ChatContent } from "gpinterface-shared/type/chat-content";
 
-export default function DeployButton({ chatHashId }: { chatHashId: string }) {
+type Props = { gpiHashId: string; chatContents: ChatContent[] };
+export default function GpiDeployButton({ gpiHashId, chatContents }: Props) {
   const [open, setOpen] = useState(false);
 
   const [isPublic, setIsPublic] = useState(true);
@@ -37,13 +34,15 @@ export default function DeployButton({ chatHashId }: { chatHashId: string }) {
       setLoading(true);
       const response = await callApi<
         GpiCreateResponse,
-        Static<typeof GpiCreateSchema>
+        Static<typeof GpiDeploySchema>
       >({
-        endpoint: "/users/gpis",
+        endpoint: `/users/gpis/${gpiHashId}/deploy`,
         method: "POST",
         body: {
+          description,
           modelHashId: model.hashId,
           config: getApiConfig(model, config),
+          isPublic,
         },
         showError: true,
       });
@@ -54,53 +53,74 @@ export default function DeployButton({ chatHashId }: { chatHashId: string }) {
         setLoading(false);
       }
     },
-    [config, model, router]
+    [description, isPublic, config, model, router, gpiHashId]
   );
 
   return (
     <Dialog open={open} onOpenChange={loading ? undefined : setOpen}>
       <DialogTrigger asChild>
-        <IconTextButton
-          Icon={StepForward}
-          text="Deploy"
-          className="w-24 md:w-32"
-          responsive
-        />
+        <IconTextButton Icon={StepForward} text="Deploy" responsive />
       </DialogTrigger>
-      <DialogContent className="max-w-3xl w-11/12 gap-3">
-        <div className="flex items-center gap-3">
+      <DialogContent
+        className="max-w-3xl w-11/12 max-h-screen overflow-y-auto gap-3 p-3"
+        close
+      >
+        <div className="w-full pb-1 border-b-2 border-theme">
           <Badge variant="tag" className="h-6">
             Deploy
           </Badge>
-          <div className="flex-1"></div>
+        </div>
+        <div className="flex flex-col gap-12 mb-12">
+          <div>
+            <div className="text-foreground font-bold text-sm">Model</div>
+            <div>
+              <Badge variant="tag">{model?.name}</Badge>
+              <div className="mt-2">
+                <div className="bg-neutral-700 rounded-md p-2 inline-block whitespace-pre-line text-neutral-300 text-xs">
+                  {Object.keys(config).length > 0
+                    ? stringify(config)
+                    : "Default config"}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div className="text-foreground font-bold text-sm">Chat</div>
+            <div className="grid md:grid-cols-[auto_1fr] gap-1 md:gap-3 items-start">
+              {chatContents.map((c) => (
+                <ContentStatic key={c.hashId} {...c} />
+              ))}
+            </div>
+          </div>
+        </div>
+        <form onSubmit={onSubmit}>
+          <Input
+            autoFocus
+            className="w-full"
+            placeholder="Description"
+            value={description}
+            onChange={(e) => setDescription(e.currentTarget.value)}
+            disabled={loading}
+          />
+        </form>
+        <div className="w-full flex justify-end items-center gap-3 mt-3">
           <IconTextButton
-            className="w-24"
+            className="w-28"
             Icon={!isPublic ? Circle : CircleCheck}
-            text="Public"
+            text={isPublic ? "Public" : "Private"}
             onClick={() => setIsPublic((prev) => !prev)}
             loading={loading}
             responsive
           />
+          <IconTextButton
+            onClick={onSubmit}
+            disabled={description === ""}
+            loading={loading}
+            text="Deploy"
+            Icon={StepForward}
+            responsive
+          />
         </div>
-        <form onSubmit={onSubmit}>
-          <div className="w-full flex gap-3">
-            <Input
-              autoFocus
-              className="flex-1"
-              placeholder="Description"
-              value={description}
-              onChange={(e) => setDescription(e.currentTarget.value)}
-              disabled={loading}
-            />
-            <Button
-              type="submit"
-              disabled={description === ""}
-              loading={loading}
-            >
-              <CornerDownLeft />
-            </Button>
-          </div>
-        </form>
       </DialogContent>
     </Dialog>
   );
