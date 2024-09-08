@@ -67,6 +67,10 @@ export async function createSessionCompletion({
   sessionHashId: string;
   content: string;
 }) {
+  if (content.trim() === "") {
+    throw fastify.httpErrors.badRequest("Empty content");
+  }
+
   const session = await fastify.prisma.session.findFirst({
     where: {
       hashId: sessionHashId,

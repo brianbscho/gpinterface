@@ -18,6 +18,10 @@ export const createChatCompletion = async ({
   content: string;
   userHashId: string | null;
 }) => {
+  if (content.trim() === "") {
+    throw fastify.httpErrors.badRequest("Empty content");
+  }
+
   const gpi = await fastify.prisma.gpi.findFirst({
     where: {
       hashId: gpiHashId,

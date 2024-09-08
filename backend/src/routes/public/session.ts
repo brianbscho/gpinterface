@@ -46,9 +46,6 @@ export default async function (fastify: FastifyInstance) {
         const { user } = await fastify.getUser(request, reply, true);
         const { sessionHashId } = request.params;
         const { content } = request.body;
-        if (content.trim() === "") {
-          throw fastify.httpErrors.badRequest("Empty content");
-        }
 
         return createSessionCompletion({
           fastify,
