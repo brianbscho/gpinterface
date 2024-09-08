@@ -43,7 +43,7 @@ export default function Gpi({ gpi }: Props) {
             </PopoverContent>
           </Popover>
         )}
-        <div className="flex-1 text-sm">
+        <div className="flex-1 text-xs underline">
           {gpi.isEditing ? "unsaved changes" : ""}
         </div>
         <GpiDropdown gpiHashId={gpi.hashId} />
