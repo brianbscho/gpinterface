@@ -107,6 +107,71 @@ export default async function (fastify: FastifyInstance) {
       }
     }
   );
+  fastify.put<{
+    Params: Static<typeof HashIdParam>;
+    Body: Static<typeof GpiDeploySchema>;
+  }>(
+    "/:hashId",
+    { schema: { params: HashIdParam, body: GpiDeploySchema } },
+    async (request, reply): Promise<GpiCreateResponse> => {
+      try {
+        const { user } = await fastify.getUser(request, reply);
+        const { hashId } = request.params;
+
+        const gpi = await fastify.prisma.gpi.findFirst({
+          where: { hashId, userHashId: user.hashId },
+          select: {
+            isDeployed: true,
+            chatContents: {
+              select: {
+                role: true,
+                content: true,
+                config: true,
+                modelHashId: true,
+              },
+              where: { isDeployed: false },
+              orderBy: { id: "asc" },
+            },
+          },
+        });
+        if (!gpi) {
+          throw fastify.httpErrors.unauthorized("Gpi not found.");
+        }
+        if (!gpi.isDeployed) {
+          throw fastify.httpErrors.unauthorized("Gpi is not deployed yet.");
+        }
+        if (gpi.chatContents.some((c) => c.content === "")) {
+          throw fastify.httpErrors.badRequest(
+            "There is empty content in chat."
+          );
+        }
+
+        await fastify.prisma.gpi.update({
+          where: { hashId },
+          data: { ...request.body, updatedAt: new Date() },
+        });
+        await fastify.prisma.chatContent.deleteMany({
+          where: { gpiHashId: hashId, isDeployed: true },
+        });
+        await fastify.prisma.chatContent.updateMany({
+          where: { gpiHashId: hashId },
+          data: { isDeployed: true },
+        });
+        await createManyEntities(fastify.prisma.chatContent.createMany, {
+          data: gpi.chatContents.map((c) => ({
+            ...c,
+            config: c.config as any,
+            gpiHashId: hashId,
+          })),
+        });
+
+        return { hashId };
+      } catch (ex) {
+        console.error("path: /users/gpis/:hashId, method: put, error:", ex);
+        throw ex;
+      }
+    }
+  );
   fastify.post<{
     Params: Static<typeof HashIdParam>;
     Body: Static<typeof GpiDeploySchema>;
