@@ -15,6 +15,7 @@ import {
   getTypedContent,
   getTypedContents,
   getTypedHistory,
+  getUpdatedAtByHashId,
 } from "../../util/prisma";
 import {
   GpiCreateResponse,
@@ -88,6 +89,7 @@ export default async function (fastify: FastifyInstance) {
             ...(!!config && { config }),
             ...(!!modelHashId && { modelHashId }),
             ...(isIsPublicBoolean && { isPublic }),
+            updatedAt: new Date(),
           },
           select: {
             hashId: true,
@@ -301,6 +303,10 @@ export default async function (fastify: FastifyInstance) {
           },
           select: { ...ContentHistorySelect, hashId: true },
         });
+        await fastify.prisma.gpi.update({
+          where: { hashId },
+          data: { updatedAt: new Date() },
+        });
 
         return [
           userChatContent,
@@ -361,6 +367,10 @@ export default async function (fastify: FastifyInstance) {
             },
           }
         );
+        await fastify.prisma.gpi.update({
+          where: { hashId },
+          data: { updatedAt: new Date() },
+        });
 
         return getTypedContents(chatContents);
       } catch (ex) {
@@ -380,13 +390,16 @@ export default async function (fastify: FastifyInstance) {
         const { user } = await fastify.getUser(request, reply);
         const { lastHashId } = request.query;
 
-        const id = await getIdByHashId(
+        const updatedAt = await getUpdatedAtByHashId(
           fastify.prisma.gpi.findFirst,
           lastHashId
         );
 
         const gpis = await fastify.prisma.gpi.findMany({
-          where: { ...(id > 0 && { id: { lt: id } }), userHashId: user.hashId },
+          where: {
+            ...(!!updatedAt && { updatedAt: { lt: updatedAt } }),
+            userHashId: user.hashId,
+          },
           select: {
             hashId: true,
             userHashId: true,
@@ -413,7 +426,7 @@ export default async function (fastify: FastifyInstance) {
               select: { chatContents: { where: { isDeployed: false } } },
             },
           },
-          orderBy: { id: "desc" },
+          orderBy: { updatedAt: "desc" },
           take: 5,
         });
 

@@ -27,10 +27,17 @@ export default async function (fastify: FastifyInstance) {
       try {
         const { user } = await fastify.getUser(request, reply);
         const { hashIds } = request.body;
+        if (hashIds.length === 0) {
+          throw fastify.httpErrors.badRequest("Nothing to delete");
+        }
 
         const oldContents = await fastify.prisma.chatContent.findMany({
-          where: { hashId: { in: hashIds }, gpi: { userHashId: user.hashId } },
-          select: { hashId: true },
+          where: {
+            hashId: { in: hashIds },
+            gpi: { userHashId: user.hashId },
+            isDeployed: false,
+          },
+          select: { hashId: true, gpiHashId: true },
         });
         if (oldContents.length !== hashIds.length) {
           throw fastify.httpErrors.badRequest("Deletion is not possible.");
@@ -38,6 +45,10 @@ export default async function (fastify: FastifyInstance) {
 
         await fastify.prisma.chatContent.deleteMany({
           where: { hashId: { in: hashIds } },
+        });
+        await fastify.prisma.gpi.update({
+          where: { hashId: oldContents[0].gpiHashId },
+          data: { updatedAt: new Date() },
         });
 
         return { hashIds };
@@ -60,8 +71,17 @@ export default async function (fastify: FastifyInstance) {
         const { content } = request.body;
 
         const oldContent = await fastify.prisma.chatContent.findFirst({
-          where: { hashId, gpi: { userHashId: user.hashId } },
-          select: { hashId: true, role: true, modelHashId: true },
+          where: {
+            hashId,
+            gpi: { userHashId: user.hashId },
+            isDeployed: false,
+          },
+          select: {
+            hashId: true,
+            gpiHashId: true,
+            role: true,
+            modelHashId: true,
+          },
         });
         if (!oldContent) {
           throw fastify.httpErrors.badRequest("content is not available.");
@@ -72,6 +92,10 @@ export default async function (fastify: FastifyInstance) {
         await fastify.prisma.chatContent.update({
           where: { hashId },
           data: { content, isModified },
+        });
+        await fastify.prisma.gpi.update({
+          where: { hashId: oldContent.gpiHashId },
+          data: { updatedAt: new Date() },
         });
 
         return { hashId, content, isModified };
@@ -101,7 +125,7 @@ export default async function (fastify: FastifyInstance) {
           throw fastify.httpErrors.badRequest("model is not available.");
         }
         const chatContent = await fastify.prisma.chatContent.findFirst({
-          where: { hashId },
+          where: { hashId, isDeployed: false },
           select: {
             gpi: {
               select: { hashId: true, userHashId: true, systemMessage: true },
@@ -175,6 +199,11 @@ export default async function (fastify: FastifyInstance) {
             config: true,
             isModified: true,
           },
+        });
+
+        await fastify.prisma.gpi.update({
+          where: { hashId: gpi.hashId },
+          data: { updatedAt: new Date() },
         });
 
         return getTypedContent({
