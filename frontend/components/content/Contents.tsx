@@ -2,7 +2,6 @@
 
 import {
   Badge,
-  Button,
   CardContent,
   CardDescription,
   Textarea,
@@ -370,33 +369,8 @@ export default function Contents({ gpi, className }: ContentsProps) {
     [gpi.hashId, model, config]
   );
 
-  const onClickDelete = useCallback(async () => {
-    const yes = confirm(
-      "Are you sure you want to delete this? This action cannot be undone."
-    );
-    if (!yes) return;
-
-    const response = await callApi<DeleteResponse>({
-      endpoint: `/users/gpis/${gpi.hashId}`,
-      method: "DELETE",
-      showError: true,
-    });
-    if (response) {
-      location.pathname = "/gpis/user";
-    }
-  }, [gpi.hashId]);
-
   return (
     <div className={cn("flex flex-col gap-3", className)}>
-      <div className="self-end">
-        <Button
-          variant="destructive"
-          className="h-6 w-6 p-0"
-          onClick={onClickDelete}
-        >
-          <X />
-        </Button>
-      </div>
       {systemContent.content.length > 0 && (
         <Content
           chatContent={systemContent}
