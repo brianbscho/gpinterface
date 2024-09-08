@@ -29,7 +29,7 @@ import {
   ChatContentsCreateResponse,
 } from "gpinterface-shared/type/chat-content";
 import { getTextResponse } from "../../util/text";
-import { copyGpiEntry, createGpiEntry } from "../../controllers/gpi";
+import { copyGpiEntry, createGpiEntry } from "../../services/gpi";
 
 export default async function (fastify: FastifyInstance) {
   fastify.post<{ Body: Static<typeof GpiCreateSchema> }>(

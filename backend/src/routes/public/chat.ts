@@ -4,7 +4,7 @@ import {
   ChatCompletionResponse,
 } from "gpinterface-shared/type/chat";
 import { Static } from "@sinclair/typebox";
-import { createChatCompletion } from "../../controllers/chat";
+import { createChatCompletion } from "../../services/chat";
 import { GpiHashIdParam } from "gpinterface-shared/type";
 
 export default async function (fastify: FastifyInstance) {

@@ -8,7 +8,7 @@ import {
   createSession,
   createSessionCompletion,
   getSessionMessages,
-} from "../../controllers/session";
+} from "../../services/session";
 import {
   ChatCompletionResponse,
   ChatCompletionSchema,
