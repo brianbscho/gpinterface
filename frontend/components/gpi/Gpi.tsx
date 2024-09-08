@@ -21,32 +21,34 @@ export default function Gpi({ gpi }: Props) {
 
   return (
     <div className="w-full border border-neutral-500 rounded-md flex flex-col gap-3 p-3">
-      <div className="whitespace-pre-wrap">
-        <div className="flex gap-1 items-start pb-1 border-b-2 border-theme">
-          <Badge variant="tag">
-            {!model?.name ? <Loader2 className="animate-spin" /> : model.name}
-          </Badge>
-          {!!model && (
-            <Popover>
-              <PopoverTrigger className="h-4">
-                <div className="flex items-center text-sm">
-                  <Button className="p-0 h-4 bg-background" variant="secondary">
-                    <Info className="h-4 w-4" />
-                  </Button>
-                </div>
-              </PopoverTrigger>
-              <PopoverContent className="whitespace-pre-wrap w-auto px-3 py-2">
-                <div className="text-sm text-neutral-400 text-wrap mt-1">
-                  {Object.keys(gpi.config).length > 0
-                    ? stringify(getApiConfig(model, gpi.config))
-                    : "Default config"}
-                </div>
-              </PopoverContent>
-            </Popover>
-          )}
-          <div className="flex-1"></div>
-          <GpiDropdown gpiHashId={gpi.hashId} />
+      <div className="flex gap-1 items-start pb-1 border-b-2 border-theme">
+        <Badge variant="tag">
+          {!model?.name ? <Loader2 className="animate-spin" /> : model.name}
+        </Badge>
+        {!!model && (
+          <Popover>
+            <PopoverTrigger className="h-4">
+              <div className="flex items-center text-sm">
+                <Button className="p-0 h-4 bg-background" variant="secondary">
+                  <Info className="h-4 w-4" />
+                </Button>
+              </div>
+            </PopoverTrigger>
+            <PopoverContent className="whitespace-pre-wrap w-auto px-3 py-2">
+              <div className="text-sm text-neutral-400 text-wrap mt-1">
+                {Object.keys(gpi.config).length > 0
+                  ? stringify(getApiConfig(model, gpi.config))
+                  : "Default config"}
+              </div>
+            </PopoverContent>
+          </Popover>
+        )}
+        <div className="flex-1 text-sm">
+          {gpi.chatContents.some((c) => !c.isDeployed)
+            ? "has unsaved change"
+            : ""}
         </div>
+        <GpiDropdown gpiHashId={gpi.hashId} />
       </div>
       <div>{gpi.description}</div>
       <div className="pb-1 border-b border-neutral-500 font-bold text-xl w-full">
