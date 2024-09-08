@@ -9,10 +9,7 @@ function Component() {
   const keyword = useMemo(() => searchParams.get("keyword"), [searchParams]);
 
   return (
-    <Gpis
-      baseUrl={`/gpis/search?keyword=${keyword}`}
-      emptyMessage="No results :("
-    />
+    <Gpis baseUrl={`/gpis?keyword=${keyword}`} emptyMessage="No results :(" />
   );
 }
 
