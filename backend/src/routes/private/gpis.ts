@@ -354,8 +354,8 @@ export default async function (fastify: FastifyInstance) {
                 model: { select: { hashId: true, name: true } },
                 histories: { select: ContentHistorySelect },
                 isModified: true,
+                isDeployed: true,
               },
-              where: { isDeployed: true },
               orderBy: { id: "asc" },
             },
             config: true,
@@ -376,7 +376,9 @@ export default async function (fastify: FastifyInstance) {
             ...rest,
             isEditing: gpi._count.chatContents > 0,
             config: config as any,
-            chatContents: getTypedContents(chatContents),
+            chatContents: getTypedContents(
+              chatContents.filter((c) => gpi.isDeployed === c.isDeployed)
+            ),
           };
         });
       } catch (ex) {
