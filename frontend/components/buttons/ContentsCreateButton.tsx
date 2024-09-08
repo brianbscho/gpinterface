@@ -8,7 +8,7 @@ import {
   ChatContentsCreateResponse,
 } from "gpinterface-shared/type/chat-content";
 import callApi from "@/utils/callApi";
-import SmallHoverButton from "./SmallHoverButton";
+import TooltipButton from "./TooltipButton";
 
 type GpiType = { hashId: string; systemMessage: string };
 type ContentsProps = {
@@ -24,7 +24,7 @@ export default function ContentsCreateButton({
     setLoading(true);
     const response = await callApi<ChatContentsCreateResponse>({
       method: "POST",
-      endpoint: `users/gpis/${gpi.hashId}/chat/contents/completion`,
+      endpoint: `/users/gpis/${gpi.hashId}/chat/contents`,
       body: {},
       showError: true,
     });
@@ -35,7 +35,7 @@ export default function ContentsCreateButton({
   }, [gpi.hashId, setChatContents]);
 
   return (
-    <SmallHoverButton message="Answer yourself">
+    <TooltipButton message="Answer yourself">
       <Button
         className="p-1 h-6 w-6"
         variant="default"
@@ -44,6 +44,6 @@ export default function ContentsCreateButton({
       >
         <FilePen />
       </Button>
-    </SmallHoverButton>
+    </TooltipButton>
   );
 }

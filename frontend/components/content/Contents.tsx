@@ -15,7 +15,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { Cpu, Layers, Loader2, RefreshCcw, X } from "lucide-react";
+import { CircleX, Cpu, Layers, Loader2, RefreshCcw } from "lucide-react";
 import {
   ChatContent,
   ChatContentRefreshSchema,
@@ -27,7 +27,7 @@ import {
 import { Static } from "@sinclair/typebox";
 import callApi from "@/utils/callApi";
 import { getApiConfig } from "@/utils/model";
-import SmallHoverButton from "../../components/buttons/SmallHoverButton";
+import TooltipButton from "../../components/buttons/TooltipButton";
 import HistoryDialog from "../../components/dialogs/HistoryDialog";
 import useModelStore from "@/store/model";
 import ContentInput from "../../components/inputs/ContentInput";
@@ -40,6 +40,7 @@ import {
   GpiUpdateResponse,
   GpiUpdateSchema,
 } from "gpinterface-shared/type/gpi";
+import IconButton from "../buttons/IconButton";
 
 type ButtonsProps = {
   onClickModel: (() => void) | undefined;
@@ -61,54 +62,45 @@ function Buttons({
   disabled,
   loading,
 }: ButtonsProps) {
-  const className = "p-1 h-6 w-6";
   return (
     <>
       {!!onClickModel && (
-        <SmallHoverButton message="Set this to model">
-          <Button
-            className={className}
+        <TooltipButton message="Set this to model">
+          <IconButton
             onClick={onClickModel}
             disabled={disabled}
             loading={loading}
-          >
-            <Cpu />
-          </Button>
-        </SmallHoverButton>
+            Icon={Cpu}
+          />
+        </TooltipButton>
       )}
       {!!history && (
-        <SmallHoverButton message="Detail">
+        <TooltipButton message="Detail">
           <HistoryDialog history={history}>
-            <Button className={className}>
-              <Layers />
-            </Button>
+            <IconButton Icon={Layers} />
           </HistoryDialog>
-        </SmallHoverButton>
+        </TooltipButton>
       )}
       {isRefreshVisible && (
-        <SmallHoverButton message="Regenerate">
-          <Button
-            className={className}
+        <TooltipButton message="Regenerate">
+          <IconButton
             onClick={onClickRefresh}
             disabled={disabled}
             loading={loading}
-          >
-            <RefreshCcw />
-          </Button>
-        </SmallHoverButton>
+            Icon={RefreshCcw}
+          />
+        </TooltipButton>
       )}
       {isDeleteVisible && (
-        <SmallHoverButton message="Delete">
-          <Button
-            className={className}
-            variant="destructive"
+        <TooltipButton message="Delete">
+          <IconButton
+            variant="icon_destructive"
             onClick={onClickDelete}
             disabled={disabled}
             loading={loading}
-          >
-            <X />
-          </Button>
-        </SmallHoverButton>
+            Icon={CircleX}
+          />
+        </TooltipButton>
       )}
     </>
   );
