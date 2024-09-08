@@ -39,7 +39,7 @@ export async function createManyEntities<
   CreateArgs extends { data: any[]; select?: any },
   Result
 >(
-  create: (
+  createMany: (
     args: CreateArgs & {
       data: (CreateArgs["data"][number] & { hashId: string })[];
     }
@@ -55,7 +55,7 @@ export async function createManyEntities<
         ...args,
         data: args.data.map((d) => getDataWithHashId(d, nanoidSize)),
       };
-      const result = await create(dataWithHashId);
+      const result = await createMany(dataWithHashId);
       return result;
     } catch (error) {
       retries++;
