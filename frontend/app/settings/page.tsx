@@ -42,7 +42,7 @@ export default function Page() {
   const [name, setName] = useState("");
   const [apiKeys, setApiKeys] = useState<ApiKeysGetResponse>([]);
 
-  const [saveButtonText, setSaveButtonText] = useState("Save");
+  const [saveButtonText, setSaveButtonText] = useState("");
   useEffect(() => {
     if (!user) return;
 
@@ -65,7 +65,7 @@ export default function Page() {
       setUser(response);
       setSaveButtonText("Saved!");
       setTimeout(() => {
-        setSaveButtonText("Save");
+        setSaveButtonText("");
       }, 1000);
     }
   }, [nameValid, setUser, name]);
@@ -149,7 +149,8 @@ export default function Page() {
             Icon={UserRound}
           ></Input>
         </div>
-        <div>
+        <div className="flex items-center gap-1">
+          <div className="text-sm">{saveButtonText}</div>
           <IconButton
             responsive
             onClick={onClickSave}
