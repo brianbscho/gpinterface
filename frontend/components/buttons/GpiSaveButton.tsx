@@ -41,7 +41,7 @@ export default function GpiSaveButton({ useGpi }: Props) {
 
   return (
     <IconTextButton
-      className="w-full md:w-28"
+      className="w-full md:w-auto"
       Icon={Save}
       text="Save"
       onClick={onClickSave}

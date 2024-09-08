@@ -6,12 +6,12 @@ import { cn } from "@/utils/css";
 type Props = { className?: string };
 export default function ModelPanel({ className }: Props) {
   return (
-    <div className={cn("h-full w-full relative overflow-hidden", className)}>
-      <div className="w-full md:w-auto md:absolute top-0 left-0 p-3 z-30 grid grid-cols-2 md:flex md:flex-col gap-1 md:gap-3 bg-background">
+    <div className={cn("h-full w-full relative overflow-y-auto", className)}>
+      <div className="z-10 sticky top-0 w-full p-3 flex justify-end gap-1 md:gap-3 bg-background">
         <ModelSelect />
         <ModelResetButton />
       </div>
-      <Model className="p-3 pt-0 md:pt-3 h-full overflow-y-auto" />
+      <Model className="p-3 pt-0" />
     </div>
   );
 }

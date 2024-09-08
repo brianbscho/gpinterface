@@ -74,7 +74,7 @@ export default function IconButton({
       {...props}
       disabled={props.disabled || loading}
       className={cn(
-        `text-primary ${sizeClass.width} ${sizeClass.height} ${sizeClass.padding}`,
+        `${sizeClass.width} ${sizeClass.height} ${sizeClass.padding}`,
         css,
         className
       )}

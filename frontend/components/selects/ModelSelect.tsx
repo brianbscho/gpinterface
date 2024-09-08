@@ -46,7 +46,7 @@ export default function ModelSelect() {
     >
       <SelectEmptyTrigger className="w-full md:w-auto h-6 sm:h-8 -mt-px">
         <IconTextButton
-          className="w-full md:w-28"
+          className="w-full"
           Icon={ChevronDown}
           text="Models"
           responsive

@@ -7,12 +7,12 @@ type Props = { className?: string };
 export default function ModelSheetButton({ className }: Props) {
   return (
     <Sheet>
-      <SheetTrigger className={className} asChild>
+      <SheetTrigger asChild>
         <IconTextButton
           Icon={CircleChevronLeft}
           text="Model"
           size="small"
-          className="md:w-32"
+          className={className}
           responsive
         />
       </SheetTrigger>

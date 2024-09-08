@@ -64,8 +64,8 @@ export default function IconTextButton({
 }: ButtonProps) {
   const css =
     variant === "icon"
-      ? "hover:bg-primary border-primary text-primary hover:text-primary-foreground"
-      : "hover:bg-destructive text-destructive-foreground border-destructive";
+      ? "hover:bg-primary border-primary"
+      : "hover:bg-destructive border-destructive";
 
   const sizeClass = responsive
     ? responsiveClass

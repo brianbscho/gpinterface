@@ -54,19 +54,17 @@ export default function Page({ params }: { params: { hashId: string } }) {
   if (!gpi) return null;
   return (
     <div className="h-full grid grid-cols-[1fr_auto] overflow-hidden relative">
-      <div className="h-full w-full pt-3 px-3 overflow-y-auto">
-        <div className="w-full md:w-auto grid grid-cols-4 md:flex md:flex-col gap-3 mb-3">
+      <div className="h-full w-full pb-3 px-3 overflow-y-auto">
+        <div className="z-20 bg-background sticky top-0 py-3 w-full flex gap-3 justify-end">
           <GpiPublicButton
             gpiHashId={gpi.hashId}
             usePublic={[gpi.isPublic, setIsPublic]}
           />
-          <ModelSheetButton className="md:hidden w-full h-6" />
+          <ModelSheetButton className="md:hidden w-full" />
           <GpiSaveButton useGpi={[gpi, setGpi]} />
           />
         </div>
-        <div className="pb-3 w-full">
-          <Contents gpi={gpi} />
-        </div>
+        <Contents gpi={gpi} />
       </div>
       <ModelPanel className="hidden md:block w-[32rem]" />
     </div>

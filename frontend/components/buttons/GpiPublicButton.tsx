@@ -37,7 +37,7 @@ export default function GpiPublicButton({ gpiHashId, usePublic }: Props) {
 
   return (
     <IconTextButton
-      className="w-full md:w-32"
+      className="w-full md:w-auto"
       Icon={isPublic ? Circle : CircleCheck}
       text="Public"
       onClick={onCheckedChange}
