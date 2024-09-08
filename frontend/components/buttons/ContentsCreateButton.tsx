@@ -25,6 +25,7 @@ export default function ContentsCreateButton({
     const response = await callApi<ChatContentsCreateResponse>({
       method: "POST",
       endpoint: `users/gpis/${gpi.hashId}/chat/contents/completion`,
+      body: {},
       showError: true,
     });
     if (response) {
