@@ -137,7 +137,7 @@ export default async function (fastify: FastifyInstance) {
           throw fastify.httpErrors.badRequest("gpi is not available.");
         }
 
-        await fastify.prisma.gpi.deleteMany({ where: { hashId } });
+        await fastify.prisma.gpi.delete({ where: { hashId } });
 
         return { hashIds: [hashId] };
       } catch (ex) {
