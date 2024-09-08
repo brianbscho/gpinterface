@@ -14,7 +14,7 @@ export default function Gpis({ baseUrl, emptyMessage }: GpisProps) {
   const [spinnerHidden, setSpinnerHidden] = useState(false);
 
   useEffect(() => {
-    setGpis([]);
+    setGpis(undefined);
     setLastHashId("");
     setSpinnerHidden(false);
   }, [baseUrl]);
