@@ -426,7 +426,7 @@ export default function Contents({ useGpi, className }: ContentsProps) {
         );
       })}
       <div>
-        <div className="flex items-center">
+        <div className="flex items-center mb-1">
           <div className="text-sm">user</div>
           <div className="flex-1"></div>
           <ContentsCreateButton gpi={gpi} setChatContents={setChatContents} />

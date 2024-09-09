@@ -21,7 +21,7 @@ export default function ContentStatic({ ...props }: ContentStaticProps) {
         )}
       </div>
       <div className="whitespace-pre-wrap px-3 py-2 text-base border rounded-md bg-neutral-700">
-        <div className="min-h-6 text-neutral-300 text-sm">{content}</div>
+        <div className="min-h-5 text-neutral-300 text-sm">{content}</div>
       </div>
     </>
   );
