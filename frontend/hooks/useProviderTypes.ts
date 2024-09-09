@@ -27,9 +27,7 @@ export default function useProviderTypes() {
         const models = response
           .flatMap((type) => type.providers)
           .flatMap((provider) => provider.models);
-        const index = models.findIndex(
-          (m) => m.isAvailable && m.isFree && !m.isLoginRequired
-        );
+        const index = models.findIndex((m) => m.isFree && !m.isLoginRequired);
 
         if (models[index]) {
           setModelHashId(models[index].hashId);

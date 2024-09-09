@@ -56,21 +56,19 @@ export default function ModelSelect() {
               <Fragment key={provider.hashId}>
                 <SelectLabel>{provider.name}</SelectLabel>
                 {provider.models.map((m) => {
-                  const { isLoginRequired, isAvailable, isFree } = m;
+                  const { isLoginRequired, isFree } = m;
                   const loginRequired = isLoggedOut && isLoginRequired;
                   const disableMessage = loginRequired
                     ? " (login required)"
                     : !isFree
                     ? " (api key required)"
-                    : !isAvailable
-                    ? " (not available)"
                     : "";
 
                   return (
                     <SelectItem
                       key={m.hashId}
                       value={m.hashId}
-                      disabled={loginRequired || !isAvailable || !isFree}
+                      disabled={loginRequired || !isFree}
                     >
                       {`${m.name}${disableMessage}`}
                     </SelectItem>
