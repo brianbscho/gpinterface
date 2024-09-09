@@ -60,7 +60,7 @@ export default function GpiTestDialog({
                     1. Chat completion
                   </div>
                   <div>
-                    {`curl -X POST ${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/chat/completion \\`}
+                    {`curl -X POST ${process.env.NEXT_PUBLIC_CHAT_ENDPOINT}/chat/completion \\`}
                   </div>
                   <div>
                     {`\t-H "Authorization: Bearer `}
@@ -83,7 +83,7 @@ export default function GpiTestDialog({
                     2. Session completion
                   </div>
                   <div>
-                    {`curl -X POST ${process.env.NEXT_PUBLIC_SERVICE_ENDPOINT}/session/completion \\`}
+                    {`curl -X POST ${process.env.NEXT_PUBLIC_CHAT_ENDPOINT}/session/completion \\`}
                   </div>
                   <div>
                     {`\t-H "Authorization: Bearer `}

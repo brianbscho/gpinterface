@@ -2,22 +2,19 @@ import Fastify from "fastify";
 import cors from "@fastify/cors";
 
 import cookiePlugin from "./plugins/cookie";
-import httpErrorsPlugin from "./plugins/httpErrors";
+import httpErrorsPlugin from "./plugins/http-errors";
 import jwtPlugin from "./plugins/jwt";
 import prismaPlugin from "./plugins/prisma";
 
-import user from "./routes/user";
-import apiKey from "./routes/apiKey";
-import apiKeys from "./routes/apiKeys";
-import gpi from "./routes/gpi";
-import gpis from "./routes/gpis";
-import chat from "./routes/chat";
-import chats from "./routes/chats";
-import content from "./routes/content";
-import contents from "./routes/contents";
-import histories from "./routes/histories";
-import providerTypes from "./routes/providerTypes";
-import session from "./routes/session";
+import users from "./routes/private/users";
+import apiKeys from "./routes/private/api-keys";
+import privateGpis from "./routes/private/gpis";
+import publicGpis from "./routes/public/gpis";
+import chat from "./routes/public/chat";
+import chatContents from "./routes/private/chat-contents";
+import histories from "./routes/private/histories";
+import providerTypes from "./routes/public/provider-types";
+import session from "./routes/public/session";
 
 const fastify = Fastify({
   logger: {
@@ -46,18 +43,15 @@ fastify.register(jwtPlugin);
 fastify.register(prismaPlugin);
 
 fastify.get("/health", () => true);
-fastify.register(apiKey, { prefix: "/api/key" });
 fastify.register(apiKeys, { prefix: "/api/keys" });
 fastify.register(chat, { prefix: "/chat" });
-fastify.register(chats, { prefix: "/chats" });
-fastify.register(content, { prefix: "/content" });
-fastify.register(contents, { prefix: "/contents" });
-fastify.register(gpi, { prefix: "/gpi" });
-fastify.register(gpis, { prefix: "/gpis" });
+fastify.register(chatContents, { prefix: "/chat/contents" });
+fastify.register(privateGpis, { prefix: "/users/gpis" });
+fastify.register(publicGpis, { prefix: "/gpis" });
 fastify.register(histories, { prefix: "/histories" });
 fastify.register(providerTypes, { prefix: "/provider/types" });
 fastify.register(session, { prefix: "/session" });
-fastify.register(user, { prefix: "/user" });
+fastify.register(users, { prefix: "/users" });
 
 const start = async () => {
   try {

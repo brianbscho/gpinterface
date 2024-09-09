@@ -1,6 +1,6 @@
 export default function Page() {
   return (
-    <div className="w-full flex-1 overflow-y-auto">
+    <div className="w-full h-full overflow-y-auto">
       <div className="p-3 text-sm">
         <div>Last updated May 21, 2024</div>
         <div className="text-lg my-3">AGREEMENT TO OUR LEGAL TERMS</div>

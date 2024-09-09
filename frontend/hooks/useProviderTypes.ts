@@ -2,7 +2,7 @@
 
 import callApi from "@/utils/callApi";
 import { useEffect } from "react";
-import { ProviderTypesGetResponse } from "gpinterface-shared/type/providerType";
+import { ProviderTypesGetResponse } from "gpinterface-shared/type/provider-type";
 import useModelStore from "@/store/model";
 
 export default function useProviderTypes() {
@@ -22,9 +22,9 @@ export default function useProviderTypes() {
         showError: true,
       });
       if (response) {
-        setProviderTypes(response.providerTypes);
+        setProviderTypes(response);
 
-        const models = response.providerTypes
+        const models = response
           .flatMap((type) => type.providers)
           .flatMap((provider) => provider.models);
         const index = models.findIndex(

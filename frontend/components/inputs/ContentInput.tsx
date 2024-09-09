@@ -1,7 +1,7 @@
 "use client";
 
 import { CornerDownLeft } from "lucide-react";
-import { Badge, Button, Textarea } from "../ui";
+import { Button, Textarea } from "../ui";
 import {
   FormEvent,
   KeyboardEvent,
@@ -40,36 +40,27 @@ export default function ContentInput({ onSubmit: _onSubmit, children }: Props) {
   );
 
   return (
-    <div className="p-0">
-      <div className="flex items-center mb-3">
-        <Badge variant="tag" className="h-6">
-          user
-        </Badge>
-        <div className="flex-1"></div>
-        {children}
-      </div>
-      <div className="text-sm text-muted-foreground">
-        <form onSubmit={onSubmit}>
-          <div className="flex items-center gap-3">
-            <div className="relative flex-1 items-start">
-              <div className="whitespace-pre-wrap px-3 py-2 text-base invisible border">
-                {content + "."}
-              </div>
-              <Textarea
-                className="absolute max-h-none inset-0 z-10 text-base overflow-hidden resize-none"
-                value={content}
-                onChange={(e) => setContent(e.currentTarget.value)}
-                placeholder="user message"
-                disabled={loading}
-                onKeyDown={onKeyDown}
-              />
+    <div className="text-sm text-muted-foreground">
+      <form onSubmit={onSubmit}>
+        <div className="flex items-center gap-3">
+          <div className="relative flex-1 items-start">
+            <div className="whitespace-pre-wrap px-3 py-2 text-base invisible border">
+              {content + "."}
             </div>
-            <Button type="submit" loading={loading}>
-              <CornerDownLeft />
-            </Button>
+            <Textarea
+              className="absolute max-h-none inset-0 z-10 text-base overflow-hidden resize-none"
+              value={content}
+              onChange={(e) => setContent(e.currentTarget.value)}
+              placeholder="user message"
+              disabled={loading}
+              onKeyDown={onKeyDown}
+            />
           </div>
-        </form>
-      </div>
+          <Button type="submit" loading={loading}>
+            <CornerDownLeft />
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }

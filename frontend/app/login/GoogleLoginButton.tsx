@@ -4,7 +4,7 @@ type Props = { onClick: () => void };
 export default function GoogleLoginButton({ onClick }: Props) {
   return (
     <button
-      className="h-10 px-4 flex justify-center items-center gap-3 bg-white focus:ring-gray-500 focus:ring-offset-gray-200 text-black w-full transition ease-in duration-200 text-center text-base font-semibold focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg"
+      className="h-10 px-4 flex justify-center items-center gap-3 bg-white focus:ring-gray-500 focus:ring-offset-gray-200 text-black w-full transition ease-in duration-200 text-center text-base focus:outline-none focus:ring-2 focus:ring-offset-2 rounded-lg"
       onClick={onClick}
     >
       <div className="gsi-material-button-icon">
@@ -36,7 +36,7 @@ export default function GoogleLoginButton({ onClick }: Props) {
           <path fill="none" d="M0 0h48v48H0z"></path>
         </svg>
       </div>
-      <span className="gsi-material-button-contents">Sign in with Google</span>
+      <span className="gsi-material-button-contents">Continue with Google</span>
     </button>
   );
 }

@@ -28,7 +28,6 @@ export default function ModelResetButton() {
 
   return (
     <IconTextButton
-      className="w-full md:w-28"
       Icon={RotateCcw}
       text="Reset"
       onClick={onClickReset}

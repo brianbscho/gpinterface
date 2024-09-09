@@ -1,20 +1,18 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import callApi from "@/utils/callApi";
 import useUserStore from "@/store/user";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { UserGetMeResponse } from "gpinterface-shared/type/user";
 import {
   LogOut,
-  MessageCircle,
   ReceiptText,
   Settings,
   FileCode,
   UserRound,
 } from "lucide-react";
 import {
-  ShadcnButton,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -24,11 +22,12 @@ import {
   DropdownMenuGroup,
 } from "@/components/ui";
 import Link from "next/link";
+import IconButton from "../buttons/IconButton";
 
 const loginRedirectPaths = ["login"];
-const logoutRedirectPaths = ["bills", "settings"];
+const logoutRedirectPaths = ["bills", "profile"];
 
-function _Menus() {
+export default function MenusDropdown() {
   const { user, setUser } = useUserStore();
   const pathname = usePathname();
   const router = useRouter();
@@ -36,8 +35,8 @@ function _Menus() {
 
   useEffect(() => {
     const callUserApi = async () => {
-      const response = await callApi<UserGetMeResponse>({ endpoint: "/user" });
-      setUser(response?.user);
+      const response = await callApi<UserGetMeResponse>({ endpoint: "/users" });
+      setUser(response);
       if (!response && logoutRedirectPaths.some((p) => pathname.includes(p))) {
         push("/");
       }
@@ -45,84 +44,61 @@ function _Menus() {
     callUserApi();
   }, [setUser, push, pathname]);
 
-  const searchParams = useSearchParams();
   useEffect(() => {
     if (user && loginRedirectPaths.some((p) => pathname.includes(p))) {
-      if (searchParams.has("chatHashId")) {
-        push("/chats");
-      } else {
-        push("/");
-      }
+      push("/");
     }
-  }, [user, push, pathname, searchParams]);
+  }, [user, push, pathname]);
 
   const onClickLogout = useCallback(async () => {
     setOpen(false);
-    await callApi({ endpoint: "/user/logout" });
+    await callApi({ endpoint: "/users/logout" });
     setUser(undefined);
     location.reload();
   }, [setUser]);
-
-  const param = useMemo(() => {
-    let params = "?";
-    searchParams.forEach((value, key) => {
-      params += `${key}=${value}`;
-    });
-    return params;
-  }, [searchParams]);
 
   const [open, setOpen] = useState(false);
 
   if (!user) {
     return (
-      <ShadcnButton asChild className="h-6 w-6 p-0 md:h-8 md:w-8">
-        <Link href={`/login${param}`}>
-          <UserRound className="h-4 w-4 md:h-5 md:w-5" />
-        </Link>
-      </ShadcnButton>
+      <Link href="/login">
+        <IconButton responsive Icon={UserRound} />
+      </Link>
     );
   }
   return (
     <DropdownMenu open={open} onOpenChange={setOpen}>
-      <DropdownMenuTrigger asChild>
-        <ShadcnButton className="h-6 w-6 p-0 md:h-8 md:w-8">
-          <UserRound className="h-4 w-4 md:h-5 md:w-5" />
-        </ShadcnButton>
+      <DropdownMenuTrigger>
+        <IconButton responsive Icon={UserRound} />
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
+      <DropdownMenuContent className="w-auto px-1">
         <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => push(`/chats`)}>
-            <MessageCircle />
-            <span className="ml-3">Chat</span>
+          <DropdownMenuItem
+            className="gap-3"
+            onClick={() => push(`/profile/gpis`)}
+          >
+            <FileCode className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="text-xs md:text-sm">My gpis</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => push(`/gpis`)}>
-            <FileCode />
-            <span className="ml-3">Gpi</span>
+          <DropdownMenuItem
+            className="gap-3"
+            onClick={() => push("/profile/settings")}
+          >
+            <Settings className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="text-xs md:text-sm">Settings</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => push("/settings")}>
-            <Settings />
-            <span className="ml-3">Settings</span>
+          <DropdownMenuItem className="gap-3" onClick={() => push("/bills")}>
+            <ReceiptText className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="text-xs md:text-sm">Bills</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => push("/bills")}>
-            <ReceiptText />
-            <span className="ml-3">Bills</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={onClickLogout}>
-            <LogOut />
-            <span className="ml-3">Logout</span>
+          <DropdownMenuItem className="gap-3" onClick={onClickLogout}>
+            <LogOut className="h-3 w-3 md:h-4 md:w-4" />
+            <span className="text-xs md:text-sm">Logout</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
-}
-
-export default function Menus() {
-  return (
-    <Suspense>
-      <_Menus />
-    </Suspense>
   );
 }

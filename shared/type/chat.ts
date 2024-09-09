@@ -1,33 +1,4 @@
 import { Type } from "@sinclair/typebox";
-import { Content } from "./content";
 
-interface Chat {
-  hashId: string;
-  userHashId: string | null;
-
-  systemMessage: string;
-  contents: Content[];
-  createdAt: string;
-}
-
-export type ChatsGetResponse = { chats: Chat[] };
-
-export type ChatUpdateResponse = {
-  systemMessage: string;
-};
-export const ChatUpdateSchema = Type.Object({
-  systemMessage: Type.String(),
-});
-
-export type ChatCreateResponse = Chat;
-
-export const ChatCompletionSchema = Type.Object({
-  gpiHashId: Type.String(),
-  content: Type.String(),
-});
-
+export const ChatCompletionSchema = Type.Object({ content: Type.String() });
 export type ChatCompletionResponse = { content: string };
-export type ChatCompletionSampleResponse = {
-  content: string;
-  sessionHashId: string;
-};

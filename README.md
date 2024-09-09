@@ -18,7 +18,7 @@ Here are some specific examples of what `gpinterface` can do:
 
 ## How does it work?
 
-`gpinterface` generates several endpoints at deploying your prompt:
+You can select the LLM model and add context. Once deployed, you'll get endpoints for:
 
 <details>
 <summary>1. one-time chat interactions</summary>
@@ -41,7 +41,7 @@ Here are some specific examples of what `gpinterface` can do:
 <details>
 <summary>4. conversation retrieval from a session</summary>
 
-![session_get](./images/session_get.png)
+![session_messages](./images/session_messages.png)
 
 </details>
 
@@ -89,12 +89,7 @@ npm run prisma:migrate
 To seed the database with initial data for each supported Large Language Model, run the following commands:
 
 ```bash
-ts-node prisma/seed/ai21_labs.ts
-ts-node prisma/seed/anthropic.ts
-ts-node prisma/seed/cohere.ts
-ts-node prisma/seed/meta.ts
-ts-node prisma/seed/mistral.ts
-ts-node prisma/seed/openai.ts
+npx ts-node prisma/seed
 ```
 
 ### Environment Variables
@@ -112,13 +107,11 @@ COHERE_API_KEY="YOUR_COHERE_API_KEY"
 GOOGLE_API_KEY="YOUR_GOOGLE_API_KEY"
 MISTRAL_API_KEY="YOUR_MISTRAL_API_KEY"
 OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
-AWS_ACCESS_KEY_ID="AWS_ACCESS_KEY" # for Bedrock, Meta Llama
-AWS_SECRET_ACCESS_KEY="AWS_SECRET_KEY" # for Bedrock, Meta Llama
+AWS_ACCESS_KEY_ID="AWS_ACCESS_KEY" # you need Llama model access in AWS Bedrock
+AWS_SECRET_ACCESS_KEY="AWS_SECRET_KEY" # you need Llama model access in AWS Bedrock
 JWT_SECRET="SECURE_RANDOM_STRING"
 COOKIE_SECRET="SECURE_RANDOM_STRING"
 NODE_ENV="development" # for development logging
-GITHUB_OAUTH_CLIENT_ID=""
-GITHUB_OAUTH_SECRET=""
 ```
 
 Ensure these variables are set in a `.env` file in the backend directory before starting the application.
@@ -129,10 +122,9 @@ The frontend application requires the following environment variables:
 
 ```bash
 NEXT_PUBLIC_API_ENDPOINT="http://localhost:3000"
-NEXT_PUBLIC_SERVICE_ENDPOINT="http://localhost:3000"
+NEXT_PUBLIC_CHAT_ENDPOINT="http://localhost:3001"
 NEXT_PUBLIC_HOSTNAME="http://localhost:3003"
 NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_KEY=""
-NEXT_PUBLIC_GITHUB_OAUTH_CLIENT_ID=""
 ```
 
 These should be configured to match the endpoints where the backend services are available, ensuring the frontend can communicate with the backend properly.

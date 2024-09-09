@@ -1,4 +1,4 @@
-export enum providers {
+export enum Provider {
   AI21Labs = "AI21 Labs",
   Anthropic = "Anthropic",
   Cohere = "Cohere",

@@ -1,40 +1,27 @@
-import CopyButton from "@/components/buttons/CopyButton";
 import DocumentTry, { BodyType } from "./DocumentTry";
-import { Badge } from "@/components/ui";
-import useModelStore from "@/store/model";
 import { cn } from "@/utils/css";
-import { getApiConfig } from "@/utils/model";
-import { stringify } from "@/utils/string";
 import { GpiGetResponse } from "gpinterface-shared/type/gpi";
-import { Fragment, ReactNode } from "react";
 import { CircleAlert } from "lucide-react";
 
-type TitleProps = { title: string; description: string };
-function Title({ title, description }: TitleProps) {
+type TitleProps = { title: string };
+function Title({ title }: TitleProps) {
   return (
-    <div>
-      <div className="flex gap-3 items-center mb-1">
-        <Badge variant="tag">{title}</Badge>
-      </div>
-      <div className="text-neutral-400">{description}</div>
+    <div className="pb-1 border-b border-neutral-500 font-bold text-xl w-full">
+      {title}
     </div>
   );
 }
 
-type ElementProps = { title: string; children: ReactNode };
-function Element({ title, children }: ElementProps) {
-  return (
-    <div>
-      <div className="font-bold text-neutral-100">{title}</div>
-      <div className="text-sm text-neutral-400 text-wrap">{children}</div>
-    </div>
-  );
-}
-
-type DocumentProps = { gpi?: GpiGetResponse; className?: string };
-export default function Document({ gpi, className }: DocumentProps) {
-  const models = useModelStore((state) => state.models);
-  const model = models.find((m) => m.hashId === gpi?.modelHashId);
+type DocumentProps = {
+  gpi?: GpiGetResponse;
+  className?: string;
+  showWarning: boolean;
+};
+export default function Document({
+  gpi,
+  className,
+  showWarning,
+}: DocumentProps) {
   const documents: {
     title: string;
     description: string;
@@ -43,18 +30,15 @@ export default function Document({ gpi, className }: DocumentProps) {
     body: BodyType;
   }[] = [
     {
-      title: "Chat Completion",
+      title: "Chat completion",
       description:
-        "Send a message that will be added to the end of a predefined messages and receive an response for one-time chat interactions. Ideal for isolated queries without session persistence.",
+        "Send a message and receive an response for one-time chat interactions. Ideal for isolated queries without session persistence.",
       method: "POST",
-      path: "/chat/completion",
-      body: {
-        gpiHashId: { value: gpi?.hashId ?? "", type: "const" },
-        content: { value: "", type: "variable" },
-      },
+      path: `/chat/${gpi?.hashId ?? ""}/completion`,
+      body: { content: { value: "", type: "variable" } },
     },
     {
-      title: "Create Session",
+      title: "Create session",
       description:
         "Initialize a new session and receive a hashed session ID, enabling users to maintain a continuous conversation.",
       method: "POST",
@@ -62,18 +46,15 @@ export default function Document({ gpi, className }: DocumentProps) {
       body: { gpiHashId: { value: gpi?.hashId ?? "", type: "const" } },
     },
     {
-      title: "Session Completion",
+      title: "Session completion",
       description:
-        "Submit query within an active session, where it will be appended to the end of existing messages, to receive response that will be stored within the session, allowing ongoing dialogue.",
+        "Submit query within an active session, where it will be appended to the end of existing messages, allowing ongoing dialogue.",
       method: "POST",
-      path: "/session/completion",
-      body: {
-        sessionHashId: { value: "", type: "variable" },
-        content: { value: "", type: "variable" },
-      },
+      path: "/session/{sessionHashId}/completion",
+      body: { content: { value: "", type: "variable" } },
     },
     {
-      title: "Retrieve Session Messages",
+      title: "Retrieve session messages",
       description:
         "Retrieve the entire message history from a specific session.",
       method: "GET",
@@ -81,48 +62,26 @@ export default function Document({ gpi, className }: DocumentProps) {
       body: {},
     },
   ];
-  if (!gpi || !model) return null;
 
+  if (!gpi) return null;
   return (
-    <div
-      className={cn(
-        "md:pl-[9.5rem] px-3 pb-3 w-full h-full overflow-y-auto flex flex-col gap-7",
-        className
-      )}
-    >
-      <div>
-        <Badge variant="tag">Info</Badge>
-        <div className="font-bold">{model.name}</div>
-      </div>
-      <Element title="Model config">
-        {Object.keys(gpi.config).length === 0
-          ? "Default"
-          : stringify(getApiConfig(model, gpi.config))}
-      </Element>
-      <Element title={gpi.isPublic ? "Public" : "Private"}>
-        {gpi.isPublic
-          ? "Accessible by anyone for testing and calling. Only the owner has editing privileges."
-          : "Only the owner can access, test, edit, and call this GPI."}
-      </Element>
-      <Element title="Share">
-        <CopyButton
-          text={`${process.env.NEXT_PUBLIC_HOSTNAME}/gpis/${gpi.hashId}`}
-        />
-      </Element>
-      <div className="flex items-center bg-destructive rounded-md px-1 py-2 gap-3">
-        <CircleAlert className="text-primary w-5 h-5" />
-        <div className="text-primary text-xs">
-          This may become unavailable or have its functionality modified at any
-          time. To ensure secure access, please make a copy.
+    <div className={cn("flex flex-col gap-12", className)}>
+      {showWarning && (
+        <div className="flex items-center bg-destructive rounded-md px-1 py-2 gap-3">
+          <CircleAlert className="text-primary w-5 h-5 shrink-0" />
+          <div className="text-primary text-xs">
+            This may be modified by the author at any time. To ensure secure
+            access, we recommend making a copy.
+          </div>
         </div>
-      </div>
+      )}
       {documents.map((doc) => {
-        const { title, description, ...props } = doc;
+        const { title, ...props } = doc;
         return (
-          <Fragment key={title}>
-            <Title title={title} description={description} {...props} />
+          <div key={title}>
+            <Title title={title} {...props} />
             <DocumentTry {...props} />
-          </Fragment>
+          </div>
         );
       })}
     </div>

@@ -3,8 +3,7 @@ import { ThemeProvider } from "next-themes";
 import MenusDropdown from "./dropdowns/MenusDropdown";
 import Link from "next/link";
 import { Toaster } from "@/components/ui/toaster";
-import { Button } from "./ui";
-import { CirclePlus } from "lucide-react";
+import ChatCreateButton from "./buttons/ChatCreateButton";
 import SearchInput from "./inputs/SearchInput";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -20,7 +19,7 @@ export default function Body({
         <main className="h-screen flex flex-col items-center min-h-0 overflow-hidden">
           <div className="sticky top-0 left-0 w-full z-20 shrink-0 bg-background">
             <div className="w-full border-b">
-              <div className="w-full p-3 flex gap-3 items-center">
+              <div className="w-full p-3 flex gap-1 items-center">
                 <Link href="/" className="font-bold text-lg">
                   <div>
                     <picture>
@@ -33,29 +32,14 @@ export default function Body({
                   </div>
                 </Link>
                 <div className="flex-1">
-                  <div className="hidden md:block w-full">
-                    <SearchInput />
-                  </div>
+                  <SearchInput />
                 </div>
-                <Link href="/chats">
-                  <Button
-                    className="bg-background p-0 pl-6 md:pl-8 h-6 md:h-8 w-24 md:w-28 border border-primary box-border relative"
-                    variant="icon"
-                  >
-                    <div className="h-6 md:h-8 w-6 md:w-8 p-1 md:p-1.5 rounded-md absolute -top-px -left-px bg-primary text-primary-foreground">
-                      <CirclePlus className="h-4 md:h-5 w-4 md:w-5" />
-                    </div>
-                    <div className="w-full text-xs md:text-sm">New chat</div>
-                  </Button>
-                </Link>
+                <ChatCreateButton />
                 <MenusDropdown />
-              </div>
-              <div className="md:hidden px-3 pb-3">
-                <SearchInput />
               </div>
             </div>
           </div>
-          {children}
+          <div className="w-full flex-1 overflow-hidden">{children}</div>
         </main>
         <Toaster />
       </ThemeProvider>

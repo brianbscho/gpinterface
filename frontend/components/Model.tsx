@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect } from "react";
+import { useCallback } from "react";
 import Select from "./selects";
 import { Input } from "./ui";
 import { Slider } from "./ui/slider";
@@ -8,8 +8,8 @@ import useModelStore from "@/store/model";
 import { cn } from "@/utils/css";
 import useProviderTypes from "@/hooks/useProviderTypes";
 
-type Props = { className?: string; disabled?: boolean; modelHashId?: string };
-export default function Model({ className, disabled, modelHashId }: Props) {
+type Props = { className?: string; disabled?: boolean };
+export default function Model({ className, disabled }: Props) {
   const [model, models, config, setModelHashId, setConfig] = useModelStore(
     (state) => [
       state.model,
@@ -20,11 +20,6 @@ export default function Model({ className, disabled, modelHashId }: Props) {
     ]
   );
 
-  useEffect(() => {
-    if (modelHashId) {
-      setModelHashId(modelHashId);
-    }
-  }, [modelHashId, setModelHashId, model, models]);
   const onChange = useCallback(
     (name: string) => (value: string) => {
       const newConfig = { ...config };
@@ -40,7 +35,7 @@ export default function Model({ className, disabled, modelHashId }: Props) {
   return (
     <div
       className={cn(
-        "w-full flex flex-col gap-7 md:pl-[8.5rem] whitespace-pre-wrap text-sm",
+        "w-full flex flex-col gap-7 whitespace-pre-wrap text-sm",
         className
       )}
     >

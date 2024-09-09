@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  FormEvent,
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { validateEmail, validatePassword } from "gpinterface-shared/string";
 import callApi from "@/utils/callApi";
 import useUserStore from "@/store/user";
@@ -33,19 +26,11 @@ import {
   UserRoundPlus,
 } from "lucide-react";
 import { Checkbox } from "@/components/ui";
-import { useSearchParams } from "next/navigation";
 import IconTextButton from "@/components/buttons/IconTextButton";
 import GoogleLoginButton from "./GoogleLoginButton";
 import { useGoogleLogin } from "@react-oauth/google";
-import GithubLoginButton from "./GithubLoginButton";
 
-function Login() {
-  const searchParams = useSearchParams();
-  const chatHashId = useMemo(
-    () => searchParams.get("chatHashId"),
-    [searchParams]
-  );
-
+export default function Page() {
   const [isLogin, setIsLogin] = useState(true);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -90,23 +75,23 @@ function Login() {
         return;
       }
       setLoading(true);
-      const endpoint = `/user/${isLogin ? "login" : "signup"}`;
+      const endpoint = `/users/${isLogin ? "signin" : "signup"}`;
       const response = await callApi<
         UserGetMeResponse,
         Static<typeof UserCreateSchema>
       >({
         endpoint,
         method: "POST",
-        body: { email, password, name, chatHashId },
+        body: { email, password, name },
         showError: true,
       });
       if (response) {
-        setUser(response.user);
+        setUser(response);
       } else {
         setLoading(false);
       }
     },
-    [email, name, password, isLogin, setUser, chatHashId]
+    [email, name, password, isLogin, setUser]
   );
   const onClickGoogleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
@@ -116,169 +101,142 @@ function Login() {
         UserGetMeResponse,
         Static<typeof UserGoogleSchema>
       >({
-        endpoint: "/user/google",
+        endpoint: "/users/google",
         method: "POST",
-        body: { access_token, chatHashId },
+        body: { access_token },
         showError: true,
       });
       if (response) {
-        setUser(response.user);
+        setUser(response);
       } else {
         setLoading(false);
       }
     },
   });
 
-  const githubOauthEndpoint = useMemo(() => {
-    const clientId = encodeURI(
-      process.env.NEXT_PUBLIC_GITHUB_OAUTH_CLIENT_ID ?? ""
-    );
-    const redirectUri = encodeURI(
-      `${process.env.NEXT_PUBLIC_HOSTNAME}/login/github?chatHashId=${
-        chatHashId ?? ""
-      }`
-    );
-    const scope = encodeURI("scope=read:user,user:email");
-
-    return `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}`;
-  }, [chatHashId]);
-
   return (
-    <div className="w-full max-w-xl px-3">
-      <div className="mt-20 w-full">
+    <div className="w-full h-full overflow-y-auto">
+      <div className="w-full max-w-sm mx-auto min-h-full p-3 flex flex-col gap-12 justify-center items-center">
         <GoogleLoginButton onClick={onClickGoogleLogin} />
-      </div>
-      {!!githubOauthEndpoint && (
-        <div className="mt-3 w-full">
-          <a href={githubOauthEndpoint}>
-            <GithubLoginButton />
-          </a>
-        </div>
-      )}
-      <div className="my-12 flex items-center gap-3">
-        <div className="flex-1">
-          <Separator className="bg-theme" />
-        </div>
-        <div>OR</div>
-        <div className="flex-1">
-          <Separator className="bg-theme" />
-        </div>
-      </div>
-      <Tabs
-        className="w-full mt-12"
-        defaultValue="login"
-        onValueChange={(e) => setIsLogin(e === "login")}
-      >
-        <TabsList className="w-full">
-          <TabsTrigger value="login" className="flex-1">
-            Login
-          </TabsTrigger>
-          <TabsTrigger value="signup" className="flex-1">
-            Sign up
-          </TabsTrigger>
-        </TabsList>
-        <form onSubmit={onSubmit} noValidate>
-          <div className="mt-12">
-            <TabsContent value="signup">
-              <Input
-                type="text"
-                placeholder="Please type your username (no space)"
-                value={name}
-                onChange={(e) => setName(e.currentTarget.value)}
-                disabled={loading}
-                Icon={UserRound}
-              />
-              <div className="text-xs min-h-4 mt-1 mb-3 text-rose-500">
-                {name.length > 0 &&
-                  !nameValid &&
-                  "You can use only alphanumeric characters and -_,~!@#$^&*()+= special characters."}
-              </div>
-            </TabsContent>
-            <Input
-              type="email"
-              placeholder="email@domain.com"
-              value={email}
-              onChange={(e) => setEmail(e.currentTarget.value)}
-              disabled={loading}
-              Icon={Mail}
-            />
-            <div className="mt-1 text-xs h-4 text-rose-500">{emailMsg}</div>
-            <Input
-              type="password"
-              placeholder="Please use secure password"
-              value={password}
-              onChange={(e) => setPassword(e.currentTarget.value)}
-              className="mt-3"
-              disabled={loading}
-              Icon={Lock}
-            />
-            <div className="mt-1 text-xs h-4 text-rose-500">{passwordMsg}</div>
+        <div className="w-full flex items-center gap-3">
+          <div className="flex-1">
+            <Separator className="bg-theme" />
           </div>
-          <div>
-            <TabsContent value="login" className="mt-12">
-              <IconTextButton
-                className="w-full"
-                disabled={loginDisabled}
-                type="submit"
-                loading={loading}
-                text="Login"
-                Icon={UserRoundCheck}
-                size="large"
-              />
-            </TabsContent>
-            <TabsContent value="signup">
-              <div className="text-xs mt-1">
-                at least 8 characters long, at least one uppercase letter, at
-                least one lowercase letter, and at least one digit
-              </div>
-              <div className="flex items-center gap-3 mt-12">
-                <Checkbox
-                  id="agree"
-                  className="w-4 h-4"
-                  value=""
-                  checked={agree}
-                  onCheckedChange={(c) =>
-                    typeof c === "boolean" ? setAgree(c) : undefined
-                  }
+          <div>OR</div>
+          <div className="flex-1">
+            <Separator className="bg-theme" />
+          </div>
+        </div>
+        <Tabs
+          className="w-full h-[30rem]"
+          defaultValue="login"
+          onValueChange={(e) => setIsLogin(e === "login")}
+        >
+          <TabsList className="w-full">
+            <TabsTrigger value="login" className="flex-1">
+              Login
+            </TabsTrigger>
+            <TabsTrigger value="signup" className="flex-1">
+              Sign up
+            </TabsTrigger>
+          </TabsList>
+          <form onSubmit={onSubmit} noValidate>
+            <div className="mt-12">
+              <TabsContent value="signup">
+                <Input
+                  type="text"
+                  placeholder="Please type your username (no space)"
+                  value={name}
+                  onChange={(e) => setName(e.currentTarget.value)}
                   disabled={loading}
+                  Icon={UserRound}
                 />
-                <label htmlFor="agree" className="text-xs">
-                  I agree to the&nbsp;
-                  <a
-                    href="https://www.termsfeed.com/live/0ce4dbce-17c2-4551-89c9-eb14fe206b71"
-                    target="_blank"
-                    className="underline"
-                  >
-                    privacy policy
-                  </a>
-                  &nbsp;and&nbsp;
-                  <a href="/terms" target="_blank" className="underline">
-                    terms and conditions
-                  </a>
-                </label>
-              </div>
-              <div className="mt-3"></div>
-              <IconTextButton
-                className="w-full"
-                disabled={signupDisabled}
-                type="submit"
-                loading={loading}
-                text="Sign up"
-                Icon={UserRoundPlus}
-                size="large"
+                <div className="text-xs min-h-4 mt-1 mb-3 text-rose-500">
+                  {name.length > 0 &&
+                    !nameValid &&
+                    "You can use only alphanumeric characters and -_,~!@#$^&*()+= special characters."}
+                </div>
+              </TabsContent>
+              <Input
+                type="email"
+                placeholder="email@domain.com"
+                value={email}
+                onChange={(e) => setEmail(e.currentTarget.value)}
+                disabled={loading}
+                Icon={Mail}
               />
-            </TabsContent>
-          </div>
-        </form>
-      </Tabs>
+              <div className="mt-1 text-xs h-4 text-rose-500">{emailMsg}</div>
+              <Input
+                type="password"
+                placeholder="Please use secure password"
+                value={password}
+                onChange={(e) => setPassword(e.currentTarget.value)}
+                className="mt-3"
+                disabled={loading}
+                Icon={Lock}
+              />
+              <div className="mt-1 text-xs h-4 text-rose-500">
+                {passwordMsg}
+              </div>
+            </div>
+            <div>
+              <TabsContent value="login" className="mt-12">
+                <IconTextButton
+                  className="w-full"
+                  disabled={loginDisabled}
+                  type="submit"
+                  loading={loading}
+                  text="Login"
+                  Icon={UserRoundCheck}
+                  size="large"
+                />
+              </TabsContent>
+              <TabsContent value="signup">
+                <div className="text-xs mt-1">
+                  at least 8 characters long, at least one uppercase letter, at
+                  least one lowercase letter, and at least one digit
+                </div>
+                <div className="flex items-center gap-3 mt-12">
+                  <Checkbox
+                    id="agree"
+                    className="w-4 h-4"
+                    value=""
+                    checked={agree}
+                    onCheckedChange={(c) =>
+                      typeof c === "boolean" ? setAgree(c) : undefined
+                    }
+                    disabled={loading}
+                  />
+                  <label htmlFor="agree" className="text-xs">
+                    I agree to the&nbsp;
+                    <a
+                      href="https://www.termsfeed.com/live/0ce4dbce-17c2-4551-89c9-eb14fe206b71"
+                      target="_blank"
+                      className="underline"
+                    >
+                      privacy policy
+                    </a>
+                    &nbsp;and&nbsp;
+                    <a href="/terms" target="_blank" className="underline">
+                      terms and conditions
+                    </a>
+                  </label>
+                </div>
+                <div className="mt-3"></div>
+                <IconTextButton
+                  className="w-full"
+                  disabled={signupDisabled}
+                  type="submit"
+                  loading={loading}
+                  text="Sign up"
+                  Icon={UserRoundPlus}
+                  size="large"
+                />
+              </TabsContent>
+            </div>
+          </form>
+        </Tabs>
+      </div>
     </div>
-  );
-}
-
-export default function Page() {
-  return (
-    <Suspense>
-      <Login />
-    </Suspense>
   );
 }

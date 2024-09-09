@@ -44,14 +44,10 @@ export default function ModelSelect() {
       open={open}
       onOpenChange={setOpen}
     >
-      <SelectEmptyTrigger className="w-full md:w-auto h-6 sm:h-8 -mt-px">
-        <IconTextButton
-          className="w-full md:w-28"
-          Icon={ChevronDown}
-          text="Models"
-          selected={open}
-          responsive
-        />
+      <SelectEmptyTrigger asChild>
+        <div className="flex">
+          <IconTextButton Icon={ChevronDown} text="Models" responsive />
+        </div>
       </SelectEmptyTrigger>
       <SelectContent className="w-[23rem]">
         {providerTypes.map((type) => (
