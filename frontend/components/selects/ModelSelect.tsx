@@ -15,7 +15,10 @@ import IconTextButton from "../buttons/IconTextButton";
 import useModelStore from "@/store/model";
 
 export default function ModelSelect() {
-  const isLoggedOut = useUserStore((state) => state.isLoggedOut);
+  const [isLoggedOut, balance] = useUserStore((state) => [
+    state.isLoggedOut,
+    state.user?.balance,
+  ]);
   const [modelHashId, models, providerTypes, setModelHashId] = useModelStore(
     (state) => [
       state.modelHashId,
@@ -56,21 +59,20 @@ export default function ModelSelect() {
               <Fragment key={provider.hashId}>
                 <SelectLabel>{provider.name}</SelectLabel>
                 {provider.models.map((m) => {
-                  const { isLoginRequired, isAvailable, isFree } = m;
+                  const { isLoginRequired, isFree } = m;
                   const loginRequired = isLoggedOut && isLoginRequired;
+                  const paymentRequired = !isFree && !balance;
                   const disableMessage = loginRequired
                     ? " (login required)"
-                    : !isFree
-                    ? " (api key required)"
-                    : !isAvailable
-                    ? " (not available)"
+                    : paymentRequired
+                    ? " (payment required)"
                     : "";
 
                   return (
                     <SelectItem
                       key={m.hashId}
                       value={m.hashId}
-                      disabled={loginRequired || !isAvailable || !isFree}
+                      disabled={loginRequired || paymentRequired}
                     >
                       {`${m.name}${disableMessage}`}
                     </SelectItem>

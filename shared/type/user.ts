@@ -4,7 +4,12 @@ export const UserLoginSchema = Type.Object({
   email: Type.String(),
   password: Type.String(),
 });
-export type UserGetMeResponse = { hashId: string; email: string; name: string };
+export type UserGetMeResponse = {
+  hashId: string;
+  email: string;
+  name: string;
+  balance: number;
+};
 
 export const UserCreateSchema = Type.Object({
   email: Type.String(),

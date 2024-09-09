@@ -15,7 +15,6 @@ export type Model = {
   outputPricePerMillion: number;
   isFree: boolean;
   isLoginRequired: boolean;
-  isAvailable: boolean;
   configs: {
     config: Config & { options: { hashId: string; value: string }[] };
   }[];

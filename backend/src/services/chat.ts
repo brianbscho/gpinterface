@@ -26,7 +26,7 @@ export const createChatCompletion = async ({
     where: {
       hashId: gpiHashId,
       OR: [{ userHashId }, { isPublic: true }],
-      model: { isAvailable: true, isFree: true },
+      model: { isAvailable: true },
     },
     select: {
       config: true,
@@ -42,6 +42,19 @@ export const createChatCompletion = async ({
   if (gpi.chatContents.some((c) => c.content === "")) {
     throw fastify.httpErrors.badRequest("There is empty content in chat.");
   }
+  if (gpi.model.isLoginRequired || !gpi.model.isFree) {
+    if (!userHashId) {
+      throw fastify.httpErrors.unauthorized("Please login first.");
+    }
+    const user = await fastify.prisma.user.findFirst({
+      where: { hashId: userHashId },
+      select: { balance: true },
+    });
+    if (!user || user.balance <= 0)
+      throw fastify.httpErrors.unauthorized(
+        "You don't have enough balance. Please deposit first."
+      );
+  }
 
   const { systemMessage, chatContents, config, model } = gpi;
   const messages = chatContents.concat({ role: "user", content });
@@ -52,6 +65,7 @@ export const createChatCompletion = async ({
     messages,
   });
 
+  const paid = gpi.model.isFree ? 0 : response.price;
   await createEntity(fastify.prisma.history.create, {
     data: {
       userHashId,
@@ -66,6 +80,12 @@ export const createChatCompletion = async ({
       ...response,
     },
   });
+  if (userHashId) {
+    await fastify.prisma.user.update({
+      where: { hashId: userHashId },
+      data: { balance: { decrement: paid } },
+    });
+  }
 
   return { content: response.content };
 };

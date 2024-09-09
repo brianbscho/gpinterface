@@ -259,6 +259,7 @@ model User {
   email    String
   password String?
   name     String
+  balance  Float   @default(0)
 
   apiKeys   ApiKey[]
   deposits  Deposit[]

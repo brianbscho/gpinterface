@@ -22,7 +22,6 @@ export default async function (fastify: FastifyInstance) {
                     outputPricePerMillion: true,
                     isFree: true,
                     isLoginRequired: true,
-                    isAvailable: true,
                     configs: {
                       select: {
                         config: {
@@ -45,6 +44,7 @@ export default async function (fastify: FastifyInstance) {
                       },
                     },
                   },
+                  where: { isAvailable: true },
                   orderBy: { name: "asc" },
                 },
               },

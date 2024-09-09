@@ -72,7 +72,9 @@ export default function MenusDropdown() {
         <IconButton responsive Icon={UserRound} />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-auto px-1">
-        <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
+        <DropdownMenuLabel>{`${user.name} ($${user.balance.toFixed(
+          4
+        )})`}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem
