@@ -162,7 +162,7 @@ export default async function (fastify: FastifyInstance) {
         const saltRounds = 12;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
         user = await createEntity(fastify.prisma.user.create, {
-          data: { email, password: hashedPassword, name },
+          data: { email, password: hashedPassword, name, balance: 2.99 },
           select: { hashId: true, balance: true },
         });
 
@@ -215,7 +215,7 @@ export default async function (fastify: FastifyInstance) {
         }
 
         const newUser = await createEntity(fastify.prisma.user.create, {
-          data: { email, name },
+          data: { email, name, balance: 2.99 },
           select: { hashId: true, balance: true },
         });
 
