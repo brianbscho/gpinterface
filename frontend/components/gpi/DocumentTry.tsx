@@ -142,7 +142,7 @@ export default function DocumentTry({
             <div className="bg-neutral-700 rounded-md p-3">
               <div className="whitespace-pre-wrap break-all items-center">
                 {`curl -X ${method} ${
-                  process.env.NEXT_PUBLIC_SERVICE_ENDPOINT
+                  process.env.NEXT_PUBLIC_CHAT_ENDPOINT
                 }${path
                   .split(/({[^}]+})/)
                   .map((p) => (p.includes("{") ? param || p : p))
