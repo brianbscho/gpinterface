@@ -76,7 +76,7 @@ export async function createSessionCompletion({
       hashId: sessionHashId,
       gpi: {
         OR: [{ userHashId }, { isPublic: true }],
-        model: { isAvailable: true, isFree: true },
+        model: { isAvailable: true },
       },
     },
     select: {

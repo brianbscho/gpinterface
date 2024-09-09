@@ -26,7 +26,7 @@ export const createChatCompletion = async ({
     where: {
       hashId: gpiHashId,
       OR: [{ userHashId }, { isPublic: true }],
-      model: { isAvailable: true, isFree: true },
+      model: { isAvailable: true },
     },
     select: {
       config: true,

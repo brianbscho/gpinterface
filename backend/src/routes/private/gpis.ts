@@ -6,7 +6,7 @@ import {
   LastHashIdParam,
 } from "gpinterface-shared/type";
 import {
-  ChatCompletionContentsQuery,
+  MessageCompletionContentsQuery,
   ChatCompletionModelSelect,
   ContentHistorySelect,
   createEntity,
@@ -318,7 +318,10 @@ export default async function (fastify: FastifyInstance) {
           where: { hashId, userHashId: user.hashId },
           select: {
             systemMessage: true,
-            chatContents: ChatCompletionContentsQuery,
+            chatContents: {
+              ...MessageCompletionContentsQuery,
+              where: { isDeployed: false },
+            },
             userHashId: true,
           },
         });
