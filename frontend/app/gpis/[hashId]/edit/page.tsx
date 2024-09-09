@@ -5,7 +5,6 @@ import callApi from "@/utils/callApi";
 import Contents from "@/components/content/Contents";
 import ModelSheetButton from "@/components/buttons/ModelSheetButton";
 import ModelPanel from "@/components/ModelPanel";
-import GpiSaveButton from "@/components/buttons/GpiSaveButton";
 import useProviderTypes from "@/hooks/useProviderTypes";
 import useModelStore from "@/store/model";
 import { GpiGetResponse } from "gpinterface-shared/type/gpi";
@@ -63,18 +62,16 @@ export default function Page({ params }: { params: { hashId: string } }) {
     <div className="h-full grid grid-cols-[1fr_auto] overflow-hidden relative">
       <div className="h-full w-full pb-3 px-3 overflow-y-auto">
         <div className="z-20 bg-background sticky top-0 py-3 w-full flex gap-3 justify-end">
-          <ModelSheetButton className="md:hidden w-full" />
-          {gpi.isDeployed ? (
-            <GpiSaveButton useGpi={[gpi, setGpi]} />
-          ) : (
-            <GpiDeployButton
-              gpiHashId={gpi.hashId}
-              chatContents={gpi.chatContents}
-            />
-          )}
+          <ModelSheetButton className="md:hidden" />
+          <GpiDeployButton
+            gpiHashId={gpi.hashId}
+            chatContents={[
+              { role: "system", content: gpi.systemMessage },
+            ].concat(gpi.chatContents)}
+            isSave={gpi.isDeployed}
+          />
           <IconTextButton
             onClick={onClickDelete}
-            className="w-full md:w-auto"
             Icon={CircleX}
             variant="icon_destructive"
             text="Delete"

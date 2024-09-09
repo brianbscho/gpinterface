@@ -1,8 +1,8 @@
 "use client";
 
-import { CircleCheck, Circle, StepForward } from "lucide-react";
+import { CircleCheck, Circle, StepForward, Save } from "lucide-react";
 import { Badge, Dialog, DialogContent, DialogTrigger, Input } from "../ui";
-import { FormEvent, useCallback, useState } from "react";
+import { FormEvent, useCallback, useMemo, useState } from "react";
 import callApi from "@/utils/callApi";
 import { Static } from "@sinclair/typebox";
 import {
@@ -15,10 +15,17 @@ import IconTextButton from "./IconTextButton";
 import useModelStore from "@/store/model";
 import { stringify } from "@/utils/string";
 import ContentStatic from "../content/ContentStatic";
-import { ChatContent } from "gpinterface-shared/type/chat-content";
 
-type Props = { gpiHashId: string; chatContents: ChatContent[] };
-export default function GpiDeployButton({ gpiHashId, chatContents }: Props) {
+type Props = {
+  gpiHashId: string;
+  chatContents: { role: string; content: string }[];
+  isSave: boolean;
+};
+export default function GpiDeployButton({
+  gpiHashId,
+  chatContents,
+  isSave,
+}: Props) {
   const [open, setOpen] = useState(false);
 
   const [isPublic, setIsPublic] = useState(true);
@@ -36,8 +43,8 @@ export default function GpiDeployButton({ gpiHashId, chatContents }: Props) {
         GpiCreateResponse,
         Static<typeof GpiDeploySchema>
       >({
-        endpoint: `/users/gpis/${gpiHashId}/deploy`,
-        method: "POST",
+        endpoint: `/users/gpis/${gpiHashId}${isSave ? "" : "/deploy"}`,
+        method: isSave ? "PUT" : "POST",
         body: {
           description,
           modelHashId: model.hashId,
@@ -53,13 +60,19 @@ export default function GpiDeployButton({ gpiHashId, chatContents }: Props) {
         setLoading(false);
       }
     },
-    [description, isPublic, config, model, router, gpiHashId]
+    [isSave, description, isPublic, config, model, router, gpiHashId]
   );
+
+  const text = useMemo(() => (isSave ? "Save" : "Deploy"), [isSave]);
 
   return (
     <Dialog open={open} onOpenChange={loading ? undefined : setOpen}>
       <DialogTrigger asChild>
-        <IconTextButton Icon={StepForward} text="Deploy" responsive />
+        <IconTextButton
+          Icon={isSave ? Save : StepForward}
+          text={text}
+          responsive
+        />
       </DialogTrigger>
       <DialogContent
         className="max-w-3xl w-11/12 max-h-screen overflow-y-auto gap-3 p-3"
@@ -67,7 +80,7 @@ export default function GpiDeployButton({ gpiHashId, chatContents }: Props) {
       >
         <div className="w-full pb-1 border-b-2 border-theme">
           <Badge variant="tag" className="h-6">
-            Deploy
+            {text}
           </Badge>
         </div>
         <div className="flex flex-col gap-12 mb-12">
@@ -88,7 +101,7 @@ export default function GpiDeployButton({ gpiHashId, chatContents }: Props) {
             <div className="text-foreground font-bold text-sm">Chat</div>
             <div className="grid md:grid-cols-[auto_1fr] gap-1 md:gap-3 items-start">
               {chatContents.map((c) => (
-                <ContentStatic key={c.hashId} {...c} />
+                <ContentStatic key={c.content} {...c} />
               ))}
             </div>
           </div>
@@ -116,8 +129,8 @@ export default function GpiDeployButton({ gpiHashId, chatContents }: Props) {
             onClick={onSubmit}
             disabled={description === ""}
             loading={loading}
-            text="Deploy"
-            Icon={StepForward}
+            Icon={isSave ? Save : StepForward}
+            text={text}
             responsive
           />
         </div>
