@@ -49,7 +49,7 @@ export default function GpiDraft({ gpi }: Props) {
         </TooltipButton>
       </div>
       <div className="pb-1 border-b border-neutral-500 font-bold text-xl w-full">
-        Chat history
+        Context
       </div>
       <div className="grid md:grid-cols-[auto_1fr] gap-3 items-start border-neutral-500">
         {gpi.systemMessage.length > 0 && (
@@ -59,9 +59,7 @@ export default function GpiDraft({ gpi }: Props) {
           <ContentStatic key={c.hashId} {...c} />
         ))}
         {gpi.systemMessage.length === 0 && gpi.chatContents.length === 0 && (
-          <div className="text-neutral-300 text-sm font-light">
-            No chat history
-          </div>
+          <div className="text-neutral-300 text-sm font-light">No context</div>
         )}
       </div>
     </div>

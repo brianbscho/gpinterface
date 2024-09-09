@@ -70,8 +70,8 @@ export default function Document({
         <div className="flex items-center bg-destructive rounded-md px-1 py-2 gap-3">
           <CircleAlert className="text-primary w-5 h-5 shrink-0" />
           <div className="text-primary text-xs">
-            This may become unavailable or have its functionality modified by
-            the author at any time. To ensure secure access, please make a copy.
+            This may be modified by the author at any time. To ensure secure
+            access, we recommend making a copy.
           </div>
         </div>
       )}
