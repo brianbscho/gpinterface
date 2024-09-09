@@ -25,7 +25,7 @@ export default function GpiDraft({ gpi }: Props) {
       showError: true,
     });
     if (response) {
-      location.pathname = "/gpis/user";
+      location.pathname = "/profile/gpis";
     }
   }, [gpi]);
 
@@ -35,7 +35,7 @@ export default function GpiDraft({ gpi }: Props) {
         <Badge variant="tag">Draft</Badge>
         <div className="flex-1"></div>
         <TooltipButton message="Edit">
-          <Link href={`/gpis/${gpi.hashId}/edit`} className="flex">
+          <Link href={`/profile/gpis/${gpi.hashId}/edit`} className="flex">
             <IconButton Icon={FileCog} responsive />
           </Link>
         </TooltipButton>

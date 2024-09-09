@@ -55,7 +55,7 @@ export default function GpiDeployButton({
       });
 
       if (response) {
-        router.push("/gpis/user");
+        router.push("/profile/gpis");
       } else {
         setLoading(false);
       }

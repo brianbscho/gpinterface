@@ -25,7 +25,7 @@ import Link from "next/link";
 import IconButton from "../buttons/IconButton";
 
 const loginRedirectPaths = ["login"];
-const logoutRedirectPaths = ["bills", "gpis/user", "/edit", "settings"];
+const logoutRedirectPaths = ["bills", "profile"];
 
 export default function MenusDropdown() {
   const { user, setUser } = useUserStore();
@@ -77,12 +77,15 @@ export default function MenusDropdown() {
         <DropdownMenuGroup>
           <DropdownMenuItem
             className="gap-3"
-            onClick={() => push(`/gpis/user`)}
+            onClick={() => push(`/profile/gpis`)}
           >
             <FileCode className="h-3 w-3 md:h-4 md:w-4" />
             <span className="text-xs md:text-sm">My gpis</span>
           </DropdownMenuItem>
-          <DropdownMenuItem className="gap-3" onClick={() => push("/settings")}>
+          <DropdownMenuItem
+            className="gap-3"
+            onClick={() => push("/profile/settings")}
+          >
             <Settings className="h-3 w-3 md:h-4 md:w-4" />
             <span className="text-xs md:text-sm">Settings</span>
           </DropdownMenuItem>

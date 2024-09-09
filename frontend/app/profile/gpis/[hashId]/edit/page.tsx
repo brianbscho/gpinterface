@@ -51,7 +51,7 @@ export default function Page({ params }: { params: { hashId: string } }) {
       showError: true,
     });
     if (response) {
-      location.pathname = "/gpis/user";
+      location.pathname = "/profile/gpis";
     }
   }, [gpi]);
 

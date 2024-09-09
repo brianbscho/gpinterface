@@ -37,7 +37,7 @@ export default function GpiDropdown({ gpi }: Props) {
       showError: true,
     });
     if (response) {
-      router.push(`/gpis/${response.hashId}/edit`);
+      router.push(`/profile/gpis/${response.hashId}/edit`);
     } else {
       setLoading(false);
     }
@@ -52,7 +52,7 @@ export default function GpiDropdown({ gpi }: Props) {
       <DropdownMenuContent className="w-auto px-1">
         {userHashId === gpi.userHashId && (
           <DropdownMenuItem>
-            <Link href={`/gpis/${gpi.hashId}/edit`}>
+            <Link href={`/profile/gpis/${gpi.hashId}/edit`}>
               <div className="flex gap-3">
                 <FileCog className="h-3 w-3 md:h-4 md:w-4" />
                 <span className="text-xs md:text-sm">Edit</span>

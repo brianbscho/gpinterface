@@ -49,7 +49,7 @@ export default function ChatCreateButton({
       showError: true,
     });
     if (response) {
-      router.push(`/gpis/${response.hashId}/edit`);
+      router.push(`/profile/gpis/${response.hashId}/edit`);
     }
     setLoading(false);
   }, [isLoggedOut, router, modelHashId, config]);
