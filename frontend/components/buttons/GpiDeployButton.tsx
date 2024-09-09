@@ -17,19 +17,19 @@ import { stringify } from "@/utils/string";
 import ContentStatic from "../content/ContentStatic";
 
 type Props = {
-  gpiHashId: string;
-  chatContents: { role: string; content: string }[];
-  isSave: boolean;
+  gpi: {
+    hashId: string;
+    chatContents: { hashId: string; role: string; content: string }[];
+    description: string;
+    isPublic: boolean;
+    isDeployed: boolean;
+  };
 };
-export default function GpiDeployButton({
-  gpiHashId,
-  chatContents,
-  isSave,
-}: Props) {
+export default function GpiDeployButton({ gpi }: Props) {
   const [open, setOpen] = useState(false);
 
-  const [isPublic, setIsPublic] = useState(true);
-  const [description, setDescription] = useState("");
+  const [isPublic, setIsPublic] = useState(gpi.isPublic);
+  const [description, setDescription] = useState(gpi.description);
   const [model, config] = useModelStore((state) => [state.model, state.config]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -43,8 +43,8 @@ export default function GpiDeployButton({
         GpiCreateResponse,
         Static<typeof GpiDeploySchema>
       >({
-        endpoint: `/users/gpis/${gpiHashId}${isSave ? "" : "/deploy"}`,
-        method: isSave ? "PUT" : "POST",
+        endpoint: `/users/gpis/${gpi.hashId}${gpi.isDeployed ? "" : "/deploy"}`,
+        method: gpi.isDeployed ? "PUT" : "POST",
         body: {
           description,
           modelHashId: model.hashId,
@@ -60,16 +60,19 @@ export default function GpiDeployButton({
         setLoading(false);
       }
     },
-    [isSave, description, isPublic, config, model, router, gpiHashId]
+    [gpi.isDeployed, description, isPublic, config, model, router, gpi.hashId]
   );
 
-  const text = useMemo(() => (isSave ? "Save" : "Deploy"), [isSave]);
+  const text = useMemo(
+    () => (gpi.isDeployed ? "Save" : "Deploy"),
+    [gpi.isDeployed]
+  );
 
   return (
     <Dialog open={open} onOpenChange={loading ? undefined : setOpen}>
       <DialogTrigger asChild>
         <IconTextButton
-          Icon={isSave ? Save : StepForward}
+          Icon={gpi.isDeployed ? Save : StepForward}
           text={text}
           responsive
         />
@@ -100,8 +103,8 @@ export default function GpiDeployButton({
           <div>
             <div className="text-foreground font-bold text-sm">Chat</div>
             <div className="grid md:grid-cols-[auto_1fr] gap-1 md:gap-3 items-start">
-              {chatContents.map((c) => (
-                <ContentStatic key={c.content} {...c} />
+              {gpi.chatContents.map((c) => (
+                <ContentStatic key={c.hashId} {...c} />
               ))}
             </div>
           </div>
@@ -129,7 +132,7 @@ export default function GpiDeployButton({
             onClick={onSubmit}
             disabled={description === ""}
             loading={loading}
-            Icon={isSave ? Save : StepForward}
+            Icon={gpi.isDeployed ? Save : StepForward}
             text={text}
             responsive
           />

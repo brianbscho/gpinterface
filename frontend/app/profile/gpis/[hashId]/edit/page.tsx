@@ -64,11 +64,16 @@ export default function Page({ params }: { params: { hashId: string } }) {
         <div className="z-20 bg-background sticky top-0 py-3 w-full flex gap-3 justify-end">
           <ModelSheetButton className="md:hidden" />
           <GpiDeployButton
-            gpiHashId={gpi.hashId}
-            chatContents={[
-              { role: "system", content: gpi.systemMessage },
-            ].concat(gpi.chatContents)}
-            isSave={gpi.isDeployed}
+            gpi={{
+              ...gpi,
+              chatContents: [
+                {
+                  hashId: "system-message-hashId",
+                  role: "system",
+                  content: gpi.systemMessage,
+                },
+              ].concat(gpi.chatContents),
+            }}
           />
           <IconTextButton
             onClick={onClickDelete}
