@@ -30,7 +30,7 @@ import {
   ChatContentsCreateResponse,
 } from "gpinterface-shared/type/chat-content";
 import { getTextResponse } from "../../util/text";
-import { copyGpiEntry, createGpiEntry } from "../../services/gpi";
+import { copyGpiEntry, createGpiEntry, getIsEditing } from "../../services/gpi";
 
 export default async function (fastify: FastifyInstance) {
   fastify.post<{ Body: Static<typeof GpiCreateSchema> }>(
@@ -507,9 +507,6 @@ export default async function (fastify: FastifyInstance) {
             modelHashId: true,
             isPublic: true,
             isDeployed: true,
-            _count: {
-              select: { chatContents: { where: { isDeployed: false } } },
-            },
           },
           orderBy: { updatedAt: "desc" },
           take: 5,
@@ -519,7 +516,7 @@ export default async function (fastify: FastifyInstance) {
           const { chatContents, config, ...rest } = gpi;
           return {
             ...rest,
-            isEditing: gpi._count.chatContents > 0,
+            isEditing: getIsEditing(chatContents),
             config: config as any,
             chatContents: getTypedContents(
               chatContents.filter((c) => gpi.isDeployed === c.isDeployed)
@@ -556,17 +553,14 @@ export default async function (fastify: FastifyInstance) {
                 model: { select: { hashId: true, name: true } },
                 histories: { select: ContentHistorySelect },
                 isModified: true,
+                isDeployed: true,
               },
-              where: { isDeployed: false },
               orderBy: { id: "asc" },
             },
             config: true,
             modelHashId: true,
             isPublic: true,
             isDeployed: true,
-            _count: {
-              select: { chatContents: { where: { isDeployed: false } } },
-            },
           },
         });
         if (!gpi) {
@@ -576,9 +570,11 @@ export default async function (fastify: FastifyInstance) {
         const { config, chatContents, ...rest } = gpi;
         return {
           ...rest,
-          isEditing: gpi._count.chatContents > 0,
+          isEditing: getIsEditing(chatContents),
           config: config as any,
-          chatContents: getTypedContents(chatContents),
+          chatContents: getTypedContents(
+            chatContents.filter((c) => !c.isDeployed)
+          ),
         };
       } catch (ex) {
         console.error("path: /users/gpis/:hashId, method: get, error:", ex);

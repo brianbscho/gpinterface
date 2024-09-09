@@ -1,5 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { getDataWithHashId, getTypedContent } from "../util/prisma";
+import { ChatContent } from "gpinterface-shared/type/chat-content";
+import { compareObjects } from "../util";
 
 export async function createGpiEntry(
   gpiDelegate: Prisma.GpiDelegate,
@@ -77,4 +79,41 @@ export async function copyGpiEntry(
   const newGpi = await createGpiEntry(prisma.gpi, { userHashId, ...gpi });
 
   return newGpi;
+}
+
+export function getIsEditing(
+  chatContents: (Omit<ChatContent, "config"> & {
+    isDeployed: boolean;
+    config: any;
+  })[]
+) {
+  const deployedContents = [...chatContents].filter((c) => c.isDeployed);
+  const editingContents = [...chatContents].filter((c) => !c.isDeployed);
+
+  const i =
+    deployedContents.length !== editingContents.length ||
+    !deployedContents.reduce((acc, curr, index) => {
+      const {
+        config: dConfig,
+        model: dModel,
+        history: dH,
+        hashId: dI,
+        ...dc
+      } = curr;
+      const {
+        config: eConfig,
+        model: eModel,
+        history: eH,
+        hashId: eI,
+        ...ec
+      } = editingContents[index];
+
+      return (
+        acc &&
+        compareObjects(dConfig, eConfig) &&
+        compareObjects(dModel, eModel) &&
+        compareObjects(dc, ec)
+      );
+    }, true);
+  return i;
 }
