@@ -52,7 +52,7 @@ export default async function (fastify: FastifyInstance) {
       } = await fastify.getUser(request, reply);
       const user = await fastify.prisma.user.findFirst({
         where: { hashId },
-        select: { hashId: true, email: true, name: true },
+        select: { hashId: true, email: true, name: true, balance: true },
       });
       if (!user) {
         throw httpErrors.badRequest("no user");
@@ -102,7 +102,7 @@ export default async function (fastify: FastifyInstance) {
         const { email, password } = request.body;
         const user = await fastify.prisma.user.findFirst({
           where: { email },
-          select: { hashId: true, name: true, password: true },
+          select: { hashId: true, name: true, password: true, balance: true },
         });
         if (!user) {
           throw httpErrors.badRequest("No user found with that email :(");
@@ -120,11 +120,16 @@ export default async function (fastify: FastifyInstance) {
           );
         }
 
-        const { hashId, name } = user;
+        const { hashId, name, balance } = user;
         const accessToken = getAccessToken(httpErrors.internalServerError, {
           user: { hashId, name },
         });
-        return cookieReply(reply, accessToken, { hashId, name, email });
+        return cookieReply(reply, accessToken, {
+          hashId,
+          name,
+          email,
+          balance,
+        });
       } catch (ex) {
         console.error("path: /users/signin, method: post, error: ", ex);
         throw ex;
@@ -146,7 +151,7 @@ export default async function (fastify: FastifyInstance) {
 
         let user = await fastify.prisma.user.findFirst({
           where: { email },
-          select: { hashId: true },
+          select: { hashId: true, balance: true },
         });
         if (user) {
           throw httpErrors.badRequest(
@@ -158,7 +163,7 @@ export default async function (fastify: FastifyInstance) {
         const hashedPassword = await bcrypt.hash(password, saltRounds);
         user = await createEntity(fastify.prisma.user.create, {
           data: { email, password: hashedPassword, name },
-          select: { hashId: true },
+          select: { hashId: true, balance: true },
         });
 
         const accessToken = getAccessToken(httpErrors.internalServerError, {
@@ -199,7 +204,7 @@ export default async function (fastify: FastifyInstance) {
         name = name.replace(/\s+/g, "");
         let user = await fastify.prisma.user.findFirst({
           where: { email },
-          select: { hashId: true, email: true, name: true },
+          select: { hashId: true, email: true, name: true, balance: true },
         });
         if (user) {
           const accessToken = getAccessToken(httpErrors.internalServerError, {
@@ -211,13 +216,13 @@ export default async function (fastify: FastifyInstance) {
 
         const newUser = await createEntity(fastify.prisma.user.create, {
           data: { email, name },
-          select: { hashId: true },
+          select: { hashId: true, balance: true },
         });
 
         const accessToken = getAccessToken(httpErrors.internalServerError, {
           user: { hashId: newUser.hashId, name },
         });
-        const me = { hashId: newUser.hashId, email, name };
+        const me = { ...newUser, email, name };
         return cookieReply(reply, accessToken, me);
       } catch (ex) {
         console.error("path: /users/google, method: post, error: ", ex);
@@ -235,7 +240,7 @@ export default async function (fastify: FastifyInstance) {
         const updatedUser = await fastify.prisma.user.update({
           where: { hashId: user.hashId },
           data: { name },
-          select: { hashId: true, email: true, name: true },
+          select: { hashId: true, email: true, name: true, balance: true },
         });
 
         return updatedUser;
