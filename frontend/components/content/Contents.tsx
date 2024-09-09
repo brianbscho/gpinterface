@@ -146,7 +146,7 @@ function Content({
     const timer = setTimeout(async () => {
       try {
         const response = await callUpdateContent(newContent);
-        if (response && setChatContents) {
+        if (response !== undefined && setChatContents) {
           setChatContents((prev) =>
             prev.map((p) => {
               if (p.hashId === chatContent.hashId) {
@@ -345,9 +345,14 @@ export default function Contents({ useGpi, className }: ContentsProps) {
         method: "PATCH",
         body: { systemMessage },
       });
-      return response?.systemMessage;
+      if (response) {
+        setGpi((prev) =>
+          !prev ? prev : { ...prev, systemMessage: response.systemMessage }
+        );
+      }
+      return undefined;
     },
-    [gpi]
+    [gpi, setGpi]
   );
   const callUpdateContent = useCallback(
     (hashId: string) => async (content: string) => {
