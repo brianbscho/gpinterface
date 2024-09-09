@@ -154,6 +154,8 @@ export const ChatCompletionModelSelect = {
   inputPricePerMillion: true,
   outputPricePerMillion: true,
   provider: { select: { name: true } },
+  isFree: true,
+  isLoginRequired: true,
 };
 
 export const ChatCompletionContentsQuery = {

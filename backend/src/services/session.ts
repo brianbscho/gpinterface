@@ -99,6 +99,19 @@ export async function createSessionCompletion({
   if (session.gpi.chatContents.some((c) => c.content === "")) {
     throw fastify.httpErrors.badRequest("There is empty content in chat.");
   }
+  if (session.gpi.model.isLoginRequired || !session.gpi.model.isFree) {
+    if (!userHashId) {
+      throw fastify.httpErrors.unauthorized("Please login first.");
+    }
+    const user = await fastify.prisma.user.findFirst({
+      where: { hashId: userHashId },
+      select: { balance: true },
+    });
+    if (!user || user.balance <= 0)
+      throw fastify.httpErrors.unauthorized(
+        "You don't have enough balance. Please deposit first."
+      );
+  }
 
   const { gpi } = session;
   const { systemMessage, config, model } = gpi;
@@ -112,6 +125,7 @@ export async function createSessionCompletion({
     messages,
   });
 
+  const paid = session.gpi.model.isFree ? 0 : response.price;
   await createManyEntities(fastify.prisma.sessionMessage.createMany, {
     data: [
       { sessionHashId, role: "user", content },
@@ -133,6 +147,12 @@ export async function createSessionCompletion({
       ...response,
     },
   });
+  if (userHashId) {
+    await fastify.prisma.user.update({
+      where: { hashId: userHashId },
+      data: { balance: { decrement: paid } },
+    });
+  }
 
   return { content: response.content };
 }

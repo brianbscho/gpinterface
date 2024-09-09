@@ -118,11 +118,22 @@ export default async function (fastify: FastifyInstance) {
         const { modelHashId, config } = request.body;
 
         const model = await fastify.prisma.model.findFirst({
-          where: { hashId: modelHashId, isAvailable: true, isFree: true },
+          where: { hashId: modelHashId, isAvailable: true },
           select: ChatCompletionModelSelect,
         });
         if (!model) {
           throw fastify.httpErrors.badRequest("model is not available.");
+        }
+        if (!model.isFree) {
+          const userBalance = await fastify.prisma.user.findFirst({
+            where: { hashId: user.hashId },
+            select: { balance: true },
+          });
+          if (!userBalance || userBalance.balance <= 0) {
+            throw fastify.httpErrors.unauthorized(
+              "You don't have enough balance. Please deposit first."
+            );
+          }
         }
         const chatContent = await fastify.prisma.chatContent.findFirst({
           where: { hashId, isDeployed: false },
@@ -162,6 +173,7 @@ export default async function (fastify: FastifyInstance) {
           messages,
         });
 
+        const paid = model.isFree ? 0 : response.price;
         const history = await createEntity(fastify.prisma.history.create, {
           data: {
             userHashId: user.hashId,
@@ -174,6 +186,7 @@ export default async function (fastify: FastifyInstance) {
               ? [{ role: "system", content: systemMessage }]
               : []
             ).concat(messages),
+            paid,
             content,
             ...response,
           },
@@ -200,11 +213,16 @@ export default async function (fastify: FastifyInstance) {
             isModified: true,
           },
         });
-
         await fastify.prisma.gpi.update({
           where: { hashId: gpi.hashId },
           data: { updatedAt: new Date() },
         });
+        if (paid > 0) {
+          await fastify.prisma.user.update({
+            where: { hashId: user.hashId },
+            data: { balance: { decrement: paid } },
+          });
+        }
 
         return getTypedContent({
           history: getTypedHistory(history),

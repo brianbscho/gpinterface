@@ -296,16 +296,22 @@ export default async function (fastify: FastifyInstance) {
         }
 
         const model = await fastify.prisma.model.findFirst({
-          where: {
-            hashId: body.modelHashId,
-            isAvailable: true,
-            isFree: true,
-            ...(!user.hashId && { isLoginRequired: false }),
-          },
+          where: { hashId: body.modelHashId, isAvailable: true },
           select: ChatCompletionModelSelect,
         });
         if (!model) {
           throw fastify.httpErrors.badRequest("model is not available.");
+        }
+        if (!model.isFree) {
+          const userBalance = await fastify.prisma.user.findFirst({
+            where: { hashId: user.hashId },
+            select: { balance: true },
+          });
+          if (!userBalance || userBalance.balance <= 0) {
+            throw fastify.httpErrors.unauthorized(
+              "You don't have enough balance. Please deposit first."
+            );
+          }
         }
 
         const gpi = await fastify.prisma.gpi.findFirst({
@@ -333,6 +339,7 @@ export default async function (fastify: FastifyInstance) {
           config: body.config,
           messages,
         });
+        const paid = model.isFree ? 0 : response.price;
 
         const userChatContent = await createEntity(
           fastify.prisma.chatContent.create,
@@ -384,6 +391,7 @@ export default async function (fastify: FastifyInstance) {
               ? [{ role: "system", content: systemMessage }]
               : []
             ).concat(messages),
+            paid,
             ...response,
           },
           select: { ...ContentHistorySelect, hashId: true },
@@ -392,6 +400,12 @@ export default async function (fastify: FastifyInstance) {
           where: { hashId },
           data: { updatedAt: new Date() },
         });
+        if (paid > 0) {
+          await fastify.prisma.user.update({
+            where: { hashId: user.hashId },
+            data: { balance: { decrement: paid } },
+          });
+        }
 
         return [
           userChatContent,
