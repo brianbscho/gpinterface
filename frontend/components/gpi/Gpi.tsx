@@ -46,7 +46,7 @@ export default function Gpi({ gpi }: Props) {
         <div className="flex-1 text-xs">
           {gpi.isEditing ? "*unsaved changes" : ""}
         </div>
-        <GpiDropdown gpiHashId={gpi.hashId} />
+        <GpiDropdown gpi={{ hashId: gpi.hashId, userHashId: gpi.userHashId }} />
       </div>
       <div>{gpi.description}</div>
       <div className="pb-1 border-b border-neutral-500 font-bold text-xl w-full">

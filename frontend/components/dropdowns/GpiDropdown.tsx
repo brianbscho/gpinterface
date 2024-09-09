@@ -13,31 +13,36 @@ import { useCallback, useState } from "react";
 import callApi from "@/utils/callApi";
 import { GpiCreateResponse } from "gpinterface-shared/type/gpi";
 import Link from "next/link";
+import useUserStore from "@/store/user";
+import { useRouter } from "next/navigation";
 
-export default function GpiDropdown({ gpiHashId }: { gpiHashId: string }) {
+type Props = { gpi: { hashId: string; userHashId: string | null } };
+export default function GpiDropdown({ gpi }: Props) {
   const { toast } = useToast();
   const onClickShare = useCallback(() => {
     navigator.clipboard.writeText(
-      `${process.env.NEXT_PUBLIC_HOSTNAME}/gpis/${gpiHashId}`
+      `${process.env.NEXT_PUBLIC_HOSTNAME}/gpis/${gpi.hashId}`
     );
     toast({ title: "Link copied!", duration: 1000 });
-  }, [gpiHashId, toast]);
+  }, [gpi.hashId, toast]);
 
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const onClickCopy = useCallback(async () => {
     setLoading(true);
     const response = await callApi<GpiCreateResponse>({
-      endpoint: `/users/gpis/${gpiHashId}/copy`,
+      endpoint: `/users/gpis/${gpi.hashId}/copy`,
       method: "POST",
       body: {},
       showError: true,
     });
     if (response) {
-      location.pathname = "/gpis/user";
+      router.push(`/gpis/${response.hashId}/edit`);
     } else {
       setLoading(false);
     }
-  }, [gpiHashId]);
+  }, [gpi.hashId, router]);
+  const userHashId = useUserStore((state) => state.user?.hashId);
 
   return (
     <DropdownMenu>
@@ -45,14 +50,16 @@ export default function GpiDropdown({ gpiHashId }: { gpiHashId: string }) {
         <IconButton Icon={CircleEllipsis} />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-auto px-1">
-        <DropdownMenuItem>
-          <Link href={`/gpis/${gpiHashId}/edit`}>
-            <div className="flex gap-3">
-              <FileCog className="h-3 w-3 md:h-4 md:w-4" />
-              <span className="text-xs md:text-sm">Edit</span>
-            </div>
-          </Link>
-        </DropdownMenuItem>
+        {userHashId === gpi.userHashId && (
+          <DropdownMenuItem>
+            <Link href={`/gpis/${gpi.hashId}/edit`}>
+              <div className="flex gap-3">
+                <FileCog className="h-3 w-3 md:h-4 md:w-4" />
+                <span className="text-xs md:text-sm">Edit</span>
+              </div>
+            </Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem className="gap-3" onClick={onClickShare}>
           <LinkIcon className="h-3 w-3 md:h-4 md:w-4" />
           <span className="text-xs md:text-sm">Share</span>
