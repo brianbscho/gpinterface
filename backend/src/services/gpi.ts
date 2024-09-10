@@ -85,6 +85,7 @@ export function getIsEditing(
   chatContents: (Omit<ChatContent, "config"> & {
     isDeployed: boolean;
     config: any;
+    histories: any;
   })[]
 ) {
   const deployedContents = [...chatContents].filter((c) => c.isDeployed);
@@ -93,26 +94,15 @@ export function getIsEditing(
   const i =
     deployedContents.length !== editingContents.length ||
     !deployedContents.reduce((acc, curr, index) => {
-      const {
-        config: dConfig,
-        model: dModel,
-        history: dH,
-        hashId: dI,
-        ...dc
-      } = curr;
-      const {
-        config: eConfig,
-        model: eModel,
-        history: eH,
-        hashId: eI,
-        ...ec
-      } = editingContents[index];
-
+      const editingContent = editingContents[index];
       return (
         acc &&
-        compareObjects(dConfig, eConfig) &&
-        compareObjects(dModel, eModel) &&
-        compareObjects(dc, ec)
+        compareObjects(curr.config, editingContent.config) &&
+        compareObjects(curr.model, editingContent.model) &&
+        compareObjects(
+          { role: curr.role, content: curr.content },
+          { role: editingContent.role, content: editingContent.content }
+        )
       );
     }, true);
   return i;
