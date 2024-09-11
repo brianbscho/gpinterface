@@ -4,7 +4,7 @@ export default function Page() {
   return (
     <div className="w-full h-full overflow-y-auto">
       <div className="max-w-7xl mx-auto px-3">
-        <div class="tab-content translations-content-item en" id="en">
+        <div className="tab-content translations-content-item en" id="en">
           <h1>Privacy Policy</h1>
           <p>Last updated: September 04, 2024</p>
           <p>
