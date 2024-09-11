@@ -15,6 +15,7 @@ import { GpiCreateResponse } from "gpinterface-shared/type/gpi";
 import Link from "next/link";
 import useUserStore from "@/store/user";
 import { useRouter } from "next/navigation";
+import useLoginStore from "@/store/login";
 
 type Props = { gpi: { hashId: string; userHashId: string | null } };
 export default function GpiDropdown({ gpi }: Props) {
@@ -26,9 +27,15 @@ export default function GpiDropdown({ gpi }: Props) {
     toast({ title: "Link copied!", duration: 1000 });
   }, [gpi.hashId, toast]);
 
+  const userHashId = useUserStore((state) => state.user?.hashId);
+  const setOpen = useLoginStore((state) => state.setOpen);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const onClickCopy = useCallback(async () => {
+    if (!userHashId) {
+      setOpen(true);
+      return;
+    }
     setLoading(true);
     const response = await callApi<GpiCreateResponse>({
       endpoint: `/users/gpis/${gpi.hashId}/copy`,
@@ -41,8 +48,7 @@ export default function GpiDropdown({ gpi }: Props) {
     } else {
       setLoading(false);
     }
-  }, [gpi.hashId, router]);
-  const userHashId = useUserStore((state) => state.user?.hashId);
+  }, [userHashId, setOpen, gpi.hashId, router]);
 
   return (
     <DropdownMenu>
@@ -50,6 +56,10 @@ export default function GpiDropdown({ gpi }: Props) {
         <IconButton Icon={CircleEllipsis} />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-auto px-1">
+        <DropdownMenuItem className="gap-3" onClick={onClickShare}>
+          <LinkIcon className="h-3 w-3 md:h-4 md:w-4" />
+          <span className="text-xs md:text-sm">Share</span>
+        </DropdownMenuItem>
         {userHashId === gpi.userHashId && (
           <DropdownMenuItem>
             <Link href={`/profile/gpis/${gpi.hashId}/edit`}>
@@ -60,10 +70,6 @@ export default function GpiDropdown({ gpi }: Props) {
             </Link>
           </DropdownMenuItem>
         )}
-        <DropdownMenuItem className="gap-3" onClick={onClickShare}>
-          <LinkIcon className="h-3 w-3 md:h-4 md:w-4" />
-          <span className="text-xs md:text-sm">Share</span>
-        </DropdownMenuItem>
         <DropdownMenuItem
           className="gap-3"
           onClick={onClickCopy}
