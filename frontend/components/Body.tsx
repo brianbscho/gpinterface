@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Toaster } from "@/components/ui/toaster";
 import ChatCreateButton from "./buttons/ChatCreateButton";
 import SearchInput from "./inputs/SearchInput";
+import LoginDialog from "./dialogs/LoginDialog";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -40,6 +41,7 @@ export default function Body({
             </div>
           </div>
           <div className="w-full flex-1 overflow-hidden">{children}</div>
+          <LoginDialog />
         </main>
         <Toaster />
       </ThemeProvider>

@@ -1,6 +1,5 @@
 "use client";
 
-import useUserStore from "@/store/user";
 import callApi from "@/utils/callApi";
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import {
@@ -21,7 +20,6 @@ import IconTextButton from "../buttons/IconTextButton";
 import { X, Lock, Check } from "lucide-react";
 
 export default function UpdatePassword() {
-  const isLoggedOut = useUserStore((state) => state.isLoggedOut);
   const [open, setOpen] = useState(false);
 
   const [oldPassword, setOldPassword] = useState("");
@@ -73,7 +71,6 @@ export default function UpdatePassword() {
     [oldPassword, newPassword, newPasswordRepeat]
   );
 
-  if (isLoggedOut) return null;
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>

@@ -8,21 +8,31 @@ import {
   DialogContent,
   DialogTitle,
 } from "@/components/ui";
+import useLoginStore from "@/store/login";
+import { useCallback } from "react";
 
-type Props = { title?: string; useOpen: [boolean, (open: boolean) => void] };
-export default function LoginDialog({
-  title = "Please log in first :)",
-  useOpen,
-}: Props) {
-  const [open, setOpen] = useOpen;
+export default function LoginDialog() {
+  const [message, setOpen] = useLoginStore((state) => [
+    state.message,
+    state.setOpen,
+  ]);
+  const onOpenChange = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        setOpen(open);
+      }
+    },
+    [setOpen]
+  );
+  const onClick = useCallback(() => setOpen(false), [setOpen]);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={message.length > 0} onOpenChange={onOpenChange}>
       <DialogContent>
-        <DialogTitle>{title}</DialogTitle>
+        <DialogTitle>{message}</DialogTitle>
         <div className="w-full flex justify-end">
           <DialogClose>
-            <Button asChild onClick={() => setOpen(false)}>
+            <Button asChild onClick={onClick}>
               <Link href="/login">Login</Link>
             </Button>
           </DialogClose>

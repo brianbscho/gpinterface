@@ -16,7 +16,7 @@ import useModelStore from "@/store/model";
 
 export default function ModelSelect() {
   const [isLoggedOut, balance] = useUserStore((state) => [
-    state.isLoggedOut,
+    !state.user,
     state.user?.balance,
   ]);
   const [modelHashId, models, providerTypes, setModelHashId] = useModelStore(
