@@ -25,6 +25,9 @@ export default function Head() {
 
         gtag('config', '${process.env.NEXT_PUBLIC_GOOGLE_ADS_ID}');`}
       </Script>
+      <Script id={`${process.env.NEXT_PUBLIC_GOOGLE_ADS_ID}_conversion`}>
+        {`gtag('event', 'conversion', {'send_to': '${process.env.NEXT_PUBLIC_GOOGLE_ADS_ID}/CrDKCLe197IZEIiNxeUD'});`}
+      </Script>
     </>
   );
 }

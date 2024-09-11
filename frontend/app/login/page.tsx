@@ -209,11 +209,7 @@ export default function Page() {
                   />
                   <label htmlFor="agree" className="text-xs">
                     I agree to the&nbsp;
-                    <a
-                      href="https://www.termsfeed.com/live/0ce4dbce-17c2-4551-89c9-eb14fe206b71"
-                      target="_blank"
-                      className="underline"
-                    >
+                    <a href="/privacy" target="_blank" className="underline">
                       privacy policy
                     </a>
                     &nbsp;and&nbsp;
