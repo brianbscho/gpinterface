@@ -3,7 +3,6 @@
 import { useCallback, useState } from "react";
 import callApi from "@/utils/callApi";
 import useUserStore from "@/store/user";
-import LoginDialog from "../dialogs/LoginDialog";
 import { CirclePlus } from "lucide-react";
 import { useRouter } from "next/navigation";
 import IconButton from "./IconButton";
@@ -14,15 +13,12 @@ import {
 import { Static } from "@sinclair/typebox";
 import useModelStore from "@/store/model";
 import useProviderTypes from "@/hooks/useProviderTypes";
+import useLoginStore from "@/store/login";
 
-export default function ChatCreateButton({
-  className,
-}: {
-  className?: string;
-}) {
+export default function ChatCreateButton() {
   const [loading, setLoading] = useState(false);
-  const isLoggedOut = useUserStore((state) => state.isLoggedOut);
-  const [open, setOpen] = useState(false);
+  const isLoggedOut = useUserStore((state) => !state.user);
+  const setOpen = useLoginStore((state) => state.setOpen);
   const router = useRouter();
 
   useProviderTypes();
@@ -52,17 +48,14 @@ export default function ChatCreateButton({
       router.push(`/profile/gpis/${response.hashId}/edit`);
     }
     setLoading(false);
-  }, [isLoggedOut, router, modelHashId, config]);
+  }, [isLoggedOut, router, modelHashId, config, setOpen]);
 
   return (
-    <div className={className}>
-      <IconButton
-        Icon={CirclePlus}
-        loading={loading}
-        onClick={onClick}
-        responsive
-      />
-      <LoginDialog useOpen={[open, setOpen]} />
-    </div>
+    <IconButton
+      Icon={CirclePlus}
+      loading={loading}
+      onClick={onClick}
+      responsive
+    />
   );
 }
