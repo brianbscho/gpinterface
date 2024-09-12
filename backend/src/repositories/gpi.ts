@@ -32,7 +32,10 @@ export class GpiRepository {
     });
 
     if (!gpi) {
-      throw new Error(`GPI with hashId ${hashId} not found`);
+      throw `GPI with hashId ${hashId} not found`;
+    }
+    if (gpi.chatContents.some((c) => c.content === "")) {
+      throw "There is empty content in chat.";
     }
 
     return gpi;

@@ -45,12 +45,6 @@ export class ChatService {
     }
 
     const gpi = await this.gpiRepository.findFirst(gpiHashId, userHashId);
-    if (gpi.chatContents.some((c) => c.content === "")) {
-      throw this.fastify.httpErrors.badRequest(
-        "There is empty content in chat."
-      );
-    }
-
     await this.checkUserAuthorization(this.fastify, gpi, userHashId);
 
     const { systemMessage, chatContents, config, model } = gpi;
