@@ -12,7 +12,7 @@ export class ApiKeyRepository {
     });
 
     if (!apiKey) {
-      throw new Error("API key not found");
+      throw "API key not found";
     }
 
     return apiKey;
