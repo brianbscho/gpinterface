@@ -1,55 +1,48 @@
-import { Prisma } from "@prisma/client";
-import { nanoid } from "nanoid";
-import { getDataWithHashId } from "../util/prisma";
 import { FastifyInstance, FastifyRequest } from "fastify";
+import { ApiKeyRepository } from "../repositories/api-key";
 
-export async function getApiKey(
-  fastify: FastifyInstance,
-  request: FastifyRequest
-) {
-  try {
+export class ApiKeyService {
+  private apiKeyRepository: ApiKeyRepository;
+
+  constructor(private fastify: FastifyInstance) {
+    this.apiKeyRepository = new ApiKeyRepository(fastify.prisma.apiKey);
+  }
+
+  getUserHashId = async (request: FastifyRequest) => {
     const { authorization } = request.headers;
     if (!authorization || !authorization.startsWith("Bearer ")) {
-      throw fastify.httpErrors.unauthorized("Please provide your api key.");
+      throw this.fastify.httpErrors.unauthorized(
+        "Please provide your api key."
+      );
     }
 
     const key = authorization.split(" ")[1];
     if (!key) {
-      throw fastify.httpErrors.unauthorized("Please provide your api key.");
+      throw this.fastify.httpErrors.unauthorized(
+        "Please provide your api key."
+      );
     }
 
-    const apiKey = await fastify.prisma.apiKey.findFirst({
-      where: { key },
-      select: { hashId: true, user: { select: { hashId: true } } },
-    });
-    if (!apiKey) {
-      throw fastify.httpErrors.unauthorized("Please provide your api key.");
-    }
-
+    const apiKey = await this.apiKeyRepository.findByKey(key);
     return apiKey.user.hashId;
-  } catch (ex) {
-    throw ex;
-  }
-}
+  };
 
-export async function createApiKey(
-  apiKey: Prisma.ApiKeyDelegate,
-  userHashId: string
-) {
-  let retries = 0;
+  findManyByUserHashId = async (userHashId: string) => {
+    const apiKeys = await this.apiKeyRepository.findManyByUserHashId(
+      userHashId
+    );
+    return apiKeys.map((a) => ({
+      hashId: a.hashId,
+      key: `${a.key.slice(0, 2)}${".".repeat(20)}${a.key.slice(-4)}`,
+    }));
+  };
 
-  while (retries < 5) {
-    try {
-      const newApiKey = await apiKey.create({
-        data: getDataWithHashId({ key: nanoid(64), userHashId }),
-        select: { hashId: true, key: true },
-      });
-      return newApiKey;
-    } catch (error) {
-      retries++;
-      console.log("🚀 ~ error:", error);
-    }
-  }
+  delete = async (hashId: string, userHashId: string) => {
+    await this.apiKeyRepository.delete(hashId, userHashId);
+    return { hashIds: [hashId] };
+  };
 
-  throw "Too many collision and failed to create entity";
+  create = async (userHashId: string) => {
+    return this.apiKeyRepository.create(userHashId);
+  };
 }

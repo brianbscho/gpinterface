@@ -1,14 +1,16 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
-import { getApiKey } from "../../services/api-key";
 import {
   ChatCompletionResponse,
   ChatCompletionSchema,
 } from "gpinterface-shared/type/chat";
 import { createChatCompletion } from "../../services/chat";
 import { GpiHashIdParam } from "gpinterface-shared/type";
+import { ApiKeyService } from "../../services/api-key";
 
 export default async function (fastify: FastifyInstance) {
+  const apiKeyService = new ApiKeyService(fastify);
+
   fastify.post<{
     Params: Static<typeof GpiHashIdParam>;
     Body: Static<typeof ChatCompletionSchema>;
@@ -17,7 +19,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { params: GpiHashIdParam, body: ChatCompletionSchema } },
     async (request, reply): Promise<ChatCompletionResponse> => {
       try {
-        const userHashId = await getApiKey(fastify, request);
+        const userHashId = await apiKeyService.getUserHashId(request);
         const { gpiHashId } = request.params;
         const { content } = request.body;
 

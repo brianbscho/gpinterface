@@ -1,6 +1,5 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
-import { getApiKey } from "../../services/api-key";
 import {
   SessionCreateResponse,
   SessionMessagesGetResponse,
@@ -15,14 +14,16 @@ import {
   ChatCompletionSchema,
 } from "gpinterface-shared/type/chat";
 import { GpiHashIdParam, SessionHashIdParam } from "gpinterface-shared/type";
+import { ApiKeyService } from "../../services/api-key";
 
 export default async function (fastify: FastifyInstance) {
+  const apiKeyService = new ApiKeyService(fastify);
   fastify.post<{ Body: Static<typeof GpiHashIdParam> }>(
     "/",
     { schema: { body: GpiHashIdParam } },
     async (request, reply): Promise<SessionCreateResponse> => {
       try {
-        const userHashId = await getApiKey(fastify, request);
+        const userHashId = await apiKeyService.getUserHashId(request);
         const { gpiHashId } = request.body;
 
         return createSession({ fastify, userHashId, gpiHashId });
@@ -40,7 +41,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { params: SessionHashIdParam, body: ChatCompletionSchema } },
     async (request, reply): Promise<ChatCompletionResponse> => {
       try {
-        const userHashId = await getApiKey(fastify, request);
+        const userHashId = await apiKeyService.getUserHashId(request);
         const { sessionHashId } = request.params;
         const { content } = request.body;
 
@@ -64,7 +65,7 @@ export default async function (fastify: FastifyInstance) {
     { schema: { params: SessionHashIdParam } },
     async (request, reply): Promise<SessionMessagesGetResponse> => {
       try {
-        const userHashId = await getApiKey(fastify, request);
+        const userHashId = await apiKeyService.getUserHashId(request);
         const { sessionHashId } = request.params;
 
         return getSessionMessages({
