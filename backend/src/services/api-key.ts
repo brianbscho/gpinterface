@@ -5,7 +5,7 @@ export class ApiKeyService {
   private apiKeyRepository: ApiKeyRepository;
 
   constructor(private fastify: FastifyInstance) {
-    this.apiKeyRepository = new ApiKeyRepository(fastify.prisma.apiKey);
+    this.apiKeyRepository = new ApiKeyRepository(fastify.prisma);
   }
 
   getUserHashId = async (request: FastifyRequest) => {

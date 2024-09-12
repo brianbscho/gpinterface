@@ -12,9 +12,9 @@ export class ChatService {
 
   constructor(fastify: FastifyInstance) {
     this.fastify = fastify;
-    this.gpiRepository = new GpiRepository(fastify.prisma.gpi);
-    this.historyRepository = new HistoryRepository(fastify.prisma.history);
-    this.userRepository = new UserRepository(fastify.prisma.user);
+    this.gpiRepository = new GpiRepository(fastify.prisma);
+    this.historyRepository = new HistoryRepository(fastify.prisma);
+    this.userRepository = new UserRepository(fastify.prisma);
   }
 
   private async checkUserAuthorization(

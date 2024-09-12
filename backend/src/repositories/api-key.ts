@@ -1,12 +1,12 @@
-import { Prisma } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { getDataWithHashId } from "../util/prisma";
 import { nanoid } from "nanoid";
 
 export class ApiKeyRepository {
-  constructor(private apiKey: Prisma.ApiKeyDelegate) {}
+  constructor(private prisma: PrismaClient) {}
 
   findByKey = async (key: string) => {
-    const apiKey = await this.apiKey.findFirst({
+    const apiKey = await this.prisma.apiKey.findFirst({
       where: { key },
       select: { hashId: true, user: { select: { hashId: true } } },
     });
@@ -19,7 +19,7 @@ export class ApiKeyRepository {
   };
 
   findManyByUserHashId = async (userHashId: string) => {
-    return this.apiKey.findMany({
+    return this.prisma.apiKey.findMany({
       where: { userHashId },
       select: { hashId: true, key: true },
     });
@@ -30,7 +30,7 @@ export class ApiKeyRepository {
 
     while (retries < 5) {
       try {
-        return await this.apiKey.create({
+        return await this.prisma.apiKey.create({
           data: getDataWithHashId({ key: nanoid(64), userHashId }),
           select: { hashId: true, key: true },
         });
@@ -44,6 +44,6 @@ export class ApiKeyRepository {
   };
 
   delete = async (hashId: string, userHashId: string) => {
-    return this.apiKey.delete({ where: { hashId, userHashId } });
+    return this.prisma.apiKey.delete({ where: { hashId, userHashId } });
   };
 }

@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { createEntity } from "../util/prisma";
 
 export interface HistoryCreateData {
@@ -13,7 +13,7 @@ export interface HistoryCreateData {
 }
 
 export class HistoryRepository {
-  constructor(private history: Prisma.HistoryDelegate) {}
+  constructor(private prisma: PrismaClient) {}
 
   async create(data: HistoryCreateData) {
     try {
@@ -22,7 +22,7 @@ export class HistoryRepository {
         gpiHashId: data.gpiHashId,
         provider: data.provider,
         model: data.model,
-        config: data.config ?? Prisma.JsonNull,
+        config: data.config ?? null,
         messages: (data.systemMessage
           ? [{ role: "system", content: data.systemMessage }]
           : []
@@ -30,7 +30,7 @@ export class HistoryRepository {
         ...data.response,
       };
 
-      const createdHistory = await createEntity(this.history.create, {
+      const createdHistory = await createEntity(this.prisma.history.create, {
         data: historyData,
       });
 

@@ -1,10 +1,10 @@
-import { Prisma } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 export class GpiRepository {
-  constructor(private gpi: Prisma.GpiDelegate) {}
+  constructor(private prisma: PrismaClient) {}
 
   async findFirst(hashId: string, userHashId: string | null) {
-    const gpi = await this.gpi.findFirst({
+    const gpi = await this.prisma.gpi.findFirst({
       where: {
         hashId,
         OR: [{ userHashId }, { isPublic: true }],
