@@ -7,7 +7,7 @@ import jwtPlugin from "./plugins/jwt";
 import prismaPlugin from "./plugins/prisma";
 
 import users from "./routes/private/users";
-import apiKeys from "./routes/private/api-keys";
+import apiKey from "./routes/private/api-key";
 import privateGpis from "./routes/private/gpis";
 import publicGpis from "./routes/public/gpis";
 import chat from "./routes/public/chat";
@@ -43,7 +43,7 @@ fastify.register(jwtPlugin);
 fastify.register(prismaPlugin);
 
 fastify.get("/health", () => true);
-fastify.register(apiKeys, { prefix: "/api/keys" });
+fastify.register(apiKey, { prefix: "/api/keys" });
 fastify.register(chat, { prefix: "/chat" });
 fastify.register(chatContents, { prefix: "/chat/contents" });
 fastify.register(privateGpis, { prefix: "/users/gpis" });
