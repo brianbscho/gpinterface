@@ -3,7 +3,13 @@ import { Prisma } from "@prisma/client";
 export class ProviderTypeRepository {
   constructor(private providerType: Prisma.ProviderTypeDelegate) {}
 
-  async findMany() {
+  /**
+   * Retrieves all provider types along with their associated providers and available models.
+   * The models and their configurations are included only if they are available.
+   *
+   * @returns A list of provider types with nested providers, models, and their configurations.
+   */
+  public async findAllProviderTypes() {
     return await this.providerType.findMany({
       select: {
         hashId: true,
@@ -42,11 +48,11 @@ export class ProviderTypeRepository {
                   },
                 },
               },
-              where: { isAvailable: true },
-              orderBy: { name: "asc" },
+              where: { isAvailable: true }, // Only select models that are available
+              orderBy: { name: "asc" }, // Order models by name in ascending order
             },
           },
-          orderBy: { name: "asc" },
+          orderBy: { name: "asc" }, // Order providers by name in ascending order
         },
       },
     });

@@ -4,7 +4,13 @@ import { createManyEntities } from "../util/prisma";
 export class SessionMessageRepository {
   constructor(private sessionMessage: Prisma.SessionMessageDelegate) {}
 
-  createMany(
+  /**
+   * Creates session messages for both the user and the assistant in a single operation.
+   * @param sessionHashId - The unique identifier of the session.
+   * @param userContent - The content of the user's message.
+   * @param assistantContent - The content of the assistant's message.
+   */
+  public createUserAndAssistantMessages(
     sessionHashId: string,
     userContent: string,
     assistantContent: string

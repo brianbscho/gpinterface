@@ -85,10 +85,10 @@ export class UserService {
    * @returns The user's information suitable for the response.
    * @throws {BadRequestError} If no user is found.
    */
-  async getMe(
+  getMe = async (
     request: FastifyRequest,
     reply: FastifyReply
-  ): Promise<UserGetMeResponse> {
+  ): Promise<UserGetMeResponse> => {
     const {
       user: { hashId },
     } = await this.fastify.getUser(request, reply);
@@ -104,15 +104,15 @@ export class UserService {
       { user: payload }
     );
     return this.cookieReply(reply, accessToken, user);
-  }
+  };
 
   /**
    * Logs out the user by clearing the access token cookie.
    * @param reply - The FastifyReply object to modify.
    */
-  async logout(reply: FastifyReply): Promise<void> {
+  logout = async (reply: FastifyReply): Promise<void> => {
     reply.clearCookie("access_token");
-  }
+  };
 
   /**
    * Deletes the user's account and associated data.
@@ -120,10 +120,10 @@ export class UserService {
    * @param reply - The FastifyReply object to modify.
    * @throws {BadRequestError} If the user does not exist.
    */
-  async deleteUser(
+  deleteUser = async (
     request: FastifyRequest,
     reply: FastifyReply
-  ): Promise<void> {
+  ): Promise<void> => {
     const {
       user: { hashId },
     } = await this.fastify.getUser(request, reply);
@@ -135,11 +135,11 @@ export class UserService {
       );
     }
 
-    await this.apiKeyRepository.deleteByUserHashId(hashId);
-    await this.historyRepository.deleteByUserHashId(hashId);
-    await this.userRepository.deleteUser(hashId);
+    await this.apiKeyRepository.deleteApiKeysByUserHashId(hashId);
+    await this.historyRepository.deleteHistoriesByUserHashId(hashId);
+    await this.userRepository.deleteUserByHashId(hashId);
     reply.clearCookie("access_token");
-  }
+  };
 
   /**
    * Authenticates a user with email and password, then sends the user data in the response.
@@ -149,10 +149,10 @@ export class UserService {
    * @throws {BadRequestError} If the user is not found or password is not required.
    * @throws {UnauthorizedError} If the password does not match.
    */
-  async signIn(
+  signIn = async (
     request: FastifyRequest<{ Body: Static<typeof UserLoginSchema> }>,
     reply: FastifyReply
-  ): Promise<UserGetMeResponse> {
+  ): Promise<UserGetMeResponse> => {
     const { email, password } = request.body;
 
     const user = await this.userRepository.findUserByEmail(email);
@@ -185,7 +185,7 @@ export class UserService {
       email,
       balance,
     });
-  }
+  };
 
   /**
    * Registers a new user and sends the user data in the response.
@@ -194,10 +194,10 @@ export class UserService {
    * @returns The newly registered user's information suitable for the response.
    * @throws {BadRequestError} If email is invalid, password is insecure, or email is already registered.
    */
-  async signUp(
+  signUp = async (
     request: FastifyRequest<{ Body: Static<typeof UserCreateSchema> }>,
     reply: FastifyReply
-  ): Promise<UserGetMeResponse> {
+  ): Promise<UserGetMeResponse> => {
     const { email, password, name } = request.body;
 
     if (!validateEmail(email)) {
@@ -230,7 +230,7 @@ export class UserService {
     );
     const me = { ...user, email, name };
     return this.cookieReply(reply, accessToken, me);
-  }
+  };
 
   /**
    * Authenticates a user via Google OAuth and sends the user data in the response.
@@ -239,10 +239,10 @@ export class UserService {
    * @returns The authenticated or newly registered user's information suitable for the response.
    * @throws {UnauthorizedError} If Google authentication fails.
    */
-  async googleSignIn(
+  googleSignIn = async (
     request: FastifyRequest<{ Body: Static<typeof UserGoogleSchema> }>,
     reply: FastifyReply
-  ): Promise<UserGetMeResponse> {
+  ): Promise<UserGetMeResponse> => {
     const { access_token } = request.body;
     const endpoint = `https://www.googleapis.com/oauth2/v3/userinfo?access_token=${access_token}`;
 
@@ -284,7 +284,7 @@ export class UserService {
     );
     const me = { ...newUser, email, name: sanitizedName };
     return this.cookieReply(reply, accessToken, me);
-  }
+  };
 
   /**
    * Updates the current user's name and sends the updated user data in the response.
@@ -293,20 +293,20 @@ export class UserService {
    * @returns The updated user's information suitable for the response.
    * @throws {BadRequestError} If the user is not found.
    */
-  async updateUser(
+  updateUser = async (
     request: FastifyRequest<{ Body: Static<typeof UserUpdateSchema> }>,
     reply: FastifyReply
-  ): Promise<UserGetMeResponse> {
+  ): Promise<UserGetMeResponse> => {
     const { user } = await this.fastify.getUser(request, reply);
     const { name } = request.body;
 
-    const updatedUser = await this.userRepository.updateUserName(
+    const updatedUser = await this.userRepository.updateUserNameByHashId(
       user.hashId,
       name
     );
 
     return updatedUser;
-  }
+  };
 
   /**
    * Updates the current user's password after validating the old password.
@@ -316,10 +316,10 @@ export class UserService {
    * @throws {BadRequestError} If passwords do not match, are insecure, or user is not found.
    * @throws {UnauthorizedError} If the old password does not match.
    */
-  async updatePassword(
+  updatePassword = async (
     request: FastifyRequest<{ Body: Static<typeof UserUpdatePasswordSchema> }>,
     reply: FastifyReply
-  ): Promise<{ success: boolean }> {
+  ): Promise<{ success: boolean }> => {
     const {
       user: { hashId },
     } = await this.fastify.getUser(request, reply);
@@ -332,7 +332,7 @@ export class UserService {
       throw this.fastify.httpErrors.badRequest("Please use a secure password");
     }
 
-    const user = await this.userRepository.findPasswordByHashId(hashId);
+    const user = await this.userRepository.findUserPasswordByHashId(hashId);
     if (!user) {
       throw this.fastify.httpErrors.badRequest("User isn't available");
     }
@@ -350,8 +350,11 @@ export class UserService {
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 12);
-    await this.userRepository.updateUserPassword(hashId, hashedPassword);
+    await this.userRepository.updateUserPasswordByHashId(
+      hashId,
+      hashedPassword
+    );
 
     return { success: true };
-  }
+  };
 }

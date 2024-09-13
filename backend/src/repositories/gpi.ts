@@ -15,13 +15,12 @@ export class GpiRepository {
    * @param hashId - The last GPI hashId for pagination.
    * @returns An array of GPIs matching the criteria.
    */
-  public async findMany(
+  public async findGpis(
     userHashId: string,
     keyword: string,
     hashId: string | undefined | null
   ) {
     const id = await getIdByHashId(this.gpi.findFirst, hashId);
-
     const search = keyword.split(" ").join(" | ");
     const whereClause: Prisma.GpiWhereInput = {
       isDeployed: true,
@@ -89,7 +88,7 @@ export class GpiRepository {
    * @param updatedAt - Optional date to filter GPIs updated before this timestamp.
    * @returns An array of GPI records.
    */
-  public async findManyByUserHashId(
+  public async findGpisByUser(
     userHashId: string,
     updatedAt: Date | null = null
   ) {
@@ -149,7 +148,7 @@ export class GpiRepository {
    * @returns The found GPI record.
    * @throws {Error} If the GPI is not found or contains empty chat content.
    */
-  public async findByHashId(
+  public async findGpiByHashId(
     hashId: string,
     userHashId: string | null,
     isPublic: boolean = false
@@ -207,7 +206,7 @@ export class GpiRepository {
    * @param userHashId - The hash ID of the user.
    * @returns The found GPI or null if not found.
    */
-  public async findByHashIdAndUser(hashId: string, userHashId: string) {
+  public async findGpiByHashIdAndUser(hashId: string, userHashId: string) {
     const gpi = await this.gpi.findFirst({
       where: { hashId, userHashId },
       select: {
@@ -261,7 +260,7 @@ export class GpiRepository {
    * @param userHashId - The hash ID of the user.
    * @returns The found GPI or null if not found.
    */
-  public async findByHashIdAndUserForPublic(
+  public async findGpiByHashIdAndUserOrPublic(
     hashId: string,
     userHashId: string
   ) {
@@ -324,7 +323,7 @@ export class GpiRepository {
    * @returns The updated GPI record.
    * @throws {Error} If the update operation fails.
    */
-  public async updateFields(
+  public async updateGpiFields(
     hashId: string,
     userHashId: string | null,
     data: Prisma.GpiUncheckedUpdateInput
@@ -372,7 +371,7 @@ export class GpiRepository {
    * @returns The updated GPI record.
    * @throws {Error} If deployment conditions are not met or the GPI is not found.
    */
-  public async update(
+  public async updateGpiWithDeploymentStatus(
     hashId: string,
     userHashId: string | null,
     isDeploying: boolean,
@@ -433,7 +432,7 @@ export class GpiRepository {
    * @returns True if accessible.
    * @throws {Error} If the GPI is not accessible.
    */
-  public async checkIsAccessible(
+  public async checkGpiAccessibility(
     hashId: string,
     userHashId: string
   ): Promise<boolean> {
@@ -457,11 +456,11 @@ export class GpiRepository {
    * @returns The created GPI's hash ID.
    * @throws {Error} If creation fails after maximum retries.
    */
-  public async create(
+  public async createGpiWithChatContents(
     gpiData: Omit<Prisma.GpiUncheckedCreateInput, "hashId">,
     chatContents: (Omit<
       Prisma.ChatContentUncheckedCreateInput,
-      "hashId" | "config"
+      "hashId" | "config" | "gpiHashId"
     > & {
       config: Prisma.InputJsonValue;
     })[]
@@ -514,7 +513,7 @@ export class GpiRepository {
    * @returns The newly created GPI's hash ID.
    * @throws {Error} If the original GPI is not found or inaccessible.
    */
-  public async createCopy(
+  public async createGpiCopy(
     hashId: string,
     userHashId: string
   ): Promise<Pick<Gpi, "hashId">> {
@@ -522,6 +521,7 @@ export class GpiRepository {
       where: { hashId, OR: [{ userHashId }, { isPublic: true }] },
       select: {
         config: true,
+        userHashId: true,
         description: true,
         modelHashId: true,
         isPublic: true,
@@ -546,11 +546,10 @@ export class GpiRepository {
 
     const newChatContents = chatContents.map((chat) => ({
       ...chat,
-      gpiHashId: hashId,
       config: chat.config as Prisma.InputJsonValue,
     }));
 
-    return this.create(
+    return this.createGpiWithChatContents(
       { ...gpiData, config: gpiData.config as Prisma.InputJsonValue },
       newChatContents
     );
@@ -561,7 +560,7 @@ export class GpiRepository {
    * @param hashId - The hash ID of the GPI.
    * @returns The updated GPI record.
    */
-  public async updateUpdatedAt(hashId: string): Promise<Gpi> {
+  public async updateGpiTimestamp(hashId: string): Promise<Gpi> {
     return this.gpi.update({
       where: { hashId },
       data: { updatedAt: new Date() },
@@ -574,8 +573,8 @@ export class GpiRepository {
    * @param userHashId - The hash ID of the user requesting deletion.
    * @throws {Error} If the GPI is not accessible or deletion fails.
    */
-  public async delete(hashId: string, userHashId: string): Promise<void> {
-    await this.checkIsAccessible(hashId, userHashId);
+  public async deleteGpi(hashId: string, userHashId: string): Promise<void> {
+    await this.checkGpiAccessibility(hashId, userHashId);
     await this.gpi.delete({ where: { hashId } });
   }
 

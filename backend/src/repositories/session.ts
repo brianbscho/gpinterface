@@ -4,7 +4,12 @@ import { createEntity } from "../util/prisma";
 export class SessionRepository {
   constructor(private session: Prisma.SessionDelegate) {}
 
-  create = async (gpiHashId: string) => {
+  /**
+   * Creates a new session for a given GPI hash ID.
+   * @param gpiHashId - The hash ID of the GPI (General Product Information) associated with the session.
+   * @returns The newly created session's hash ID.
+   */
+  public createSession = async (gpiHashId: string) => {
     return createEntity(
       this.session.create,
       { data: { gpiHashId }, select: { hashId: true } },
@@ -12,7 +17,17 @@ export class SessionRepository {
     );
   };
 
-  findByHashId = async (hashId: string, userHashId: string | null) => {
+  /**
+   * Finds a session by its hash ID and checks if it is associated with the user or is public.
+   * @param hashId - The session's unique hash ID.
+   * @param userHashId - The user's hash ID (can be null if checking for public sessions).
+   * @returns The session data including associated GPI and chat contents.
+   * @throws {Error} If the session or GPI is not available or contains empty chat content.
+   */
+  public findSessionByHashId = async (
+    hashId: string,
+    userHashId: string | null
+  ) => {
     const session = await this.session.findFirst({
       where: {
         hashId,
@@ -52,20 +67,30 @@ export class SessionRepository {
     });
 
     if (!session) {
-      throw "session is not available.";
+      throw new Error("Session is not available.");
     }
     const { gpi } = session;
     if (!gpi) {
-      throw "gpi is not available.";
+      throw new Error("GPI is not available.");
     }
     if (gpi.chatContents.some((c) => c.content === "")) {
-      throw "There is empty content in chat.";
+      throw new Error("There is empty content in chat.");
     }
 
     return { ...session, gpi };
   };
 
-  getMessages = async (hashId: string, userHashId: string | null) => {
+  /**
+   * Retrieves all messages for a session by its hash ID.
+   * @param hashId - The session's unique hash ID.
+   * @param userHashId - The user's hash ID (can be null if checking for public sessions).
+   * @returns An array of messages with roles and content.
+   * @throws {Error} If the session is not available.
+   */
+  public getSessionMessages = async (
+    hashId: string,
+    userHashId: string | null
+  ) => {
     const session = await this.session.findFirst({
       where: { hashId, gpi: { OR: [{ userHashId }, { isPublic: true }] } },
       select: {
@@ -77,7 +102,7 @@ export class SessionRepository {
     });
 
     if (!session) {
-      throw "session is not available.";
+      throw new Error("Session is not available.");
     }
 
     return session.messages;

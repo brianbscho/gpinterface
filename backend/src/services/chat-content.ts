@@ -1,17 +1,23 @@
 import { FastifyInstance } from "fastify";
-import { ChatContentRepository } from "../repositories/chat-content";
+import { Prisma } from "@prisma/client";
+
 import { GpiRepository } from "../repositories/gpi";
+import { ChatContentRepository } from "../repositories/chat-content";
 import { ModelRepository } from "../repositories/model";
+import { HistoryRepository } from "../repositories/history";
+import { UserRepository } from "../repositories/user";
+
 import { ModelService } from "./model";
+import { getTextResponse } from "../util/text";
 import {
   getTypedContent,
   getTypedContents,
   getTypedHistory,
 } from "../util/prisma";
-import { getTextResponse } from "../util/text";
-import { HistoryRepository } from "../repositories/history";
-import { UserRepository } from "../repositories/user";
 
+/**
+ * Service class responsible for handling chat content-related business logic.
+ */
 export class ChatContentService {
   private chatContentRepository: ChatContentRepository;
   private gpiRepository: GpiRepository;
@@ -20,6 +26,10 @@ export class ChatContentService {
   private historyRepository: HistoryRepository;
   private userRepository: UserRepository;
 
+  /**
+   * Initializes the ChatContentService with necessary repositories and services.
+   * @param fastify - The FastifyInstance for accessing Prisma and HTTP errors.
+   */
   constructor(private fastify: FastifyInstance) {
     this.chatContentRepository = new ChatContentRepository(
       fastify.prisma.chatContent
@@ -31,40 +41,126 @@ export class ChatContentService {
     this.userRepository = new UserRepository(fastify.prisma.user);
   }
 
-  patch = async (hashId: string, userHashId: string, content: string) => {
-    const oldContent = await this.chatContentRepository.findByHashId(
-      hashId,
-      userHashId
-    );
+  /**
+   * Updates the content of a specific chat content entry.
+   * @param hashId - The hash ID of the chat content to update.
+   * @param userHashId - The hash ID of the user.
+   * @param content - The new content to set.
+   * @returns An object containing the updated hash ID, content, and modification status.
+   * @throws {Error} For any other unexpected errors.
+   */
+  patch = async (
+    hashId: string,
+    userHashId: string,
+    content: string
+  ): Promise<{ hashId: string; content: string; isModified: boolean }> => {
+    try {
+      // Retrieve the existing chat content
+      const oldContent =
+        await this.chatContentRepository.findChatContentByHashId(
+          hashId,
+          userHashId
+        );
 
-    const isModified = oldContent.role !== "user" && !!oldContent.modelHashId;
-    await this.chatContentRepository.updateContent(hashId, content, isModified);
-    await this.gpiRepository.updateUpdatedAt(oldContent.gpiHashId);
-    return { hashId, content, isModified };
+      // Determine if the content has been modified
+      const isModified =
+        oldContent.role !== "user" && Boolean(oldContent.modelHashId);
+
+      // Update the chat content
+      await this.chatContentRepository.updateChatContent(
+        hashId,
+        content,
+        isModified
+      );
+
+      // Update the GPI's updatedAt timestamp
+      await this.gpiRepository.updateGpiTimestamp(oldContent.gpiHashId);
+
+      return { hashId, content, isModified };
+    } catch (error) {
+      // Log unexpected errors for debugging
+      this.fastify.log.error(`Error in patch: ${(error as Error).message}`);
+
+      // Re-throw known HTTP errors
+      if (error instanceof this.fastify.httpErrors.badRequest) {
+        throw error;
+      }
+
+      // Throw a generic internal server error for unexpected issues
+      throw this.fastify.httpErrors.internalServerError(
+        "An unexpected error occurred."
+      );
+    }
   };
 
-  createEmpty = async (gpiHashId: string, userHashId: string) => {
-    await this.gpiRepository.checkIsAccessible(gpiHashId, userHashId);
+  /**
+   * Creates empty chat content entries for a specific GPI and user.
+   * @param gpiHashId - The hash ID of the GPI.
+   * @param userHashId - The hash ID of the user.
+   * @returns An array of typed chat content objects.
+   * @throws {ForbiddenError} If the GPI is not accessible by the user.
+   * @throws {Error} For any other unexpected errors.
+   */
+  createEmpty = async (
+    gpiHashId: string,
+    userHashId: string
+  ): Promise<any[]> => {
+    try {
+      // Check if the GPI is accessible by the user
+      await this.gpiRepository.checkGpiAccessibility(gpiHashId, userHashId);
 
-    const chatContents = await this.chatContentRepository.createManyAndReturn([
-      {
-        gpiHashId,
-        role: "user",
-        content: "",
-        isDeployed: false,
-      },
-      {
-        gpiHashId,
-        role: "assistant",
-        content: "",
-        isDeployed: false,
-      },
-    ]);
-    await this.gpiRepository.updateUpdatedAt(gpiHashId);
+      // Create empty user and assistant chat contents
+      const chatContents =
+        await this.chatContentRepository.createChatContentsAndReturn([
+          {
+            gpiHashId,
+            role: "user",
+            content: "",
+            isDeployed: false,
+          },
+          {
+            gpiHashId,
+            role: "assistant",
+            content: "",
+            isDeployed: false,
+          },
+        ]);
 
-    return getTypedContents(chatContents);
+      // Update the GPI's updatedAt timestamp
+      await this.gpiRepository.updateGpiTimestamp(gpiHashId);
+
+      // Return the typed chat contents
+      return getTypedContents(chatContents);
+    } catch (error) {
+      // Log unexpected errors for debugging
+      this.fastify.log.error(
+        `Error in createEmpty: ${(error as Error).message}`
+      );
+
+      // Re-throw known HTTP errors
+      if (error instanceof this.fastify.httpErrors.forbidden) {
+        throw error;
+      }
+
+      // Throw a generic internal server error for unexpected issues
+      throw this.fastify.httpErrors.internalServerError(
+        "An unexpected error occurred."
+      );
+    }
   };
 
+  /**
+   * Creates a completion within a GPI session by processing user input and generating a response.
+   * @param gpiHashId - The hash ID of the GPI.
+   * @param userHashId - The hash ID of the user.
+   * @param modelHashId - The hash ID of the model to use.
+   * @param config - The configuration for the model.
+   * @param content - The content provided by the user.
+   * @returns An array containing the user's chat content and the assistant's chat content with history.
+   * @throws {badRequestError} If the input content is empty.
+   * @throws {InsufficientBalanceError} If the user does not have enough balance.
+   * @throws {Error} For any other unexpected errors.
+   */
   createCompletion = async (
     gpiHashId: string,
     userHashId: string,
@@ -72,142 +168,262 @@ export class ChatContentService {
     config: any,
     content: string
   ) => {
-    const model = await this.modelRepository.findByHashId(modelHashId);
-    await this.modelService.checkAvailable(model, userHashId);
+    try {
+      // Retrieve the model by hash ID
+      const model = await this.modelRepository.findModelByHashId(modelHashId);
 
-    const gpi = await this.gpiRepository.findByHashId(
-      gpiHashId,
-      userHashId,
-      true
-    );
+      // Check if the model is available for the user
+      await this.modelService.checkAvailable(model, userHashId);
 
-    const { systemMessage, chatContents } = gpi;
-    const messages = chatContents.concat({ role: "user", content });
-    let response = await getTextResponse({
-      model,
-      systemMessage,
-      config,
-      messages,
-    });
-    const paid = model.isFree ? 0 : response.price;
+      // Retrieve the GPI by hash ID and user hash ID, ensuring it's active
+      const gpi = await this.gpiRepository.findGpiByHashId(
+        gpiHashId,
+        userHashId,
+        true
+      );
+      if (!gpi) {
+      }
 
-    const [userChatContent, assistantChatContent] =
-      await this.chatContentRepository.createManyAndReturn([
+      const { systemMessage, chatContents } = gpi;
+
+      // Compile messages for the model by appending the user's content
+      const messages = [...chatContents, { role: "user", content }];
+
+      // Generate a response from the model
+      const response = await getTextResponse({
+        model,
+        systemMessage,
+        config,
+        messages,
+      });
+
+      // Determine the payment required based on the model's pricing
+      const paid = model.isFree ? 0 : response.price;
+
+      // Create user and assistant chat contents
+      const [userChatContent, assistantChatContent] =
+        await this.chatContentRepository.createChatContentsAndReturn([
+          {
+            role: "user",
+            content,
+            gpiHashId,
+            isDeployed: false,
+          },
+          {
+            modelHashId,
+            config,
+            role: "assistant",
+            content: response.content,
+            gpiHashId,
+            isDeployed: false,
+          },
+        ]);
+
+      // Create a history record of this interaction
+      const history = await this.historyRepository.createHistory({
+        userHashId,
+        gpiHashId,
+        chatContentHashId: assistantChatContent.hashId,
+        provider: model.provider.name,
+        model: model.name,
+        config: config,
+        messages: systemMessage
+          ? [{ role: "system", content: systemMessage }, ...messages]
+          : messages,
+        paid,
+        ...response,
+      });
+
+      // Update the GPI's updatedAt timestamp
+      await this.gpiRepository.updateGpiTimestamp(gpiHashId);
+
+      // Update the user's balance if applicable
+      if (paid > 0) {
+        await this.userRepository.updateUserBalanceByHashId(userHashId, {
+          decrement: paid,
+        });
+      }
+
+      // Return the typed chat contents with history
+      return [
+        getTypedContent(userChatContent),
         {
-          role: "user",
-          content,
-          gpiHashId,
-          isDeployed: false,
+          ...getTypedContent(assistantChatContent),
+          history: getTypedHistory(history),
         },
-        {
-          modelHashId,
-          config,
-          role: "assistant",
-          content: response.content,
-          gpiHashId,
-          isDeployed: false,
-        },
-      ]);
+      ];
+    } catch (error) {
+      // Log unexpected errors for debugging
+      this.fastify.log.error(
+        `Error in createCompletion: ${(error as Error).message}`
+      );
 
-    const history = await this.historyRepository.create({
-      userHashId,
-      gpiHashId,
-      chatContentHashId: assistantChatContent.hashId,
-      provider: model.provider.name,
-      model: model.name,
-      config: config,
-      messages: (systemMessage
-        ? [{ role: "system", content: systemMessage }]
-        : []
-      ).concat(messages),
-      paid,
-      ...response,
-    });
-    await this.gpiRepository.updateUpdatedAt(gpiHashId);
-    if (paid > 0) {
-      await this.userRepository.updateBalance(userHashId, { decrement: paid });
+      // Re-throw known HTTP errors
+      if (
+        error instanceof this.fastify.httpErrors.badRequest ||
+        error instanceof this.fastify.httpErrors.forbidden
+      ) {
+        throw error;
+      }
+
+      // Throw a generic internal server error for unexpected issues
+      throw this.fastify.httpErrors.internalServerError(
+        "An unexpected error occurred."
+      );
     }
-
-    return [
-      getTypedContent(userChatContent),
-      {
-        ...getTypedContent(assistantChatContent),
-        history: getTypedHistory(history),
-      },
-    ];
   };
 
+  /**
+   * Refreshes the content of a specific chat content entry by generating a new response.
+   * @param hashId - The hash ID of the chat content to refresh.
+   * @param userHashId - The hash ID of the user.
+   * @param modelHashId - The hash ID of the model to use.
+   * @param config - The configuration for the model.
+   * @returns The refreshed chat content with history.
+   * @throws {InsufficientBalanceError} If the user does not have enough balance.
+   * @throws {Error} For any other unexpected errors.
+   */
   refresh = async (
     hashId: string,
     userHashId: string,
     modelHashId: string,
     config: any
-  ) => {
-    const model = await this.modelRepository.findByHashId(modelHashId);
-    await this.modelService.checkAvailable(model, userHashId);
+  ): Promise<any> => {
+    try {
+      // Retrieve the model by hash ID
+      const model = await this.modelRepository.findModelByHashId(modelHashId);
 
-    const gpi = await this.chatContentRepository.getGpi(hashId, userHashId);
+      // Check if the model is available for the user
+      await this.modelService.checkAvailable(model, userHashId);
 
-    const messages = await this.chatContentRepository.getMessages(
-      gpi.hashId,
-      hashId
-    );
-
-    const { systemMessage } = gpi;
-    let response = await getTextResponse({
-      model,
-      systemMessage,
-      config,
-      messages,
-    });
-
-    const paid = model.isFree ? 0 : response.price;
-    const history = await this.historyRepository.create({
-      userHashId,
-      gpiHashId: gpi.hashId,
-      chatContentHashId: hashId,
-      provider: model.provider.name,
-      model: model.name,
-      config,
-      messages: (systemMessage
-        ? [{ role: "system", content: systemMessage }]
-        : []
-      ).concat(messages),
-      paid,
-      ...response,
-    });
-    const newContent = await this.chatContentRepository.updateHistories(
-      hashId,
-      {
-        content: response.content,
-        config,
-        modelHashId,
-        isModified: false,
-        histories: { connect: { hashId: history.hashId } },
+      // Retrieve the GPI associated with the chat content
+      const gpi = await this.chatContentRepository.getGpiByHashId(
+        hashId,
+        userHashId
+      );
+      if (!gpi) {
       }
-    );
-    await this.gpiRepository.updateUpdatedAt(gpi.hashId);
-    if (paid > 0) {
-      await this.userRepository.updateBalance(userHashId, { decrement: paid });
-    }
 
-    return getTypedContent({
-      history: getTypedHistory(history),
-      ...newContent,
-    });
+      // Retrieve the messages for the GPI
+      const messages = await this.chatContentRepository.getMessages(
+        gpi.hashId,
+        hashId
+      );
+
+      const { systemMessage } = gpi;
+
+      // Generate a new response from the model
+      const response = await getTextResponse({
+        model,
+        systemMessage,
+        config,
+        messages,
+      });
+
+      // Determine the payment required based on the model's pricing
+      const paid = model.isFree ? 0 : response.price;
+
+      // Create a history record of this interaction
+      const history = await this.historyRepository.createHistory({
+        userHashId,
+        gpiHashId: gpi.hashId,
+        chatContentHashId: hashId,
+        provider: model.provider.name,
+        model: model.name,
+        config,
+        messages: systemMessage
+          ? [{ role: "system", content: systemMessage }, ...messages]
+          : messages,
+        paid,
+        ...response,
+      });
+
+      // Update the chat content with the new response and connect the history
+      const newContent =
+        await this.chatContentRepository.clearAndUpdateHistories(hashId, {
+          content: response.content,
+          config,
+          modelHashId,
+          isModified: false,
+          histories: { connect: { hashId: history.hashId } },
+        });
+
+      // Update the GPI's updatedAt timestamp
+      await this.gpiRepository.updateGpiTimestamp(gpi.hashId);
+
+      // Update the user's balance if applicable
+      if (paid > 0) {
+        await this.userRepository.updateUserBalanceByHashId(userHashId, {
+          decrement: paid,
+        });
+      }
+
+      // Return the refreshed chat content with history
+      return getTypedContent({
+        history: getTypedHistory(history),
+        ...newContent,
+      });
+    } catch (error) {
+      // Log unexpected errors for debugging
+      this.fastify.log.error(`Error in refresh: ${(error as Error).message}`);
+
+      // Re-throw known HTTP errors
+      if (
+        error instanceof this.fastify.httpErrors.badRequest ||
+        error instanceof this.fastify.httpErrors.forbidden
+      ) {
+        throw error;
+      }
+
+      // Throw a generic internal server error for unexpected issues
+      throw this.fastify.httpErrors.internalServerError(
+        "An unexpected error occurred."
+      );
+    }
   };
 
-  delete = async (hashIds: string[], userHashId: string) => {
-    if (hashIds.length === 0) {
-      throw this.fastify.httpErrors.badRequest("Nothing to delete");
+  /**
+   * Deletes multiple chat content entries belonging to a user.
+   * @param hashIds - An array of hash IDs of the chat contents to delete.
+   * @param userHashId - The hash ID of the user.
+   * @returns An object containing the deleted hash IDs.
+   * @throws {badRequestError} If no hash IDs are provided for deletion.
+   * @throws {Error} For any other unexpected errors.
+   */
+  delete = async (
+    hashIds: string[],
+    userHashId: string
+  ): Promise<{ hashIds: string[] }> => {
+    try {
+      // Validate that there are hash IDs to delete
+      if (hashIds.length === 0) {
+        throw this.fastify.httpErrors.badRequest("Nothing to delete.");
+      }
+
+      // Delete the chat contents and retrieve the associated GPI hash ID
+      const gpiHashId =
+        await this.chatContentRepository.deleteChatContentsByHashIds(
+          hashIds,
+          userHashId
+        );
+
+      // Update the GPI's updatedAt timestamp
+      await this.gpiRepository.updateGpiTimestamp(gpiHashId);
+
+      return { hashIds };
+    } catch (error) {
+      // Log unexpected errors for debugging
+      this.fastify.log.error(`Error in delete: ${(error as Error).message}`);
+
+      // Re-throw known HTTP errors
+      if (error instanceof this.fastify.httpErrors.badRequest) {
+        throw error;
+      }
+
+      // Throw a generic internal server error for unexpected issues
+      throw this.fastify.httpErrors.internalServerError(
+        "An unexpected error occurred."
+      );
     }
-
-    const gpiHashId = await this.chatContentRepository.deleteManyByHashIds(
-      hashIds,
-      userHashId
-    );
-    await this.gpiRepository.updateUpdatedAt(gpiHashId);
-
-    return { hashIds };
   };
 }

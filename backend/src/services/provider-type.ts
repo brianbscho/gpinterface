@@ -16,6 +16,8 @@ export class ProviderTypeService {
    * @throws {BadRequestError} If fetching providerTypes fails.
    */
   public async getHistories() {
-    return await this.providerTypeRepository.findMany();
+    const providerTypes =
+      await this.providerTypeRepository.findAllProviderTypes();
+    return providerTypes;
   }
 }

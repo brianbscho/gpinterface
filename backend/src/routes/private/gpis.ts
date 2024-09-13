@@ -22,9 +22,16 @@ import { GpiService } from "../../services/gpi";
 import { ChatContentService } from "../../services/chat-content";
 
 export default async function (fastify: FastifyInstance) {
+  // Initialize services for GPI and Chat Content.
   const gpiService = new GpiService(fastify);
   const chatContentService = new ChatContentService(fastify);
 
+  /**
+   * Route: POST /
+   * Purpose: Creates a new GPI.
+   * Body Params: GpiCreateSchema - Contains the GPI modelHashId and configuration.
+   * Response: GpiCreateResponse - The newly created GPI.
+   */
   fastify.post<{ Body: Static<typeof GpiCreateSchema> }>(
     "/",
     { schema: { body: GpiCreateSchema } },
@@ -35,6 +42,14 @@ export default async function (fastify: FastifyInstance) {
       return gpiService.create(user.hashId, modelHashId, config);
     }
   );
+
+  /**
+   * Route: PATCH /:hashId
+   * Purpose: Updates an existing GPI.
+   * Params: hashId - Identifier for the GPI to update.
+   * Body Params: GpiUpdateSchema - The fields to update for the GPI.
+   * Response: GpiUpdateResponse - The updated GPI.
+   */
   fastify.patch<{
     Params: Static<typeof HashIdParam>;
     Body: Static<typeof GpiUpdateSchema>;
@@ -48,6 +63,14 @@ export default async function (fastify: FastifyInstance) {
       return gpiService.patch(hashId, user.hashId, request.body);
     }
   );
+
+  /**
+   * Route: PUT /:hashId
+   * Purpose: Replaces the existing GPI with a new deployment.
+   * Params: hashId - Identifier for the GPI to replace.
+   * Body Params: GpiDeploySchema - Deployment configuration.
+   * Response: GpiCreateResponse - The new deployed GPI.
+   */
   fastify.put<{
     Params: Static<typeof HashIdParam>;
     Body: Static<typeof GpiDeploySchema>;
@@ -61,6 +84,14 @@ export default async function (fastify: FastifyInstance) {
       return gpiService.put(hashId, user.hashId, request.body);
     }
   );
+
+  /**
+   * Route: POST /:hashId/deploy
+   * Purpose: Deploys the specified GPI.
+   * Params: hashId - Identifier for the GPI to deploy.
+   * Body Params: GpiDeploySchema - Deployment configuration.
+   * Response: GpiCreateResponse - The deployed GPI.
+   */
   fastify.post<{
     Params: Static<typeof HashIdParam>;
     Body: Static<typeof GpiDeploySchema>;
@@ -74,6 +105,13 @@ export default async function (fastify: FastifyInstance) {
       return gpiService.deploy(hashId, user.hashId, request.body);
     }
   );
+
+  /**
+   * Route: POST /:hashId/copy
+   * Purpose: Creates a copy of the specified GPI.
+   * Params: hashId - Identifier for the GPI to copy.
+   * Response: GpiCreateResponse - The newly created copy of the GPI.
+   */
   fastify.post<{ Params: Static<typeof HashIdParam> }>(
     "/:hashId/copy",
     { schema: { params: HashIdParam } },
@@ -84,6 +122,13 @@ export default async function (fastify: FastifyInstance) {
       return gpiService.copy(hashId, user.hashId);
     }
   );
+
+  /**
+   * Route: DELETE /:hashId
+   * Purpose: Deletes the specified GPI.
+   * Params: hashId - Identifier for the GPI to delete.
+   * Response: DeleteResponse - Confirmation of deletion.
+   */
   fastify.delete<{ Params: Static<typeof HashIdParam> }>(
     "/:hashId",
     { schema: { params: HashIdParam } },
@@ -94,6 +139,14 @@ export default async function (fastify: FastifyInstance) {
       return gpiService.delete(hashId, user.hashId);
     }
   );
+
+  /**
+   * Route: POST /:hashId/chat/contents/completion
+   * Purpose: Creates a chat content completion for the specified GPI.
+   * Params: hashId - Identifier for the GPI.
+   * Body Params: ChatContentCreateSchema - Configuration and content for the chat completion.
+   * Response: ChatContentsCreateResponse - The newly created chat content completion.
+   */
   fastify.post<{
     Params: Static<typeof HashIdParam>;
     Body: Static<typeof ChatContentCreateSchema>;
@@ -114,6 +167,13 @@ export default async function (fastify: FastifyInstance) {
       );
     }
   );
+
+  /**
+   * Route: POST /:hashId/chat/contents
+   * Purpose: Creates an empty chat content for the specified GPI.
+   * Params: hashId - Identifier for the GPI.
+   * Response: ChatContentsCreateResponse - The newly created empty chat content.
+   */
   fastify.post<{ Params: Static<typeof HashIdParam> }>(
     "/:hashId/chat/contents",
     { schema: { params: HashIdParam } },
@@ -124,6 +184,13 @@ export default async function (fastify: FastifyInstance) {
       return chatContentService.createEmpty(hashId, user.hashId);
     }
   );
+
+  /**
+   * Route: GET /
+   * Purpose: Retrieves a list of GPIs for the authenticated user with optional pagination.
+   * Query Params: lastHashId - Optional parameter for pagination.
+   * Response: GpisGetResponse - A list of GPIs.
+   */
   fastify.get<{ Querystring: Static<typeof LastHashIdParam> }>(
     "/",
     { schema: { querystring: LastHashIdParam } },
@@ -134,34 +201,22 @@ export default async function (fastify: FastifyInstance) {
       return gpiService.getManyByUserHashId(lastHashId, user.hashId);
     }
   );
+
+  /**
+   * Route: GET /:hashId
+   * Purpose: Retrieves the private details of a specific GPI.
+   * Params: hashId - Identifier for the GPI.
+   * Response: GpiGetResponse - Details about the requested GPI.
+   * Error Handling: Catches and handles errors, logging them and returning appropriate HTTP responses.
+   */
   fastify.get<{ Params: Static<typeof HashIdParam> }>(
     "/:hashId",
     { schema: { params: HashIdParam } },
     async (request, reply): Promise<GpiGetResponse> => {
-      try {
-        // Authenticate and get the user
-        const { user } = await fastify.getUser(request, reply);
-        const { hashId } = request.params;
+      const { user } = await fastify.getUser(request, reply);
+      const { hashId } = request.params;
 
-        // Use the Service to get the GPI
-        return await gpiService.getPrivateGpi(hashId, user.hashId);
-      } catch (error) {
-        // Log the error
-        fastify.log.error(
-          { url: request.url, method: request.method, error },
-          "Error fetching GPI"
-        );
-
-        // Handle known errors
-        if (error instanceof Error) {
-          throw fastify.httpErrors.badRequest(error.message);
-        }
-
-        // Handle unexpected errors
-        throw fastify.httpErrors.internalServerError(
-          "An unexpected error occurred."
-        );
-      }
+      return await gpiService.getPrivateGpi(hashId, user.hashId);
     }
   );
 }

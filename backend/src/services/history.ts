@@ -20,7 +20,7 @@ export class HistoryService {
     userHashId: string,
     lastHashId: string | null | undefined
   ) {
-    const histories = await this.historyRepository.findMany(
+    const histories = await this.historyRepository.findHistoriesByUserHashId(
       userHashId,
       lastHashId
     );
