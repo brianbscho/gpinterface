@@ -1,14 +1,12 @@
 import { FastifyInstance } from "fastify";
 import { Static } from "@sinclair/typebox";
 import { LastHashIdParam } from "gpinterface-shared/type";
-import {
-  ContentHistorySelect,
-  getIdByHashId,
-  getTypedHistory,
-} from "../../util/prisma";
 import { HistoriesGetResponse } from "gpinterface-shared/type/history";
+import { HistoryService } from "../../services/history";
 
 export default async function (fastify: FastifyInstance) {
+  const historyService = new HistoryService(fastify);
+
   fastify.get<{ Querystring: Static<typeof LastHashIdParam> }>(
     "/",
     { schema: { querystring: LastHashIdParam } },
@@ -17,26 +15,7 @@ export default async function (fastify: FastifyInstance) {
         const { user } = await fastify.getUser(request, reply);
         const { lastHashId } = request.query;
 
-        const id = await getIdByHashId(
-          fastify.prisma.history.findFirst,
-          lastHashId
-        );
-
-        const histories = await fastify.prisma.history.findMany({
-          where: {
-            userHashId: user.hashId,
-            ...(id > 0 && { id: { lt: id } }),
-          },
-          select: {
-            hashId: true,
-            ...ContentHistorySelect,
-            paid: true,
-          },
-          orderBy: { id: "desc" },
-          take: 20,
-        });
-
-        return histories.map((h) => getTypedHistory(h));
+        return historyService.getHistories(user.hashId, lastHashId);
       } catch (ex) {
         console.error("path: /histories?lastHashId, method: get, error:", ex);
         throw ex;

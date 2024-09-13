@@ -44,4 +44,11 @@ export class HistoryRepository {
       take: 20,
     });
   }
+
+  public async deleteByUserHashId(userHashId: string) {
+    await this.history.updateMany({
+      where: { userHashId },
+      data: { userHashId: null },
+    });
+  }
 }

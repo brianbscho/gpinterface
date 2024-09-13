@@ -124,4 +124,8 @@ export class ApiKeyRepository {
       error.code === "P2002" // Unique constraint failed
     );
   }
+
+  public async deleteByUserHashId(userHashId: string) {
+    return this.apiKey.deleteMany({ where: { userHashId } });
+  }
 }
