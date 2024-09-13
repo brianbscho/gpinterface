@@ -1,4 +1,4 @@
-import { FastifyInstance, FastifyRequest } from "fastify";
+import { FastifyInstance } from "fastify";
 import { ChatContentRepository } from "../repositories/chat-content";
 import { GpiRepository } from "../repositories/gpi";
 import { ModelRepository } from "../repositories/model";
@@ -6,6 +6,7 @@ import { ModelService } from "./model";
 import {
   getIdByHashId,
   getTypedContent,
+  getTypedContents,
   getTypedHistory,
 } from "../util/prisma";
 import { getTextResponse } from "../util/text";
@@ -41,6 +42,100 @@ export class ChatContentService {
     await this.chatContentRepository.updateContent(hashId, content, isModified);
     await this.gpiRepository.updateUpdatedAt(oldContent.gpiHashId);
     return { hashId, content, isModified };
+  };
+
+  createEmpty = async (gpiHashId: string, userHashId: string) => {
+    await this.gpiRepository.checkIsAccessible(gpiHashId, userHashId);
+
+    const chatContents = await this.chatContentRepository.createManyAndReturn([
+      {
+        gpiHashId,
+        role: "user",
+        content: "",
+        isDeployed: false,
+      },
+      {
+        gpiHashId,
+        role: "assistant",
+        content: "",
+        isDeployed: false,
+      },
+    ]);
+    await this.gpiRepository.updateUpdatedAt(gpiHashId);
+
+    return getTypedContents(chatContents);
+  };
+
+  createCompletion = async (
+    gpiHashId: string,
+    userHashId: string,
+    modelHashId: string,
+    config: any,
+    content: string
+  ) => {
+    const model = await this.modelRepository.findByHashId(modelHashId);
+    await this.modelService.checkAvailable(model, userHashId);
+
+    const gpi = await this.gpiRepository.findByHashId(
+      gpiHashId,
+      userHashId,
+      true
+    );
+
+    const { systemMessage, chatContents } = gpi;
+    const messages = chatContents.concat({ role: "user", content });
+    let response = await getTextResponse({
+      model,
+      systemMessage,
+      config,
+      messages,
+    });
+    const paid = model.isFree ? 0 : response.price;
+
+    const [userChatContent, assistantChatContent] =
+      await this.chatContentRepository.createManyAndReturn([
+        {
+          role: "user",
+          content,
+          gpiHashId,
+          isDeployed: false,
+        },
+        {
+          modelHashId,
+          config,
+          role: "assistant",
+          content: response.content,
+          gpiHashId,
+          isDeployed: false,
+        },
+      ]);
+
+    const history = await this.historyRepository.create({
+      userHashId,
+      gpiHashId,
+      chatContentHashId: assistantChatContent.hashId,
+      provider: model.provider.name,
+      model: model.name,
+      config: config,
+      messages: (systemMessage
+        ? [{ role: "system", content: systemMessage }]
+        : []
+      ).concat(messages),
+      paid,
+      ...response,
+    });
+    await this.gpiRepository.updateUpdatedAt(gpiHashId);
+    if (paid > 0) {
+      await this.userRepository.updateBalance(userHashId, { decrement: paid });
+    }
+
+    return [
+      getTypedContent(userChatContent),
+      {
+        ...getTypedContent(assistantChatContent),
+        history: getTypedHistory(history),
+      },
+    ];
   };
 
   refresh = async (

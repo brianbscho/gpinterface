@@ -12,7 +12,7 @@ export default async function (fastify: FastifyInstance) {
 
   fastify.get("/", async (request, reply): Promise<ApiKeysGetResponse> => {
     const { user } = await fastify.getUser(request, reply);
-    return apiKeyService.findManyByUserHashId(user.hashId);
+    return apiKeyService.getByUserHashId(user.hashId);
   });
 
   fastify.delete<{ Params: Static<typeof HashIdParam> }>(

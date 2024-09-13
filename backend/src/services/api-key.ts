@@ -27,7 +27,7 @@ export class ApiKeyService {
     return apiKey.user.hashId;
   };
 
-  findManyByUserHashId = async (userHashId: string) => {
+  getByUserHashId = async (userHashId: string) => {
     const apiKeys = await this.apiKeyRepository.findManyByUserHashId(
       userHashId
     );

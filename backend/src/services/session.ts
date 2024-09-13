@@ -28,7 +28,7 @@ export class SessionService {
   }
 
   create = async (gpiHashId: string, userHashId: string | null) => {
-    await this.gpiRepository.findByHashId(gpiHashId, userHashId);
+    await this.gpiRepository.findByHashId(gpiHashId, userHashId, true);
     return this.sessionRepository.create(gpiHashId);
   };
 

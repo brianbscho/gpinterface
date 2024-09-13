@@ -1,84 +1,250 @@
-import { Prisma, PrismaClient } from "@prisma/client";
-import { getDataWithHashId, getTypedContent } from "../util/prisma";
 import { ChatContent } from "gpinterface-shared/type/chat-content";
 import { compareObjects } from "../util";
 
-export async function createGpiEntry(
-  gpiDelegate: Prisma.GpiDelegate,
-  gpi: {
-    userHashId: string;
-    config: Prisma.JsonValue;
-    description: string;
-    isPublic: boolean;
-    systemMessage: string;
-    modelHashId: string;
-    chatContents: {
-      config: Prisma.JsonValue;
-      modelHashId: string | null;
-      role: string;
-      content: string;
-    }[];
-  }
-) {
-  let retries = 0;
+import { GpiRepository } from "../repositories/gpi";
+import { FastifyInstance } from "fastify";
+import { GpiDeploySchema, GpiUpdateSchema } from "gpinterface-shared/type/gpi";
+import { Static } from "@sinclair/typebox";
+import { ChatContentRepository } from "../repositories/chat-content";
+import {
+  getIdByHashId,
+  getTypedContents,
+  getUpdatedAtByHashId,
+} from "../util/prisma";
 
-  while (retries < 5) {
-    try {
-      const newGpi = await gpiDelegate.create({
-        data: getDataWithHashId(
-          {
-            ...gpi,
-            config: gpi.config ?? Prisma.JsonNull,
-            chatContents: {
-              createMany: {
-                data: gpi.chatContents.map((c) =>
-                  getDataWithHashId(getTypedContent(c))
-                ),
-              },
-            },
-          },
-          32
+export class GpiService {
+  private gpiRepository: GpiRepository;
+  private chatContentRepository: ChatContentRepository;
+
+  constructor(private fastify: FastifyInstance) {
+    this.gpiRepository = new GpiRepository(fastify.prisma.gpi);
+    this.chatContentRepository = new ChatContentRepository(
+      fastify.prisma.chatContent
+    );
+  }
+
+  getByHashIdUserHashId = async (hashId: string, userHashId: string) => {
+    const gpi = await this.gpiRepository.findByHashIdAndUser(
+      hashId,
+      userHashId
+    );
+
+    const { config, chatContents, ...rest } = gpi;
+    return {
+      ...rest,
+      isEditing: getIsEditing(chatContents),
+      config: config as any,
+      chatContents: [],
+      getTypedContents: chatContents.filter((c) => !c.isDeployed),
+    };
+  };
+
+  getManyByUserHashId = async (
+    lastHashId: string | undefined,
+    userHashId: string
+  ) => {
+    const updatedAt = await getUpdatedAtByHashId(
+      this.fastify.prisma.gpi.findFirst,
+      lastHashId
+    );
+    const gpis = await this.gpiRepository.findManyByUserHashId(
+      userHashId,
+      updatedAt
+    );
+
+    return gpis.map((gpi) => {
+      const { chatContents, config, ...rest } = gpi;
+      return {
+        ...rest,
+        isEditing: getIsEditing(chatContents),
+        config: config as any,
+        chatContents: getTypedContents(
+          chatContents.filter((c) => gpi.isDeployed === c.isDeployed)
         ),
-        select: { hashId: true },
-      });
+      };
+    });
+  };
 
-      return newGpi;
-    } catch (error) {
-      retries++;
-      console.log("🚀 ~ error:", error);
+  getPrivateGpi = async (hashId: string, userHashId: string) => {
+    const gpi = await this.gpiRepository.findByHashIdAndUser(
+      hashId,
+      userHashId
+    );
+
+    if (!gpi) {
+      throw new Error("The GPI is not available.");
     }
+
+    const { config, chatContents, ...rest } = gpi;
+
+    // Check for empty chat content
+    if (chatContents.some((c) => c.content.trim() === "")) {
+      throw new Error("There is empty content in chat.");
+    }
+
+    return {
+      ...rest,
+      isEditing: getIsEditing(chatContents),
+      config: config as any, // Adjust the type as necessary
+      chatContents: getTypedContents(chatContents.filter((c) => !c.isDeployed)),
+    };
+  };
+
+  /**
+   * Retrieves and processes a public GPI for the response.
+   * @param hashId - The hash ID of the GPI.
+   * @param userHashId - The hash ID of the user.
+   * @returns The processed GPI data suitable for the response.
+   * @throws {BadRequestError} If the GPI is not found or contains empty chat content.
+   */
+  public async getPublicGpi(hashId: string, userHashId: string) {
+    const gpi = await this.gpiRepository.findByHashIdAndUserForPublic(
+      hashId,
+      userHashId
+    );
+
+    if (!gpi) {
+      throw new Error("The GPI is not available.");
+    }
+
+    const { config, chatContents, ...rest } = gpi;
+
+    // Check for empty chat content
+    if (chatContents.some((c) => c.content.trim() === "")) {
+      throw new Error("There is empty content in chat.");
+    }
+
+    return {
+      ...rest,
+      isEditing: false, // As per the controller's logic
+      config: config as any, // Adjust the type as necessary
+      chatContents: getTypedContents(chatContents),
+    };
   }
 
-  throw "Too many collision and failed to create entity";
-}
+  /**
+   * Retrieves and processes a list of GPIs based on search criteria.
+   * @param userHashId - The hash ID of the user.
+   * @param keyword - The search keyword.
+   * @param lastHashId - The last hash ID for pagination.
+   * @returns An array of processed GPIs suitable for the response.
+   */
+  public async getGpis(
+    userHashId: string,
+    keyword: string,
+    lastHashId: string | undefined | null
+  ) {
+    const id = await getIdByHashId(
+      this.fastify.prisma.gpi.findFirst,
+      lastHashId
+    );
 
-export async function copyGpiEntry(
-  prisma: PrismaClient,
-  hashId: string,
-  userHashId: string
-) {
-  const gpi = await prisma.gpi.findFirst({
-    where: { hashId, OR: [{ userHashId }, { isPublic: true }] },
-    select: {
-      config: true,
-      description: true,
-      modelHashId: true,
-      isPublic: true,
-      systemMessage: true,
-      chatContents: {
-        select: { role: true, content: true, config: true, modelHashId: true },
-        where: { isDeployed: true },
+    const gpis = await this.gpiRepository.findMany(userHashId, keyword, id);
+
+    return gpis.map((gpi) => {
+      const { config, chatContents, ...rest } = gpi;
+      return {
+        ...rest,
+        isEditing: false, // Assuming no editing in list view
+        config: config as any,
+        chatContents: getTypedContents(chatContents),
+      };
+    });
+  }
+
+  create = async (userHashId: string, modelHashId: string, config: any) => {
+    return this.gpiRepository.create(
+      {
+        userHashId,
+        modelHashId,
+        config,
+        description: "",
+        isPublic: false,
+        systemMessage: "",
       },
-    },
-  });
+      []
+    );
+  };
 
-  if (!gpi) {
-    throw "no gpi";
-  }
+  patch = async (
+    hashId: string,
+    userHashId: string,
+    data: Static<typeof GpiUpdateSchema>
+  ) => {
+    await this.gpiRepository.checkIsAccessible(hashId, userHashId);
 
-  const newGpi = await createGpiEntry(prisma.gpi, { userHashId, ...gpi });
+    const { description, systemMessage, config, modelHashId, isPublic } = data;
+    const isIsPublicBoolean = typeof isPublic === "boolean";
+    const updatedGpi = await this.gpiRepository.updateFields(
+      hashId,
+      userHashId,
+      {
+        ...(!!description && { description }),
+        ...(!!systemMessage && { systemMessage }),
+        ...(!!config && { config }),
+        ...(!!modelHashId && { modelHashId }),
+        ...(isIsPublicBoolean && { isPublic }),
+        updatedAt: new Date(),
+      }
+    );
 
-  return newGpi;
+    return { ...updatedGpi, config: updatedGpi.config as any };
+  };
+
+  put = async (
+    hashId: string,
+    userHashId: string,
+    data: Static<typeof GpiDeploySchema>
+  ) => {
+    const gpi = await this.gpiRepository.update(hashId, userHashId, false, {
+      ...data,
+      updatedAt: new Date(),
+    });
+
+    await this.chatContentRepository.markAsDeployed(hashId);
+    await this.chatContentRepository.createMany(
+      gpi.chatContents.map((c) => ({
+        ...c,
+        config: c.config as any,
+        gpiHashId: hashId,
+        isDeployed: false,
+      }))
+    );
+
+    return { hashId };
+  };
+
+  deploy = async (
+    hashId: string,
+    userHashId: string,
+    data: Static<typeof GpiDeploySchema>
+  ) => {
+    const gpi = await this.gpiRepository.update(hashId, userHashId, true, {
+      ...data,
+      isDeployed: true,
+    });
+
+    await this.chatContentRepository.markAsDeployed(hashId);
+    await this.chatContentRepository.createMany(
+      gpi.chatContents.map((c) => ({
+        ...c,
+        config: c.config as any,
+        gpiHashId: hashId,
+        isDeployed: false,
+      }))
+    );
+
+    return { hashId };
+  };
+
+  copy = async (hashId: string, userHashId: string) => {
+    return this.gpiRepository.createCopy(hashId, userHashId);
+  };
+
+  delete = async (hashId: string, userHashId: string) => {
+    await this.gpiRepository.delete(hashId, userHashId);
+    return { hashIds: [hashId] };
+  };
 }
 
 export function getIsEditing(

@@ -6,17 +6,6 @@ import {
   LastHashIdParam,
 } from "gpinterface-shared/type";
 import {
-  MessageCompletionContentsQuery,
-  ChatCompletionModelSelect,
-  ContentHistorySelect,
-  createEntity,
-  createManyEntities,
-  getTypedContent,
-  getTypedContents,
-  getTypedHistory,
-  getUpdatedAtByHashId,
-} from "../../util/prisma";
-import {
   GpiCreateResponse,
   GpiCreateSchema,
   GpiDeploySchema,
@@ -29,33 +18,21 @@ import {
   ChatContentCreateSchema,
   ChatContentsCreateResponse,
 } from "gpinterface-shared/type/chat-content";
-import { getTextResponse } from "../../util/text";
-import { copyGpiEntry, createGpiEntry, getIsEditing } from "../../services/gpi";
+import { GpiService } from "../../services/gpi";
+import { ChatContentService } from "../../services/chat-content";
 
 export default async function (fastify: FastifyInstance) {
+  const gpiService = new GpiService(fastify);
+  const chatContentService = new ChatContentService(fastify);
+
   fastify.post<{ Body: Static<typeof GpiCreateSchema> }>(
     "/",
     { schema: { body: GpiCreateSchema } },
     async (request, reply): Promise<GpiCreateResponse> => {
-      try {
-        const { user } = await fastify.getUser(request, reply);
-        const { modelHashId, config } = request.body;
+      const { user } = await fastify.getUser(request, reply);
+      const { modelHashId, config } = request.body;
 
-        const newGpi = await createGpiEntry(fastify.prisma.gpi, {
-          userHashId: user.hashId,
-          modelHashId,
-          config,
-          description: "",
-          isPublic: false,
-          systemMessage: "",
-          chatContents: [],
-        });
-
-        return { hashId: newGpi.hashId };
-      } catch (ex) {
-        console.error("path: /users/gpis, method: post, error:", ex);
-        throw ex;
-      }
+      return gpiService.create(user.hashId, modelHashId, config);
     }
   );
   fastify.patch<{
@@ -65,46 +42,10 @@ export default async function (fastify: FastifyInstance) {
     "/:hashId",
     { schema: { params: HashIdParam, body: GpiUpdateSchema } },
     async (request, reply): Promise<GpiUpdateResponse> => {
-      try {
-        const { user } = await fastify.getUser(request, reply);
-        const { hashId } = request.params;
-        const { description, systemMessage, config, modelHashId, isPublic } =
-          request.body;
+      const { user } = await fastify.getUser(request, reply);
+      const { hashId } = request.params;
 
-        const oldGpi = await fastify.prisma.gpi.findFirst({
-          where: { hashId, userHashId: user.hashId },
-          select: { hashId: true },
-        });
-        if (!oldGpi) {
-          throw fastify.httpErrors.unauthorized("Gpi not found.");
-        }
-
-        const isIsPublicBoolean = typeof isPublic === "boolean";
-        const updatedGpi = await fastify.prisma.gpi.update({
-          where: { hashId },
-          data: {
-            ...(!!description && { description }),
-            ...(!!systemMessage && { systemMessage }),
-            ...(!!config && { config }),
-            ...(!!modelHashId && { modelHashId }),
-            ...(isIsPublicBoolean && { isPublic }),
-            updatedAt: new Date(),
-          },
-          select: {
-            hashId: true,
-            description: true,
-            systemMessage: true,
-            config: true,
-            modelHashId: true,
-            isPublic: true,
-          },
-        });
-
-        return { ...updatedGpi, config: updatedGpi.config as any };
-      } catch (ex) {
-        console.error("path: /users/gpis/:hashId, method: patch, error:", ex);
-        throw ex;
-      }
+      return gpiService.patch(hashId, user.hashId, request.body);
     }
   );
   fastify.put<{
@@ -114,62 +55,10 @@ export default async function (fastify: FastifyInstance) {
     "/:hashId",
     { schema: { params: HashIdParam, body: GpiDeploySchema } },
     async (request, reply): Promise<GpiCreateResponse> => {
-      try {
-        const { user } = await fastify.getUser(request, reply);
-        const { hashId } = request.params;
+      const { user } = await fastify.getUser(request, reply);
+      const { hashId } = request.params;
 
-        const gpi = await fastify.prisma.gpi.findFirst({
-          where: { hashId, userHashId: user.hashId },
-          select: {
-            isDeployed: true,
-            chatContents: {
-              select: {
-                role: true,
-                content: true,
-                config: true,
-                modelHashId: true,
-              },
-              where: { isDeployed: false },
-              orderBy: { id: "asc" },
-            },
-          },
-        });
-        if (!gpi) {
-          throw fastify.httpErrors.unauthorized("Gpi not found.");
-        }
-        if (!gpi.isDeployed) {
-          throw fastify.httpErrors.unauthorized("Gpi is not deployed yet.");
-        }
-        if (gpi.chatContents.some((c) => c.content === "")) {
-          throw fastify.httpErrors.badRequest(
-            "There is empty content in chat."
-          );
-        }
-
-        await fastify.prisma.gpi.update({
-          where: { hashId },
-          data: { ...request.body, updatedAt: new Date() },
-        });
-        await fastify.prisma.chatContent.deleteMany({
-          where: { gpiHashId: hashId, isDeployed: true },
-        });
-        await fastify.prisma.chatContent.updateMany({
-          where: { gpiHashId: hashId },
-          data: { isDeployed: true },
-        });
-        await createManyEntities(fastify.prisma.chatContent.createMany, {
-          data: gpi.chatContents.map((c) => ({
-            ...c,
-            config: c.config as any,
-            gpiHashId: hashId,
-          })),
-        });
-
-        return { hashId };
-      } catch (ex) {
-        console.error("path: /users/gpis/:hashId, method: put, error:", ex);
-        throw ex;
-      }
+      return gpiService.put(hashId, user.hashId, request.body);
     }
   );
   fastify.post<{
@@ -179,105 +68,30 @@ export default async function (fastify: FastifyInstance) {
     "/:hashId/deploy",
     { schema: { params: HashIdParam, body: GpiDeploySchema } },
     async (request, reply): Promise<GpiCreateResponse> => {
-      try {
-        const { user } = await fastify.getUser(request, reply);
-        const { hashId } = request.params;
+      const { user } = await fastify.getUser(request, reply);
+      const { hashId } = request.params;
 
-        const gpi = await fastify.prisma.gpi.findFirst({
-          where: { hashId, userHashId: user.hashId },
-          select: {
-            isDeployed: true,
-            chatContents: {
-              select: {
-                role: true,
-                content: true,
-                config: true,
-                modelHashId: true,
-              },
-              orderBy: { id: "asc" },
-            },
-          },
-        });
-        if (!gpi) {
-          throw fastify.httpErrors.unauthorized("Gpi not found.");
-        }
-        if (gpi.isDeployed) {
-          throw fastify.httpErrors.unauthorized("Gpi is already deployed");
-        }
-        if (gpi.chatContents.some((c) => c.content === "")) {
-          throw fastify.httpErrors.badRequest(
-            "There is empty content in chat."
-          );
-        }
-
-        await fastify.prisma.gpi.update({
-          where: { hashId },
-          data: { ...request.body, isDeployed: true, updatedAt: new Date() },
-        });
-        await fastify.prisma.chatContent.updateMany({
-          where: { gpiHashId: hashId },
-          data: { isDeployed: true },
-        });
-        await createManyEntities(fastify.prisma.chatContent.createMany, {
-          data: gpi.chatContents.map((c) => ({
-            ...c,
-            config: c.config as any,
-            gpiHashId: hashId,
-          })),
-        });
-
-        return { hashId };
-      } catch (ex) {
-        console.error(
-          "path: /users/gpis/:hashId/deploy, method: post, error:",
-          ex
-        );
-        throw ex;
-      }
+      return gpiService.deploy(hashId, user.hashId, request.body);
     }
   );
   fastify.post<{ Params: Static<typeof HashIdParam> }>(
     "/:hashId/copy",
     { schema: { params: HashIdParam } },
     async (request, reply): Promise<GpiCreateResponse> => {
-      try {
-        const { user } = await fastify.getUser(request, reply);
-        const { hashId } = request.params;
+      const { user } = await fastify.getUser(request, reply);
+      const { hashId } = request.params;
 
-        const gpi = await copyGpiEntry(fastify.prisma, hashId, user.hashId);
-        return gpi;
-      } catch (ex) {
-        console.error(
-          "path: /users/gpis/:hashId/copy, method: post, error:",
-          ex
-        );
-        throw ex;
-      }
+      return gpiService.copy(hashId, user.hashId);
     }
   );
   fastify.delete<{ Params: Static<typeof HashIdParam> }>(
     "/:hashId",
     { schema: { params: HashIdParam } },
     async (request, reply): Promise<DeleteResponse> => {
-      try {
-        const { user } = await fastify.getUser(request, reply);
-        const { hashId } = request.params;
+      const { user } = await fastify.getUser(request, reply);
+      const { hashId } = request.params;
 
-        const gpi = await fastify.prisma.gpi.findFirst({
-          where: { hashId, userHashId: user.hashId },
-          select: { hashId: true },
-        });
-        if (!gpi) {
-          throw fastify.httpErrors.badRequest("gpi is not available.");
-        }
-
-        await fastify.prisma.gpi.delete({ where: { hashId } });
-
-        return { hashIds: [hashId] };
-      } catch (ex) {
-        console.error("path: /users/gpis/:hashId, method: put, error:", ex);
-        throw ex;
-      }
+      return gpiService.delete(hashId, user.hashId);
     }
   );
   fastify.post<{
@@ -287,263 +101,37 @@ export default async function (fastify: FastifyInstance) {
     "/:hashId/chat/contents/completion",
     { schema: { params: HashIdParam, body: ChatContentCreateSchema } },
     async (request, reply): Promise<ChatContentsCreateResponse> => {
-      try {
-        const { user } = await fastify.getUser(request, reply);
-        const { hashId } = request.params;
-        const { content, ...body } = request.body;
-        if (content.trim() === "") {
-          throw fastify.httpErrors.badRequest("Empty content");
-        }
+      const { user } = await fastify.getUser(request, reply);
+      const { hashId } = request.params;
+      const { modelHashId, config, content } = request.body;
 
-        const model = await fastify.prisma.model.findFirst({
-          where: { hashId: body.modelHashId, isAvailable: true },
-          select: ChatCompletionModelSelect,
-        });
-        if (!model) {
-          throw fastify.httpErrors.badRequest("model is not available.");
-        }
-        if (!model.isFree) {
-          const userBalance = await fastify.prisma.user.findFirst({
-            where: { hashId: user.hashId },
-            select: { balance: true },
-          });
-          if (!userBalance || userBalance.balance <= 0) {
-            throw fastify.httpErrors.unauthorized(
-              "You don't have enough balance. Please deposit first."
-            );
-          }
-        }
-
-        const gpi = await fastify.prisma.gpi.findFirst({
-          where: { hashId, userHashId: user.hashId },
-          select: {
-            systemMessage: true,
-            chatContents: {
-              ...MessageCompletionContentsQuery,
-              where: { isDeployed: false },
-            },
-            userHashId: true,
-          },
-        });
-        if (!gpi) {
-          throw fastify.httpErrors.badRequest("gpi is not available.");
-        }
-        if (gpi.chatContents.some((c) => c.content === "")) {
-          throw fastify.httpErrors.badRequest(
-            "There is empty content in chat."
-          );
-        }
-
-        const { systemMessage, chatContents } = gpi;
-        const messages = chatContents.concat({ role: "user", content });
-        let response = await getTextResponse({
-          model,
-          systemMessage,
-          config: body.config,
-          messages,
-        });
-        const paid = model.isFree ? 0 : response.price;
-
-        const userChatContent = await createEntity(
-          fastify.prisma.chatContent.create,
-          {
-            data: {
-              gpiHashId: hashId,
-              role: "user",
-              content,
-              isDeployed: false,
-            },
-            select: {
-              hashId: true,
-              role: true,
-              content: true,
-              isModified: true,
-            },
-          }
-        );
-        const assistantChatContent = await createEntity(
-          fastify.prisma.chatContent.create,
-          {
-            data: {
-              ...body,
-              gpiHashId: hashId,
-              role: "assistant",
-              content: response.content,
-              isDeployed: false,
-            },
-            select: {
-              hashId: true,
-              model: true,
-              role: true,
-              content: true,
-              config: true,
-              isModified: true,
-            },
-          }
-        );
-
-        const history = await createEntity(fastify.prisma.history.create, {
-          data: {
-            userHashId: user.hashId || null,
-            gpiHashId: hashId,
-            chatContentHashId: assistantChatContent.hashId,
-            provider: model.provider.name,
-            model: model.name,
-            config: body.config,
-            messages: (systemMessage
-              ? [{ role: "system", content: systemMessage }]
-              : []
-            ).concat(messages),
-            paid,
-            ...response,
-          },
-          select: { ...ContentHistorySelect, hashId: true },
-        });
-        await fastify.prisma.gpi.update({
-          where: { hashId },
-          data: { updatedAt: new Date() },
-        });
-        if (paid > 0) {
-          await fastify.prisma.user.update({
-            where: { hashId: user.hashId },
-            data: { balance: { decrement: paid } },
-          });
-        }
-
-        return [
-          userChatContent,
-          {
-            ...getTypedContent(assistantChatContent),
-            history: getTypedHistory(history),
-          },
-        ];
-      } catch (ex) {
-        console.error(
-          "path: /users/gpis/:hashId/chat/contents/completion, method: post, error:",
-          ex
-        );
-        throw ex;
-      }
+      return chatContentService.createCompletion(
+        hashId,
+        user.hashId,
+        modelHashId,
+        config,
+        content
+      );
     }
   );
   fastify.post<{ Params: Static<typeof HashIdParam> }>(
     "/:hashId/chat/contents",
     { schema: { params: HashIdParam } },
     async (request, reply): Promise<ChatContentsCreateResponse> => {
-      try {
-        const { user } = await fastify.getUser(request, reply);
-        const { hashId } = request.params;
+      const { user } = await fastify.getUser(request, reply);
+      const { hashId } = request.params;
 
-        const gpi = await fastify.prisma.gpi.findFirst({
-          where: { hashId, userHashId: user.hashId },
-          select: { hashId: true },
-        });
-        if (!gpi) {
-          throw fastify.httpErrors.badRequest("gpi not found");
-        }
-
-        const chatContents = await createManyEntities(
-          fastify.prisma.chatContent.createManyAndReturn,
-          {
-            data: [
-              {
-                gpiHashId: hashId,
-                role: "user",
-                content: "",
-                isDeployed: false,
-              },
-              {
-                gpiHashId: hashId,
-                role: "assistant",
-                content: "",
-                isDeployed: false,
-              },
-            ],
-            select: {
-              hashId: true,
-              model: { select: { hashId: true, name: true } },
-              role: true,
-              content: true,
-              config: true,
-              isModified: true,
-            },
-          }
-        );
-        await fastify.prisma.gpi.update({
-          where: { hashId },
-          data: { updatedAt: new Date() },
-        });
-
-        return getTypedContents(chatContents);
-      } catch (ex) {
-        console.error(
-          "path: /users/gpis/:hashId/chat/contents, method: post, error:",
-          ex
-        );
-        throw ex;
-      }
+      return chatContentService.createEmpty(hashId, user.hashId);
     }
   );
   fastify.get<{ Querystring: Static<typeof LastHashIdParam> }>(
     "/",
     { schema: { querystring: LastHashIdParam } },
     async (request, reply): Promise<GpisGetResponse> => {
-      try {
-        const { user } = await fastify.getUser(request, reply);
-        const { lastHashId } = request.query;
+      const { user } = await fastify.getUser(request, reply);
+      const { lastHashId } = request.query;
 
-        const updatedAt = await getUpdatedAtByHashId(
-          fastify.prisma.gpi.findFirst,
-          lastHashId
-        );
-
-        const gpis = await fastify.prisma.gpi.findMany({
-          where: {
-            ...(!!updatedAt && { updatedAt: { lt: updatedAt } }),
-            userHashId: user.hashId,
-          },
-          select: {
-            hashId: true,
-            userHashId: true,
-            description: true,
-            systemMessage: true,
-            chatContents: {
-              select: {
-                hashId: true,
-                role: true,
-                content: true,
-                config: true,
-                model: { select: { hashId: true, name: true } },
-                histories: { select: ContentHistorySelect },
-                isModified: true,
-                isDeployed: true,
-              },
-              orderBy: { id: "asc" },
-            },
-            config: true,
-            modelHashId: true,
-            isPublic: true,
-            isDeployed: true,
-          },
-          orderBy: { updatedAt: "desc" },
-          take: 5,
-        });
-
-        return gpis.map((gpi) => {
-          const { chatContents, config, ...rest } = gpi;
-          return {
-            ...rest,
-            isEditing: getIsEditing(chatContents),
-            config: config as any,
-            chatContents: getTypedContents(
-              chatContents.filter((c) => gpi.isDeployed === c.isDeployed)
-            ),
-          };
-        });
-      } catch (ex) {
-        console.error("path: /users/gpis?lastHashId, method: get, error:", ex);
-        throw ex;
-      }
+      return gpiService.getManyByUserHashId(lastHashId, user.hashId);
     }
   );
   fastify.get<{ Params: Static<typeof HashIdParam> }>(
@@ -551,51 +139,28 @@ export default async function (fastify: FastifyInstance) {
     { schema: { params: HashIdParam } },
     async (request, reply): Promise<GpiGetResponse> => {
       try {
+        // Authenticate and get the user
         const { user } = await fastify.getUser(request, reply);
         const { hashId } = request.params;
 
-        const gpi = await fastify.prisma.gpi.findFirst({
-          where: { hashId, userHashId: user.hashId },
-          select: {
-            hashId: true,
-            userHashId: true,
-            description: true,
-            systemMessage: true,
-            chatContents: {
-              select: {
-                hashId: true,
-                role: true,
-                content: true,
-                config: true,
-                model: { select: { hashId: true, name: true } },
-                histories: { select: ContentHistorySelect },
-                isModified: true,
-                isDeployed: true,
-              },
-              orderBy: { id: "asc" },
-            },
-            config: true,
-            modelHashId: true,
-            isPublic: true,
-            isDeployed: true,
-          },
-        });
-        if (!gpi) {
-          throw fastify.httpErrors.badRequest("The gpi is not available.");
+        // Use the Service to get the GPI
+        return await gpiService.getPrivateGpi(hashId, user.hashId);
+      } catch (error) {
+        // Log the error
+        fastify.log.error(
+          { url: request.url, method: request.method, error },
+          "Error fetching GPI"
+        );
+
+        // Handle known errors
+        if (error instanceof Error) {
+          throw fastify.httpErrors.badRequest(error.message);
         }
 
-        const { config, chatContents, ...rest } = gpi;
-        return {
-          ...rest,
-          isEditing: getIsEditing(chatContents),
-          config: config as any,
-          chatContents: getTypedContents(
-            chatContents.filter((c) => !c.isDeployed)
-          ),
-        };
-      } catch (ex) {
-        console.error("path: /users/gpis/:hashId, method: get, error:", ex);
-        throw ex;
+        // Handle unexpected errors
+        throw fastify.httpErrors.internalServerError(
+          "An unexpected error occurred."
+        );
       }
     }
   );
