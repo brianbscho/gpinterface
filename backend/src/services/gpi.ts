@@ -139,7 +139,11 @@ export class GpiService {
       lastHashId
     );
 
-    const gpis = await this.gpiRepository.findMany(userHashId, keyword, id);
+    const gpis = await this.gpiRepository.findMany(
+      userHashId,
+      keyword,
+      lastHashId
+    );
 
     return gpis.map((gpi) => {
       const { config, chatContents, ...rest } = gpi;

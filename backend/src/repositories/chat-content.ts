@@ -1,5 +1,5 @@
 import { Prisma, ChatContent, Gpi } from "@prisma/client";
-import { getDataWithHashId } from "../util/prisma";
+import { getDataWithHashId, getIdByHashId } from "../util/prisma";
 
 export class ChatContentRepository {
   constructor(private chatContent: Prisma.ChatContentDelegate) {}
@@ -32,16 +32,21 @@ export class ChatContentRepository {
   /**
    * Retrieves messages associated with a GPI hash ID up to a certain ID.
    * @param gpiHashId - The GPI hash ID.
-   * @param lastId - The ID to retrieve messages less than this value.
+   * @param hashId - The hasId of chat-content to retrieve messages less than this value.
    * @returns An array of messages.
    * @throws {Error} If any message content is empty.
    */
   public async getMessages(
     gpiHashId: string,
-    lastId: number
+    hashId: string
   ): Promise<Pick<ChatContent, "role" | "content">[]> {
+    const id = await getIdByHashId(this.chatContent.findFirst, hashId);
+    if (id < 1) {
+      throw "content is not available.";
+    }
+
     const messages = await this.chatContent.findMany({
-      where: { gpiHashId, isDeployed: false, id: { lt: lastId } },
+      where: { gpiHashId, isDeployed: false, id: { lt: id } },
       select: { role: true, content: true },
       orderBy: { id: "asc" },
     });

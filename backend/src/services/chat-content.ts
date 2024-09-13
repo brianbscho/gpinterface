@@ -4,7 +4,6 @@ import { GpiRepository } from "../repositories/gpi";
 import { ModelRepository } from "../repositories/model";
 import { ModelService } from "./model";
 import {
-  getIdByHashId,
   getTypedContent,
   getTypedContents,
   getTypedHistory,
@@ -149,16 +148,9 @@ export class ChatContentService {
 
     const gpi = await this.chatContentRepository.getGpi(hashId, userHashId);
 
-    const id = await getIdByHashId(
-      this.fastify.prisma.chatContent.findFirst,
-      hashId
-    );
-    if (id < 1) {
-      throw this.fastify.httpErrors.badRequest("content is not available.");
-    }
     const messages = await this.chatContentRepository.getMessages(
       gpi.hashId,
-      id
+      hashId
     );
 
     const { systemMessage } = gpi;

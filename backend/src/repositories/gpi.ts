@@ -1,17 +1,27 @@
-import { Prisma, Gpi, ChatContent } from "@prisma/client";
-import { getDataWithHashId, getTypedContent } from "../util/prisma";
+import { Prisma, Gpi } from "@prisma/client";
+import {
+  getDataWithHashId,
+  getIdByHashId,
+  getTypedContent,
+} from "../util/prisma";
 
 export class GpiRepository {
-  constructor(private gpiDelegate: Prisma.GpiDelegate) {}
+  constructor(private gpi: Prisma.GpiDelegate) {}
 
   /**
    * Finds multiple GPIs based on search criteria.
    * @param userHashId - The hash ID of the user.
    * @param keyword - The search keyword.
-   * @param lastId - The last GPI ID for pagination.
+   * @param hashId - The last GPI hashId for pagination.
    * @returns An array of GPIs matching the criteria.
    */
-  public async findMany(userHashId: string, keyword: string, lastId: number) {
+  public async findMany(
+    userHashId: string,
+    keyword: string,
+    hashId: string | undefined | null
+  ) {
+    const id = await getIdByHashId(this.gpi.findFirst, hashId);
+
     const search = keyword.split(" ").join(" | ");
     const whereClause: Prisma.GpiWhereInput = {
       isDeployed: true,
@@ -27,10 +37,10 @@ export class GpiRepository {
           },
         ],
       }),
-      ...(lastId > 0 && { id: { lt: lastId } }),
+      ...(id > 0 && { id: { lt: id } }),
     };
 
-    return this.gpiDelegate.findMany({
+    return this.gpi.findMany({
       where: whereClause,
       select: {
         hashId: true,
@@ -88,7 +98,7 @@ export class GpiRepository {
       ...(updatedAt && { updatedAt: { lt: updatedAt } }),
     };
 
-    return this.gpiDelegate.findMany({
+    return this.gpi.findMany({
       where: whereClause,
       select: {
         hashId: true,
@@ -153,7 +163,7 @@ export class GpiRepository {
       orConditions.push({ isPublic: true });
     }
 
-    const gpi = await this.gpiDelegate.findFirst({
+    const gpi = await this.gpi.findFirst({
       where: {
         hashId,
         OR: orConditions,
@@ -198,7 +208,7 @@ export class GpiRepository {
    * @returns The found GPI or null if not found.
    */
   public async findByHashIdAndUser(hashId: string, userHashId: string) {
-    const gpi = await this.gpiDelegate.findFirst({
+    const gpi = await this.gpi.findFirst({
       where: { hashId, userHashId },
       select: {
         hashId: true,
@@ -255,7 +265,7 @@ export class GpiRepository {
     hashId: string,
     userHashId: string
   ) {
-    const gpi = await this.gpiDelegate.findFirst({
+    const gpi = await this.gpi.findFirst({
       where: {
         hashId,
         isDeployed: true,
@@ -334,7 +344,7 @@ export class GpiRepository {
       { isPublic: true },
     ];
 
-    const updatedGpi = await this.gpiDelegate.update({
+    const updatedGpi = await this.gpi.update({
       where: {
         hashId,
         OR: orConditions,
@@ -368,7 +378,7 @@ export class GpiRepository {
     isDeploying: boolean,
     data: Prisma.GpiUncheckedUpdateInput
   ) {
-    const gpi = await this.gpiDelegate.findFirst({
+    const gpi = await this.gpi.findFirst({
       where: { hashId, userHashId },
       select: {
         isDeployed: true,
@@ -400,7 +410,7 @@ export class GpiRepository {
       throw new Error("GPI is already deployed.");
     }
 
-    const updatedGpi = await this.gpiDelegate.update({
+    const updatedGpi = await this.gpi.update({
       where: { hashId, userHashId },
       data: { ...data, updatedAt: new Date() },
       select: {
@@ -427,7 +437,7 @@ export class GpiRepository {
     hashId: string,
     userHashId: string
   ): Promise<boolean> {
-    const gpi = await this.gpiDelegate.findFirst({
+    const gpi = await this.gpi.findFirst({
       where: { hashId, userHashId },
       select: { hashId: true },
     });
@@ -475,7 +485,7 @@ export class GpiRepository {
           32
         );
 
-        const createdGpi = await this.gpiDelegate.create({
+        const createdGpi = await this.gpi.create({
           data: dataWithHashId,
           select: { hashId: true },
         });
@@ -508,7 +518,7 @@ export class GpiRepository {
     hashId: string,
     userHashId: string
   ): Promise<Pick<Gpi, "hashId">> {
-    const originalGpi = await this.gpiDelegate.findFirst({
+    const originalGpi = await this.gpi.findFirst({
       where: { hashId, OR: [{ userHashId }, { isPublic: true }] },
       select: {
         config: true,
@@ -552,7 +562,7 @@ export class GpiRepository {
    * @returns The updated GPI record.
    */
   public async updateUpdatedAt(hashId: string): Promise<Gpi> {
-    return this.gpiDelegate.update({
+    return this.gpi.update({
       where: { hashId },
       data: { updatedAt: new Date() },
     });
@@ -566,7 +576,7 @@ export class GpiRepository {
    */
   public async delete(hashId: string, userHashId: string): Promise<void> {
     await this.checkIsAccessible(hashId, userHashId);
-    await this.gpiDelegate.delete({ where: { hashId } });
+    await this.gpi.delete({ where: { hashId } });
   }
 
   /**
