@@ -1,23 +1,19 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { createEntity } from "../util/prisma";
-import { UserRepository } from "./user";
 
 export class SessionRepository {
-  private userRepository: UserRepository;
-  constructor(private prisma: PrismaClient) {
-    this.userRepository = new UserRepository(prisma);
-  }
+  constructor(private session: Prisma.SessionDelegate) {}
 
   create = async (gpiHashId: string) => {
     return createEntity(
-      this.prisma.session.create,
+      this.session.create,
       { data: { gpiHashId }, select: { hashId: true } },
       32
     );
   };
 
-  find = async (hashId: string, userHashId: string | null) => {
-    const session = await this.prisma.session.findFirst({
+  findByHashId = async (hashId: string, userHashId: string | null) => {
+    const session = await this.session.findFirst({
       where: {
         hashId,
         gpi: {
@@ -65,20 +61,12 @@ export class SessionRepository {
     if (gpi.chatContents.some((c) => c.content === "")) {
       throw "There is empty content in chat.";
     }
-    if (gpi.model.isLoginRequired || !gpi.model.isFree) {
-      if (!userHashId) {
-        throw "Please login first.";
-      }
-      const balance = await this.userRepository.getBalance(userHashId);
-      if (balance <= 0)
-        throw "You don't have enough balance. Please deposit first.";
-    }
 
     return { ...session, gpi };
   };
 
   getMessages = async (hashId: string, userHashId: string | null) => {
-    const session = await this.prisma.session.findFirst({
+    const session = await this.session.findFirst({
       where: { hashId, gpi: { OR: [{ userHashId }, { isPublic: true }] } },
       select: {
         messages: {

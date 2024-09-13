@@ -1,15 +1,15 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { createManyEntities } from "../util/prisma";
 
 export class SessionMessageRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(private sessionMessage: Prisma.SessionMessageDelegate) {}
 
   createMany(
     sessionHashId: string,
     userContent: string,
     assistantContent: string
   ) {
-    createManyEntities(this.prisma.sessionMessage.createMany, {
+    createManyEntities(this.sessionMessage.createMany, {
       data: [
         { sessionHashId, role: "user", content: userContent },
         { sessionHashId, role: "assistant", content: assistantContent },

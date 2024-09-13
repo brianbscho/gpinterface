@@ -1,39 +1,12 @@
-import { PrismaClient } from "@prisma/client";
-import { createEntity } from "../util/prisma";
-
-export interface HistoryCreateData {
-  userHashId: string | null;
-  gpiHashId: string;
-  sessionHashId?: string | null;
-  provider: string;
-  model: string;
-  config: any;
-  systemMessage?: string;
-  messages: Array<{ role: string; content: string }>;
-  response: any;
-  paid?: number;
-}
+import { Prisma } from "@prisma/client";
+import { createEntity, getDataWithHashId } from "../util/prisma";
 
 export class HistoryRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(private history: Prisma.HistoryDelegate) {}
 
-  async create(data: HistoryCreateData) {
-    const historyData = {
-      userHashId: data.userHashId,
-      gpiHashId: data.gpiHashId,
-      provider: data.provider,
-      model: data.model,
-      config: data.config ?? null,
-      messages: (data.systemMessage
-        ? [{ role: "system", content: data.systemMessage }]
-        : []
-      ).concat(data.messages),
-      paid: data.paid,
-      ...data.response,
-    };
-
-    const createdHistory = await createEntity(this.prisma.history.create, {
-      data: historyData,
+  async create(data: Omit<Prisma.HistoryUncheckedCreateInput, "hashId">) {
+    const createdHistory = await createEntity(this.history.create, {
+      data: getDataWithHashId(data),
     });
 
     return createdHistory;

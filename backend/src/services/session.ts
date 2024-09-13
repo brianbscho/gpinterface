@@ -6,6 +6,7 @@ import { SessionMessageRepository } from "../repositories/session-message";
 import { Prisma } from "@prisma/client";
 import { HistoryRepository } from "../repositories/history";
 import { UserRepository } from "../repositories/user";
+import { ModelService } from "./model";
 
 export class SessionService {
   private historyRepository: HistoryRepository;
@@ -13,18 +14,21 @@ export class SessionService {
   private sessionMessageRepository: SessionMessageRepository;
   private gpiRepository: GpiRepository;
   private userRepository: UserRepository;
+  private modelService: ModelService;
+
   constructor(private fastify: FastifyInstance) {
-    this.historyRepository = new HistoryRepository(fastify.prisma);
-    this.sessionRepository = new SessionRepository(fastify.prisma);
+    this.historyRepository = new HistoryRepository(fastify.prisma.history);
+    this.sessionRepository = new SessionRepository(fastify.prisma.session);
     this.sessionMessageRepository = new SessionMessageRepository(
-      fastify.prisma
+      fastify.prisma.sessionMessage
     );
-    this.gpiRepository = new GpiRepository(fastify.prisma);
-    this.userRepository = new UserRepository(fastify.prisma);
+    this.gpiRepository = new GpiRepository(fastify.prisma.gpi);
+    this.userRepository = new UserRepository(fastify.prisma.user);
+    this.modelService = new ModelService(fastify);
   }
 
   create = async (gpiHashId: string, userHashId: string | null) => {
-    await this.gpiRepository.findFirst(gpiHashId, userHashId);
+    await this.gpiRepository.findByHashId(gpiHashId, userHashId);
     return this.sessionRepository.create(gpiHashId);
   };
 
@@ -37,10 +41,11 @@ export class SessionService {
       throw this.fastify.httpErrors.badRequest("Empty content");
     }
 
-    const session = await this.sessionRepository.find(
+    const session = await this.sessionRepository.findByHashId(
       sessionHashId,
       userHashId
     );
+    await this.modelService.checkAvailable(session.gpi.model, userHashId);
 
     const { gpi } = session;
     const { systemMessage, config, model } = gpi;
@@ -69,7 +74,7 @@ export class SessionService {
       config: config ?? Prisma.JsonNull,
       messages,
       paid,
-      response,
+      ...response,
     });
     if (userHashId) {
       await this.userRepository.updateBalance(userHashId, { decrement: paid });
