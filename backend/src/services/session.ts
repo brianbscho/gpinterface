@@ -1,182 +1,153 @@
 import { FastifyInstance } from "fastify";
-import {
-  ChatCompletionContentsQuery,
-  MessageCompletionContentsQuery,
-  ChatCompletionModelSelect,
-  createEntity,
-  createManyEntities,
-  getDataWithHashId,
-} from "../util/prisma";
+import { SessionRepository } from "../repositories/session";
 import { getTextResponse } from "../util/text";
+import { GpiRepository } from "../repositories/gpi";
+import { SessionMessageRepository } from "../repositories/session-message";
 import { Prisma } from "@prisma/client";
+import { HistoryRepository } from "../repositories/history";
+import { UserRepository } from "../repositories/user";
+import { ModelService } from "./model";
 
-async function createSessionEntry(
-  sessionDelegate: Prisma.SessionDelegate,
-  gpiHashId: string
-) {
-  let retries = 0;
+/**
+ * Service class responsible for handling session-related business logic.
+ */
+export class SessionService {
+  private historyRepository: HistoryRepository;
+  private sessionRepository: SessionRepository;
+  private sessionMessageRepository: SessionMessageRepository;
+  private gpiRepository: GpiRepository;
+  private userRepository: UserRepository;
+  private modelService: ModelService;
 
-  while (retries < 5) {
-    try {
-      const newSession = await sessionDelegate.create({
-        data: getDataWithHashId({ gpiHashId }, 32),
-        select: { hashId: true },
-      });
+  /**
+   * Initializes the SessionService with necessary repositories and services.
+   * @param fastify - The FastifyInstance for accessing Prisma and HTTP errors.
+   */
+  constructor(private fastify: FastifyInstance) {
+    this.historyRepository = new HistoryRepository(fastify.prisma.history);
+    this.sessionRepository = new SessionRepository(fastify.prisma.session);
+    this.sessionMessageRepository = new SessionMessageRepository(
+      fastify.prisma.sessionMessage
+    );
+    this.gpiRepository = new GpiRepository(fastify.prisma.gpi);
+    this.userRepository = new UserRepository(fastify.prisma.user);
+    this.modelService = new ModelService(fastify);
+  }
 
-      return newSession;
-    } catch (error) {
-      retries++;
-      console.log("🚀 ~ error:", error);
+  /**
+   * Creates a new session for a given GPI hash ID and user hash ID.
+   * @param gpiHashId - The hash ID of the GPI.
+   * @param userHashId - The hash ID of the user (nullable).
+   * @returns The created session object.
+   * @throws {BadRequestError} If the GPI hash ID is invalid or not accessible by the user.
+   */
+  create = async (gpiHashId: string, userHashId: string | null) => {
+    // Validate and find the GPI
+    await this.gpiRepository.findGpiByHashId(gpiHashId, userHashId, true);
+
+    // Create a new session
+    const session = await this.sessionRepository.createSession(gpiHashId);
+    return session;
+  };
+
+  /**
+   * Creates a completion within a session by processing user input and generating a response.
+   * @param userHashId - The hash ID of the user (nullable).
+   * @param sessionHashId - The hash ID of the session.
+   * @param content - The content provided by the user.
+   * @returns An object containing the generated response content.
+   * @throws {BadRequestError} If the input content is empty or invalid.
+   * @throws {BadRequestError} If the session is not found.
+   * @throws {BadRequestError} If the user balance is insufficient.
+   */
+  createCompletion = async (
+    userHashId: string | null,
+    sessionHashId: string,
+    content: string
+  ): Promise<{ content: string }> => {
+    // Validate content
+    if (content.trim() === "") {
+      throw this.fastify.httpErrors.badRequest("Empty content");
     }
-  }
 
-  throw "Too many collision and failed to create entity";
-}
-
-export async function createSession({
-  fastify,
-  userHashId,
-  gpiHashId,
-}: {
-  fastify: FastifyInstance;
-  userHashId: string | null;
-  gpiHashId: string;
-}) {
-  const gpi = await fastify.prisma.gpi.findFirst({
-    where: { hashId: gpiHashId, OR: [{ userHashId }, { isPublic: true }] },
-    select: { hashId: true, chatContents: ChatCompletionContentsQuery },
-  });
-  if (!gpi) {
-    throw fastify.httpErrors.badRequest("gpi is not available.");
-  }
-  if (gpi.chatContents.some((c) => c.content === "")) {
-    throw fastify.httpErrors.badRequest("There is empty content in chat.");
-  }
-
-  return createSessionEntry(fastify.prisma.session, gpiHashId);
-}
-
-export async function createSessionCompletion({
-  fastify,
-  userHashId,
-  sessionHashId,
-  content,
-}: {
-  fastify: FastifyInstance;
-  userHashId: string | null;
-  sessionHashId: string;
-  content: string;
-}) {
-  if (content.trim() === "") {
-    throw fastify.httpErrors.badRequest("Empty content");
-  }
-
-  const session = await fastify.prisma.session.findFirst({
-    where: {
-      hashId: sessionHashId,
-      gpi: {
-        OR: [{ userHashId }, { isPublic: true }],
-        model: { isAvailable: true },
-      },
-    },
-    select: {
-      gpi: {
-        select: {
-          hashId: true,
-          systemMessage: true,
-          chatContents: ChatCompletionContentsQuery,
-          config: true,
-          model: { select: ChatCompletionModelSelect },
-        },
-      },
-      messages: MessageCompletionContentsQuery,
-    },
-  });
-
-  if (!session || !session.gpi) {
-    throw fastify.httpErrors.badRequest("session is not available.");
-  }
-  if (session.gpi.chatContents.some((c) => c.content === "")) {
-    throw fastify.httpErrors.badRequest("There is empty content in chat.");
-  }
-  if (session.gpi.model.isLoginRequired || !session.gpi.model.isFree) {
-    if (!userHashId) {
-      throw fastify.httpErrors.unauthorized("Please login first.");
+    // Find the session
+    const session = await this.sessionRepository.findSessionByHashId(
+      sessionHashId,
+      userHashId
+    );
+    if (!session) {
+      throw this.fastify.httpErrors.badRequest("Session not found");
     }
-    const user = await fastify.prisma.user.findFirst({
-      where: { hashId: userHashId },
-      select: { balance: true },
+
+    // Check if model is available
+    await this.modelService.checkAvailable(session.gpi.model, userHashId);
+
+    const { gpi } = session;
+    const { systemMessage, config, model } = gpi;
+
+    // Compile messages for the model
+    const messages = [
+      ...gpi.chatContents,
+      ...session.messages,
+      { role: "user", content },
+    ];
+
+    // Get response from the model
+    const response = await getTextResponse({
+      model,
+      systemMessage,
+      config: config as any,
+      messages,
     });
-    if (!user || user.balance <= 0)
-      throw fastify.httpErrors.unauthorized(
-        "You don't have enough balance. Please deposit first."
-      );
-  }
 
-  const { gpi } = session;
-  const { systemMessage, config, model } = gpi;
-  const messages = gpi.chatContents
-    .concat(session.messages)
-    .concat({ role: "user", content });
-  const response = await getTextResponse({
-    model,
-    systemMessage,
-    config: config as any,
-    messages,
-  });
+    // Create session messages
+    await this.sessionMessageRepository.createUserAndAssistantMessages(
+      sessionHashId,
+      content,
+      response.content
+    );
 
-  const paid = session.gpi.model.isFree ? 0 : response.price;
-  await createManyEntities(fastify.prisma.sessionMessage.createMany, {
-    data: [
-      { sessionHashId, role: "user", content },
-      { sessionHashId, role: "assistant", content: response.content },
-    ],
-  });
-  await createEntity(fastify.prisma.history.create, {
-    data: {
+    // Calculate payment
+    const paid = session.gpi.model.isFree ? 0 : response.price;
+
+    // Create history record
+    await this.historyRepository.createHistory({
       userHashId,
       gpiHashId: session.gpi.hashId,
       sessionHashId,
       provider: model.provider.name,
       model: model.name,
       config: config ?? Prisma.JsonNull,
-      messages: (systemMessage
-        ? [{ role: "system", content: systemMessage }]
-        : []
-      ).concat(messages),
+      messages,
+      paid,
       ...response,
-    },
-  });
-  if (userHashId) {
-    await fastify.prisma.user.update({
-      where: { hashId: userHashId },
-      data: { balance: { decrement: paid } },
     });
-  }
 
-  return { content: response.content };
-}
+    // Update user balance if applicable
+    if (userHashId) {
+      await this.userRepository.updateUserBalanceByHashId(userHashId, {
+        decrement: paid,
+      });
+    }
 
-export async function getSessionMessages({
-  fastify,
-  userHashId,
-  sessionHashId,
-}: {
-  fastify: FastifyInstance;
-  userHashId: string | null;
-  sessionHashId: string;
-}) {
-  const session = await fastify.prisma.session.findFirst({
-    where: {
-      hashId: sessionHashId,
-      gpi: { OR: [{ userHashId }, { isPublic: true }] },
-    },
-    select: { messages: MessageCompletionContentsQuery },
-  });
+    return { content: response.content };
+  };
 
-  if (!session) {
-    throw fastify.httpErrors.badRequest("session is not available.");
-  }
-
-  return session;
+  /**
+   * Retrieves messages for a given session.
+   * @param sessionHashId - The hash ID of the session.
+   * @param userHashId - The hash ID of the user (nullable).
+   * @returns An array of messages associated with the session.
+   */
+  getMessages = async (
+    sessionHashId: string,
+    userHashId: string | null
+  ): Promise<{ role: string; content: string }[]> => {
+    // Retrieve messages from the repository
+    const messages = await this.sessionRepository.getSessionMessages(
+      sessionHashId,
+      userHashId
+    );
+    return messages;
+  };
 }

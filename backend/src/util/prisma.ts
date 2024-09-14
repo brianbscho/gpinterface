@@ -71,7 +71,7 @@ export async function getIdByHashId(
     where: { hashId: string };
     select: { id: true };
   }) => Promise<{ id: number } | null>,
-  hashId?: string
+  hashId?: string | null
 ) {
   if (!hashId) return -1;
 
@@ -105,7 +105,7 @@ export async function getUpdatedAtByHashId(
 }
 
 export function getTypedContent<T>(
-  chatContent: T & { config: Prisma.JsonValue }
+  chatContent: T & { config: Prisma.JsonValue | Prisma.InputJsonValue }
 ) {
   return { ...chatContent, config: chatContent.config as any };
 }
@@ -158,11 +158,6 @@ export const ChatCompletionModelSelect = {
   isLoginRequired: true,
 };
 
-export const ChatCompletionContentsQuery = {
-  select: { role: true, content: true },
-  orderBy: { id: "asc" as const },
-  where: { isDeployed: true },
-};
 export const MessageCompletionContentsQuery = {
   select: { role: true, content: true },
   orderBy: { id: "asc" as const },
