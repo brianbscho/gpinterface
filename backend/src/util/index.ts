@@ -1,4 +1,4 @@
-export function compareObjects(obj1: any, obj2: any) {
+export function isEqual(obj1: any, obj2: any) {
   if (obj1 === obj2) return true;
   if (
     obj1 === null ||

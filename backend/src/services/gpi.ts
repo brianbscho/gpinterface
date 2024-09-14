@@ -7,7 +7,7 @@ import { GpiDeploySchema, GpiUpdateSchema } from "gpinterface-shared/type/gpi";
 import { GpiRepository } from "../repositories/gpi";
 import { ChatContentRepository } from "../repositories/chat-content";
 
-import { compareObjects } from "../util";
+import { isEqual } from "../util";
 import {
   getIdByHashId,
   getTypedContents,
@@ -48,7 +48,7 @@ export class GpiService {
     const { config, chatContents, ...rest } = gpi;
     return {
       ...rest,
-      isEditing: getIsEditing(chatContents),
+      isEditing: this.getIsEditing(chatContents),
       config: config as any,
       chatContents: [],
       getTypedContents: chatContents.filter((c) => !c.isDeployed),
@@ -75,7 +75,7 @@ export class GpiService {
       const { config, chatContents, ...rest } = gpi;
       return {
         ...rest,
-        isEditing: getIsEditing(chatContents),
+        isEditing: this.getIsEditing(chatContents),
         config: config as any,
         chatContents: getTypedContents(
           chatContents.filter((c) => gpi.isDeployed === c.isDeployed)
@@ -110,7 +110,7 @@ export class GpiService {
 
     return {
       ...rest,
-      isEditing: getIsEditing(chatContents),
+      isEditing: this.getIsEditing(chatContents),
       config: config as any,
       chatContents: getTypedContents(chatContents.filter((c) => !c.isDeployed)),
     };
@@ -328,36 +328,38 @@ export class GpiService {
     await this.gpiRepository.deleteGpi(hashId, userHashId);
     return { hashIds: [hashId] };
   };
-}
 
-/**
- * Determines if a GPI is being edited based on its chat contents.
- * @param chatContents - An array of chat content objects.
- * @returns A boolean indicating if the GPI is being edited.
- */
-export function getIsEditing(
-  chatContents: (Omit<ChatContent, "config"> & {
-    isDeployed: boolean;
-    config: any;
-    histories: any;
-  })[]
-): boolean {
-  const deployedContents = chatContents.filter((c) => c.isDeployed);
-  const editingContents = chatContents.filter((c) => !c.isDeployed);
+  /**
+   * Determines if a GPI is being edited based on its chat contents.
+   * @param chatContents - An array of chat content objects.
+   * @returns A boolean indicating if the GPI is being edited.
+   */
+  getIsEditing = (
+    chatContents: (Omit<ChatContent, "config"> & {
+      isDeployed: boolean;
+      config: any;
+      histories: any;
+    })[]
+  ): boolean => {
+    const deployedContents = chatContents.filter((c) => c.isDeployed);
+    const editingContents = chatContents.filter((c) => !c.isDeployed);
 
-  const isDifferentLength = deployedContents.length !== editingContents.length;
-  const areContentsIdentical = deployedContents.reduce((acc, curr, index) => {
-    const editingContent = editingContents[index];
+    const isDifferentLength =
+      deployedContents.length !== editingContents.length;
     return (
-      acc &&
-      compareObjects(curr.config, editingContent.config) &&
-      compareObjects(curr.model, editingContent.model) &&
-      compareObjects(
-        { role: curr.role, content: curr.content },
-        { role: editingContent.role, content: editingContent.content }
-      )
+      isDifferentLength ||
+      !deployedContents.reduce((acc, curr, index) => {
+        const editingContent = editingContents[index];
+        return (
+          acc &&
+          isEqual(curr.config, editingContent.config) &&
+          isEqual(curr.model, editingContent.model) &&
+          isEqual(
+            { role: curr.role, content: curr.content },
+            { role: editingContent.role, content: editingContent.content }
+          )
+        );
+      }, true)
     );
-  }, true);
-
-  return isDifferentLength || !areContentsIdentical;
+  };
 }
