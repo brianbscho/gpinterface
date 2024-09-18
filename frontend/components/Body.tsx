@@ -35,7 +35,7 @@ export default function Body({
                 <div className="flex-1">
                   <SearchInput />
                 </div>
-                <ChatCreateButton />
+                <ChatCreateButton isIcon />
                 <MenusDropdown />
               </div>
             </div>
