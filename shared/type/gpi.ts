@@ -33,7 +33,7 @@ export const GpiUpdateSchema = Type.Object({
   description: Type.Optional(Type.String()),
   systemMessage: Type.Optional(Type.String()),
   config: Type.Optional(Type.Any()),
-  modelHashId: Type.Optional(Type.Any()),
+  modelHashId: Type.Optional(Type.String()),
   isPublic: Type.Optional(Type.Boolean()),
 });
 export type GpiUpdateResponse = {

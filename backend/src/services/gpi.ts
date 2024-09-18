@@ -218,16 +218,15 @@ export class GpiService {
     await this.gpiRepository.checkGpiAccessibility(hashId, userHashId);
 
     const { description, systemMessage, config, modelHashId, isPublic } = data;
-    const isIsPublicBoolean = typeof isPublic === "boolean";
     const updatedGpi = await this.gpiRepository.updateGpiFields(
       hashId,
       userHashId,
       {
-        ...(description && { description }),
-        ...(systemMessage && { systemMessage }),
-        ...(config && { config }),
-        ...(modelHashId && { modelHashId }),
-        ...(isIsPublicBoolean && { isPublic }),
+        ...(description !== undefined && { description }),
+        ...(systemMessage !== undefined && { systemMessage }),
+        ...(config !== undefined && { config }),
+        ...(modelHashId !== undefined && { modelHashId }),
+        ...(isPublic !== undefined && { isPublic }),
         updatedAt: new Date(),
       }
     );
