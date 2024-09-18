@@ -2,14 +2,16 @@ import DocumentTry, { BodyType } from "./DocumentTry";
 import { cn } from "@/utils/css";
 import { GpiGetResponse } from "gpinterface-shared/type/gpi";
 import { CircleAlert } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "../ui/accordion";
 
 type TitleProps = { title: string };
 function Title({ title }: TitleProps) {
-  return (
-    <div className="pb-1 border-b border-neutral-500 font-bold text-xl w-full">
-      {title}
-    </div>
-  );
+  return <div className="pb-1 text-left font-bold text-xl w-full">{title}</div>;
 }
 
 type DocumentProps = {
@@ -75,15 +77,21 @@ export default function Document({
           </div>
         </div>
       )}
-      {documents.map((doc) => {
-        const { title, ...props } = doc;
-        return (
-          <div key={title}>
-            <Title title={title} {...props} />
-            <DocumentTry {...props} />
-          </div>
-        );
-      })}
+      <Accordion type="multiple">
+        {documents.map((doc) => {
+          const { title, ...props } = doc;
+          return (
+            <AccordionItem key={title} value={title}>
+              <AccordionTrigger>
+                <Title title={title} {...props} />
+              </AccordionTrigger>
+              <AccordionContent>
+                <DocumentTry {...props} />
+              </AccordionContent>
+            </AccordionItem>
+          );
+        })}
+      </Accordion>
     </div>
   );
 }
