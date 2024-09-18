@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Badge,
-  CardContent,
-  CardDescription,
-  Textarea,
-} from "../../components/ui";
+import { CardContent, CardDescription, Textarea } from "../../components/ui";
 import {
   Dispatch,
   SetStateAction,
@@ -111,7 +106,7 @@ type ContentProps = {
     Partial<Pick<ChatContent, "hashId" | "isModified">>;
   setChatContents?: Dispatch<SetStateAction<ChatContent[]>>;
   useRefreshingHashId: [RefreshingHashId, (hashId: RefreshingHashId) => void];
-  callUpdateContent: (content: string) => Promise<string | undefined>;
+  callUpdateContent: (content: string) => Promise<void>;
   hashIds?: string[];
 };
 
@@ -144,31 +139,13 @@ function Content({
 
     setIsSaving(true);
     const timer = setTimeout(async () => {
-      try {
-        const response = await callUpdateContent(newContent);
-        if (response !== undefined && setChatContents) {
-          setChatContents((prev) =>
-            prev.map((p) => {
-              if (p.hashId === chatContent.hashId) {
-                return { ...p, content: response };
-              }
-              return p;
-            })
-          );
-        }
-      } catch {}
+      await callUpdateContent(newContent);
 
       setIsSaving(false);
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [
-    newContent,
-    oldContent,
-    callUpdateContent,
-    chatContent.hashId,
-    setChatContents,
-  ]);
+  }, [newContent, oldContent, callUpdateContent, chatContent.hashId]);
 
   const disabled = useMemo(
     () => typeof refreshingHashId === "string",
@@ -350,7 +327,6 @@ export default function Contents({ useGpi, className }: ContentsProps) {
           !prev ? prev : { ...prev, systemMessage: response.systemMessage }
         );
       }
-      return undefined;
     },
     [gpi, setGpi]
   );
@@ -371,7 +347,6 @@ export default function Contents({ useGpi, className }: ContentsProps) {
           )
         );
       }
-      return response?.content;
     },
     [setChatContents]
   );
