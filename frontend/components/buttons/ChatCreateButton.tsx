@@ -14,8 +14,13 @@ import { Static } from "@sinclair/typebox";
 import useModelStore from "@/store/model";
 import useProviderTypes from "@/hooks/useProviderTypes";
 import useLoginStore from "@/store/login";
+import { Button } from "../ui";
 
-export default function ChatCreateButton() {
+export default function ChatCreateButton({
+  isIcon = false,
+}: {
+  isIcon?: boolean;
+}) {
   const [loading, setLoading] = useState(false);
   const isLoggedOut = useUserStore((state) => !state.user);
   const setOpen = useLoginStore((state) => state.setOpen);
@@ -50,12 +55,24 @@ export default function ChatCreateButton() {
     setLoading(false);
   }, [isLoggedOut, router, modelHashId, config, setOpen]);
 
+  if (isIcon) {
+    return (
+      <IconButton
+        Icon={CirclePlus}
+        loading={loading}
+        onClick={onClick}
+        responsive
+      />
+    );
+  }
+
   return (
-    <IconButton
-      Icon={CirclePlus}
+    <Button
       loading={loading}
       onClick={onClick}
-      responsive
-    />
+      className="text-2xl font-bold bg-theme p-7 hover:bg-theme/80"
+    >
+      Create your prompt
+    </Button>
   );
 }
