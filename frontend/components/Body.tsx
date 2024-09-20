@@ -4,7 +4,6 @@ import MenusDropdown from "./dropdowns/MenusDropdown";
 import Link from "next/link";
 import { Toaster } from "@/components/ui/toaster";
 import ChatCreateButton from "./buttons/ChatCreateButton";
-import SearchInput from "./inputs/SearchInput";
 import LoginDialog from "./dialogs/LoginDialog";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -32,9 +31,7 @@ export default function Body({
                     </picture>
                   </div>
                 </Link>
-                <div className="flex-1">
-                  <SearchInput />
-                </div>
+                <div className="flex-1"></div>
                 <ChatCreateButton isIcon />
                 <MenusDropdown />
               </div>

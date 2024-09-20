@@ -1,6 +1,4 @@
 import ChatCreateButton from "@/components/buttons/ChatCreateButton";
-import { Button } from "@/components/ui";
-import Link from "next/link";
 import GpiDemo from "@/components/gpi/GpiDemo";
 
 export default function Page() {
@@ -58,12 +56,7 @@ export default function Page() {
           </div>
         </section>
         <div className="mx-auto text-center mb-12">
-          <Button
-            className="text-2xl font-bold bg-theme p-7 hover:bg-theme/80"
-            asChild
-          >
-            <Link href="/gpis">Check all prompts</Link>
-          </Button>
+          <ChatCreateButton />
         </div>
         <section className="grid md:grid-cols-3 gap-8 mb-12">
           <div className="p-6 rounded-lg">
