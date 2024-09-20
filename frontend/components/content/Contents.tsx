@@ -127,9 +127,6 @@ function Content({
     state.setConfig,
   ]);
 
-  useEffect(() => {
-    setNewContent(chatContent.content);
-  }, [chatContent.content]);
   const [isSaving, setIsSaving] = useState(false);
   useEffect(() => {
     if (oldContent === newContent) {
@@ -342,9 +339,7 @@ export default function Contents({ useGpi, className }: ContentsProps) {
       });
       if (response) {
         setChatContents((prev) =>
-          prev.map((c) =>
-            c.hashId === hashId ? { ...c, isModified: response.isModified } : c
-          )
+          prev.map((c) => (c.hashId === hashId ? { ...c, ...response } : c))
         );
       }
     },

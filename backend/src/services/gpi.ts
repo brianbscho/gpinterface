@@ -250,10 +250,7 @@ export class GpiService {
       hashId,
       userHashId,
       false,
-      {
-        ...data,
-        updatedAt: new Date(),
-      }
+      { ...data, updatedAt: new Date() }
     );
 
     await this.chatContentRepository.markChatContentsAsDeployed(hashId);
@@ -285,10 +282,7 @@ export class GpiService {
       hashId,
       userHashId,
       true,
-      {
-        ...data,
-        isDeployed: true,
-      }
+      { ...data, isDeployed: true }
     );
 
     await this.chatContentRepository.markChatContentsAsDeployed(hashId);

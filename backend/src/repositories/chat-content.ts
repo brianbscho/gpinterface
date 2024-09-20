@@ -138,7 +138,7 @@ export class ChatContentRepository {
   public async createChatContents(
     data: Omit<Prisma.ChatContentCreateManyInput, "hashId">[]
   ): Promise<Prisma.BatchPayload> {
-    const dataWithHashIds = data.map(getDataWithHashId);
+    const dataWithHashIds = data.map((d) => getDataWithHashId(d));
     return this.chatContent.createMany({
       data: dataWithHashIds,
     });
@@ -152,7 +152,7 @@ export class ChatContentRepository {
   public async createChatContentsAndReturn(
     data: Omit<Prisma.ChatContentCreateManyInput, "hashId">[]
   ) {
-    const dataWithHashIds = data.map(getDataWithHashId);
+    const dataWithHashIds = data.map((d) => getDataWithHashId(d));
     return this.chatContent.createManyAndReturn({
       data: dataWithHashIds,
       select: {

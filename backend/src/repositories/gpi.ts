@@ -382,13 +382,9 @@ export class GpiRepository {
       select: {
         isDeployed: true,
         chatContents: {
-          select: {
-            role: true,
-            content: true,
-            config: true,
-            modelHashId: true,
-          },
+          select: { role: true, content: true, config: true },
           orderBy: { id: "asc" },
+          where: { isDeployed: false },
         },
       },
     });
@@ -415,9 +411,14 @@ export class GpiRepository {
       select: {
         isDeployed: true,
         chatContents: {
-          select: { role: true, content: true, config: true },
+          select: {
+            role: true,
+            content: true,
+            config: true,
+            modelHashId: true,
+          },
           orderBy: { id: "asc" },
-          where: { isDeployed: true },
+          where: { isDeployed: false },
         },
       },
     });
