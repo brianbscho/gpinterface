@@ -190,7 +190,7 @@ export default function Page() {
         ))}
         <div className="col-span-2"></div>
         <div className="font-bold">Customer support</div>
-        <div className="text-neutral-400 flex items-center gap-1 underline col-span-2">
+        <div className="text-neutral-400 md:flex items-center gap-1 col-span-2">
           <a href="mailto:brian.b.cho@bookquilt.com">
             <IconTextButton
               responsive
@@ -199,6 +199,7 @@ export default function Page() {
               className="w-32 md:w-44"
             />
           </a>
+          <div>Please contact us to charge your balance</div>
         </div>
         <div className="font-bold">Password</div>
         <div className="col-span-2">
