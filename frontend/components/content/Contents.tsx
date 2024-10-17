@@ -169,6 +169,7 @@ function Content({
       showError: true,
     });
     if (response && setChatContents) {
+      setNewContent(response.content);
       setChatContents((prev) =>
         prev.map((p) => {
           if (p.hashId === response.hashId) {
