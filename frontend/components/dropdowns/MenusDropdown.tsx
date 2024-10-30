@@ -54,7 +54,7 @@ export default function MenusDropdown() {
     setOpen(false);
     await callApi({ endpoint: "/users/logout" });
     setUser(undefined);
-    location.reload();
+    window.location.href = "/";
   }, [setUser]);
 
   const [open, setOpen] = useState(false);

@@ -111,7 +111,7 @@ export class UserService {
    * @param reply - The FastifyReply object to modify.
    */
   logout = async (reply: FastifyReply): Promise<void> => {
-    reply.clearCookie("access_token");
+    reply.clearCookie("access_token").send({});
   };
 
   /**
