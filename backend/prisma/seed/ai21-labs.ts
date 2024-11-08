@@ -8,7 +8,7 @@ const models = [
     outputPricePerMillion: 0.7,
     isFree: true,
     isLoginRequired: false,
-    isAvailable: true,
+    isAvailable: false,
   },
   {
     hashId: nanoid(),
