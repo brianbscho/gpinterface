@@ -26,7 +26,7 @@ const models = [
     outputPricePerMillion: 1.5,
     isFree: true,
     isLoginRequired: true,
-    isAvailable: true,
+    isAvailable: false,
   },
 ];
 
