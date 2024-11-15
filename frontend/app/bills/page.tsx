@@ -82,7 +82,7 @@ export default function Page() {
                   <div>
                     <HistoryDialog history={h}>
                       <IconTextButton
-                        className="w-16 md:w-24"
+                        className="w-auto md:w-24"
                         Icon={Layers}
                         text="Detail"
                         responsive

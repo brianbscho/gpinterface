@@ -96,7 +96,7 @@ export default function DocumentTry({
               <Input
                 key={key}
                 placeholder={key}
-                className="w-full h-8 border-neutral-500"
+                className="w-full h-8 border-neutral-500 focus-visible:ring-0 focus-visible:border-theme focus-visible:ring-offset-0"
                 value={data[key].value}
                 onChange={(e) =>
                   setData((prev) => {
@@ -117,7 +117,7 @@ export default function DocumentTry({
               .map((p) => (
                 <Input
                   key={p}
-                  className="w-full py-0 h-8 border-neutral-500"
+                  className="w-full py-0 h-8 border-neutral-500 focus-visible:ring-0 focus-visible:border-theme focus-visible:ring-offset-0"
                   placeholder={p}
                   value={param}
                   onChange={(e) => setParam(e.currentTarget.value)}
